@@ -30,7 +30,7 @@ Doorstuuradres bewerken
 		</div>
 		<div class="row">
 			<label>Bestemming:
-				<input type="email" name="destination" value="{{ Input::old ('destination', $mFwd->source) }}" required />
+				<input type="email" name="destination" value="{{ Input::old ('destination', $mFwd->destination) }}" required />
 			</label>
 			<small class="error">Geef een geldig e-mailadres in</small>
 		</div>

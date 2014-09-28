@@ -26,7 +26,7 @@ class MailForwardingController extends BaseController
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
-		$objDomains = MailForwardingVirtual::where ('uid', $user->uid)->get ();
+		$objDomains = MailDomainVirtual::where ('uid', $user->uid)->get ();
 		$domains = array
 		(
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
@@ -81,7 +81,7 @@ class MailForwardingController extends BaseController
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
-		$objDomains = MailForwardingVirtual::where ('uid', $user->uid)->get ();
+		$objDomains = MailDomainVirtual::where ('uid', $user->uid)->get ();
 		$domains = array
 		(
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
