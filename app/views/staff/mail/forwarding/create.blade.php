@@ -28,7 +28,7 @@ Doorstuuradres toevoegen &bull; Staff
 				<small class="error">Verplicht veld</small>
 			</div>
 		</div>
-		<div>
+		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Bestemming:
 					<input type="email" name="destination" value="{{ Input::old ('destination') }}" required />
