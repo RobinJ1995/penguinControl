@@ -1,0 +1,9 @@
+<?php
+
+class Group extends Eloquent
+{
+
+	protected $table = 'group';
+	public $timestamps = false;
+
+}

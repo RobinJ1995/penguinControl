@@ -1,0 +1,41 @@
+@extends ('layout.master')
+
+@section ('pageTitle')
+E-mailaccounts &bull; Staff
+@endsection
+
+@section ('content')
+<table>
+	<thead>
+		<tr>
+			<th></th>
+			<th>E-mailadres</th>
+			<th>Gebruiker</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach ($mUsers as $mUser)
+		<tr>
+			<td>
+				<div class="button-group radius">
+					<a href="/staff/mail/user/{{ $mUser->id }}/edit" title="Bewerken" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Bewerken" />
+					</a><a href="/staff/mail/user/{{ $mUser->id }}/remove" title="Verwijderen" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					</a>
+				</div>
+			</td>
+			<td>{{ $mUser->email }}</td>
+			<td>
+				<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->getUserInfo ()->username }}</span>
+			</td>
+		</tr>
+		@endforeach
+	</tbody>
+</table>
+<div class="right">
+	<a href="/staff/mail/user/create" title="Toevoegen" class="button radius">
+		<img src="/img/icons/add.png" alt="Toevoegen" />
+	</a>
+</div>
+@endsection

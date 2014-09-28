@@ -1,0 +1,72 @@
+<li class="has-dropdown">
+	<a href="#">Gebruikersinstellingen</a>
+	<ul class="dropdown">
+		<li>
+			<a href="#">Overzicht</a>
+		</li>
+		<li>
+			<a href="#">Wachtwoord wijzigen</a>
+		</li>
+		<li>
+			<a href="#">Uitloggen</a>
+		</li>
+	</ul>
+</li>
+<li class="divider hide-for-small"></li>
+<li class="has-dropdown">
+	<a href="#">Website-instellingen</a>
+	<ul class="dropdown">
+		<li>
+			<a href="#">vHosts</a>
+		</li>
+		<li>
+			<a href="#">Versiebeheer</a>
+		</li>
+		<li>
+			<a href="#">Statistieken</a>
+		</li>
+	</ul>
+</li>
+<li class="divider hide-for-small"></li>
+<li class="has-dropdown">
+	<a href="#">Database-instellingen</a>
+	<ul class="dropdown">
+		<li>
+			<a href="#">Databases</a>
+		</li>
+		<li>
+			<a href="#">Gebruikers</a>
+		</li>
+		<li>
+			<a href="#">Rechten</a>
+		</li>
+	</ul>
+</li>
+<li class="divider hide-for-small"></li>
+<li class="has-dropdown">
+	<a href="#">FTP-instellingen</a>
+	<ul class="dropdown">
+		<li>
+			<a href="#">Gebruikers</a>
+		</li>
+	</ul>
+</li>
+<li class="divider hide-for-small"></li>
+<li class="has-dropdown">
+	<a href="#">E-mailinstellingen</a>
+	<ul class="dropdown">
+		<li>
+			<a href="#">Algemeen</a>
+		</li>
+		<li>
+			<a href="#">Domeinen</a>
+		</li>
+		<li>
+			<a href="#">Gebruikers</a>
+		</li>
+		<li>
+			<a href="#">Forwards</a>
+		</li>
+	</ul>
+</li>
+<li class="divider hide-for-small"></li> 

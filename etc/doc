@@ -1,0 +1,48 @@
+app/routes.php -- Welke url berwijst naar welke functie.
+	Route::get ('user/start', 'UserController@start');
+	--> GET: Er worden gegevens opgehaald, maar niet verstuurd (buiten de URL)
+	--> POST: Er worden gegevens vestuurd (er wordt een formulier gesubmit)
+	--> 'user/start': De URL in kwestie
+	--> 'user/{user}/edit': {user} is een parameter; deze wordt doorgegeven aan de functie
+	--> 'UserController@start': Doorgeven aan de functie 'start' in de class 'UserController'
+	Afspraken:
+		@index voor overzichtspagina's
+		@create toont het formulier om een nieuw item aan te maken
+		@store is de functie die een nieuw item in de database opslaat
+		@edit toont hetformulier om een bestaand item te bewerken
+		@update is de functie die een bestaand item bijwerkt in de database
+		@remove is de functie die een bestaand item verwijdert
+	
+	Route::mode ('ftp', 'FtpUserVirtual'); -- Een variabele {ftp} in de URL wordt aan de functie doorgegeven als een instantie van de class FtpUserVirtual die in de database id {ftp} heeft
+	Route::pattern ('ftp', '[0-9]+'); -- De variabele {ftp} mag enkel een getal bevatten in de URL.
+
+app/controllers/ -- De logica gebeurt hier
+	Returnt een response; Dit zal meestal een View of een Redirect zijn
+	Logica en databasetoegang moet zoveel mogelijk binnen controllers blijven; Variabelen worden vanuit de controller doorgegeven aan de view
+	
+	return View::make ('user.login')->with ('x', 'jos'); -- In dit geval zal in de view een variabele $x met waarde 'jos' beschikbaar zijn. ->withX ('jos') is een verkortte notatie.
+	'user.login' verwijst naar 'app/views/user/login.blade.php'. 'user/login' zal ook werken, maar voor SINControl wordt '.' gebruikt in plaats van '/'.
+	
+	$x = 'jos';
+	$y = 'maria';
+	$z = 2;
+	return View::make ('user.login', compact ('x', 'y', 'z'); -- De variabelen x, y en z met hun waardes zullen worden doorgegeven aan de view.
+	
+	return Redirect::to ('/user/start')->with ('alerts', $alerts); -- Doorsturen naar pagina /user/start met variabe $alerts.
+	Bij redirects zijn variabelen die doorgegeven worden te vinden in de session, in plaats van als gewone variabele. --> Session::get ('alerts')
+
+app/views/ -- Wat effectief aan de gebruiker getoond wordt.
+	In views wordt Blade syntax gebruikt.
+		@extends ('x') -- View x extenden
+		@section ('y') -- Section y uit de view die geëxtend wordt overschrijven met wat tussen @section ('y') en @endsection staat
+		@if ($x)
+			<p>Bla</p>
+		@endif
+		@foreach ($x as $y)
+			<p>{{ $y }}
+		@endforeach
+		Om variabelen te echo'en worden deze tussen {{ en }} gezet; {{ $x }}
+		<?php zal je normaalgesproken niet nodig hebben in de views; Als je nog logica moet toepassen in je view ben je meestal verkeerd bezig
+	Form::token () output een hidden field met een unieke token die gebruikt kan worden om bots en scripts tegen te houden
+
+app/models/ -- Models; Worden gebruikt voor databasetoegang.

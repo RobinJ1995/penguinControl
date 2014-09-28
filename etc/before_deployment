@@ -1,0 +1,17 @@
+ApacheVhostVirtual
+==================
+private $vHostDirAvailable = '/etc/apache2/sites-available/';
+private $vHostDirEnabled = '/etc/apache2/sites-enabled/';
+
+SystemService
+=============
+const INIT = 'sysvinit';
+
+Voeg /etc toe als basedir voor SINControl's vHost
+
+Zorg ervoor dat de volgende mappen bestaan in /home/users/;
+0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f  g  h  i  j  k  l  m  n  o  p  q  r  s  t  u  v  w  x  y  z
+
+Zorg ervoor dat er een gebruiker sincontrol bestaat en dat deze NOPASSWD sudo access heeft tot de volgende commando's;
+service (of systemctl als Debian al overgeschakeld is op systemd), cp, chmod, chown
+Er is ook NOPASSWD sudo access nodig voor service (of systemctl) op elke server die services draait de SINControl moet kunnen beheren (zoals Apache).

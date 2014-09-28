@@ -1,0 +1,13 @@
+/etc/pam.d/
+    common-account
+    common-auth
+    common-password
+    common-session
+
+Vervang in deze bestanden md5 door sha512
+
+Maak een group aan genaamd sincontrol
+Maak de groep sincontrol eigenaar van /etc/apache2/sites-available/ en /etc/apache2/sites-enabled/
+Geef permisies g+rwx op /etc/apache2/sites-available/ en /etc/apache2/sites-enabled/
+
+Wanneer Debian overstapt op systemd kan in app/libraries/ServiceApache.php de constante INIT ingesteld worden op 'systemd'.

@@ -1,0 +1,346 @@
+<?php
+
+class UserController extends BaseController
+{
+	public function start ()
+	{
+		$user = Auth::user ();
+		$userInfo = $user->getUserInfo ();
+		
+		return View::make ('user.start', compact ('user', 'userInfo'));
+	}
+	
+	public function getLogin ()
+	{
+		if (Auth::check ())
+			return Redirect::to ('/user/start');
+		else
+			return View::make ('user.login');
+	}
+	
+	public function login ()
+	{
+		$alerts = array ();
+		
+		$validator = Validator::make // http://laravel.com/docs/validation //
+		(
+			array
+			(
+				'Gebruikersnaam' => Input::get ('username'),
+				'Wachtwoord' => Input::get ('password')
+			),
+			array
+			(
+				'Gebruikersnaam' => 'required',
+				'Wachtwoord' => 'required'
+			)
+		);
+		
+		if ($validator->fails ())
+			return View::make ('user.login')->withErrors ($validator);
+		
+		$userInfo = UserInfo::where ('username', Input::get ('username'))->first ();
+		if (empty ($userInfo))
+			return View::make ('user.login')->with ('alerts', array (new Alert ('Ongeldige gebruikersnaam', 'alert')));
+		
+		$user = User::where ('user_info_id', $userInfo->id)->first ();
+		if (empty ($user))
+			return View::make ('user.login')->with ('alerts', array (new Alert ('Uw account is nog niet gevalideert.', 'alert')));
+		
+		$now = ceil (time () / 60 / 60 / 24);
+		if ($user->expire <= $now && $user->expire != -1)
+			return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.', 'info')));
+		
+		$hashedPass = crypt (Input::get ('password'), $user->crypt);
+		if ($hashedPass !== $user->crypt)
+			return View::make ('user.login')
+				->withInput (Input::only ('username'))
+				->with ('alerts', array (new Alert ('Ongeldig wachtwoord voor gebruiker ' . $userInfo->username, 'alert')));
+
+		//if ($user->getLowestGid () > Group::where ('name', 'staff')->firstOrFail ()->gid)
+		//	return View::make ('user.login')->with ('alerts', array (new Alert ('Omdat SIN in onderhoud is kunnen gebruikers momenteel niet inloggen.', 'warning')));
+		 
+		Auth::login ($user);
+
+		$hash = DatabaseCredentials::getHash (Input::get ('password'));
+		if (! empty ($hash))
+			DatabaseCredentials::forUserPrimary_hash ($userInfo->username, $hash);
+		
+		$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', 'success');
+		
+		$expiresIn = $user->expire - $now;
+		if ($expiresIn <= 14 && $user->expire != -1)
+			$alerts[] = new Alert ('Waarschuwing: Uw account zal over ' . $expiresIn . ' dagen vervallen. <a href="/user/' . $user->id . '/expired">Klik hier</a> om uw account te verlengen.', 'warning');
+		
+		return Redirect::to ('/user/start')->with ('alerts', $alerts);
+	}
+	
+	public function edit ()
+	{
+		$user = Auth::user ();
+		$userInfo = $user->getUserInfo ();
+		
+		return View::make ('user.edit', compact ('user', 'userInfo'))->with ('alerts', array (new Alert ('Laat de velden om een nieuw wachtwoord in te stellen leeg indien u uw huidige wachtwoord niet wenst te wijzigen.', 'info')));
+	}
+	
+	public function update ()
+	{
+		$user = Auth::user ();
+		$alerts = array ();
+		
+		$validator = Validator::make
+		(
+			array
+			(
+				'Shell' => Input::get ('shell'),
+				'E-mailadres' => Input::get ('email'),
+				'Huidige wachtwoord' => Input::get ('currentPass'),
+				'Nieuwe wachtwoord' => Input::get ('newPass'),
+				'Nieuwe wachtwoord (bevestiging)' => Input::get ('newPassConfirm')
+			),
+			array
+			(
+				'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
+				'E-mailadres' => array ('required', 'email'),
+				'Huidige wachtwoord' => 'required',
+				'Nieuwe wachtwoord' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', 'different:Huidige wachtwoord',  'required_with:Nieuwe wachtwoord (bevestiging)'),
+				'Nieuwe wachtwoord (bevestiging)' => array ('same:Nieuwe wachtwoord', 'required_with:Nieuwe wachtwoord')
+			)
+		);
+		
+		if ($validator->fails ())
+			return View::make ('user.edit', compact ('user'))->withErrors ($validator);
+		
+		$hashedPass = crypt (Input::get ('currentPass'), $user->crypt);
+		if ($hashedPass !== $user->crypt)
+			return View::make ('user.edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
+		
+		$userInfo = $user->getUserInfo ();
+		$userInfo->email = Input::get ('email');
+		
+		if (! empty (Input::get ('newPass')))
+		{
+			$user->setPassword (Input::get ('newPass'));
+			DatabaseCredentials::forUserPrimary($userInfo->username, Input::get ('newPass'));
+			
+			$ftp = FtpUserVirtual::where ('user', $userInfo->username)->where ('locked', '1')->first ();
+			$ftpPasswordChanged = false;
+			if (! empty ($ftp))
+			{
+				$ftp->setPassword (Input::get ('newPass'));
+				$ftpPasswordChanged = true;
+			}
+			
+			$alerts[] = new Alert ('Let op: Uw gebruikers-' . ($ftpPasswordChanged ? ', FTP-' : '') . ' en SIN Cloud-wachtwoord zijn aangepast. Andere wachtwoorden (van eventuele andere FTP-accounts of e-mailaccounts) dient u zelf nog te wijzigen indien u dit wenst.', 'info');
+		}
+		$user->shell = Input::get ('shell');
+		
+		$userInfo->save ();
+		$user->save ();
+		
+		$alerts[] = new Alert ('Gegevens bijgewerkt', 'success');
+		
+		return Redirect::to ('/user/start')->with ('alerts', $alerts);
+	}
+	
+	public function logout ()
+	{
+		Auth::logout ();
+		
+		return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('U bent uitgelogd')));
+	}
+	
+	public function getRegister ()
+	{
+		return View::make ('user.register');
+	}
+	
+	public function register ()
+	{
+		$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
+		$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
+		
+		foreach ($etcPasswd as $entry)
+		{
+			if (! empty ($entry))
+			{
+				$fields = explode (':', $entry, 2);
+
+				$reservedUsers[] = $fields[0];
+			}
+		}
+		
+		$strReservedUsers = implode (',', $reservedUsers);
+		
+		$email = Input::get ('rnummer') . '@student.thomasmore.be';
+		
+		$validator = Validator::make
+		(
+			array
+			(
+				'Gebruikersnaam' => strtolower (Input::get ('username')),
+				'Wachtwoord' => Input::get ('password'),
+				'Wachtwoord (bevestiging)' => Input::get ('password_confirm'),
+				'Voornaam' => Input::get ('fname'),
+				'Achternaam' => Input::get ('lname'),
+				'E-mailadres' => $email, //Input::get ('email'),
+				'r-nummer' => Input::get ('rnummer'),
+				'Voorwaarden' => Input::get ('termsAgree')
+			),
+			array
+			(
+				'Gebruikersnaam' => array ('required', 'alpha_num', 'min:4', 'max:14', 'unique:user_info,username', 'not_in:' . $strReservedUsers),
+				'Wachtwoord' => array ('required', 'not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8'),
+				'Wachtwoord (bevestiging)' => 'same:Wachtwoord',
+				'Voornaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+				'Achternaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+				'E-mailadres' => array ('required', 'email'),
+				'r-nummer' => array ('required', 'regex:/^r\d\d\d\d\d\d\d$/', 'unique:user_info,schoolnr'),
+				'Voorwaarden' => array ('required', 'accepted')
+			)
+		);
+		
+		if ($validator->fails ())
+			return Redirect::to ('/user/register')->withInput ()->withErrors ($validator);
+		
+		$etc = array
+		(
+			'password' => crypt (Input::get ('password'), '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$'),
+			'mysql_hash' => DatabaseCredentials::getHash (Input::get ('password'))
+		);
+		
+		$userInfo = new UserInfo ();
+		$userInfo->username = strtolower (Input::get ('username'));
+		$userInfo->fname = Input::get ('fname');
+		$userInfo->lname = Input::get ('lname');
+		$userInfo->email = $email; //Input::get ('email');
+		$userInfo->schoolnr = Input::get ('rnummer');
+		$userInfo->lastchange = time () / 60 / 60 / 24;
+		$userInfo->etc = serialize ($etc); // Na al de dirty hacks die Runes uitgehaald heeft met de oude SINControl mag ik ook wel eens zondigen zeker... //
+		$userInfo->validated = 0;
+		
+		$userInfo->save ();
+
+		$mailMessage = 'Gebruikersnaam: ' . $userInfo->username . PHP_EOL
+				. 'Naam: ' . $userInfo->fname . ' ' . $userInfo->lname . PHP_EOL
+				. 'E-mailadres: '  . $userInfo->email . PHP_EOL
+				. 'r-nummer: ' . $userInfo->schoolnr . PHP_EOL;
+		
+		 mail ('sin@sinners.be', 'Gebruiker wacht op validatie', $mailMessage, 'Content-type: text/plain');
+		
+		return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('Uw registratie is opgeslagen. Uw gegevens zullen door onze medewerkers worden nagekeken om te verifi&euml;ren dat uw wel degelijk een student bent aan Thomas More, waarna u een e-mail zal ontvangen op het opgegeven e-mailadres met verdere instructies voor het activeren van uw account. Dit zal normaalgesproken binnen 24 uur gebeuren. Indien u de e-mail in kwestie niet kan vinden, vergeet dan ook zeker uw spam-folder niet na te kijken. Bij problemen, of indien u na 3 dagen nog steeds geen e-mail van ons heeft ontvangen, <a href="/page/contact">neem gerust contact met ons op</a>.', 'success')));
+	}
+	
+	public function getExpired ($user)
+	{
+		$septemberYet = (idate ('n') >= 9);
+		$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
+		
+		return View::make ('user.expired', compact ('user', 'nextYear'));
+	}
+	
+	public function expired ($user)
+	{
+		$validator = Validator::make
+		(
+			array
+			(
+				'Gebruikersnaam' => Input::get ('username'),
+				'Wachtwoord' => Input::get ('password'),
+				'Verlengen' => Input::get ('renew')
+			),
+			array
+			(
+				'Gebruikersnaam' => array ('required', 'exists:user_info,username'),
+				'Wachtwoord' => 'required',
+				'Verlengen' => array ('required', 'accepted')
+			)
+		);
+		
+		if ($validator->fails ())
+			return View::make ('user.expired', compact ('user'))->withErrors ($validator);
+		
+		$userInfo = UserInfo::where ('username', Input::get ('username'))->first ();
+		if (empty ($userInfo))
+			return View::make ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Gebruikersinformatie niet gevonden', 'alert')));
+		
+		$now = ceil (time () / 60 / 60 / 24);
+		if ($user->expire > ($now + 14))
+			return View::make ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Uw account staat nog niet op het punt te vervallen en kan dus nog niet verleng worden. Verlengingen kunnen gedaan worden vanaf 14 dagen voor dat de account zal vervallen.', 'alert')));
+		
+		$hashedPass = crypt (Input::get ('password'), $user->crypt);
+		if ($hashedPass !== $user->crypt)
+			return View::make ('user.expired', compact ('user'))
+				->withInput (Input::only ('username'))
+				->with ('alerts', array (new Alert ('Ongeldig wachtwoord voor gebruiker ' . $userInfo->username, 'alert')));
+		
+		
+		if (empty ($userInfo->schoolnr) && empty ($userInfo->email))
+		{
+			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Geen r-nummer of e-mailadres bekend voor uw account. <a href="/page/contact">Contacteer ons</a>.', 'alert')));
+		}
+		else
+		{
+			if (substr (strtolower ($userInfo->schoolnr), 0, 1) == 'r' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 's' || substr (strtolower ($userInfo->email), 0, 2) == 'r0' || substr (strtolower ($userInfo->email), 0, 2) == 's5' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 'p' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 'q')
+			{
+				$userInfo->validationcode = md5 (time ());
+				$userInfo->save ();
+
+				$url = 'https://sinners.be/user/' . $user->id . '/expired/renew/' . $userInfo->validationcode;
+
+				$message = '<p>Beste ' . $userInfo->getFullName () . '</p>' . PHP_EOL
+					. PHP_EOL
+					. '<p>Er is zojuist een verlenging aangevraagd voor uw SIN-account.<br />' . PHP_EOL
+					. 'Om deze verlenging te bevestigen, open de volgende link in uw webbrowser: <a href="' . $url . '">' . $url . '</a></p>' . PHP_EOL
+					. '<p>Met vriendelijke groeten<br />' . PHP_EOL
+					. 'Het SIN-team</p>';
+
+				$headers = 'From: sin@sinners.be' . "\r\n" .
+					   'Content-type: text/html'. "\r\n";
+
+				mail ($userInfo->email, 'Verlenging SIN-account', $message, $headers);
+
+				return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies om uw verlenging te bevestigen. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
+			}
+			else
+			{
+				return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er ontbreken gegevens voor uw account. Mogelijk is er iets misgegaan bij uw oorspronkelijke registratie. <a href="/page/contact">Contacteer ons</a>. Wij excuseren ons voor het ongemak.', 'alert')));
+			}
+		}
+	}
+	
+	public function renew ($user, $validationcode)
+	{
+		$userInfo = $user->getUserInfo ();
+		
+		if ($validationcode == $userInfo->validationcode && (! empty ($userInfo->validationcode)))
+		{
+			$userLog = new UserLog ();
+			$userLog->user_info_id = $userInfo->id;
+			$userLog->nieuw = 0;
+			$userLog->boekhouding = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			
+			if (substr (strtolower ($userInfo->schoolnr), 0, 1) == 'p' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 'q')
+				$userLog->boekhouding = -1;
+			
+			$userInfo->validationcode = null;
+			
+			$septemberYet = (idate ('n') >= 9);
+			$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
+			$next1OctUnix = strtotime ('Oct 1,' . $nextYear);
+			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
+			
+			$user->expire = $next1OctDays;
+			
+			$userLog->save ();
+			$userInfo->save ();
+			$user->save ();
+			
+			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Uw SIN-account is verlengd tot 1 oktober 20' . $nextYear . '!', 'success')));
+		}
+		else
+		{
+			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgegeven link is ongeldig voor gebruiker ' . $userInfo->username, 'alert')));
+		}
+	}
+}

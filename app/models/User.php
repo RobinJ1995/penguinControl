@@ -1,0 +1,136 @@
+<?php
+
+use Illuminate\Auth\UserInterface;
+use Illuminate\Auth\Reminders\RemindableInterface;
+
+class User extends Eloquent implements UserInterface, RemindableInterface
+{
+
+	/**
+	 * The database table used by the model.
+	 *
+	 * @var string
+	 */
+	protected $table = 'user';
+	public $timestamps = false;
+	
+	public function setPassword ($password)
+	{
+		$this->crypt = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
+	}
+	
+	public function getUserInfo ()
+	{
+		return UserInfo::find ($this->user_info_id);
+	}
+	
+	public function user_info ()
+	{
+		return $this->hasOne ('UserInfo');
+	}
+	
+	public function getGroup ()
+	{
+		return Group::where ('gid', $this->gid)->first ();
+	}
+	
+	public function getGroups ()
+	{
+		return UserGroup::where ('uid', $this->uid)->get ();
+	}
+	
+	public function isGroupMember ($group)
+	{
+		return (UserGroup::where ('uid', $this->uid)->where ('gid', $group->gid)->count () > 0);
+	}
+	
+	public function getLowestGid () // Lagere gid betekent hogere permissies //
+	{
+		$userGroups = UserGroup::where ('uid', $this->uid);
+		$lowestGid = $this->gid;
+		
+		if ($userGroups->count () > 0 && $userGroups->min ('gid') < $lowestGid)
+			$lowestGid = $userGroups->min ('gid');
+		
+		return $lowestGid;
+	}
+	
+	public function hasExpired ()
+	{
+		if ($this->expire === null)
+			return false;
+		
+		$validUntilUnix = ($this->expire - 1) * 24 * 60 * 60;
+		
+		return (time () >= $validUntilUnix);
+	}
+
+	/**
+	 * The attributes excluded from the model's JSON form.
+	 *
+	 * @var array
+	 */
+	protected $hidden = array ('crypt');
+
+	/**
+	 * Get the unique identifier for the user.
+	 *
+	 * @return mixed
+	 */
+	public function getAuthIdentifier ()
+	{
+		return $this->getKey ();
+	}
+
+	/**
+	 * Get the password for the user.
+	 *
+	 * @return string
+	 */
+	public function getAuthPassword ()
+	{
+		return $this->password;
+	}
+
+	/**
+	 * Get the token value for the "remember me" session.
+	 *
+	 * @return string
+	 */
+	public function getRememberToken ()
+	{
+		return $this->remember_token;
+	}
+
+	/**
+	 * Set the token value for the "remember me" session.
+	 *
+	 * @param  string  $value
+	 * @return void
+	 */
+	public function setRememberToken ($value)
+	{
+		$this->remember_token = $value;
+	}
+
+	/**
+	 * Get the column name for the "remember me" token.
+	 *
+	 * @return string
+	 */
+	public function getRememberTokenName ()
+	{
+		return 'remember_token';
+	}
+
+	/**
+	 * Get the e-mail address where password reminders are sent.
+	 *
+	 * @return string
+	 */
+	public function getReminderEmail ()
+	{
+		return $this->email;
+	}
+
+}
