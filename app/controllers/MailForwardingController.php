@@ -63,7 +63,7 @@ class MailForwardingController extends BaseController
 		if ($validator->fails ())
 			return Redirect::to ('/mail/forwarding/create')->withInput ()->withErrors ($validator);
 		
-		$mFwd = new MailForwardingVirtualVirtual ();
+		$mFwd = new MailForwardingVirtual ();
 		$mFwd->uid = $user->uid;
 		$mFwd->source = Input::get ('source') . '@' . Input::get ('domain');
 		$mFwd->destination = Input::get ('destination');
