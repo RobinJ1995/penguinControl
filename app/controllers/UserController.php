@@ -386,6 +386,29 @@ class UserController extends BaseController
 		if (empty ($user) || $userInfo->validated == 0)
 			return View::make ('user.amnesia')->with ('alerts', array (new Alert ('Uw account is nog niet gevalideerd.', 'alert')));
 		
+		$now = ceil (time () / 60 / 60 / 24);
+		if ($user->expire <= $now && $user->expire != -1)
+		{
+			$random = bin2hex (openssl_random_pseudo_bytes (8));
+			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
+			$user->save ();
+			
+			$message = '<p>Beste ' . $userInfo->getFullName () . '</p>' . PHP_EOL
+			. '<p>Er is zojuist een aanvraag ingediend om uw inloggegevens door te geven en/of te wijzigen. Indien u deze aanvraag niet heeft ingediend kunt u deze e-mail best negeren. Indien u e-mails zoals deze regelmatig ontvangt zonder deze zelf aangevraagd te hebben, dan kan het zijn dat iemand misbruik probeert te maken van uw SIN-account. <a href="https://sinners.be/page/contact">Contacteer ons</a> zeker in dit geval!</p>' . PHP_EOL
+			. '<p>Wij hebben uw wachtwoord tijdelijk ingesteld op <kbd>' . $random . '</kbd>. U kunt dit wachtwoord gebruiken in combinatie met uw gebruikersnaam (<kbd>' . $userInfo->username . '</kbd>) om in te loggen op onze website en uw account (die vervallen is) te verlengen.<br />'. PHP_EOL
+			. 'Wanneer uw account verlengt is dient u zelf een nieuw wachtwoord in te stellen via <em>Gebruiker -> Gegevens wijzigen</em>. Zolang u zelf geen nieuw wachtwoord heeft ingesteld zult u geen gebruik kunnen maken van sommige andere diensten zoals FTP.</p>' . PHP_EOL
+			. '<p>Wij horen het graag indien u verdere vragen of problemen heeft.</p>' . PHP_EOL
+			. '<p>Met vriendelijke groeten<br />' . PHP_EOL
+			. 'Het SIN-team</p>';
+		
+			$headers = 'From: sin@sinners.be' . "\r\n"
+				. 'Content-type: text/html'. "\r\n";
+
+			mail ($userInfo->email, 'Inloggegevens SIN-account', $message, $headers);
+			
+			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
+		}
+		
 		$userInfo->logintoken = md5 (time ());
 		$userInfo->save ();
 		
