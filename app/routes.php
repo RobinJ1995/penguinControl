@@ -128,6 +128,9 @@ Route::post ('user/register', 'UserController@register');
 Route::get ('user/edit', 'UserController@edit');
 Route::post ('user/edit', 'UserController@update');
 Route::get ('user/logout', 'UserController@logout');
+Route::get ('user/amnesia', 'UserController@getAmnesia');
+Route::post ('user/amnesia', 'UserController@amnesia');
+Route::get ('user/{user}/amnesia/login/{logintoken}', 'UserController@loginWithToken');
 
 // vHost //
 Route::get ('website/vhost', 'VHostController@index');
