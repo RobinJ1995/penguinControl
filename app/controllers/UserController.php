@@ -378,7 +378,7 @@ class UserController extends BaseController
 			{
 				$userInfo = UserInfo::where ('schoolnr', $something)->first ();
 				if (empty ($userInfo))
-					return View::make ('user.amnesia')->with ('alerts', array (new Alert ('Gebruikersinformatie niet gevonden. <a href="/p/contact">Contacteer ons</a>.', 'alert')));
+					return View::make ('user.amnesia')->with ('alerts', array (new Alert ('Gebruikersinformatie niet gevonden. <a href="/page/contact">Contacteer ons</a>.', 'alert')));
 			}
 		}
 		
@@ -392,7 +392,7 @@ class UserController extends BaseController
 		$url = 'https://sinners.be/user/' . $user->id . '/amnesia/login/' . $userInfo->logintoken;
 		
 		$message = '<p>Beste ' . $userInfo->getFullName () . '</p>' . PHP_EOL
-			. '<p>Er is zojuist een aanvraag ingediend om uw inloggegevens door te geven en/of te wijzigen. Indien u deze aanvraag niet heeft ingediend kunt u deze e-mail best negeren. Indien u e-mails zoals deze regelmatig ontvangt zonder deze zelf aangevraagd te hebben, dan kan het zijn dat iemand misbruik probeert te maken van uw SIN-account. <a href="https://sinners.be/p/contact">Contacteer ons</a> zeker in dit geval!</p>' . PHP_EOL
+			. '<p>Er is zojuist een aanvraag ingediend om uw inloggegevens door te geven en/of te wijzigen. Indien u deze aanvraag niet heeft ingediend kunt u deze e-mail best negeren. Indien u e-mails zoals deze regelmatig ontvangt zonder deze zelf aangevraagd te hebben, dan kan het zijn dat iemand misbruik probeert te maken van uw SIN-account. <a href="https://sinners.be/page/contact">Contacteer ons</a> zeker in dit geval!</p>' . PHP_EOL
 			. '<p>U kunt de volgende link eenmalig gebruiken om in te loggen op uw SIN-account: <a href="' . $url . '">' . $url . '</a><br />'. PHP_EOL
 			. 'U kunt vervolgens indien gewenst uw wachtwoord wijzigen via <em>Gebruiker -> Gegevens wijzigen</em>.</p>' . PHP_EOL
 			. '<p>Wij horen het graag indien u verdere vragen of problemen heeft.</p>' . PHP_EOL
@@ -418,7 +418,7 @@ class UserController extends BaseController
 			
 			$now = ceil (time () / 60 / 60 / 24);
 			if ($user->expire <= $now && $user->expire != -1)
-				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.<br />Uw gebruikersnaam is <kbd>' . $userInfo->username . '</kbd>. Indien u uw wachtwoord niet meer weet, <a href="/p/contact">neem contact met ons op</a>.', 'info')));
+				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.<br />Uw gebruikersnaam is <kbd>' . $userInfo->username . '</kbd>. Indien u uw wachtwoord niet meer weet, <a href="/page/contact">neem contact met ons op</a>.', 'info')));
 			
 			Auth::login ($user);
 
