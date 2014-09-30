@@ -25,6 +25,7 @@
 		<script src="/js/foundation/foundation.equalizer.js"></script>
 		<script src="/js/foundation/foundation.alert.js"></script>
 		<script src="/js/foundation/foundation.magellan.js"></script>
+		<script src="/js/browserUpdate.js"></script>
 		<script src="/js/a29uYW1p.js"></script>
 		<script>
 			$(document).ready
