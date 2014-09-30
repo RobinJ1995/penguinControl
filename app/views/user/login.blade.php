@@ -28,7 +28,7 @@ Login
 		</div>
 	</form>
 	<p>
-		<!--<a href="/p/user/forgot">Wachtwoord vergeten?</a>-->
+		<a href="/user/amnesia">Inloggegevens vergeten?</a>
 	</p>
 </div>
 <div class="large-4 medium-3 hide-for-small-down column">

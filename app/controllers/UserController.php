@@ -129,6 +129,8 @@ class UserController extends BaseController
 			{
 				$ftp->setPassword (Input::get ('newPass'));
 				$ftpPasswordChanged = true;
+				
+				$ftp->save ();
 			}
 			
 			$alerts[] = new Alert ('Let op: Uw gebruikers-' . ($ftpPasswordChanged ? ', FTP-' : '') . ' en SIN Cloud-wachtwoord zijn aangepast. Andere wachtwoorden (van eventuele andere FTP-accounts of e-mailaccounts) dient u zelf nog te wijzigen indien u dit wenst.', 'info');
