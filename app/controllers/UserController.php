@@ -47,15 +47,15 @@ class UserController extends BaseController
 		if (empty ($user))
 			return View::make ('user.login')->with ('alerts', array (new Alert ('Uw account is nog niet gevalideert.', 'alert')));
 		
-		$now = ceil (time () / 60 / 60 / 24);
-		if ($user->expire <= $now && $user->expire != -1)
-			return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.', 'info')));
-		
 		$hashedPass = crypt (Input::get ('password'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
 			return View::make ('user.login')
 				->withInput (Input::only ('username'))
 				->with ('alerts', array (new Alert ('Ongeldig wachtwoord voor gebruiker ' . $userInfo->username, 'alert')));
+		
+		$now = ceil (time () / 60 / 60 / 24);
+		if ($user->expire <= $now && $user->expire != -1)
+			return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.', 'info')));
 
 		//if ($user->getLowestGid () > Group::where ('name', 'staff')->firstOrFail ()->gid)
 		//	return View::make ('user.login')->with ('alerts', array (new Alert ('Omdat SIN in onderhoud is kunnen gebruikers momenteel niet inloggen.', 'warning')));
