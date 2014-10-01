@@ -1,6 +1,15 @@
 @if (! empty (Auth::user ()) && (Auth::user ()->gid <= Group::where ('name', 'staff')->firstOrFail ()->gid))
 <div class="contain-to-grid">
 	<nav id="staffMenu" class="top-bar" data-topbar>
+		<ul class="title-area">
+			<li class="name"></li>
+			<li class="toggle-topbar menu-icon">
+				<a href="#">
+					<span>Staff</span>
+				</a>
+			</li>
+		</ul>
+		
 		<section class="top-bar-section">
 			<ul class="right show-for-large-up">
 				<li class="staffMenu">

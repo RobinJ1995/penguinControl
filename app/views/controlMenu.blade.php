@@ -1,5 +1,14 @@
 <div class="contain-to-grid sticky">
 	<nav id="controlMenu" class="top-bar" data-topbar data-options="sticky_on: large">
+		<ul class="title-area">
+			<li class="name"></li>
+			<li class="toggle-topbar menu-icon">
+				<a href="#">
+					<span>Menu</span>
+				</a>
+			</li>
+		</ul>
+		
 		<section class="top-bar-section">
 			<ul>
 				@foreach ($controlMenu as $item)
