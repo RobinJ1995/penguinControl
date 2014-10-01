@@ -34,7 +34,7 @@ class StaffSystemTaskController extends BaseController
 				'Start' => array ('date'),
 				'Interval' => array ('numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),
 				'Interval-eenheid' => array ('required_with:Interval', 'in:sec,min,hour,day,week'),
-				'Einde' => array ('date', 'after:Start')
+				'Einde' => array ('date')
 			)
 		);
 		
