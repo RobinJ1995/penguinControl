@@ -107,11 +107,14 @@ class FtpController extends BaseController
 		if ($ftp->locked)
 			return Redirect::to ('/ftp/' . $ftp->id . '/edit')->withInput ()->with ('alerts', array (new Alert ('U kan deze FTP-account niet zelf bewerken. Indien u hier toch graag iets aan zou willen wijzigen, neem dan contact met ons op.', 'alert')));
 		
-		
 		$ftp->user = $user->getUserInfo ()->username . '_' . Input::get ('user');
 		$ftp->dir = $user->homedir . '/' . Input::get ('dir');
 		if (! empty (Input::get ('passwd')))
+		{
+			Log::info ('FTP password change: ' . $user->getUserInfo ()->username . ' (' . $ftp->user . ') from ' . $_SERVER['REMOTE_ADDR']);
+			
 			$ftp->setPassword (Input::get ('passwd'));
+		}
 		
 		$ftp->save ();
 		

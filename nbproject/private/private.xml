@@ -3,9 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/models/User.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/config/database.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/FtpController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/controlMenu.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/models/SystemTask.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/filters.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/systemtask/create.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/siteMenu.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/layout/master.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/systemtask/index.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/routes.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/UserController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffSystemTaskController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staffMenu.blade.php</file>
         </group>
     </open-files>
 </project-private>

@@ -49,9 +49,13 @@ class UserController extends BaseController
 		
 		$hashedPass = crypt (Input::get ('password'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
+		{
+			Log::info ('Login attempt with wrong password: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			
 			return View::make ('user.login')
 				->withInput (Input::only ('username'))
 				->with ('alerts', array (new Alert ('Ongeldig wachtwoord voor gebruiker ' . $userInfo->username, 'alert')));
+		}
 		
 		$now = ceil (time () / 60 / 60 / 24);
 		if ($user->expire <= $now && $user->expire != -1)
@@ -59,7 +63,7 @@ class UserController extends BaseController
 
 		//if ($user->getLowestGid () > Group::where ('name', 'staff')->firstOrFail ()->gid)
 		//	return View::make ('user.login')->with ('alerts', array (new Alert ('Omdat SIN in onderhoud is kunnen gebruikers momenteel niet inloggen.', 'warning')));
-		 
+		
 		Auth::login ($user);
 
 		$hash = DatabaseCredentials::getHash (Input::get ('password'));
@@ -71,6 +75,8 @@ class UserController extends BaseController
 		$expiresIn = $user->expire - $now;
 		if ($expiresIn <= 14 && $user->expire != -1)
 			$alerts[] = new Alert ('Waarschuwing: Uw account zal over ' . $expiresIn . ' dagen vervallen. <a href="/user/' . $user->id . '/expired">Klik hier</a> om uw account te verlengen.', 'warning');
+		
+		Log::info ('Login: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 		
 		return Redirect::to ('/user/start')->with ('alerts', $alerts);
 	}
@@ -134,6 +140,8 @@ class UserController extends BaseController
 			}
 			
 			$alerts[] = new Alert ('Let op: Uw gebruikers-' . ($ftpPasswordChanged ? ', FTP-' : '') . ' en SIN Cloud-wachtwoord zijn aangepast. Andere wachtwoorden (van eventuele andere FTP-accounts of e-mailaccounts) dient u zelf nog te wijzigen indien u dit wenst.', 'info');
+			
+			Log::info ('Password change: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 		}
 		$user->shell = Input::get ('shell');
 		
@@ -222,6 +230,8 @@ class UserController extends BaseController
 		$userInfo->validated = 0;
 		
 		$userInfo->save ();
+		
+		Log::info ('Account registration: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
 		$mailMessage = 'Gebruikersnaam: ' . $userInfo->username . PHP_EOL
 				. 'Naam: ' . $userInfo->fname . ' ' . $userInfo->lname . PHP_EOL
@@ -340,6 +350,8 @@ class UserController extends BaseController
 			$userInfo->save ();
 			$user->save ();
 			
+			Log::info ('Account renewal: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Uw SIN-account is verlengd tot 1 oktober 20' . $nextYear . '!', 'success')));
 		}
 		else
@@ -389,8 +401,11 @@ class UserController extends BaseController
 			return View::make ('user.amnesia')->with ('alerts', array (new Alert ('Uw account is nog niet gevalideerd.', 'alert')));
 		
 		$now = ceil (time () / 60 / 60 / 24);
+		$expired = false;
 		if ($user->expire <= $now && $user->expire != -1)
 		{
+			$expired = true;
+			
 			$random = bin2hex (openssl_random_pseudo_bytes (8));
 			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
 			$user->save ();
@@ -429,6 +444,8 @@ class UserController extends BaseController
 		
 		mail ($userInfo->email, 'Inloggegevens SIN-account', $message, $headers);
 		
+		Log::info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
+		
 		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
 	}
 	
@@ -449,11 +466,15 @@ class UserController extends BaseController
 
 			$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', 'success');
 			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken.', 'info');
+			
+			Log::info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}
 		else
 		{
+			Log::info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgegeven link is ongeldig voor gebruiker ' . $userInfo->username, 'alert')));
 		}
 	}
