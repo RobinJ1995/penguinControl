@@ -333,6 +333,8 @@ class UserController extends BaseController
 			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
 			
 			$user->expire = $next1OctDays;
+			if ($user->shell == '/bin/false')
+				$user->shell = '/bin/bash';
 			
 			$userLog->save ();
 			$userInfo->save ();
