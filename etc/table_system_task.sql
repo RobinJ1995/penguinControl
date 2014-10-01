@@ -6,5 +6,6 @@ CREATE TABLE `control_new`.`system_task` (
   `end` INT(10) NULL COMMENT 'unix timestamp',
   `interval` INT(10) NULL COMMENT 'number of seconds',
   `exitcode` SMALLINT(3) NULL COMMENT 'last exit code',
+  `started` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`));
  

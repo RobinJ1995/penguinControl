@@ -9,7 +9,6 @@ Groep toevoegen &bull; Staff
 	<fieldset>
 		<legend>Groep toevoegen</legend>
 		<div class="row">
-			</div>
 			<div class="large-3 medium-3 small-12 column">
 				<label>GID:
 					<input type="number" name="gid" value="{{ Input::old ('gid') }}" min="1" max="{{ 200 }}" required />
@@ -29,6 +28,7 @@ Groep toevoegen &bull; Staff
 					<li>{{ $gid }}</li>
 					@endforeach
 				</ul>
+			</div>
 		</div>
 		<div>
 			{{ Form::token () }}

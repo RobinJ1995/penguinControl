@@ -83,6 +83,7 @@ Route::model ('user', 'User');
 Route::model ('userInfo', 'UserInfo');
 Route::model ('group', 'Group');
 Route::model ('limit', 'UserLimit');
+Route::model ('systemTask', 'SystemTask');
 
 Route::bind ('page',
 	function ($value, $route)
@@ -102,8 +103,8 @@ Route::pattern ('user', '[0-9]+');
 Route::pattern ('userInfo', '[0-9]+');
 Route::pattern ('group', '[0-9]+');
 Route::pattern ('limit', '[0-9]+');
+Route::pattern ('systemTask', '[0-9]+');
 
-Route::pattern ('order', '[a-zA-Z\_]+');
 Route::pattern ('order', '[a-zA-Z\_]+');
 
 // Home //
@@ -264,3 +265,9 @@ Route::post ('staff/page/create', 'StaffPageController@store');
 Route::get ('staff/page/{page}/edit', 'StaffPageController@edit');
 Route::post ('staff/page/{page}/edit', 'StaffPageController@update');
 Route::get ('staff/page/{page}/remove', 'StaffPageController@remove');
+
+// Staff // SystemTask //
+Route::get ('staff/systemtask', 'StaffSystemTaskController@index');
+Route::get ('staff/systemtask/create', 'StaffSystemTaskController@create');
+Route::post ('staff/systemtask/create', 'StaffSystemTaskController@store');
+Route::get ('staff/systemtask/{systemTask}/remove', 'StaffSystemTaskController@remove');
