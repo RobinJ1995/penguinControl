@@ -350,6 +350,10 @@ class UserController extends BaseController
 			$userInfo->save ();
 			$user->save ();
 			
+			$vhosts = ApacheVhostVirtual::where ('uid', $user->id)->get ();
+			foreach ($vhosts as $vhost)
+				$vhost->save (); // In save () wordt nagekeken of user expired is //
+			
 			Log::info ('Account renewal: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Uw SIN-account is verlengd tot 1 oktober 20' . $nextYear . '!', 'success')));

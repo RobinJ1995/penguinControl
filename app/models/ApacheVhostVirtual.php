@@ -11,6 +11,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
 	const SSLCERT = '/etc/apache2/ssl/wildcard.sinners.be.cert';
 	const SSLKEY = '/etc/apache2/ssl/wildcard.sinners.be.key';
+	const EXPIRED_DOCROOT = '/var/www/expired/';
 
 	public function save (array $options = array ())
 	{
@@ -22,6 +23,11 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 		
 		$identification = 'VHOST_' . $username . '_' . $this->servername;
 		$filename = $identification . '.conf';
+		
+		$now = ceil (time () / 60 / 60 / 24);
+		$expired = false;
+		if ($user->expire <= $now && $user->expire != -1)
+			$expired = true;
 		
 		$template80 = 
 '<VirtualHost *:80>
@@ -97,7 +103,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 		$file = str_replace ('{:homedir:}', $homedir, $file);
 		$file = str_replace ('{:group:}', $group, $file);
 		$file = str_replace ('{:serveradmin:}', $this->serveradmin, $file);
-		$file = str_replace ('{:docroot:}', $this->docroot, $file);
+		$file = str_replace ('{:docroot:}', $expired ? self::EXPIRED_DOCROOT : $this->docroot, $file);
 		$file = str_replace ('{:identification:}', $identification, $file);
 		$file = str_replace ('{:execCGI:}', ($this->cgi ? '+ExecCGI' : ''), $file);
 		$file = str_replace ('{:cgiHandler:}', ($this->cgi ? 'AddHandler cgi-script .cgi' : ''), $file);
