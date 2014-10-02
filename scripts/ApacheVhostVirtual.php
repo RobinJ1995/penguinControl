@@ -29,9 +29,9 @@ class ApacheVhostVirtual
 		$r = $q->fetchAll ();
 		
 		$vHosts = array ();
-		foreach ($r as $vHost){die (var_dump ($vHost));
-			$vHosts[] = new ApacheVhostVirtual ($vHost['apache_vhost_virtual.servername'], $vHost['apache_vhost_virtual.serveralias'], $vHost['apache_vhost_virtual.serveradmin'], $vHost['apache_vhost_virtual.ssl'], $vHost['user_info.username'], $vHost['group.name']);
-		}
+		foreach ($r as $vHost)
+			$vHosts[] = new ApacheVhostVirtual ($vHost['servername'], $vHost['serveralias'], $vHost['serveradmin'], $vHost['ssl'], $vHost['username'], $vHost['name']);
+		
 		return $vHosts;
 	}
 	
