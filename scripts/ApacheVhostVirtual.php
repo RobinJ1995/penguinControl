@@ -64,6 +64,7 @@ class ApacheVhostVirtual
 	DocumentRoot "{:docroot:}"
 	<Directory "{:docroot:}">
 		Options +Indexes +FollowSymLinks
+		AllowOverride All
 		Require all granted
 	</Directory>
 
@@ -82,6 +83,7 @@ class ApacheVhostVirtual
 	DocumentRoot "{:docroot:}"
 	<Directory "{:docroot:}">
 		Options +Indexes +FollowSymLinks
+		AllowOverride All
 		Require all granted
 	</Directory>
 </VirtualHost>';
