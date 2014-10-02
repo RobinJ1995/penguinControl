@@ -20,7 +20,7 @@ class ApacheVhostVirtual
 			FROM apache_vhost_virtual
 			INNER JOIN user ON apache_vhost_virtual.uid = user.uid
 			INNER JOIN user_info ON user.user_info_id = user_info.id
-			INNER JOIN group ON user.gid = group.gid
+			INNER JOIN `group` ON user.gid = `group`.gid
 			WHERE user.expire <= :now AND user.expire != -1;'
 		);
 		$q->bindValue (':now', $now);
