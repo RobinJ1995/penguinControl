@@ -29,7 +29,7 @@ class StaffSystemTaskController extends BaseController
 			),
 			array
 			(
-				'Type' => array ('required', 'in:apache_reload,custom'),
+				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts,custom'),
 				'Commando' => array ('required_if:type,custom'),
 				'Start' => array ('date'),
 				'Interval' => array ('numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),

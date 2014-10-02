@@ -38,6 +38,8 @@ Systeemopdrachten &bull; Staff
 					case 'homedir_prepare':
 						echo 'Home directory voorbereiden voor <kbd>' . $data['user'] . '</kbd>';
 						break;
+					case 'nuke_expired_vhosts':
+						echo 'Websites van vervallen gebruikers uitschakelen';
 					case 'custom':
 						echo 'Commando: <kbd>' . $data['command'] . '</kbd>';
 						break;

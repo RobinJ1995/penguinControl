@@ -17,6 +17,7 @@ Systeemopdracht toevoegen &bull; Staff
 						array
 						(
 							'apache_reload' => 'Webserver opnieuw laden',
+							'nuke_expired_vhosts' => 'Websites van vervallen gebruikers uitschakelen',
 							'custom' => 'Commando'
 						),
 						Input::old ('type')
