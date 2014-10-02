@@ -5,7 +5,7 @@ require_once ('ServiceApache.php');
 
 $db = new PDO
 (
-	'mysql:host=127.0.0.1;dbname=control_new',
+	'mysql:host=192.168.20.101;dbname=control_new',
 	'control_dev',
 	'***REMOVED***'
 );
