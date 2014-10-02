@@ -68,7 +68,7 @@ class StaffSystemTaskController extends BaseController
 		}
 		if (! empty (Input::get ('interval')))
 			$task->interval = Input::get ('interval') * $factor;
-		$task->end = strtotime (Input::get ('end'));
+		$task->end = (empty (Input::get ('end')) ? NULL : strtotime (Input::get ('end')));
 		
 		$task->save ();
 		
