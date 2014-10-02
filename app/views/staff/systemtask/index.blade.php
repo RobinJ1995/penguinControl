@@ -106,15 +106,15 @@ Systeemopdrachten &bull; Staff
 				{
 					if (empty ($task->interval))
 					{
-						if ($task->exitcode === 0)
-						{
-							$img = 'task-ok';
-							$alt = 'Uitgevoerd en beëindigd met exit code 0.';
-						}
-						else if ($task->exitcode === NULL)
+						if ($task->exitcode === NULL)
 						{
 							$img = 'task-unknown';
 							$alt = 'Zou gestart moeten zijn maar exit code is onbekend. Mogelijk is de opdracht nog aan het uitvoeren of is er iets mis.';
+						}
+						else if ($task->exitcode === 0)
+						{
+							$img = 'task-ok';
+							$alt = 'Uitgevoerd en beëindigd met exit code 0.';
 						}
 						else
 						{
@@ -124,15 +124,15 @@ Systeemopdrachten &bull; Staff
 					}
 					else
 					{
-						if ($task->exitcode === 0)
-						{
-							$img = 'task-planned-last-ok';
-							$alt = 'Staat gepland om opnieuw uitgevoerd te worden. Laatste uitvoering beëindigde met exit code 0.';
-						}
-						else if ($task->exitcode === NULL)
+						if ($task->exitcode === NULL)
 						{
 							$img = 'task-unknown';
 							$alt = 'Staat gepland om opnieuw uitgevoerd te worden. Van de laatste uitvoering is geen exit code bekend. Mogelijk is de opdracht nog aan het uitvoeren of is er iets mis.';
+						}
+						else if ($task->exitcode === 0)
+						{
+							$img = 'task-planned-last-ok';
+							$alt = 'Staat gepland om opnieuw uitgevoerd te worden. Laatste uitvoering beëindigde met exit code 0.';
 						}
 						else
 						{
