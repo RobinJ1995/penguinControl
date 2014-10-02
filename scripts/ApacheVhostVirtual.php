@@ -35,7 +35,7 @@ class ApacheVhostVirtual
 		return $vHosts;
 	}
 	
-	public function __construct ($servername, $serveralias, $serveradmin, $ssl, $username, $group, $ssl)
+	public function __construct ($servername, $serveralias, $serveradmin, $ssl, $username, $group)
 	{
 		$this->servername = $servername;
 		$this->serveralias = $serveralias;
