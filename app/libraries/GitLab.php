@@ -2,11 +2,11 @@
 
 class GitLab
 {
-	private const $api = 'http://192.168.40.105/api/v3/';
+	const API = 'http://192.168.20.105/api/v3/';
 	
 	public static function createUser ($email, $password, $username, $name, $admin = false)
 	{
-		$url = self::api . 'users';
+		$url = self::API . 'users';
 		
 		$fields = array
 		(

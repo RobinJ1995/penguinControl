@@ -6,7 +6,7 @@ abstract class SystemService
 	protected $serverName; //EXAMPLE// Xena //
 	protected $software; //EXAMPLE// apache2 // Service-naam //
 	protected $ssh; //EXAMPLE// squid // app/config/remote.php //
-	protected $needsSudo = true; // Of sudo voor het commando moet worden gezet //
+	protected $needsSudo = false; // Of sudo voor het commando moet worden gezet //
 	
 	const INIT = 'sysvinit';
 	
@@ -51,7 +51,7 @@ abstract class SystemService
 		}
 		else
 		{
-			exec ($cmd . ' 2>&1', $output);
+			exec ($cmd . ' 2>&1', $output, $exitCode);
 			foreach ($output as $line)
 				$line = trim ($line);
 		}
@@ -59,6 +59,10 @@ abstract class SystemService
 		if ($returnAsString)
 			return implode (PHP_EOL, $output);
 		else
-			return $output;
+			return array
+			(
+				'exitcode' => $exitCode,
+				'output' => $output
+			);
 	}
 }
