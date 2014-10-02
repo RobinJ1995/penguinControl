@@ -1,23 +1,20 @@
-<?php
+<?php namespace Illuminate\Database\Migrations;
 
-namespace Illuminate\Database\Migrations;
-
-interface MigrationRepositoryInterface
-{
+interface MigrationRepositoryInterface {
 
 	/**
 	 * Get the ran migrations for a given package.
 	 *
 	 * @return array
 	 */
-	public function getRan ();
+	public function getRan();
 
 	/**
 	 * Get the last migration batch.
 	 *
 	 * @return array
 	 */
-	public function getLast ();
+	public function getLast();
 
 	/**
 	 * Log that a migration was run.
@@ -26,7 +23,7 @@ interface MigrationRepositoryInterface
 	 * @param  int     $batch
 	 * @return void
 	 */
-	public function log ($file, $batch);
+	public function log($file, $batch);
 
 	/**
 	 * Remove a migration from the log.
@@ -34,28 +31,28 @@ interface MigrationRepositoryInterface
 	 * @param  object  $migration
 	 * @return void
 	 */
-	public function delete ($migration);
+	public function delete($migration);
 
 	/**
 	 * Get the next migration batch number.
 	 *
 	 * @return int
 	 */
-	public function getNextBatchNumber ();
+	public function getNextBatchNumber();
 
 	/**
 	 * Create the migration repository data store.
 	 *
 	 * @return void
 	 */
-	public function createRepository ();
+	public function createRepository();
 
 	/**
 	 * Determine if the migration repository exists.
 	 *
 	 * @return bool
 	 */
-	public function repositoryExists ();
+	public function repositoryExists();
 
 	/**
 	 * Set the information source to gather data.
@@ -63,5 +60,6 @@ interface MigrationRepositoryInterface
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setSource ($name);
+	public function setSource($name);
+
 }

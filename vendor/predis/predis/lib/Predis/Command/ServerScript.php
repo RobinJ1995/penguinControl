@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerScript extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SCRIPT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SCRIPT';
+    }
 }

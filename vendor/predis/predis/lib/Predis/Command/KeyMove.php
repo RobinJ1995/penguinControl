@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class KeyMove extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'MOVE';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'MOVE';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return (bool) $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

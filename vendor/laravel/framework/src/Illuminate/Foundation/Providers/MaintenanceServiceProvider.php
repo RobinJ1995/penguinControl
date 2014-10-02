@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Foundation\Providers;
+<?php namespace Illuminate\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Console\UpCommand;
 use Illuminate\Foundation\Console\DownCommand;
 
-class MaintenanceServiceProvider extends ServiceProvider
-{
+class MaintenanceServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -21,19 +18,19 @@ class MaintenanceServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('command.up', function($app)
+		$this->app->bindShared('command.up', function($app)
 		{
 			return new UpCommand;
 		});
 
-		$this->app->bindShared ('command.down', function($app)
+		$this->app->bindShared('command.down', function($app)
 		{
 			return new DownCommand;
 		});
 
-		$this->commands ('command.up', 'command.down');
+		$this->commands('command.up', 'command.down');
 	}
 
 	/**
@@ -41,9 +38,9 @@ class MaintenanceServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('command.up', 'command.down');
+		return array('command.up', 'command.down');
 	}
 
 }

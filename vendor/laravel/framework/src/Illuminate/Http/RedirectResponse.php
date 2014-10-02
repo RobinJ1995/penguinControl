@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Http;
+<?php namespace Illuminate\Http;
 
 use Illuminate\Support\MessageBag;
 use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Session\Store as SessionStore;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 
-class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectResponse
-{
+class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectResponse {
 
 	/**
 	 * The request instance.
@@ -32,9 +29,9 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  bool  $replace
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function header ($key, $value, $replace = true)
+	public function header($key, $value, $replace = true)
 	{
-		$this->headers->set ($key, $value, $replace);
+		$this->headers->set($key, $value, $replace);
 
 		return $this;
 	}
@@ -46,16 +43,15 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  mixed   $value
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function with ($key, $value = null)
+	public function with($key, $value = null)
 	{
-		if (is_array ($key))
+		if (is_array($key))
 		{
-			foreach ($key as $k => $v)
-				$this->with ($k, $v);
+			foreach ($key as $k => $v) $this->with($k, $v);
 		}
 		else
 		{
-			$this->session->flash ($key, $value);
+			$this->session->flash($key, $value);
 		}
 
 		return $this;
@@ -67,9 +63,9 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function withCookie (Cookie $cookie)
+	public function withCookie(Cookie $cookie)
 	{
-		$this->headers->setCookie ($cookie);
+		$this->headers->setCookie($cookie);
 
 		return $this;
 	}
@@ -80,11 +76,11 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  array  $input
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function withInput (array $input = null)
+	public function withInput(array $input = null)
 	{
-		$input = $input ? : $this->request->input ();
+		$input = $input ?: $this->request->input();
 
-		$this->session->flashInput ($input);
+		$this->session->flashInput($input);
 
 		return $this;
 	}
@@ -95,9 +91,9 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  dynamic  string
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function onlyInput ()
+	public function onlyInput()
 	{
-		return $this->withInput ($this->request->only (func_get_args ()));
+		return $this->withInput($this->request->only(func_get_args()));
 	}
 
 	/**
@@ -106,9 +102,9 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  dynamic  string
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function exceptInput ()
+	public function exceptInput()
 	{
-		return $this->withInput ($this->request->except (func_get_args ()));
+		return $this->withInput($this->request->except(func_get_args()));
 	}
 
 	/**
@@ -117,15 +113,15 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  \Illuminate\Support\Contracts\MessageProviderInterface|array  $provider
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function withErrors ($provider)
+	public function withErrors($provider)
 	{
 		if ($provider instanceof MessageProviderInterface)
 		{
-			$this->with ('errors', $provider->getMessageBag ());
+			$this->with('errors', $provider->getMessageBag());
 		}
 		else
 		{
-			$this->with ('errors', new MessageBag ((array) $provider));
+			$this->with('errors', new MessageBag((array) $provider));
 		}
 
 		return $this;
@@ -136,7 +132,7 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 *
 	 * @return  \Illuminate\Http\Request
 	 */
-	public function getRequest ()
+	public function getRequest()
 	{
 		return $this->request;
 	}
@@ -147,7 +143,7 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return void
 	 */
-	public function setRequest (Request $request)
+	public function setRequest(Request $request)
 	{
 		$this->request = $request;
 	}
@@ -157,7 +153,7 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 *
 	 * @return \Illuminate\Session\Store
 	 */
-	public function getSession ()
+	public function getSession()
 	{
 		return $this->session;
 	}
@@ -168,7 +164,7 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 * @param  \Illuminate\Session\Store  $store
 	 * @return void
 	 */
-	public function setSession (SessionStore $session)
+	public function setSession(SessionStore $session)
 	{
 		$this->session = $session;
 	}
@@ -182,14 +178,14 @@ class RedirectResponse extends \Symfony\Component\HttpFoundation\RedirectRespons
 	 *
 	 * @throws \BadMethodCallException
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		if (starts_with ($method, 'with'))
+		if (starts_with($method, 'with'))
 		{
-			return $this->with (snake_case (substr ($method, 4)), $parameters[0]);
+			return $this->with(snake_case(substr($method, 4)), $parameters[0]);
 		}
 
-		throw new \BadMethodCallException ("Method [$method] does not exist on Redirect.");
+		throw new \BadMethodCallException("Method [$method] does not exist on Redirect.");
 	}
 
 }

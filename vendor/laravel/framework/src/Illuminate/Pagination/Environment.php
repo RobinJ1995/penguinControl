@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Pagination;
+<?php namespace Illuminate\Pagination;
 
 use Illuminate\Http\Request;
 use Illuminate\View\Environment as ViewEnvironment;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class Environment
-{
+class Environment {
 
 	/**
 	 * The request instance.
@@ -74,13 +71,13 @@ class Environment
 	 * @param  string  $pageName
 	 * @return void
 	 */
-	public function __construct (Request $request, ViewEnvironment $view, TranslatorInterface $trans, $pageName = 'page')
+	public function __construct(Request $request, ViewEnvironment $view, TranslatorInterface $trans, $pageName = 'page')
 	{
 		$this->view = $view;
 		$this->trans = $trans;
 		$this->request = $request;
 		$this->pageName = $pageName;
-		$this->setupPaginationEnvironment ();
+		$this->setupPaginationEnvironment();
 	}
 
 	/**
@@ -88,9 +85,9 @@ class Environment
 	 *
 	 * @return void
 	 */
-	protected function setupPaginationEnvironment ()
+	protected function setupPaginationEnvironment()
 	{
-		$this->view->addNamespace ('pagination', __DIR__ . '/views');
+		$this->view->addNamespace('pagination', __DIR__.'/views');
 	}
 
 	/**
@@ -101,11 +98,11 @@ class Environment
 	 * @param  int    $perPage
 	 * @return \Illuminate\Pagination\Paginator
 	 */
-	public function make (array $items, $total, $perPage)
+	public function make(array $items, $total, $perPage)
 	{
-		$paginator = new Paginator ($this, $items, $total, $perPage);
+		$paginator = new Paginator($this, $items, $total, $perPage);
 
-		return $paginator->setupPaginationContext ();
+		return $paginator->setupPaginationContext();
 	}
 
 	/**
@@ -115,11 +112,11 @@ class Environment
 	 * @param  string  $view
 	 * @return \Illuminate\View\View
 	 */
-	public function getPaginationView (Paginator $paginator, $view = null)
+	public function getPaginationView(Paginator $paginator, $view = null)
 	{
-		$data = array ('environment' => $this, 'paginator' => $paginator);
+		$data = array('environment' => $this, 'paginator' => $paginator);
 
-		return $this->view->make ($this->getViewName ($view), $data);
+		return $this->view->make($this->getViewName($view), $data);
 	}
 
 	/**
@@ -127,11 +124,11 @@ class Environment
 	 *
 	 * @return int
 	 */
-	public function getCurrentPage ()
+	public function getCurrentPage()
 	{
-		$page = (int) $this->currentPage ? : $this->request->query->get ($this->pageName, 1);
+		$page = (int) $this->currentPage ?: $this->request->input($this->pageName, 1);
 
-		if ($page < 1 || filter_var ($page, FILTER_VALIDATE_INT) === false)
+		if ($page < 1 || filter_var($page, FILTER_VALIDATE_INT) === false)
 		{
 			return 1;
 		}
@@ -145,7 +142,7 @@ class Environment
 	 * @param  int  $number
 	 * @return void
 	 */
-	public function setCurrentPage ($number)
+	public function setCurrentPage($number)
 	{
 		$this->currentPage = $number;
 	}
@@ -155,9 +152,9 @@ class Environment
 	 *
 	 * @return string
 	 */
-	public function getCurrentUrl ()
+	public function getCurrentUrl()
 	{
-		return $this->baseUrl ? : $this->request->url ();
+		return $this->baseUrl ?: $this->request->url();
 	}
 
 	/**
@@ -166,7 +163,7 @@ class Environment
 	 * @param  string  $baseUrl
 	 * @return void
 	 */
-	public function setBaseUrl ($baseUrl)
+	public function setBaseUrl($baseUrl)
 	{
 		$this->baseUrl = $baseUrl;
 	}
@@ -177,7 +174,7 @@ class Environment
 	 * @param  string  $pageName
 	 * @return void
 	 */
-	public function setPageName ($pageName)
+	public function setPageName($pageName)
 	{
 		$this->pageName = $pageName;
 	}
@@ -187,7 +184,7 @@ class Environment
 	 *
 	 * @return string
 	 */
-	public function getPageName ()
+	public function getPageName()
 	{
 		return $this->pageName;
 	}
@@ -198,12 +195,11 @@ class Environment
 	 * @param  string  $view
 	 * @return string
 	 */
-	public function getViewName ($view = null)
+	public function getViewName($view = null)
 	{
-		if (!is_null ($view))
-			return $view;
+		if ( ! is_null($view)) return $view;
 
-		return $this->viewName ? : 'pagination::slider';
+		return $this->viewName ?: 'pagination::slider';
 	}
 
 	/**
@@ -212,7 +208,7 @@ class Environment
 	 * @param  string  $viewName
 	 * @return void
 	 */
-	public function setViewName ($viewName)
+	public function setViewName($viewName)
 	{
 		$this->viewName = $viewName;
 	}
@@ -222,7 +218,7 @@ class Environment
 	 *
 	 * @return string
 	 */
-	public function getLocale ()
+	public function getLocale()
 	{
 		return $this->locale;
 	}
@@ -233,7 +229,7 @@ class Environment
 	 * @param  string  $locale
 	 * @return void
 	 */
-	public function setLocale ($locale)
+	public function setLocale($locale)
 	{
 		$this->locale = $locale;
 	}
@@ -243,7 +239,7 @@ class Environment
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Request
 	 */
-	public function getRequest ()
+	public function getRequest()
 	{
 		return $this->request;
 	}
@@ -254,7 +250,7 @@ class Environment
 	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return void
 	 */
-	public function setRequest (Request $request)
+	public function setRequest(Request $request)
 	{
 		$this->request = $request;
 	}
@@ -264,7 +260,7 @@ class Environment
 	 *
 	 * @return \Illuminate\View\Environment
 	 */
-	public function getViewDriver ()
+	public function getViewDriver()
 	{
 		return $this->view;
 	}
@@ -275,7 +271,7 @@ class Environment
 	 * @param  \Illuminate\View\Environment  $view
 	 * @return void
 	 */
-	public function setViewDriver (ViewEnvironment $view)
+	public function setViewDriver(ViewEnvironment $view)
 	{
 		$this->view = $view;
 	}
@@ -285,7 +281,7 @@ class Environment
 	 *
 	 * @return \Symfony\Component\Translation\TranslatorInterface
 	 */
-	public function getTranslator ()
+	public function getTranslator()
 	{
 		return $this->trans;
 	}

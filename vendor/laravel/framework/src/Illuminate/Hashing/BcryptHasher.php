@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Hashing;
 
-namespace Illuminate\Hashing;
-
-class BcryptHasher implements HasherInterface
-{
+class BcryptHasher implements HasherInterface {
 
 	/**
 	 * Default crypt cost factor.
@@ -21,15 +18,15 @@ class BcryptHasher implements HasherInterface
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function make ($value, array $options = array ())
+	public function make($value, array $options = array())
 	{
-		$cost = isset ($options['rounds']) ? $options['rounds'] : $this->rounds;
+		$cost = isset($options['rounds']) ? $options['rounds'] : $this->rounds;
 
-		$hash = password_hash ($value, PASSWORD_BCRYPT, array ('cost' => $cost));
+		$hash = password_hash($value, PASSWORD_BCRYPT, array('cost' => $cost));
 
 		if ($hash === false)
 		{
-			throw new \RuntimeException ("Bcrypt hashing not supported.");
+			throw new \RuntimeException("Bcrypt hashing not supported.");
 		}
 
 		return $hash;
@@ -43,9 +40,9 @@ class BcryptHasher implements HasherInterface
 	 * @param  array   $options
 	 * @return bool
 	 */
-	public function check ($value, $hashedValue, array $options = array ())
+	public function check($value, $hashedValue, array $options = array())
 	{
-		return password_verify ($value, $hashedValue);
+		return password_verify($value, $hashedValue);
 	}
 
 	/**
@@ -55,11 +52,11 @@ class BcryptHasher implements HasherInterface
 	 * @param  array   $options
 	 * @return bool
 	 */
-	public function needsRehash ($hashedValue, array $options = array ())
+	public function needsRehash($hashedValue, array $options = array())
 	{
-		$cost = isset ($options['rounds']) ? $options['rounds'] : $this->rounds;
+		$cost = isset($options['rounds']) ? $options['rounds'] : $this->rounds;
 
-		return password_needs_rehash ($hashedValue, PASSWORD_BCRYPT, array ('cost' => $cost));
+		return password_needs_rehash($hashedValue, PASSWORD_BCRYPT, array('cost' => $cost));
 	}
 
 }

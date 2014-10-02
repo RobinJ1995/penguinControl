@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Database\Query\Processors;
+<?php namespace Illuminate\Database\Query\Processors;
 
 use Illuminate\Database\Query\Builder;
 
-class SqlServerProcessor extends Processor
-{
+class SqlServerProcessor extends Processor {
 
 	/**
 	 * Process an "insert get ID" query.
@@ -16,13 +13,13 @@ class SqlServerProcessor extends Processor
 	 * @param  string  $sequence
 	 * @return int
 	 */
-	public function processInsertGetId (Builder $query, $sql, $values, $sequence = null)
+	public function processInsertGetId(Builder $query, $sql, $values, $sequence = null)
 	{
-		$query->getConnection ()->insert ($sql, $values);
+		$query->getConnection()->insert($sql, $values);
 
-		$id = $query->getConnection ()->getPdo ()->lastInsertId ();
+		$id = $query->getConnection()->getPdo()->lastInsertId();
 
-		return is_numeric ($id) ? (int) $id : $id;
+		return is_numeric($id) ? (int) $id : $id;
 	}
 
 	/**
@@ -31,12 +28,9 @@ class SqlServerProcessor extends Processor
 	 * @param  array  $results
 	 * @return array
 	 */
-	public function processColumnListing ($results)
+	public function processColumnListing($results)
 	{
-		return array_values (array_map (function($r)
-			{
-				return $r->name;
-			}, $results));
+		return array_values(array_map(function($r) { return $r->name; }, $results));
 	}
 
 }

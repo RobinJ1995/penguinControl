@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetDifferenceStore extends SetIntersectionStore
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SDIFFSTORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SDIFFSTORE';
+    }
 }

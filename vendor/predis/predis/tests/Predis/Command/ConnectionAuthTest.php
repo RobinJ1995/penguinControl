@@ -17,48 +17,46 @@ namespace Predis\Command;
  */
 class ConnectionAuthTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ConnectionAuth';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ConnectionAuth';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'AUTH';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'AUTH';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('password');
+        $expected = array('password');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('password');
-		$expected = array ('password');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $raw = null;
+        $expected = null;
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$raw = null;
-		$expected = null;
+        $command = $this->getCommand();
 
-		$command = $this->getCommand ();
-
-		$this->assertSame ($expected, $command->parseResponse ($raw));
-	}
-
+        $this->assertSame($expected, $command->parseResponse($raw));
+    }
 }

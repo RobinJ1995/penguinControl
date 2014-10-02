@@ -21,33 +21,32 @@ require 'SharedConfigurations.php';
 // PS: please note that multibulk iterators are supported only by the standard
 // connection backend class (Predis\Connection\StreamConnection) and not the
 // phpiredis-based one (Predis\Connection\PhpiredisConnection).
+
 // Create a client and force the connection to use iterable multibulk responses.
-$client = new Predis\Client ($single_server + array ('iterable_multibulk' => true));
+$client = new Predis\Client($single_server + array('iterable_multibulk' => true));
 
 // Prepare an hash with some fields and their respective values.
-$client->hmset ('metavars', array ('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'));
+$client->hmset('metavars', array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'));
 
 // By default multibulk iterators iterate over the reply as a list of items...
-foreach ($client->hgetall ('metavars') as $index => $item)
-{
-	echo "[$index] $item\n";
+foreach ($client->hgetall('metavars') as $index => $item) {
+    echo "[$index] $item\n";
 }
 
 /* OUTPUT:
-  [0] foo
-  [1] bar
-  [2] hoge
-  [3] piyo
-  [4] lol
-  [5] wut
- */
+[0] foo
+[1] bar
+[2] hoge
+[3] piyo
+[4] lol
+[5] wut
+*/
 
 // ... but certain multibulk replies are better represented as lists of tuples.
-foreach ($client->hgetall ('metavars')->asTuple () as $index => $kv)
-{
-	list($key, $value) = $kv;
+foreach ($client->hgetall('metavars')->asTuple() as $index => $kv) {
+    list($key, $value) = $kv;
 
-	echo "[$index] $key => $value\n";
+    echo "[$index] $key => $value\n";
 }
 
 /* OUTPUT:

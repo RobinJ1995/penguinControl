@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Translation;
+<?php namespace Illuminate\Translation;
 
 use Illuminate\Filesystem\Filesystem;
 
-class FileLoader implements LoaderInterface
-{
+class FileLoader implements LoaderInterface {
 
 	/**
 	 * The filesystem instance.
@@ -26,7 +23,7 @@ class FileLoader implements LoaderInterface
 	 *
 	 * @var array
 	 */
-	protected $hints = array ();
+	protected $hints = array();
 
 	/**
 	 * Create a new file loader instance.
@@ -35,7 +32,7 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $path
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $path)
+	public function __construct(Filesystem $files, $path)
 	{
 		$this->path = $path;
 		$this->files = $files;
@@ -49,15 +46,15 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $namespace
 	 * @return array
 	 */
-	public function load ($locale, $group, $namespace = null)
+	public function load($locale, $group, $namespace = null)
 	{
-		if (is_null ($namespace) || $namespace == '*')
+		if (is_null($namespace) || $namespace == '*')
 		{
-			return $this->loadPath ($this->path, $locale, $group);
+			return $this->loadPath($this->path, $locale, $group);
 		}
 		else
 		{
-			return $this->loadNamespaced ($locale, $group, $namespace);
+			return $this->loadNamespaced($locale, $group, $namespace);
 		}
 	}
 
@@ -69,16 +66,16 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $namespace
 	 * @return array
 	 */
-	protected function loadNamespaced ($locale, $group, $namespace)
+	protected function loadNamespaced($locale, $group, $namespace)
 	{
-		if (isset ($this->hints[$namespace]))
+		if (isset($this->hints[$namespace]))
 		{
-			$lines = $this->loadPath ($this->hints[$namespace], $locale, $group);
+			$lines = $this->loadPath($this->hints[$namespace], $locale, $group);
 
-			return $this->loadNamespaceOverrides ($lines, $locale, $group, $namespace);
+			return $this->loadNamespaceOverrides($lines, $locale, $group, $namespace);
 		}
 
-		return array ();
+		return array();
 	}
 
 	/**
@@ -90,13 +87,13 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $namespace
 	 * @return array
 	 */
-	protected function loadNamespaceOverrides (array $lines, $locale, $group, $namespace)
+	protected function loadNamespaceOverrides(array $lines, $locale, $group, $namespace)
 	{
 		$file = "{$this->path}/packages/{$locale}/{$namespace}/{$group}.php";
 
-		if ($this->files->exists ($file))
+		if ($this->files->exists($file))
 		{
-			return array_replace_recursive ($lines, $this->files->getRequire ($file));
+			return array_replace_recursive($lines, $this->files->getRequire($file));
 		}
 
 		return $lines;
@@ -110,14 +107,14 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $group
 	 * @return array
 	 */
-	protected function loadPath ($path, $locale, $group)
+	protected function loadPath($path, $locale, $group)
 	{
-		if ($this->files->exists ($full = "{$path}/{$locale}/{$group}.php"))
+		if ($this->files->exists($full = "{$path}/{$locale}/{$group}.php"))
 		{
-			return $this->files->getRequire ($full);
+			return $this->files->getRequire($full);
 		}
 
-		return array ();
+		return array();
 	}
 
 	/**
@@ -127,7 +124,7 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $hint
 	 * @return void
 	 */
-	public function addNamespace ($namespace, $hint)
+	public function addNamespace($namespace, $hint)
 	{
 		$this->hints[$namespace] = $hint;
 	}

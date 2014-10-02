@@ -1,21 +1,17 @@
-<?php
+<?php namespace Illuminate\Routing;
 
-namespace Illuminate\Routing;
+use ReflectionClass, ReflectionMethod;
 
-use ReflectionClass,
-    ReflectionMethod;
-
-class ControllerInspector
-{
+class ControllerInspector {
 
 	/**
 	 * An array of HTTP verbs.
 	 *
 	 * @var array
 	 */
-	protected $verbs = array (
-	    'any', 'get', 'post', 'put', 'patch',
-	    'delete', 'head', 'options'
+	protected $verbs = array(
+		'any', 'get', 'post', 'put', 'patch',
+		'delete', 'head', 'options'
 	);
 
 	/**
@@ -25,29 +21,29 @@ class ControllerInspector
 	 * @param  string  $prefix
 	 * @return array
 	 */
-	public function getRoutable ($controller, $prefix)
+	public function getRoutable($controller, $prefix)
 	{
-		$routable = array ();
+		$routable = array();
 
-		$reflection = new ReflectionClass ($controller);
+		$reflection = new ReflectionClass($controller);
 
 		// To get the routable methods, we will simply spin through all methods on the
 		// controller instance checking to see if it belongs to the given class and
 		// is a publicly routable method. If so, we will add it to this listings.
-		foreach ($reflection->getMethods () as $method)
+		foreach ($reflection->getMethods() as $method)
 		{
-			if ($this->isRoutable ($method, $reflection->name))
+			if ($this->isRoutable($method, $reflection->name))
 			{
-				$data = $this->getMethodData ($method, $prefix);
+				$data = $this->getMethodData($method, $prefix);
 
 				// If the routable method is an index method, we will create a special index
 				// route which is simply the prefix and the verb and does not contain any
 				// the wildcard place-holders that each "typical" routes would contain.
-				if ($data['plain'] == $prefix . '/index')
+				if ($data['plain'] == $prefix.'/index')
 				{
 					$routable[$method->name][] = $data;
 
-					$routable[$method->name][] = $this->getIndexData ($data, $prefix);
+					$routable[$method->name][] = $this->getIndexData($data, $prefix);
 				}
 
 				// If the routable method is not a special index method, we will just add in
@@ -70,12 +66,11 @@ class ControllerInspector
 	 * @param  string  $controller
 	 * @return bool
 	 */
-	public function isRoutable (ReflectionMethod $method, $controller)
+	public function isRoutable(ReflectionMethod $method, $controller)
 	{
-		if ($method->class == 'Illuminate\Routing\Controller')
-			return false;
+		if ($method->class == 'Illuminate\Routing\Controller') return false;
 
-		return $method->isPublic () && starts_with ($method->name, $this->verbs);
+		return $method->isPublic() && starts_with($method->name, $this->verbs);
 	}
 
 	/**
@@ -84,13 +79,13 @@ class ControllerInspector
 	 * @param  ReflectionMethod  $method
 	 * @return array
 	 */
-	public function getMethodData (ReflectionMethod $method, $prefix)
+	public function getMethodData(ReflectionMethod $method, $prefix)
 	{
-		$verb = $this->getVerb ($name = $method->name);
+		$verb = $this->getVerb($name = $method->name);
 
-		$uri = $this->addUriWildcards ($plain = $this->getPlainUri ($name, $prefix));
+		$uri = $this->addUriWildcards($plain = $this->getPlainUri($name, $prefix));
 
-		return compact ('verb', 'plain', 'uri');
+		return compact('verb', 'plain', 'uri');
 	}
 
 	/**
@@ -100,9 +95,9 @@ class ControllerInspector
 	 * @param  string  $prefix
 	 * @return array
 	 */
-	protected function getIndexData ($data, $prefix)
+	protected function getIndexData($data, $prefix)
 	{
-		return array ('verb' => $data['verb'], 'plain' => $prefix, 'uri' => $prefix);
+		return array('verb' => $data['verb'], 'plain' => $prefix, 'uri' => $prefix);
 	}
 
 	/**
@@ -111,9 +106,9 @@ class ControllerInspector
 	 * @param  string  $name
 	 * @return string
 	 */
-	public function getVerb ($name)
+	public function getVerb($name)
 	{
-		return head (explode ('_', snake_case ($name)));
+		return head(explode('_', snake_case($name)));
 	}
 
 	/**
@@ -123,9 +118,9 @@ class ControllerInspector
 	 * @param  string  $prefix
 	 * @return string
 	 */
-	public function getPlainUri ($name, $prefix)
+	public function getPlainUri($name, $prefix)
 	{
-		return $prefix . '/' . implode ('-', array_slice (explode ('_', snake_case ($name)), 1));
+		return $prefix.'/'.implode('-', array_slice(explode('_', snake_case($name)), 1));
 	}
 
 	/**
@@ -134,9 +129,9 @@ class ControllerInspector
 	 * @param  string  $uri
 	 * @return string
 	 */
-	public function addUriWildcards ($uri)
+	public function addUriWildcards($uri)
 	{
-		return $uri . '/{one?}/{two?}/{three?}/{four?}/{five?}';
+		return $uri.'/{one?}/{two?}/{three?}/{four?}/{five?}';
 	}
 
 }

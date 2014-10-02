@@ -22,5 +22,4 @@ use Symfony\Component\Debug\ExceptionHandler as DebugExceptionHandler;
  */
 class ExceptionHandler extends DebugExceptionHandler
 {
-	
 }

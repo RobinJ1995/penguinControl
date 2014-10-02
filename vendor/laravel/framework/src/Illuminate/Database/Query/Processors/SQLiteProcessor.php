@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Database\Query\Processors;
 
-namespace Illuminate\Database\Query\Processors;
-
-class SQLiteProcessor extends Processor
-{
+class SQLiteProcessor extends Processor {
 
 	/**
 	 * Process the results of a column listing query.
@@ -11,12 +8,9 @@ class SQLiteProcessor extends Processor
 	 * @param  array  $results
 	 * @return array
 	 */
-	public function processColumnListing ($results)
+	public function processColumnListing($results)
 	{
-		return array_values (array_map (function($r)
-			{
-				return $r->name;
-			}, $results));
+		return array_values(array_map(function($r) { return $r->name; }, $results));
 	}
 
 }

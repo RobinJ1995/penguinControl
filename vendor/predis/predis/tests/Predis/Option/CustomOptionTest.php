@@ -18,99 +18,97 @@ use PredisTestCase;
  */
 class CustomOptionTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     * @expectedException InvalidArgumentException
+     */
+    public function testConstructorAcceptsOnlyCallablesForFilter()
+    {
+        $option = new CustomOption(array('filter' => new \stdClass()));
+    }
 
-	/**
-	 * @group disconnected
-	 * @expectedException InvalidArgumentException
-	 */
-	public function testConstructorAcceptsOnlyCallablesForFilter ()
-	{
-		$option = new CustomOption (array ('filter' => new \stdClass()));
-	}
+    /**
+     * @group disconnected
+     * @expectedException InvalidArgumentException
+     */
+    public function testConstructorAcceptsOnlyCallablesForDefault()
+    {
+        $option = new CustomOption(array('default' => new \stdClass()));
+    }
 
-	/**
-	 * @group disconnected
-	 * @expectedException InvalidArgumentException
-	 */
-	public function testConstructorAcceptsOnlyCallablesForDefault ()
-	{
-		$option = new CustomOption (array ('default' => new \stdClass()));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testConstructorIgnoresUnrecognizedParameters()
+    {
+        $option = new CustomOption(array('unknown' => new \stdClass()));
 
-	/**
-	 * @group disconnected
-	 */
-	public function testConstructorIgnoresUnrecognizedParameters ()
-	{
-		$option = new CustomOption (array ('unknown' => new \stdClass()));
+        $this->assertNotNull($option);
+    }
 
-		$this->assertNotNull ($option);
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterWithoutCallbackReturnsValue()
+    {
+        $options = $this->getMock('Predis\Option\ClientOptionsInterface');
+        $option = new CustomOption();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterWithoutCallbackReturnsValue ()
-	{
-		$options = $this->getMock ('Predis\Option\ClientOptionsInterface');
-		$option = new CustomOption();
+        $this->assertEquals('test', $option->filter($options, 'test'));
+    }
 
-		$this->assertEquals ('test', $option->filter ($options, 'test'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testDefaultWithoutCallbackReturnsNull()
+    {
+        $options = $this->getMock('Predis\Option\ClientOptionsInterface');
+        $option = new CustomOption();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testDefaultWithoutCallbackReturnsNull ()
-	{
-		$options = $this->getMock ('Predis\Option\ClientOptionsInterface');
-		$option = new CustomOption();
+        $this->assertNull($option->getDefault($options));
+    }
 
-		$this->assertNull ($option->getDefault ($options));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testInvokeCallsFilterCallback()
+    {
+        $value = 'test';
 
-	/**
-	 * @group disconnected
-	 */
-	public function testInvokeCallsFilterCallback ()
-	{
-		$value = 'test';
+        $options = $this->getMock('Predis\Option\ClientOptionsInterface');
 
-		$options = $this->getMock ('Predis\Option\ClientOptionsInterface');
+        $filter = $this->getMock('stdClass', array('__invoke'));
+        $filter->expects($this->once())
+               ->method('__invoke')
+               ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'), $value)
+               ->will($this->returnValue(true));
 
-		$filter = $this->getMock ('stdClass', array ('__invoke'));
-		$filter->expects ($this->once ())
-			->method ('__invoke')
-			->with ($this->isInstanceOf ('Predis\Option\ClientOptionsInterface'), $value)
-			->will ($this->returnValue (true));
+        $default = $this->getMock('stdClass', array('__invoke'));
+        $default->expects($this->never())->method('__invoke');
 
-		$default = $this->getMock ('stdClass', array ('__invoke'));
-		$default->expects ($this->never ())->method ('__invoke');
+        $option = new CustomOption(array('filter' => $filter, 'default' => $default));
 
-		$option = new CustomOption (array ('filter' => $filter, 'default' => $default));
+        $this->assertTrue($option($options, $value));
+    }
 
-		$this->assertTrue ($option ($options, $value));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testInvokeCallsDefaultCallback()
+    {
+        $options = $this->getMock('Predis\Option\ClientOptionsInterface');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testInvokeCallsDefaultCallback ()
-	{
-		$options = $this->getMock ('Predis\Option\ClientOptionsInterface');
+        $filter = $this->getMock('stdClass', array('__invoke'));
+        $filter->expects($this->never())->method('__invoke');
 
-		$filter = $this->getMock ('stdClass', array ('__invoke'));
-		$filter->expects ($this->never ())->method ('__invoke');
+        $default = $this->getMock('stdClass', array('__invoke'));
+        $default->expects($this->once())
+                ->method('__invoke')
+                ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'))
+                ->will($this->returnValue(true));
 
-		$default = $this->getMock ('stdClass', array ('__invoke'));
-		$default->expects ($this->once ())
-			->method ('__invoke')
-			->with ($this->isInstanceOf ('Predis\Option\ClientOptionsInterface'))
-			->will ($this->returnValue (true));
+        $option = new CustomOption(array('filter' => $filter, 'default' => $default));
 
-		$option = new CustomOption (array ('filter' => $filter, 'default' => $default));
-
-		$this->assertTrue ($option ($options, null));
-	}
-
+        $this->assertTrue($option($options, null));
+    }
 }

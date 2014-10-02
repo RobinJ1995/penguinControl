@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Support;
+<?php namespace Illuminate\Support;
 
 use Closure;
 
-abstract class Manager
-{
+abstract class Manager {
 
 	/**
 	 * The application instance.
@@ -19,14 +16,14 @@ abstract class Manager
 	 *
 	 * @var array
 	 */
-	protected $customCreators = array ();
+	protected $customCreators = array();
 
 	/**
 	 * The array of created "drivers".
 	 *
 	 * @var array
 	 */
-	protected $drivers = array ();
+	protected $drivers = array();
 
 	/**
 	 * Create a new manager instance.
@@ -34,7 +31,7 @@ abstract class Manager
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return void
 	 */
-	public function __construct ($app)
+	public function __construct($app)
 	{
 		$this->app = $app;
 	}
@@ -45,16 +42,16 @@ abstract class Manager
 	 * @param  string  $driver
 	 * @return mixed
 	 */
-	public function driver ($driver = null)
+	public function driver($driver = null)
 	{
-		$driver = $driver ? : $this->getDefaultDriver ();
+		$driver = $driver ?: $this->getDefaultDriver();
 
 		// If the given driver has not been created before, we will create the instances
-		// here and cache it so we can return it next time very quickly. If their is
+		// here and cache it so we can return it next time very quickly. If there is
 		// already a driver created by this name, we'll just return that instance.
-		if (!isset ($this->drivers[$driver]))
+		if ( ! isset($this->drivers[$driver]))
 		{
-			$this->drivers[$driver] = $this->createDriver ($driver);
+			$this->drivers[$driver] = $this->createDriver($driver);
 		}
 
 		return $this->drivers[$driver];
@@ -68,23 +65,23 @@ abstract class Manager
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function createDriver ($driver)
+	protected function createDriver($driver)
 	{
-		$method = 'create' . ucfirst ($driver) . 'Driver';
+		$method = 'create'.ucfirst($driver).'Driver';
 
 		// We'll check to see if a creator method exists for the given driver. If not we
 		// will check for a custom driver creator, which allows developers to create
 		// drivers using their own customized driver creator Closure to create it.
-		if (isset ($this->customCreators[$driver]))
+		if (isset($this->customCreators[$driver]))
 		{
-			return $this->callCustomCreator ($driver);
+			return $this->callCustomCreator($driver);
 		}
-		elseif (method_exists ($this, $method))
+		elseif (method_exists($this, $method))
 		{
-			return $this->$method ();
+			return $this->$method();
 		}
 
-		throw new \InvalidArgumentException ("Driver [$driver] not supported.");
+		throw new \InvalidArgumentException("Driver [$driver] not supported.");
 	}
 
 	/**
@@ -93,9 +90,9 @@ abstract class Manager
 	 * @param  string  $driver
 	 * @return mixed
 	 */
-	protected function callCustomCreator ($driver)
+	protected function callCustomCreator($driver)
 	{
-		return $this->customCreators[$driver] ($this->app);
+		return $this->customCreators[$driver]($this->app);
 	}
 
 	/**
@@ -105,7 +102,7 @@ abstract class Manager
 	 * @param  Closure  $callback
 	 * @return \Illuminate\Support\Manager|static
 	 */
-	public function extend ($driver, Closure $callback)
+	public function extend($driver, Closure $callback)
 	{
 		$this->customCreators[$driver] = $callback;
 
@@ -117,7 +114,7 @@ abstract class Manager
 	 *
 	 * @return array
 	 */
-	public function getDrivers ()
+	public function getDrivers()
 	{
 		return $this->drivers;
 	}
@@ -129,9 +126,9 @@ abstract class Manager
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		return call_user_func_array (array ($this->driver (), $method), $parameters);
+		return call_user_func_array(array($this->driver(), $method), $parameters);
 	}
 
 }

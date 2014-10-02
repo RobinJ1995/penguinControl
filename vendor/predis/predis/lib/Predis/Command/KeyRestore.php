@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class KeyRestore extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'RESTORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'RESTORE';
+    }
 }

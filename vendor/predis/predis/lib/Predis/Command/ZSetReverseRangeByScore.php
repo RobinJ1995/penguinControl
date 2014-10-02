@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetReverseRangeByScore extends ZSetRangeByScore
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZREVRANGEBYSCORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZREVRANGEBYSCORE';
+    }
 }

@@ -9,26 +9,24 @@
  * file that was distributed with this source code.
  */
 
-spl_autoload_register (function ($class)
-{
-	$file = __DIR__ . '/../../../../src/' . strtr ($class, '\\', '/') . '.php';
-	if (file_exists ($file))
-	{
-		require $file;
+spl_autoload_register(function ($class) {
+    $file = __DIR__.'/../../../../src/'.strtr($class, '\\', '/').'.php';
+    if (file_exists($file)) {
+        require $file;
 
-		return true;
-	}
+        return true;
+    }
 });
 
 use Monolog\Logger;
 use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\ChromePHPHandler;
 
-$logger = new Logger ('firephp');
-$logger->pushHandler (new FirePHPHandler);
-$logger->pushHandler (new ChromePHPHandler ());
+$logger = new Logger('firephp');
+$logger->pushHandler(new FirePHPHandler);
+$logger->pushHandler(new ChromePHPHandler());
 
-$logger->addDebug ('Debug');
-$logger->addInfo ('Info');
-$logger->addWarning ('Warning');
-$logger->addError ('Error');
+$logger->addDebug('Debug');
+$logger->addInfo('Info');
+$logger->addWarning('Warning');
+$logger->addError('Error');

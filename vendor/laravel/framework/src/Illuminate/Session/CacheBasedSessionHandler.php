@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Session;
+<?php namespace Illuminate\Session;
 
 use Illuminate\Cache\Repository;
 
-class CacheBasedSessionHandler implements \SessionHandlerInterface
-{
+class CacheBasedSessionHandler implements \SessionHandlerInterface {
 
 	/**
 	 * The cache repository instance.
@@ -28,7 +25,7 @@ class CacheBasedSessionHandler implements \SessionHandlerInterface
 	 * @param  int  $minutes
 	 * @return void
 	 */
-	public function __construct (Repository $cache, $minutes)
+	public function __construct(Repository $cache, $minutes)
 	{
 		$this->cache = $cache;
 		$this->minutes = $minutes;
@@ -37,7 +34,7 @@ class CacheBasedSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function open ($savePath, $sessionName)
+	public function open($savePath, $sessionName)
 	{
 		return true;
 	}
@@ -45,7 +42,7 @@ class CacheBasedSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function close ()
+	public function close()
 	{
 		return true;
 	}
@@ -53,31 +50,31 @@ class CacheBasedSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function read ($sessionId)
+	public function read($sessionId)
 	{
-		return $this->cache->get ($sessionId) ? : '';
+		return $this->cache->get($sessionId) ?: '';
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function write ($sessionId, $data)
+	public function write($sessionId, $data)
 	{
-		return $this->cache->put ($sessionId, $data, $this->minutes);
+		return $this->cache->put($sessionId, $data, $this->minutes);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function destroy ($sessionId)
+	public function destroy($sessionId)
 	{
-		return $this->cache->forget ($sessionId);
+		return $this->cache->forget($sessionId);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function gc ($lifetime)
+	public function gc($lifetime)
 	{
 		return true;
 	}
@@ -87,7 +84,7 @@ class CacheBasedSessionHandler implements \SessionHandlerInterface
 	 *
 	 * @return \Illuminate\Cache\Repository
 	 */
-	public function getCache ()
+	public function getCache()
 	{
 		return $this->cache;
 	}

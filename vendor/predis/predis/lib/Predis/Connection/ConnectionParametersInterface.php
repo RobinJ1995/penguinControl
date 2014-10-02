@@ -19,27 +19,26 @@ namespace Predis\Connection;
  */
 interface ConnectionParametersInterface
 {
+    /**
+     * Checks if the specified parameters is set.
+     *
+     * @param  string $parameter Name of the parameter.
+     * @return bool
+     */
+    public function __isset($parameter);
 
-	/**
-	 * Checks if the specified parameters is set.
-	 *
-	 * @param  string $parameter Name of the parameter.
-	 * @return bool
-	 */
-	public function __isset ($parameter);
+    /**
+     * Returns the value of the specified parameter.
+     *
+     * @param  string $parameter Name of the parameter.
+     * @return mixed
+     */
+    public function __get($parameter);
 
-	/**
-	 * Returns the value of the specified parameter.
-	 *
-	 * @param  string $parameter Name of the parameter.
-	 * @return mixed
-	 */
-	public function __get ($parameter);
-
-	/**
-	 * Returns an array representation of the connection parameters.
-	 *
-	 * @return array
-	 */
-	public function toArray ();
+    /**
+     * Returns an array representation of the connection parameters.
+     *
+     * @return array
+     */
+    public function toArray();
 }

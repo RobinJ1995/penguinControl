@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class ListPushTail extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'RPUSH';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'RPUSH';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		return self::normalizeVariadic ($arguments);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeVariadic($arguments);
+    }
 }

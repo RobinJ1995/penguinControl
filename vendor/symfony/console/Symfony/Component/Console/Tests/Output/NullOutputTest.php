@@ -16,26 +16,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class NullOutputTest extends \PHPUnit_Framework_TestCase
 {
+    public function testConstructor()
+    {
+        $output = new NullOutput();
 
-	public function testConstructor ()
-	{
-		$output = new NullOutput();
+        ob_start();
+        $output->write('foo');
+        $buffer = ob_get_clean();
 
-		ob_start ();
-		$output->write ('foo');
-		$buffer = ob_get_clean ();
+        $this->assertSame('', $buffer, '->write() does nothing (at least nothing is printed)');
+        $this->assertFalse($output->isDecorated(), '->isDecorated() returns false');
+    }
 
-		$this->assertSame ('', $buffer, '->write() does nothing (at least nothing is printed)');
-		$this->assertFalse ($output->isDecorated (), '->isDecorated() returns false');
-	}
+    public function testVerbosity()
+    {
+        $output = new NullOutput();
+        $this->assertSame(OutputInterface::VERBOSITY_QUIET, $output->getVerbosity(), '->getVerbosity() returns VERBOSITY_QUIET for NullOutput by default');
 
-	public function testVerbosity ()
-	{
-		$output = new NullOutput();
-		$this->assertSame (OutputInterface::VERBOSITY_QUIET, $output->getVerbosity (), '->getVerbosity() returns VERBOSITY_QUIET for NullOutput by default');
-
-		$output->setVerbosity (OutputInterface::VERBOSITY_VERBOSE);
-		$this->assertSame (OutputInterface::VERBOSITY_QUIET, $output->getVerbosity (), '->getVerbosity() always returns VERBOSITY_QUIET for NullOutput');
-	}
-
+        $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
+        $this->assertSame(OutputInterface::VERBOSITY_QUIET, $output->getVerbosity(), '->getVerbosity() always returns VERBOSITY_QUIET for NullOutput');
+    }
 }

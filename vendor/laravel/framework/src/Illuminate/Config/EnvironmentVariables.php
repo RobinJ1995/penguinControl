@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Config;
+<?php namespace Illuminate\Config;
 
 /**
  * PHP $_ENV loader for protecting sensitive configuration options.
  *
  * Inspired by the wonderful "Dotenv" library by Vance Lucas.
  */
-class EnvironmentVariables
-{
+class EnvironmentVariables {
 
 	/**
 	 * The environment loader implementation.
@@ -23,7 +20,7 @@ class EnvironmentVariables
 	 * @param  \Illuminate\Config\EnvironmentLoaderInterface  $loader
 	 * @return void
 	 */
-	public function __construct (EnvironmentVariablesLoaderInterface $loader)
+	public function __construct(EnvironmentVariablesLoaderInterface $loader)
 	{
 		$this->loader = $loader;
 	}
@@ -33,15 +30,15 @@ class EnvironmentVariables
 	 *
 	 * @param  string  $environment
 	 */
-	public function load ($environment = null)
+	public function load($environment = null)
 	{
-		foreach ($this->loader->load ($environment) as $key => $value)
+		foreach ($this->loader->load($environment) as $key => $value)
 		{
 			$_ENV[$key] = $value;
 
 			$_SERVER[$key] = $value;
 
-			putenv ("{$key}={$value}");
+			putenv("{$key}={$value}");
 		}
 	}
 

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringSetExpire extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SETEX';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SETEX';
+    }
 }

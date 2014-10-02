@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class PubSubUnsubscribeByPattern extends PubSubUnsubscribe
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'PUNSUBSCRIBE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'PUNSUBSCRIBE';
+    }
 }

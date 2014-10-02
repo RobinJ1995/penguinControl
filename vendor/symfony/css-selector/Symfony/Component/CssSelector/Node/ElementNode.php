@@ -21,59 +21,57 @@ namespace Symfony\Component\CssSelector\Node;
  */
 class ElementNode extends AbstractNode
 {
+    /**
+     * @var string|null
+     */
+    private $namespace;
 
-	/**
-	 * @var string|null
-	 */
-	private $namespace;
+    /**
+     * @var string|null
+     */
+    private $element;
 
-	/**
-	 * @var string|null
-	 */
-	private $element;
+    /**
+     * @param string|null $namespace
+     * @param string|null $element
+     */
+    public function __construct($namespace = null, $element = null)
+    {
+        $this->namespace = $namespace;
+        $this->element = $element;
+    }
 
-	/**
-	 * @param string|null $namespace
-	 * @param string|null $element
-	 */
-	public function __construct ($namespace = null, $element = null)
-	{
-		$this->namespace = $namespace;
-		$this->element = $element;
-	}
+    /**
+     * @return null|string
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
+    }
 
-	/**
-	 * @return null|string
-	 */
-	public function getNamespace ()
-	{
-		return $this->namespace;
-	}
+    /**
+     * @return null|string
+     */
+    public function getElement()
+    {
+        return $this->element;
+    }
 
-	/**
-	 * @return null|string
-	 */
-	public function getElement ()
-	{
-		return $this->element;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecificity()
+    {
+        return new Specificity(0, 0, $this->element ? 1 : 0);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSpecificity ()
-	{
-		return new Specificity (0, 0, $this->element ? 1 : 0);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        $element = $this->element ?: '*';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __toString ()
-	{
-		$element = $this->element ? : '*';
-
-		return sprintf ('%s[%s]', $this->getNodeName (), $this->namespace ? $this->namespace . '|' . $element : $element);
-	}
-
+        return sprintf('%s[%s]', $this->getNodeName(), $this->namespace ? $this->namespace.'|'.$element : $element);
+    }
 }

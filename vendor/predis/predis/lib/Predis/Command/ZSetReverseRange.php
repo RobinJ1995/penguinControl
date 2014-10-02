@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetReverseRange extends ZSetRange
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZREVRANGE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZREVRANGE';
+    }
 }

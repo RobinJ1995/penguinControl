@@ -18,24 +18,22 @@ use PredisTestCase;
  */
 class ResponseErrorHandlerTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testOk()
+    {
+        $handler = new ResponseErrorHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testOk ()
-	{
-		$handler = new ResponseErrorHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $message = "ERR Operation against a key holding the wrong kind of value";
+        $response = $handler->handle($connection, $message);
 
-		$message = "ERR Operation against a key holding the wrong kind of value";
-		$response = $handler->handle ($connection, $message);
-
-		$this->assertInstanceOf ('Predis\ResponseError', $response);
-		$this->assertSame ($message, $response->getMessage ());
-	}
-
+        $this->assertInstanceOf('Predis\ResponseError', $response);
+        $this->assertSame($message, $response->getMessage());
+    }
 }

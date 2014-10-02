@@ -18,33 +18,28 @@ namespace Symfony\Component\Translation\Catalogue;
  */
 class MergeOperation extends AbstractOperation
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function processDomain($domain)
+    {
+        $this->messages[$domain] = array(
+            'all'      => array(),
+            'new'      => array(),
+            'obsolete' => array(),
+        );
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function processDomain ($domain)
-	{
-		$this->messages[$domain] = array (
-		    'all' => array (),
-		    'new' => array (),
-		    'obsolete' => array (),
-		);
+        foreach ($this->source->all($domain) as $id => $message) {
+            $this->messages[$domain]['all'][$id] = $message;
+            $this->result->add(array($id => $message), $domain);
+        }
 
-		foreach ($this->source->all ($domain) as $id => $message)
-		{
-			$this->messages[$domain]['all'][$id] = $message;
-			$this->result->add (array ($id => $message), $domain);
-		}
-
-		foreach ($this->target->all ($domain) as $id => $message)
-		{
-			if (!$this->source->has ($id, $domain))
-			{
-				$this->messages[$domain]['all'][$id] = $message;
-				$this->messages[$domain]['new'][$id] = $message;
-				$this->result->add (array ($id => $message), $domain);
-			}
-		}
-	}
-
+        foreach ($this->target->all($domain) as $id => $message) {
+            if (!$this->source->has($id, $domain)) {
+                $this->messages[$domain]['all'][$id] = $message;
+                $this->messages[$domain]['new'][$id] = $message;
+                $this->result->add(array($id => $message), $domain);
+            }
+        }
+    }
 }

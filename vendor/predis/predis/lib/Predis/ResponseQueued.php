@@ -19,37 +19,35 @@ namespace Predis;
  */
 class ResponseQueued implements ResponseObjectInterface
 {
+    /**
+     * Converts the object to its string representation.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'QUEUED';
+    }
 
-	/**
-	 * Converts the object to its string representation.
-	 *
-	 * @return string
-	 */
-	public function __toString ()
-	{
-		return 'QUEUED';
-	}
+    /**
+     * Returns the value of the specified property.
+     *
+     * @param  string $property Name of the property.
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $property === 'queued';
+    }
 
-	/**
-	 * Returns the value of the specified property.
-	 *
-	 * @param  string $property Name of the property.
-	 * @return mixed
-	 */
-	public function __get ($property)
-	{
-		return $property === 'queued';
-	}
-
-	/**
-	 * Checks if the specified property is set.
-	 *
-	 * @param  string $property Name of the property.
-	 * @return bool
-	 */
-	public function __isset ($property)
-	{
-		return $property === 'queued';
-	}
-
+    /**
+     * Checks if the specified property is set.
+     *
+     * @param  string $property Name of the property.
+     * @return bool
+     */
+    public function __isset($property)
+    {
+        return $property === 'queued';
+    }
 }

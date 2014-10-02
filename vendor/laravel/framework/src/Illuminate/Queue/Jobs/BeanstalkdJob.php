@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Queue\Jobs;
+<?php namespace Illuminate\Queue\Jobs;
 
 use Pheanstalk_Job;
 use Illuminate\Container\Container;
 use Pheanstalk_Pheanstalk as Pheanstalk;
 
-class BeanstalkdJob extends Job
-{
+class BeanstalkdJob extends Job {
 
 	/**
 	 * The Pheanstalk instance.
@@ -32,7 +29,10 @@ class BeanstalkdJob extends Job
 	 * @param  string  $queue
 	 * @return void
 	 */
-	public function __construct (Container $container, Pheanstalk $pheanstalk, Pheanstalk_Job $job, $queue)
+	public function __construct(Container $container,
+                                Pheanstalk $pheanstalk,
+                                Pheanstalk_Job $job,
+                                $queue)
 	{
 		$this->job = $job;
 		$this->queue = $queue;
@@ -45,9 +45,9 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->resolveAndFire (json_decode ($this->getRawBody (), true));
+		$this->resolveAndFire(json_decode($this->getRawBody(), true));
 	}
 
 	/**
@@ -55,9 +55,9 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getRawBody ()
+	public function getRawBody()
 	{
-		return $this->job->getData ();
+		return $this->job->getData();
 	}
 
 	/**
@@ -65,11 +65,11 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return void
 	 */
-	public function delete ()
+	public function delete()
 	{
-		parent::delete ();
+		parent::delete();
 
-		$this->pheanstalk->delete ($this->job);
+		$this->pheanstalk->delete($this->job);
 	}
 
 	/**
@@ -78,11 +78,11 @@ class BeanstalkdJob extends Job
 	 * @param  int   $delay
 	 * @return void
 	 */
-	public function release ($delay = 0)
+	public function release($delay = 0)
 	{
 		$priority = Pheanstalk::DEFAULT_PRIORITY;
 
-		$this->pheanstalk->release ($this->job, $priority, $delay);
+		$this->pheanstalk->release($this->job, $priority, $delay);
 	}
 
 	/**
@@ -90,9 +90,9 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return void
 	 */
-	public function bury ()
+	public function bury()
 	{
-		$this->pheanstalk->bury ($this->job);
+		$this->pheanstalk->bury($this->job);
 	}
 
 	/**
@@ -100,9 +100,9 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return int
 	 */
-	public function attempts ()
+	public function attempts()
 	{
-		$stats = $this->pheanstalk->statsJob ($this->job);
+		$stats = $this->pheanstalk->statsJob($this->job);
 
 		return (int) $stats->reserves;
 	}
@@ -112,9 +112,9 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getJobId ()
+	public function getJobId()
 	{
-		return $this->job->getId ();
+		return $this->job->getId();
 	}
 
 	/**
@@ -122,7 +122,7 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return \Illuminate\Container\Container
 	 */
-	public function getContainer ()
+	public function getContainer()
 	{
 		return $this->container;
 	}
@@ -132,7 +132,7 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return Pheanstalk
 	 */
-	public function getPheanstalk ()
+	public function getPheanstalk()
 	{
 		return $this->pheanstalk;
 	}
@@ -142,7 +142,7 @@ class BeanstalkdJob extends Job
 	 *
 	 * @return Pheanstalk_Job
 	 */
-	public function getPheanstalkJob ()
+	public function getPheanstalkJob()
 	{
 		return $this->job;
 	}

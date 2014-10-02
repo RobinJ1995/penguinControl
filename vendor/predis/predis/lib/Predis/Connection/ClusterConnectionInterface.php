@@ -19,5 +19,4 @@ namespace Predis\Connection;
  */
 interface ClusterConnectionInterface extends AggregatedConnectionInterface
 {
-	
 }

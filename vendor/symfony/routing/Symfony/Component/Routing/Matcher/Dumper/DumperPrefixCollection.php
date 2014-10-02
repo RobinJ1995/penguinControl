@@ -18,101 +18,88 @@ namespace Symfony\Component\Routing\Matcher\Dumper;
  */
 class DumperPrefixCollection extends DumperCollection
 {
+    /**
+     * @var string
+     */
+    private $prefix = '';
 
-	/**
-	 * @var string
-	 */
-	private $prefix = '';
+    /**
+     * Returns the prefix.
+     *
+     * @return string The prefix
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
 
-	/**
-	 * Returns the prefix.
-	 *
-	 * @return string The prefix
-	 */
-	public function getPrefix ()
-	{
-		return $this->prefix;
-	}
+    /**
+     * Sets the prefix.
+     *
+     * @param string $prefix The prefix
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
+    }
 
-	/**
-	 * Sets the prefix.
-	 *
-	 * @param string $prefix The prefix
-	 */
-	public function setPrefix ($prefix)
-	{
-		$this->prefix = $prefix;
-	}
+    /**
+     * Adds a route in the tree.
+     *
+     * @param DumperRoute $route The route
+     *
+     * @return DumperPrefixCollection The node the route was added to
+     *
+     * @throws \LogicException
+     */
+    public function addPrefixRoute(DumperRoute $route)
+    {
+        $prefix = $route->getRoute()->compile()->getStaticPrefix();
 
-	/**
-	 * Adds a route in the tree.
-	 *
-	 * @param DumperRoute $route The route
-	 *
-	 * @return DumperPrefixCollection The node the route was added to
-	 *
-	 * @throws \LogicException
-	 */
-	public function addPrefixRoute (DumperRoute $route)
-	{
-		$prefix = $route->getRoute ()->compile ()->getStaticPrefix ();
+        for ($collection = $this; null !== $collection; $collection = $collection->getParent()) {
+            // Same prefix, add to current leave
+            if ($collection->prefix === $prefix) {
+                $collection->add($route);
 
-		for ($collection = $this; null !== $collection; $collection = $collection->getParent ())
-		{
+                return $collection;
+            }
 
-			// Same prefix, add to current leave
-			if ($collection->prefix === $prefix)
-			{
-				$collection->add ($route);
+            // Prefix starts with route's prefix
+            if ('' === $collection->prefix || 0 === strpos($prefix, $collection->prefix)) {
+                $child = new DumperPrefixCollection();
+                $child->setPrefix(substr($prefix, 0, strlen($collection->prefix)+1));
+                $collection->add($child);
 
-				return $collection;
-			}
+                return $child->addPrefixRoute($route);
+            }
+        }
 
-			// Prefix starts with route's prefix
-			if ('' === $collection->prefix || 0 === strpos ($prefix, $collection->prefix))
-			{
-				$child = new DumperPrefixCollection();
-				$child->setPrefix (substr ($prefix, 0, strlen ($collection->prefix) + 1));
-				$collection->add ($child);
+        // Reached only if the root has a non empty prefix
+        throw new \LogicException("The collection root must not have a prefix");
+    }
 
-				return $child->addPrefixRoute ($route);
-			}
-		}
+    /**
+     * Merges nodes whose prefix ends with a slash
+     *
+     * Children of a node whose prefix ends with a slash are moved to the parent node
+     */
+    public function mergeSlashNodes()
+    {
+        $children = array();
 
-		// Reached only if the root has a non empty prefix
-		throw new \LogicException ("The collection root must not have a prefix");
-	}
+        foreach ($this as $child) {
+            if ($child instanceof self) {
+                $child->mergeSlashNodes();
+                if ('/' === substr($child->prefix, -1)) {
+                    $children = array_merge($children, $child->all());
+                } else {
+                    $children[] = $child;
+                }
+            } else {
+                $children[] = $child;
+            }
+        }
 
-	/**
-	 * Merges nodes whose prefix ends with a slash
-	 *
-	 * Children of a node whose prefix ends with a slash are moved to the parent node
-	 */
-	public function mergeSlashNodes ()
-	{
-		$children = array ();
-
-		foreach ($this as $child)
-		{
-			if ($child instanceof self)
-			{
-				$child->mergeSlashNodes ();
-				if ('/' === substr ($child->prefix, -1))
-				{
-					$children = array_merge ($children, $child->all ());
-				}
-				else
-				{
-					$children[] = $child;
-				}
-			}
-			else
-			{
-				$children[] = $child;
-			}
-		}
-
-		$this->setAll ($children);
-	}
-
+        $this->setAll($children);
+    }
 }

@@ -25,29 +25,25 @@ use Predis\Protocol\ResponseHandlerInterface;
  */
 class ResponseIntegerHandler implements ResponseHandlerInterface
 {
+    /**
+     * Handles an integer reply returned by Redis.
+     *
+     * @param  ComposableConnectionInterface $connection Connection to Redis.
+     * @param  string                        $number     String representation of an integer.
+     * @return int
+     */
+    public function handle(ComposableConnectionInterface $connection, $number)
+    {
+        if (is_numeric($number)) {
+            return (int) $number;
+        }
 
-	/**
-	 * Handles an integer reply returned by Redis.
-	 *
-	 * @param  ComposableConnectionInterface $connection Connection to Redis.
-	 * @param  string                        $number     String representation of an integer.
-	 * @return int
-	 */
-	public function handle (ComposableConnectionInterface $connection, $number)
-	{
-		if (is_numeric ($number))
-		{
-			return (int) $number;
-		}
+        if ($number !== 'nil') {
+            CommunicationException::handle(new ProtocolException(
+                $connection, "Cannot parse '$number' as numeric response"
+            ));
+        }
 
-		if ($number !== 'nil')
-		{
-			CommunicationException::handle (new ProtocolException (
-				$connection, "Cannot parse '$number' as numeric response"
-			));
-		}
-
-		return null;
-	}
-
+        return null;
+    }
 }

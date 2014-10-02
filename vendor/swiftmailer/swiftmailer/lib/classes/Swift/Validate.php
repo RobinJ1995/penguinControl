@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of SwiftMailer.
  *
@@ -10,37 +9,34 @@
 /**
  * Utility Class allowing users to simply check expressions again Swift Grammar.
  *
- * @package Swift
  * @author  Xavier De Cock <xdecock@gmail.com>
  */
 class Swift_Validate
 {
+    /**
+     * Grammar Object
+     *
+     * @var Swift_Mime_Grammar
+     */
+    private static $grammar = null;
 
-	/**
-	 * Grammar Object
-	 *
-	 * @var Swift_Mime_Grammar
-	 */
-	private static $grammar = null;
+    /**
+     * Checks if an e-mail address matches the current grammars.
+     *
+     * @param string $email
+     *
+     * @return bool
+     */
+    public static function email($email)
+    {
+        if (self::$grammar === null) {
+            self::$grammar = Swift_DependencyContainer::getInstance()
+                ->lookup('mime.grammar');
+        }
 
-	/**
-	 * Checks if an e-mail address matches the current grammars.
-	 *
-	 * @param string $email
-	 *
-	 * @return boolean
-	 */
-	public static function email ($email)
-	{
-		if (self::$grammar === null)
-		{
-			self::$grammar = Swift_DependencyContainer::getInstance ()
-				->lookup ('mime.grammar');
-		}
-
-		return preg_match (
-			'/^' . self::$grammar->getDefinition ('addr-spec') . '$/D', $email
-		);
-	}
-
+        return (bool) preg_match(
+                '/^'.self::$grammar->getDefinition('addr-spec').'$/D',
+                $email
+            );
+    }
 }

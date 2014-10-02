@@ -29,64 +29,58 @@ use Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerPatterns;
  */
 class StringHandler implements HandlerInterface
 {
+    /**
+     * @var TokenizerPatterns
+     */
+    private $patterns;
 
-	/**
-	 * @var TokenizerPatterns
-	 */
-	private $patterns;
+    /**
+     * @var TokenizerEscaping
+     */
+    private $escaping;
 
-	/**
-	 * @var TokenizerEscaping
-	 */
-	private $escaping;
+    /**
+     * @param TokenizerPatterns $patterns
+     * @param TokenizerEscaping $escaping
+     */
+    public function __construct(TokenizerPatterns $patterns, TokenizerEscaping $escaping)
+    {
+        $this->patterns = $patterns;
+        $this->escaping = $escaping;
+    }
 
-	/**
-	 * @param TokenizerPatterns $patterns
-	 * @param TokenizerEscaping $escaping
-	 */
-	public function __construct (TokenizerPatterns $patterns, TokenizerEscaping $escaping)
-	{
-		$this->patterns = $patterns;
-		$this->escaping = $escaping;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(Reader $reader, TokenStream $stream)
+    {
+        $quote = $reader->getSubstring(1);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function handle (Reader $reader, TokenStream $stream)
-	{
-		$quote = $reader->getSubstring (1);
+        if (!in_array($quote, array("'", '"'))) {
+            return false;
+        }
 
-		if (!in_array ($quote, array ("'", '"')))
-		{
-			return false;
-		}
+        $reader->moveForward(1);
+        $match = $reader->findPattern($this->patterns->getQuotedStringPattern($quote));
 
-		$reader->moveForward (1);
-		$match = $reader->findPattern ($this->patterns->getQuotedStringPattern ($quote));
+        if (!$match) {
+            throw new InternalErrorException(sprintf('Should have found at least an empty match at %s.', $reader->getPosition()));
+        }
 
-		if (!$match)
-		{
-			throw new InternalErrorException (sprintf ('Should have found at least an empty match at %s.', $reader->getPosition ()));
-		}
+        // check unclosed strings
+        if (strlen($match[0]) === $reader->getRemainingLength()) {
+            throw SyntaxErrorException::unclosedString($reader->getPosition() - 1);
+        }
 
-		// check unclosed strings
-		if (strlen ($match[0]) === $reader->getRemainingLength ())
-		{
-			throw SyntaxErrorException::unclosedString ($reader->getPosition () - 1);
-		}
+        // check quotes pairs validity
+        if ($quote !== $reader->getSubstring(1, strlen($match[0]))) {
+            throw SyntaxErrorException::unclosedString($reader->getPosition() - 1);
+        }
 
-		// check quotes pairs validity
-		if ($quote !== $reader->getSubstring (1, strlen ($match[0])))
-		{
-			throw SyntaxErrorException::unclosedString ($reader->getPosition () - 1);
-		}
+        $string = $this->escaping->escapeUnicodeAndNewLine($match[0]);
+        $stream->push(new Token(Token::TYPE_STRING, $string, $reader->getPosition()));
+        $reader->moveForward(strlen($match[0]) + 1);
 
-		$string = $this->escaping->escapeUnicodeAndNewLine ($match[0]);
-		$stream->push (new Token (Token::TYPE_STRING, $string, $reader->getPosition ()));
-		$reader->moveForward (strlen ($match[0]) + 1);
-
-		return true;
-	}
-
+        return true;
+    }
 }

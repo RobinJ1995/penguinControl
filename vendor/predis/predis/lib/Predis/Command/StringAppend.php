@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringAppend extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'APPEND';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'APPEND';
+    }
 }

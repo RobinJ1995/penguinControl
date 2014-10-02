@@ -17,50 +17,48 @@ namespace Predis\Command;
  */
 class ServerLastSaveTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerLastSave';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerLastSave';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'LASTSAVE';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'LASTSAVE';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame(100, $this->getCommand()->parseResponse(100));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame (100, $this->getCommand ()->parseResponse (100));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsIntegerValue()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsIntegerValue ()
-	{
-		$redis = $this->getClient ();
-
-		$this->assertInternalType ('integer', $redis->lastsave ());
-	}
-
+        $this->assertInternalType('integer', $redis->lastsave());
+    }
 }

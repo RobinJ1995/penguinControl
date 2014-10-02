@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Exception;
+<?php namespace Illuminate\Exception;
 
 use Closure;
 use ErrorException;
@@ -9,8 +7,7 @@ use Illuminate\Support\Contracts\ResponsePreparerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Debug\Exception\FatalErrorException as FatalError;
 
-class Handler
-{
+class Handler {
 
 	/**
 	 * The response preparer implementation.
@@ -45,14 +42,14 @@ class Handler
 	 *
 	 * @var array
 	 */
-	protected $handlers = array ();
+	protected $handlers = array();
 
 	/**
 	 * All of the handled error messages.
 	 *
 	 * @var array
 	 */
-	protected $handled = array ();
+	protected $handled = array();
 
 	/**
 	 * Create a new error handler instance.
@@ -62,7 +59,10 @@ class Handler
 	 * @param  \Illuminate\Exception\ExceptionDisplayerInterface  $debugDisplayer
 	 * @return void
 	 */
-	public function __construct (ResponsePreparerInterface $responsePreparer, ExceptionDisplayerInterface $plainDisplayer, ExceptionDisplayerInterface $debugDisplayer, $debug = true)
+	public function __construct(ResponsePreparerInterface $responsePreparer,
+                                ExceptionDisplayerInterface $plainDisplayer,
+                                ExceptionDisplayerInterface $debugDisplayer,
+                                $debug = true)
 	{
 		$this->debug = $debug;
 		$this->plainDisplayer = $plainDisplayer;
@@ -76,14 +76,13 @@ class Handler
 	 * @param  string  $environment
 	 * @return void
 	 */
-	public function register ($environment)
+	public function register($environment)
 	{
-		$this->registerErrorHandler ();
+		$this->registerErrorHandler();
 
-		$this->registerExceptionHandler ();
+		$this->registerExceptionHandler();
 
-		if ($environment != 'testing')
-			$this->registerShutdownHandler ();
+		if ($environment != 'testing') $this->registerShutdownHandler();
 	}
 
 	/**
@@ -91,9 +90,9 @@ class Handler
 	 *
 	 * @return void
 	 */
-	protected function registerErrorHandler ()
+	protected function registerErrorHandler()
 	{
-		set_error_handler (array ($this, 'handleError'));
+		set_error_handler(array($this, 'handleError'));
 	}
 
 	/**
@@ -101,9 +100,9 @@ class Handler
 	 *
 	 * @return void
 	 */
-	protected function registerExceptionHandler ()
+	protected function registerExceptionHandler()
 	{
-		set_exception_handler (array ($this, 'handleUncaughtException'));
+		set_exception_handler(array($this, 'handleUncaughtException'));
 	}
 
 	/**
@@ -111,9 +110,9 @@ class Handler
 	 *
 	 * @return void
 	 */
-	protected function registerShutdownHandler ()
+	protected function registerShutdownHandler()
 	{
-		register_shutdown_function (array ($this, 'handleShutdown'));
+		register_shutdown_function(array($this, 'handleShutdown'));
 	}
 
 	/**
@@ -127,11 +126,11 @@ class Handler
 	 *
 	 * @throws \ErrorException
 	 */
-	public function handleError ($level, $message, $file = '', $line = 0, $context = array ())
+	public function handleError($level, $message, $file = '', $line = 0, $context = array())
 	{
-		if (error_reporting () & $level)
+		if (error_reporting() & $level)
 		{
-			throw new ErrorException ($message, 0, $level, $file, $line);
+			throw new ErrorException($message, 0, $level, $file, $line);
 		}
 	}
 
@@ -141,22 +140,22 @@ class Handler
 	 * @param  \Exception  $exception
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function handleException ($exception)
+	public function handleException($exception)
 	{
-		$response = $this->callCustomHandlers ($exception);
+		$response = $this->callCustomHandlers($exception);
 
 		// If one of the custom error handlers returned a response, we will send that
 		// response back to the client after preparing it. This allows a specific
 		// type of exceptions to handled by a Closure giving great flexibility.
-		if (!is_null ($response))
+		if ( ! is_null($response))
 		{
-			return $this->prepareResponse ($response);
+			return $this->prepareResponse($response);
 		}
 
 		// If no response was sent by this custom exception handler, we will call the
 		// default exception displayer for the current application context and let
 		// it show the exception to the user / developer based on the situation.
-		return $this->displayException ($exception);
+		return $this->displayException($exception);
 	}
 
 	/**
@@ -165,9 +164,9 @@ class Handler
 	 * @param  \Exception  $exception
 	 * @return void
 	 */
-	public function handleUncaughtException ($exception)
+	public function handleUncaughtException($exception)
 	{
-		$this->handleException ($exception)->send ();
+		$this->handleException($exception)->send();
 	}
 
 	/**
@@ -175,21 +174,20 @@ class Handler
 	 *
 	 * @return void
 	 */
-	public function handleShutdown ()
+	public function handleShutdown()
 	{
-		$error = error_get_last ();
+		$error = error_get_last();
 
 		// If an error has occurred that has not been displayed, we will create a fatal
 		// error exception instance and pass it into the regular exception handling
 		// code so it can be displayed back out to the developer for information.
-		if (!is_null ($error))
+		if ( ! is_null($error))
 		{
-			extract ($error);
+			extract($error);
 
-			if (!$this->isFatal ($type))
-				return;
+			if ( ! $this->isFatal($type)) return;
 
-			$this->handleException (new FatalError ($message, $type, 0, $file, $line))->send ();
+			$this->handleException(new FatalError($message, $type, 0, $file, $line))->send();
 		}
 	}
 
@@ -199,9 +197,9 @@ class Handler
 	 * @param  int   $type
 	 * @return bool
 	 */
-	protected function isFatal ($type)
+	protected function isFatal($type)
 	{
-		return in_array ($type, array (E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE));
+        return in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE));
 	}
 
 	/**
@@ -210,9 +208,9 @@ class Handler
 	 * @param  \Exception  $exception
 	 * @return void
 	 */
-	public function handleConsole ($exception)
+	public function handleConsole($exception)
 	{
-		return $this->callCustomHandlers ($exception, true);
+		return $this->callCustomHandlers($exception, true);
 	}
 
 	/**
@@ -222,20 +220,20 @@ class Handler
 	 * @param  bool  $fromConsole
 	 * @return void
 	 */
-	protected function callCustomHandlers ($exception, $fromConsole = false)
+	protected function callCustomHandlers($exception, $fromConsole = false)
 	{
 		foreach ($this->handlers as $handler)
 		{
 			// If this exception handler does not handle the given exception, we will just
 			// go the next one. A handler may type-hint an exception that it handles so
 			//  we can have more granularity on the error handling for the developer.
-			if (!$this->handlesException ($handler, $exception))
+			if ( ! $this->handlesException($handler, $exception))
 			{
 				continue;
 			}
 			elseif ($exception instanceof HttpExceptionInterface)
 			{
-				$code = $exception->getStatusCode ();
+				$code = $exception->getStatusCode();
 			}
 
 			// If the exception doesn't implement the HttpExceptionInterface, we will just
@@ -251,17 +249,17 @@ class Handler
 			// at least some errors, and avoid errors with no data or not log writes.
 			try
 			{
-				$response = $handler ($exception, $code, $fromConsole);
+				$response = $handler($exception, $code, $fromConsole);
 			}
 			catch (\Exception $e)
 			{
-				$response = $this->formatException ($e);
+				$response = $this->formatException($e);
 			}
 
 			// If this handler returns a "non-null" response, we will return it so it will
 			// get sent back to the browsers. Once the handler returns a valid response
 			// we will cease iterating through them and calling these other handlers.
-			if (isset ($response) && !is_null ($response))
+			if (isset($response) && ! is_null($response))
 			{
 				return $response;
 			}
@@ -274,11 +272,11 @@ class Handler
 	 * @param  \Exception  $exception
 	 * @return void
 	 */
-	protected function displayException ($exception)
+	protected function displayException($exception)
 	{
 		$displayer = $this->debug ? $this->debugDisplayer : $this->plainDisplayer;
 
-		return $displayer->display ($exception);
+		return $displayer->display($exception);
 	}
 
 	/**
@@ -288,11 +286,11 @@ class Handler
 	 * @param  \Exception  $exception
 	 * @return bool
 	 */
-	protected function handlesException (Closure $handler, $exception)
+	protected function handlesException(Closure $handler, $exception)
 	{
-		$reflection = new ReflectionFunction ($handler);
+		$reflection = new ReflectionFunction($handler);
 
-		return $reflection->getNumberOfParameters () == 0 || $this->hints ($reflection, $exception);
+		return $reflection->getNumberOfParameters() == 0 || $this->hints($reflection, $exception);
 	}
 
 	/**
@@ -302,13 +300,13 @@ class Handler
 	 * @param  \Exception  $exception
 	 * @return bool
 	 */
-	protected function hints (ReflectionFunction $reflection, $exception)
+	protected function hints(ReflectionFunction $reflection, $exception)
 	{
-		$parameters = $reflection->getParameters ();
+		$parameters = $reflection->getParameters();
 
 		$expected = $parameters[0];
 
-		return !$expected->getClass () || $expected->getClass ()->isInstance ($exception);
+		return ! $expected->getClass() || $expected->getClass()->isInstance($exception);
 	}
 
 	/**
@@ -317,13 +315,13 @@ class Handler
 	 * @param  \Exception  $e
 	 * @return string
 	 */
-	protected function formatException (\Exception $e)
+	protected function formatException(\Exception $e)
 	{
 		if ($this->debug)
 		{
-			$location = $e->getMessage () . ' in ' . $e->getFile () . ':' . $e->getLine ();
+			$location = $e->getMessage().' in '.$e->getFile().':'.$e->getLine();
 
-			return 'Error in exception handler: ' . $location;
+			return 'Error in exception handler: '.$location;
 		}
 
 		return 'Error in exception handler.';
@@ -335,9 +333,9 @@ class Handler
 	 * @param  Closure  $callback
 	 * @return void
 	 */
-	public function error (Closure $callback)
+	public function error(Closure $callback)
 	{
-		array_unshift ($this->handlers, $callback);
+		array_unshift($this->handlers, $callback);
 	}
 
 	/**
@@ -346,7 +344,7 @@ class Handler
 	 * @param  Closure  $callback
 	 * @return void
 	 */
-	public function pushError (Closure $callback)
+	public function pushError(Closure $callback)
 	{
 		$this->handlers[] = $callback;
 	}
@@ -357,9 +355,9 @@ class Handler
 	 * @param  mixed  $response
 	 * @return \Illuminate\Http\Response
 	 */
-	protected function prepareResponse ($response)
+	protected function prepareResponse($response)
 	{
-		return $this->responsePreparer->prepareResponse ($response);
+		return $this->responsePreparer->prepareResponse($response);
 	}
 
 	/**
@@ -367,9 +365,9 @@ class Handler
 	 *
 	 * @return bool
 	 */
-	public function runningInConsole ()
+	public function runningInConsole()
 	{
-		return php_sapi_name () == 'cli';
+		return php_sapi_name() == 'cli';
 	}
 
 	/**
@@ -378,7 +376,7 @@ class Handler
 	 * @param  bool  $debug
 	 * @return void
 	 */
-	public function setDebug ($debug)
+	public function setDebug($debug)
 	{
 		$this->debug = $debug;
 	}

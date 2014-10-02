@@ -15,5 +15,4 @@ use Symfony\Component\Console\Application;
 
 class DescriptorApplication1 extends Application
 {
-	
 }

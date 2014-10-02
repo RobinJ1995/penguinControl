@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetUnion extends SetIntersection
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SUNION';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SUNION';
+    }
 }

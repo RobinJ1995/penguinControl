@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation;
+<?php namespace Illuminate\Foundation;
 
 use Illuminate\Filesystem\Filesystem;
 
-class ProviderRepository
-{
+class ProviderRepository {
 
 	/**
 	 * The filesystem instance.
@@ -26,7 +23,7 @@ class ProviderRepository
 	 *
 	 * @var array
 	 */
-	protected $default = array ('when' => array ());
+	protected $default = array('when' => array());
 
 	/**
 	 * Create a new service repository instance.
@@ -35,7 +32,7 @@ class ProviderRepository
 	 * @param  string  $manifestPath
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $manifestPath)
+	public function __construct(Filesystem $files, $manifestPath)
 	{
 		$this->files = $files;
 		$this->manifestPath = $manifestPath;
@@ -49,22 +46,22 @@ class ProviderRepository
 	 * @param  string  $path
 	 * @return void
 	 */
-	public function load (Application $app, array $providers)
+	public function load(Application $app, array $providers)
 	{
-		$manifest = $this->loadManifest ();
+		$manifest = $this->loadManifest();
 
 		// First we will load the service manifest, which contains information on all
 		// service providers registered with the application and which services it
 		// provides. This is used to know which services are "deferred" loaders.
-		if ($this->shouldRecompile ($manifest, $providers))
+		if ($this->shouldRecompile($manifest, $providers))
 		{
-			$manifest = $this->compileManifest ($app, $providers);
+			$manifest = $this->compileManifest($app, $providers);
 		}
 
 		// If the application is running in the console, we will not lazy load any of
 		// the service providers. This is mainly because it's not as necessary for
 		// performance and also so any provided Artisan commands get registered.
-		if ($app->runningInConsole ())
+		if ($app->runningInConsole())
 		{
 			$manifest['eager'] = $manifest['providers'];
 		}
@@ -74,7 +71,7 @@ class ProviderRepository
 		// while still getting automatically loaded when a certain event occurs.
 		foreach ($manifest['when'] as $provider => $events)
 		{
-			$this->registerLoadEvents ($app, $provider, $events);
+			$this->registerLoadEvents($app, $provider, $events);
 		}
 
 		// We will go ahead and register all of the eagerly loaded providers with the
@@ -82,10 +79,10 @@ class ProviderRepository
 		// a provided service. Then we will set the deferred service list on it.
 		foreach ($manifest['eager'] as $provider)
 		{
-			$app->register ($this->createProvider ($app, $provider));
+			$app->register($this->createProvider($app, $provider));
 		}
 
-		$app->setDeferredServices ($manifest['deferred']);
+		$app->setDeferredServices($manifest['deferred']);
 	}
 
 	/**
@@ -96,14 +93,13 @@ class ProviderRepository
 	 * @param  array  $events
 	 * @return void
 	 */
-	protected function registerLoadEvents (Application $app, $provider, array $events)
+	protected function registerLoadEvents(Application $app, $provider, array $events)
 	{
-		if (count ($events) < 1)
-			return;
+		if (count($events) < 1) return;
 
-		$app->make ('events')->listen ($events, function() use ($app, $provider)
+		$app->make('events')->listen($events, function() use ($app, $provider)
 		{
-			$app->register ($provider);
+			$app->register($provider);
 		});
 	}
 
@@ -114,28 +110,28 @@ class ProviderRepository
 	 * @param  array  $providers
 	 * @return array
 	 */
-	protected function compileManifest (Application $app, $providers)
+	protected function compileManifest(Application $app, $providers)
 	{
 		// The service manifest should contain a list of all of the providers for
 		// the application so we can compare it on each request to the service
 		// and determine if the manifest should be recompiled or is current.
-		$manifest = $this->freshManifest ($providers);
+		$manifest = $this->freshManifest($providers);
 
 		foreach ($providers as $provider)
 		{
-			$instance = $this->createProvider ($app, $provider);
+			$instance = $this->createProvider($app, $provider);
 
 			// When recompiling the service manifest, we will spin through each of the
 			// providers and check if it's a deferred provider or not. If so we'll
 			// add it's provided services to the manifest and note the provider.
-			if ($instance->isDeferred ())
+			if ($instance->isDeferred())
 			{
-				foreach ($instance->provides () as $service)
+				foreach ($instance->provides() as $service)
 				{
 					$manifest['deferred'][$service] = $provider;
 				}
 
-				$manifest['when'][$provider] = $instance->when ();
+				$manifest['when'][$provider] = $instance->when();
 			}
 
 			// If the service providers are not deferred, we will simply add it to an
@@ -147,7 +143,7 @@ class ProviderRepository
 			}
 		}
 
-		return $this->writeManifest ($manifest);
+		return $this->writeManifest($manifest);
 	}
 
 	/**
@@ -157,9 +153,9 @@ class ProviderRepository
 	 * @param  string  $provider
 	 * @return \Illuminate\Support\ServiceProvider
 	 */
-	public function createProvider (Application $app, $provider)
+	public function createProvider(Application $app, $provider)
 	{
-		return new $provider ($app);
+		return new $provider($app);
 	}
 
 	/**
@@ -169,9 +165,9 @@ class ProviderRepository
 	 * @param  array  $providers
 	 * @return bool
 	 */
-	public function shouldRecompile ($manifest, $providers)
+	public function shouldRecompile($manifest, $providers)
 	{
-		return is_null ($manifest) || $manifest['providers'] != $providers;
+		return is_null($manifest) || $manifest['providers'] != $providers;
 	}
 
 	/**
@@ -179,18 +175,18 @@ class ProviderRepository
 	 *
 	 * @return array
 	 */
-	public function loadManifest ()
+	public function loadManifest()
 	{
-		$path = $this->manifestPath . '/services.json';
+		$path = $this->manifestPath.'/services.json';
 
 		// The service manifest is a file containing a JSON representation of every
 		// service provided by the application and whether its provider is using
 		// deferred loading or should be eagerly loaded on each request to us.
-		if ($this->files->exists ($path))
+		if ($this->files->exists($path))
 		{
-			$manifest = json_decode ($this->files->get ($path), true);
+			$manifest = json_decode($this->files->get($path), true);
 
-			return array_merge ($this->default, $manifest);
+			return array_merge($this->default, $manifest);
 		}
 	}
 
@@ -200,11 +196,11 @@ class ProviderRepository
 	 * @param  array  $manifest
 	 * @return array
 	 */
-	public function writeManifest ($manifest)
+	public function writeManifest($manifest)
 	{
-		$path = $this->manifestPath . '/services.json';
+		$path = $this->manifestPath.'/services.json';
 
-		$this->files->put ($path, json_encode ($manifest));
+		$this->files->put($path, json_encode($manifest));
 
 		return $manifest;
 	}
@@ -215,11 +211,11 @@ class ProviderRepository
 	 * @param  array  $providers
 	 * @return array
 	 */
-	protected function freshManifest (array $providers)
+	protected function freshManifest(array $providers)
 	{
-		list($eager, $deferred) = array (array (), array ());
+		list($eager, $deferred) = array(array(), array());
 
-		return compact ('providers', 'eager', 'deferred');
+		return compact('providers', 'eager', 'deferred');
 	}
 
 	/**
@@ -227,7 +223,7 @@ class ProviderRepository
 	 *
 	 * @return \Illuminate\Filesystem\Filesystem
 	 */
-	public function getFilesystem ()
+	public function getFilesystem()
 	{
 		return $this->files;
 	}

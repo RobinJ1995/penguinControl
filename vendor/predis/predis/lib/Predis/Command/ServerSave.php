@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerSave extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SAVE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SAVE';
+    }
 }

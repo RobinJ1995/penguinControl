@@ -21,71 +21,69 @@ namespace Predis\Command;
  */
 class KeyKeysV12xTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\KeyKeysV12x';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\KeyKeysV12x';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'KEYS';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'KEYS';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('pattern:*');
+        $expected = array('pattern:*');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('pattern:*');
-		$expected = array ('pattern:*');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $raw = 'key1 key2 key3';
+        $parsed = array('key1', 'key2', 'key3');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$raw = 'key1 key2 key3';
-		$parsed = array ('key1', 'key2', 'key3');
+        $this->assertSame($parsed, $this->getCommand()->parseResponse($raw));
+    }
 
-		$this->assertSame ($parsed, $this->getCommand ()->parseResponse ($raw));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('pattern');
+        $expected = array('prefix:pattern');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('pattern');
-		$expected = array ('prefix:pattern');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
-
-		$this->assertSame (array (), $command->getArguments ());
-	}
-
+        $this->assertSame(array(), $command->getArguments());
+    }
 }

@@ -1,25 +1,22 @@
-<?php
-
-namespace Illuminate\Exception;
+<?php namespace Illuminate\Exception;
 
 use Whoops\Run;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Handler\JsonResponseHandler;
 use Illuminate\Support\ServiceProvider;
 
-class ExceptionServiceProvider extends ServiceProvider
-{
+class ExceptionServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the service provider.
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->registerDisplayers ();
+		$this->registerDisplayers();
 
-		$this->registerHandler ();
+		$this->registerHandler();
 	}
 
 	/**
@@ -27,11 +24,11 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerDisplayers ()
+	protected function registerDisplayers()
 	{
-		$this->registerPlainDisplayer ();
+		$this->registerPlainDisplayer();
 
-		$this->registerDebugDisplayer ();
+		$this->registerDebugDisplayer();
 	}
 
 	/**
@@ -39,11 +36,11 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerHandler ()
+	protected function registerHandler()
 	{
-		$this->app['exception'] = $this->app->share (function($app)
+		$this->app['exception'] = $this->app->share(function($app)
 		{
-			return new Handler ($app, $app['exception.plain'], $app['exception.debug']);
+			return new Handler($app, $app['exception.plain'], $app['exception.debug']);
 		});
 	}
 
@@ -52,14 +49,14 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerPlainDisplayer ()
+	protected function registerPlainDisplayer()
 	{
-		$this->app['exception.plain'] = $this->app->share (function($app)
+		$this->app['exception.plain'] = $this->app->share(function($app)
 		{
 			// If the application is running in a console environment, we will just always
 			// use the debug handler as there is no point in the console ever returning
 			// out HTML. This debug handler always returns JSON from the console env.
-			if ($app->runningInConsole ())
+			if ($app->runningInConsole())
 			{
 				return $app['exception.debug'];
 			}
@@ -75,13 +72,13 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerDebugDisplayer ()
+	protected function registerDebugDisplayer()
 	{
-		$this->registerWhoops ();
+		$this->registerWhoops();
 
-		$this->app['exception.debug'] = $this->app->share (function($app)
+		$this->app['exception.debug'] = $this->app->share(function($app)
 		{
-			return new WhoopsDisplayer ($app['whoops'], $app->runningInConsole ());
+			return new WhoopsDisplayer($app['whoops'], $app->runningInConsole());
 		});
 	}
 
@@ -90,20 +87,20 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerWhoops ()
+	protected function registerWhoops()
 	{
-		$this->registerWhoopsHandler ();
+		$this->registerWhoopsHandler();
 
-		$this->app['whoops'] = $this->app->share (function($app)
+		$this->app['whoops'] = $this->app->share(function($app)
 		{
 			// We will instruct Whoops to not exit after it displays the exception as it
 			// will otherwise run out before we can do anything else. We just want to
 			// let the framework go ahead and finish a request on this end instead.
-			with ($whoops = new Run)->allowQuit (false);
+			with($whoops = new Run)->allowQuit(false);
 
-			$whoops->writeToOutput (false);
+			$whoops->writeToOutput(false);
 
-			return $whoops->pushHandler ($app['whoops.handler']);
+			return $whoops->pushHandler($app['whoops.handler']);
 		});
 	}
 
@@ -112,18 +109,18 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerWhoopsHandler ()
+	protected function registerWhoopsHandler()
 	{
-		if ($this->shouldReturnJson ())
+		if ($this->shouldReturnJson())
 		{
-			$this->app['whoops.handler'] = $this->app->share (function()
+			$this->app['whoops.handler'] = $this->app->share(function()
 			{
-				return new JsonResponseHandler;
+					return new JsonResponseHandler;
 			});
 		}
 		else
 		{
-			$this->registerPrettyWhoopsHandler ();
+			$this->registerPrettyWhoopsHandler();
 		}
 	}
 
@@ -132,9 +129,9 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return bool
 	 */
-	protected function shouldReturnJson ()
+	protected function shouldReturnJson()
 	{
-		return $this->app->runningInConsole () || $this->requestWantsJson ();
+		return $this->app->runningInConsole() || $this->requestWantsJson();
 	}
 
 	/**
@@ -142,9 +139,9 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return bool
 	 */
-	protected function requestWantsJson ()
+	protected function requestWantsJson()
 	{
-		return $this->app['request']->ajax () || $this->app['request']->wantsJson ();
+		return $this->app['request']->ajax() || $this->app['request']->wantsJson();
 	}
 
 	/**
@@ -152,20 +149,20 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerPrettyWhoopsHandler ()
+	protected function registerPrettyWhoopsHandler()
 	{
 		$me = $this;
 
-		$this->app['whoops.handler'] = $this->app->share (function() use ($me)
+		$this->app['whoops.handler'] = $this->app->share(function() use ($me)
 		{
-			with ($handler = new PrettyPageHandler)->setEditor ('sublime');
+			with($handler = new PrettyPageHandler)->setEditor('sublime');
 
 			// If the resource path exists, we will register the resource path with Whoops
 			// so our custom Laravel branded exception pages will be used when they are
 			// displayed back to the developer. Otherwise, the default pages are run.
-			if (!is_null ($path = $me->resourcePath ()))
+			if ( ! is_null($path = $me->resourcePath()))
 			{
-				$handler->setResourcesPath ($path);
+				$handler->setResourcesPath($path);
 			}
 
 			return $handler;
@@ -177,10 +174,9 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return string
 	 */
-	public function resourcePath ()
+	public function resourcePath()
 	{
-		if (is_dir ($path = $this->getResourcePath ()))
-			return $path;
+		if (is_dir($path = $this->getResourcePath())) return $path;
 	}
 
 	/**
@@ -188,11 +184,11 @@ class ExceptionServiceProvider extends ServiceProvider
 	 *
 	 * @return string
 	 */
-	protected function getResourcePath ()
+	protected function getResourcePath()
 	{
 		$base = $this->app['path.base'];
 
-		return $base . '/vendor/laravel/framework/src/Illuminate/Exception/resources';
+		return $base.'/vendor/laravel/framework/src/Illuminate/Exception/resources';
 	}
 
 }

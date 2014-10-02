@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class HashGet extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HGET';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HGET';
+    }
 }

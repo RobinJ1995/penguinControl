@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class HashGetMultiple extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HMGET';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HMGET';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		return self::normalizeVariadic ($arguments);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeVariadic($arguments);
+    }
 }

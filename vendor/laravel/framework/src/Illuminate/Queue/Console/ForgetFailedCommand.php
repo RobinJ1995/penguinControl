@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Console;
+<?php namespace Illuminate\Queue\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 
-class ForgetFailedCommand extends Command
-{
+class ForgetFailedCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -27,15 +24,15 @@ class ForgetFailedCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		if ($this->laravel['queue.failer']->forget ($this->argument ('id')))
+		if ($this->laravel['queue.failer']->forget($this->argument('id')))
 		{
-			$this->info ('Failed job deleted successfully!');
+			$this->info('Failed job deleted successfully!');
 		}
 		else
 		{
-			$this->error ('No failed job matches the given ID.');
+			$this->error('No failed job matches the given ID.');
 		}
 	}
 
@@ -44,10 +41,10 @@ class ForgetFailedCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('id', InputArgument::REQUIRED, 'The ID of the failed job'),
+		return array(
+			array('id', InputArgument::REQUIRED, 'The ID of the failed job'),
 		);
 	}
 

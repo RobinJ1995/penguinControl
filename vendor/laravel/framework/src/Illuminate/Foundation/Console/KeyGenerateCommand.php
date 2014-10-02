@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class KeyGenerateCommand extends Command
-{
+class KeyGenerateCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -29,9 +26,9 @@ class KeyGenerateCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->files = $files;
 	}
@@ -41,19 +38,19 @@ class KeyGenerateCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		list($path, $contents) = $this->getKeyFile ();
+		list($path, $contents) = $this->getKeyFile();
 
-		$key = $this->getRandomKey ();
+		$key = $this->getRandomKey();
 
-		$contents = str_replace ($this->laravel['config']['app.key'], $key, $contents);
+		$contents = str_replace($this->laravel['config']['app.key'], $key, $contents);
 
-		$this->files->put ($path, $contents);
+		$this->files->put($path, $contents);
 
 		$this->laravel['config']['app.key'] = $key;
 
-		$this->info ("Application key [$key] set successfully.");
+		$this->info("Application key [$key] set successfully.");
 	}
 
 	/**
@@ -61,13 +58,13 @@ class KeyGenerateCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getKeyFile ()
+	protected function getKeyFile()
 	{
-		$env = $this->option ('env') ? $this->option ('env') . '/' : '';
+		$env = $this->option('env') ? $this->option('env').'/' : '';
 
-		$contents = $this->files->get ($path = $this->laravel['path'] . "/config/{$env}app.php");
+		$contents = $this->files->get($path = $this->laravel['path']."/config/{$env}app.php");
 
-		return array ($path, $contents);
+		return array($path, $contents);
 	}
 
 	/**
@@ -75,9 +72,9 @@ class KeyGenerateCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getRandomKey ()
+	protected function getRandomKey()
 	{
-		return Str::random (32);
+		return Str::random(32);
 	}
 
 }

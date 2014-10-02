@@ -27,13 +27,11 @@ use Predis\Protocol\ResponseHandlerInterface;
  */
 class ResponseErrorHandler implements ResponseHandlerInterface
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function handle (ComposableConnectionInterface $connection, $errorMessage)
-	{
-		return new ResponseError ($errorMessage);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(ComposableConnectionInterface $connection, $errorMessage)
+    {
+        return new ResponseError($errorMessage);
+    }
 }

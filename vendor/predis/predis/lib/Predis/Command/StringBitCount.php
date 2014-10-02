@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringBitCount extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'BITCOUNT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'BITCOUNT';
+    }
 }

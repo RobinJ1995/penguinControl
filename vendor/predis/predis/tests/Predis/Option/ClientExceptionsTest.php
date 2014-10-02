@@ -18,16 +18,14 @@ use PredisTestCase;
  */
 class ClientExceptionsTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testDefaultReturnsTrue()
+    {
+        $options = $this->getMock('Predis\Option\ClientOptionsInterface');
+        $option = new ClientExceptions();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testDefaultReturnsTrue ()
-	{
-		$options = $this->getMock ('Predis\Option\ClientOptionsInterface');
-		$option = new ClientExceptions();
-
-		$this->assertTrue ($option->getDefault ($options));
-	}
-
+        $this->assertTrue($option->getDefault($options));
+    }
 }

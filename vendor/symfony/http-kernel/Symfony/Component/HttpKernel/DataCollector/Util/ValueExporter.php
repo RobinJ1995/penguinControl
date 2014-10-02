@@ -16,53 +16,44 @@ namespace Symfony\Component\HttpKernel\DataCollector\Util;
  */
 class ValueExporter
 {
+    /**
+     * Converts a PHP value to a string.
+     *
+     * @param mixed $value The PHP value
+     *
+     * @return string The string representation of the given value
+     */
+    public function exportValue($value)
+    {
+        if (is_object($value)) {
+            return sprintf('Object(%s)', get_class($value));
+        }
 
-	/**
-	 * Converts a PHP value to a string.
-	 *
-	 * @param mixed $value The PHP value
-	 *
-	 * @return string The string representation of the given value
-	 */
-	public function exportValue ($value)
-	{
-		if (is_object ($value))
-		{
-			return sprintf ('Object(%s)', get_class ($value));
-		}
+        if (is_array($value)) {
+            $a = array();
+            foreach ($value as $k => $v) {
+                $a[] = sprintf('%s => %s', $k, $this->exportValue($v));
+            }
 
-		if (is_array ($value))
-		{
-			$a = array ();
-			foreach ($value as $k => $v)
-			{
-				$a[] = sprintf ('%s => %s', $k, $this->exportValue ($v));
-			}
+            return sprintf("Array(%s)", implode(', ', $a));
+        }
 
-			return sprintf ("Array(%s)", implode (', ', $a));
-		}
+        if (is_resource($value)) {
+            return sprintf('Resource(%s#%d)', get_resource_type($value), $value);
+        }
 
-		if (is_resource ($value))
-		{
-			return sprintf ('Resource(%s#%d)', get_resource_type ($value), $value);
-		}
+        if (null === $value) {
+            return 'null';
+        }
 
-		if (null === $value)
-		{
-			return 'null';
-		}
+        if (false === $value) {
+            return 'false';
+        }
 
-		if (false === $value)
-		{
-			return 'false';
-		}
+        if (true === $value) {
+            return 'true';
+        }
 
-		if (true === $value)
-		{
-			return 'true';
-		}
-
-		return (string) $value;
-	}
-
+        return (string) $value;
+    }
 }

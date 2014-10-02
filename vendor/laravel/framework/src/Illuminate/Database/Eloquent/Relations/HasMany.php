@@ -1,20 +1,17 @@
-<?php
-
-namespace Illuminate\Database\Eloquent\Relations;
+<?php namespace Illuminate\Database\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Collection;
 
-class HasMany extends HasOneOrMany
-{
+class HasMany extends HasOneOrMany {
 
 	/**
 	 * Get the results of the relationship.
 	 *
 	 * @return mixed
 	 */
-	public function getResults ()
+	public function getResults()
 	{
-		return $this->query->get ();
+		return $this->query->get();
 	}
 
 	/**
@@ -22,13 +19,13 @@ class HasMany extends HasOneOrMany
 	 *
 	 * @param  array   $models
 	 * @param  string  $relation
-	 * @return void
+	 * @return array
 	 */
-	public function initRelation (array $models, $relation)
+	public function initRelation(array $models, $relation)
 	{
 		foreach ($models as $model)
 		{
-			$model->setRelation ($relation, $this->related->newCollection ());
+			$model->setRelation($relation, $this->related->newCollection());
 		}
 
 		return $models;
@@ -42,9 +39,9 @@ class HasMany extends HasOneOrMany
 	 * @param  string  $relation
 	 * @return array
 	 */
-	public function match (array $models, Collection $results, $relation)
+	public function match(array $models, Collection $results, $relation)
 	{
-		return $this->matchMany ($models, $results, $relation);
+		return $this->matchMany($models, $results, $relation);
 	}
 
 }

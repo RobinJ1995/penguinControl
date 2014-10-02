@@ -18,28 +18,27 @@ use Symfony\Component\Routing\Matcher\Dumper\DumperCollection;
 
 class DumperPrefixCollectionTest extends \PHPUnit_Framework_TestCase
 {
+    public function testAddPrefixRoute()
+    {
+        $coll = new DumperPrefixCollection();
+        $coll->setPrefix('');
 
-	public function testAddPrefixRoute ()
-	{
-		$coll = new DumperPrefixCollection();
-		$coll->setPrefix ('');
+        $route = new DumperRoute('bar', new Route('/foo/bar'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('bar', new Route ('/foo/bar'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('bar2', new Route('/foo/bar'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('bar2', new Route ('/foo/bar'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('qux', new Route('/foo/qux'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('qux', new Route ('/foo/qux'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('bar3', new Route('/foo/bar'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('bar3', new Route ('/foo/bar'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('bar4', new Route(''));
+        $result = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('bar4', new Route (''));
-		$result = $coll->addPrefixRoute ($route);
-
-		$expect = <<<'EOF'
+        $expect = <<<'EOF'
             |-coll /
             | |-coll /f
             | | |-coll /fo
@@ -62,29 +61,29 @@ class DumperPrefixCollectionTest extends \PHPUnit_Framework_TestCase
 
 EOF;
 
-		$this->assertSame ($expect, $this->collectionToString ($result->getRoot (), '            '));
-	}
+        $this->assertSame($expect, $this->collectionToString($result->getRoot(), '            '));
+    }
 
-	public function testMergeSlashNodes ()
-	{
-		$coll = new DumperPrefixCollection();
-		$coll->setPrefix ('');
+    public function testMergeSlashNodes()
+    {
+        $coll = new DumperPrefixCollection();
+        $coll->setPrefix('');
 
-		$route = new DumperRoute ('bar', new Route ('/foo/bar'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('bar', new Route('/foo/bar'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('bar2', new Route ('/foo/bar'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('bar2', new Route('/foo/bar'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('qux', new Route ('/foo/qux'));
-		$coll = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('qux', new Route('/foo/qux'));
+        $coll = $coll->addPrefixRoute($route);
 
-		$route = new DumperRoute ('bar3', new Route ('/foo/bar'));
-		$result = $coll->addPrefixRoute ($route);
+        $route = new DumperRoute('bar3', new Route('/foo/bar'));
+        $result = $coll->addPrefixRoute($route);
 
-		$result->getRoot ()->mergeSlashNodes ();
+        $result->getRoot()->mergeSlashNodes();
 
-		$expect = <<<'EOF'
+        $expect = <<<'EOF'
             |-coll /f
             | |-coll /fo
             | | |-coll /foo
@@ -104,26 +103,21 @@ EOF;
 
 EOF;
 
-		$this->assertSame ($expect, $this->collectionToString ($result->getRoot (), '            '));
-	}
+        $this->assertSame($expect, $this->collectionToString($result->getRoot(), '            '));
+    }
 
-	private function collectionToString (DumperCollection $collection, $prefix)
-	{
-		$string = '';
-		foreach ($collection as $route)
-		{
-			if ($route instanceof DumperCollection)
-			{
-				$string .= sprintf ("%s|-coll %s\n", $prefix, $route->getPrefix ());
-				$string .= $this->collectionToString ($route, $prefix . '| ');
-			}
-			else
-			{
-				$string .= sprintf ("%s|-route %s %s\n", $prefix, $route->getName (), $route->getRoute ()->getPath ());
-			}
-		}
+    private function collectionToString(DumperCollection $collection, $prefix)
+    {
+        $string = '';
+        foreach ($collection as $route) {
+            if ($route instanceof DumperCollection) {
+                $string .= sprintf("%s|-coll %s\n", $prefix, $route->getPrefix());
+                $string .= $this->collectionToString($route, $prefix.'| ');
+            } else {
+                $string .= sprintf("%s|-route %s %s\n", $prefix, $route->getName(), $route->getRoute()->getPath());
+            }
+        }
 
-		return $string;
-	}
-
+        return $string;
+    }
 }

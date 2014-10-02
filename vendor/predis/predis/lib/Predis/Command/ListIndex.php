@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListIndex extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LINDEX';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LINDEX';
+    }
 }

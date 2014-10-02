@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\View\Engines;
+<?php namespace Illuminate\View\Engines;
 
 use Illuminate\View\Compilers\CompilerInterface;
 
-class CompilerEngine extends PhpEngine
-{
+class CompilerEngine extends PhpEngine {
 
 	/**
 	 * The Blade compiler instance.
@@ -19,7 +16,7 @@ class CompilerEngine extends PhpEngine
 	 *
 	 * @var array
 	 */
-	protected $lastCompiled = array ();
+	protected $lastCompiled = array();
 
 	/**
 	 * Create a new Blade view engine instance.
@@ -27,7 +24,7 @@ class CompilerEngine extends PhpEngine
 	 * @param  \Illuminate\View\Compilers\CompilerInterface  $compiler
 	 * @return void
 	 */
-	public function __construct (CompilerInterface $compiler)
+	public function __construct(CompilerInterface $compiler)
 	{
 		$this->compiler = $compiler;
 	}
@@ -39,26 +36,26 @@ class CompilerEngine extends PhpEngine
 	 * @param  array   $data
 	 * @return string
 	 */
-	public function get ($path, array $data = array ())
+	public function get($path, array $data = array())
 	{
 		$this->lastCompiled[] = $path;
 
 		// If this given view has expired, which means it has simply been edited since
 		// it was last compiled, we will re-compile the views so we can evaluate a
 		// fresh copy of the view. We'll pass the compiler the path of the view.
-		if ($this->compiler->isExpired ($path))
+		if ($this->compiler->isExpired($path))
 		{
-			$this->compiler->compile ($path);
+			$this->compiler->compile($path);
 		}
 
-		$compiled = $this->compiler->getCompiledPath ($path);
+		$compiled = $this->compiler->getCompiledPath($path);
 
 		// Once we have the path to the compiled file, we will evaluate the paths with
 		// typical PHP just like any other templates. We also keep a stack of views
 		// which have been rendered for right exception messages to be generated.
-		$results = $this->evaluatePath ($compiled, $data);
+		$results = $this->evaluatePath($compiled, $data);
 
-		array_pop ($this->lastCompiled);
+		array_pop($this->lastCompiled);
 
 		return $results;
 	}
@@ -71,12 +68,11 @@ class CompilerEngine extends PhpEngine
 	 *
 	 * @throws $e
 	 */
-	protected function handleViewException ($e)
+	protected function handleViewException($e)
 	{
-		$e = new \ErrorException ($this->getMessage ($e), 0, 1, $e->getFile (), $e->getLine (), $e);
+		$e = new \ErrorException($this->getMessage($e), 0, 1, $e->getFile(), $e->getLine(), $e);
 
-		ob_get_clean ();
-		throw $e;
+		ob_get_clean(); throw $e;
 	}
 
 	/**
@@ -85,9 +81,9 @@ class CompilerEngine extends PhpEngine
 	 * @param  \Exception  $e
 	 * @return string
 	 */
-	protected function getMessage ($e)
+	protected function getMessage($e)
 	{
-		return $e->getMessage () . ' (View: ' . realpath (last ($this->lastCompiled)) . ')';
+		return $e->getMessage().' (View: '.realpath(last($this->lastCompiled)).')';
 	}
 
 	/**
@@ -95,7 +91,7 @@ class CompilerEngine extends PhpEngine
 	 *
 	 * @return \Illuminate\View\Compilers\CompilerInterface
 	 */
-	public function getCompiler ()
+	public function getCompiler()
 	{
 		return $this->compiler;
 	}

@@ -19,18 +19,17 @@ namespace Predis;
  */
 interface ResponseErrorInterface extends ResponseObjectInterface
 {
+    /**
+     * Returns the error message
+     *
+     * @return string
+     */
+    public function getMessage();
 
-	/**
-	 * Returns the error message
-	 *
-	 * @return string
-	 */
-	public function getMessage ();
-
-	/**
-	 * Returns the error type (e.g. ERR, ASK, MOVED)
-	 *
-	 * @return string
-	 */
-	public function getErrorType ();
+    /**
+     * Returns the error type (e.g. ERR, ASK, MOVED)
+     *
+     * @return string
+     */
+    public function getErrorType();
 }

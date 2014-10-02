@@ -18,255 +18,237 @@ namespace Symfony\Component\HttpKernel\Tests\Profiler\Mock;
  */
 class MemcacheMock
 {
+    private $connected = false;
+    private $storage = array();
 
-	private $connected = false;
-	private $storage = array ();
+    /**
+     * Open memcached server connection
+     *
+     * @param string  $host
+     * @param int     $port
+     * @param int     $timeout
+     *
+     * @return bool
+     */
+    public function connect($host, $port = null, $timeout = null)
+    {
+        if ('127.0.0.1' == $host && 11211 == $port) {
+            $this->connected = true;
 
-	/**
-	 * Open memcached server connection
-	 *
-	 * @param string  $host
-	 * @param int     $port
-	 * @param int     $timeout
-	 *
-	 * @return bool
-	 */
-	public function connect ($host, $port = null, $timeout = null)
-	{
-		if ('127.0.0.1' == $host && 11211 == $port)
-		{
-			$this->connected = true;
+            return true;
+        }
 
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Open memcached server persistent connection
+     *
+     * @param string  $host
+     * @param int     $port
+     * @param int     $timeout
+     *
+     * @return bool
+     */
+    public function pconnect($host, $port = null, $timeout = null)
+    {
+        if ('127.0.0.1' == $host && 11211 == $port) {
+            $this->connected = true;
 
-	/**
-	 * Open memcached server persistent connection
-	 *
-	 * @param string  $host
-	 * @param int     $port
-	 * @param int     $timeout
-	 *
-	 * @return bool
-	 */
-	public function pconnect ($host, $port = null, $timeout = null)
-	{
-		if ('127.0.0.1' == $host && 11211 == $port)
-		{
-			$this->connected = true;
+            return true;
+        }
 
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Add a memcached server to connection pool
+     *
+     * @param string   $host
+     * @param int      $port
+     * @param bool     $persistent
+     * @param int      $weight
+     * @param int      $timeout
+     * @param int      $retry_interval
+     * @param bool     $status
+     * @param callable $failure_callback
+     * @param int      $timeoutms
+     *
+     * @return bool
+     */
+    public function addServer($host, $port = 11211, $persistent = null, $weight = null, $timeout = null, $retry_interval = null, $status = null, $failure_callback = null, $timeoutms = null)
+    {
+        if ('127.0.0.1' == $host && 11211 == $port) {
+            $this->connected = true;
 
-	/**
-	 * Add a memcached server to connection pool
-	 *
-	 * @param string   $host
-	 * @param int      $port
-	 * @param bool     $persistent
-	 * @param int      $weight
-	 * @param int      $timeout
-	 * @param int      $retry_interval
-	 * @param bool     $status
-	 * @param callable $failure_callback
-	 * @param int      $timeoutms
-	 *
-	 * @return bool
-	 */
-	public function addServer ($host, $port = 11211, $persistent = null, $weight = null, $timeout = null, $retry_interval = null, $status = null, $failure_callback = null, $timeoutms = null)
-	{
-		if ('127.0.0.1' == $host && 11211 == $port)
-		{
-			$this->connected = true;
+            return true;
+        }
 
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Add an item to the server only if such key doesn't exist at the server yet.
+     *
+     * @param string  $key
+     * @param mixed   $var
+     * @param int     $flag
+     * @param int     $expire
+     *
+     * @return bool
+     */
+    public function add($key, $var, $flag = null, $expire = null)
+    {
+        if (!$this->connected) {
+            return false;
+        }
 
-	/**
-	 * Add an item to the server only if such key doesn't exist at the server yet.
-	 *
-	 * @param string  $key
-	 * @param mixed   $var
-	 * @param int     $flag
-	 * @param int     $expire
-	 *
-	 * @return bool
-	 */
-	public function add ($key, $var, $flag = null, $expire = null)
-	{
-		if (!$this->connected)
-		{
-			return false;
-		}
+        if (!isset($this->storage[$key])) {
+            $this->storeData($key, $var);
 
-		if (!isset ($this->storage[$key]))
-		{
-			$this->storeData ($key, $var);
+            return true;
+        }
 
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Store data at the server.
+     *
+     * @param string  $key
+     * @param string  $var
+     * @param int     $flag
+     * @param int     $expire
+     *
+     * @return bool
+     */
+    public function set($key, $var, $flag = null, $expire = null)
+    {
+        if (!$this->connected) {
+            return false;
+        }
 
-	/**
-	 * Store data at the server.
-	 *
-	 * @param string  $key
-	 * @param string  $var
-	 * @param int     $flag
-	 * @param int     $expire
-	 *
-	 * @return bool
-	 */
-	public function set ($key, $var, $flag = null, $expire = null)
-	{
-		if (!$this->connected)
-		{
-			return false;
-		}
+        $this->storeData($key, $var);
 
-		$this->storeData ($key, $var);
+        return true;
+    }
 
-		return true;
-	}
+    /**
+     * Replace value of the existing item.
+     *
+     * @param string  $key
+     * @param mixed   $var
+     * @param int     $flag
+     * @param int     $expire
+     *
+     * @return bool
+     */
+    public function replace($key, $var, $flag = null, $expire = null)
+    {
+        if (!$this->connected) {
+            return false;
+        }
 
-	/**
-	 * Replace value of the existing item.
-	 *
-	 * @param string  $key
-	 * @param mixed   $var
-	 * @param int     $flag
-	 * @param int     $expire
-	 *
-	 * @return bool
-	 */
-	public function replace ($key, $var, $flag = null, $expire = null)
-	{
-		if (!$this->connected)
-		{
-			return false;
-		}
+        if (isset($this->storage[$key])) {
+            $this->storeData($key, $var);
 
-		if (isset ($this->storage[$key]))
-		{
-			$this->storeData ($key, $var);
+            return true;
+        }
 
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Retrieve item from the server.
+     *
+     * @param string|array  $key
+     * @param int|array     $flags
+     *
+     * @return mixed
+     */
+    public function get($key, &$flags = null)
+    {
+        if (!$this->connected) {
+            return false;
+        }
 
-	/**
-	 * Retrieve item from the server.
-	 *
-	 * @param string|array  $key
-	 * @param int|array     $flags
-	 *
-	 * @return mixed
-	 */
-	public function get ($key, &$flags = null)
-	{
-		if (!$this->connected)
-		{
-			return false;
-		}
+        if (is_array($key)) {
+            $result = array();
+            foreach ($key as $k) {
+                if (isset($this->storage[$k])) {
+                    $result[] = $this->getData($k);
+                }
+            }
 
-		if (is_array ($key))
-		{
-			$result = array ();
-			foreach ($key as $k)
-			{
-				if (isset ($this->storage[$k]))
-				{
-					$result[] = $this->getData ($k);
-				}
-			}
+            return $result;
+        }
 
-			return $result;
-		}
+        return $this->getData($key);
+    }
 
-		return $this->getData ($key);
-	}
+    /**
+     * Delete item from the server
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function delete($key)
+    {
+        if (!$this->connected) {
+            return false;
+        }
 
-	/**
-	 * Delete item from the server
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 */
-	public function delete ($key)
-	{
-		if (!$this->connected)
-		{
-			return false;
-		}
+        if (isset($this->storage[$key])) {
+            unset($this->storage[$key]);
 
-		if (isset ($this->storage[$key]))
-		{
-			unset ($this->storage[$key]);
+            return true;
+        }
 
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Flush all existing items at the server
+     *
+     * @return bool
+     */
+    public function flush()
+    {
+        if (!$this->connected) {
+            return false;
+        }
 
-	/**
-	 * Flush all existing items at the server
-	 *
-	 * @return bool
-	 */
-	public function flush ()
-	{
-		if (!$this->connected)
-		{
-			return false;
-		}
+        $this->storage = array();
 
-		$this->storage = array ();
+        return true;
+    }
 
-		return true;
-	}
+    /**
+     * Close memcached server connection
+     *
+     * @return bool
+     */
+    public function close()
+    {
+        $this->connected = false;
 
-	/**
-	 * Close memcached server connection
-	 *
-	 * @return bool
-	 */
-	public function close ()
-	{
-		$this->connected = false;
+        return true;
+    }
 
-		return true;
-	}
+    private function getData($key)
+    {
+        if (isset($this->storage[$key])) {
+            return unserialize($this->storage[$key]);
+        }
 
-	private function getData ($key)
-	{
-		if (isset ($this->storage[$key]))
-		{
-			return unserialize ($this->storage[$key]);
-		}
+        return false;
+    }
 
-		return false;
-	}
+    private function storeData($key, $value)
+    {
+        $this->storage[$key] = serialize($value);
 
-	private function storeData ($key, $value)
-	{
-		$this->storage[$key] = serialize ($value);
-
-		return true;
-	}
-
+        return true;
+    }
 }

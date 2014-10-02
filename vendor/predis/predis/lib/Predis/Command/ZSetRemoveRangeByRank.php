@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetRemoveRangeByRank extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZREMRANGEBYRANK';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZREMRANGEBYRANK';
+    }
 }

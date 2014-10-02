@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetCardinality extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZCARD';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZCARD';
+    }
 }

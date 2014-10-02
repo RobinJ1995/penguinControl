@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Illuminate\Filesystem\Filesystem;
 
-class FileStore implements StoreInterface
-{
+class FileStore implements StoreInterface {
 
 	/**
 	 * The Illuminate Filesystem instance.
@@ -28,7 +25,7 @@ class FileStore implements StoreInterface
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $directory)
+	public function __construct(Filesystem $files, $directory)
 	{
 		$this->files = $files;
 		$this->directory = $directory;
@@ -40,21 +37,21 @@ class FileStore implements StoreInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		$path = $this->path ($key);
+		$path = $this->path($key);
 
 		// If the file doesn't exists, we obviously can't return the cache so we will
 		// just return null. Otherwise, we'll get the contents of the file and get
 		// the expiration UNIX timestamps from the start of the file's contents.
-		if (!$this->files->exists ($path))
+		if ( ! $this->files->exists($path))
 		{
 			return null;
 		}
 
 		try
 		{
-			$expire = substr ($contents = $this->files->get ($path), 0, 10);
+			$expire = substr($contents = $this->files->get($path), 0, 10);
 		}
 		catch (\Exception $e)
 		{
@@ -64,12 +61,12 @@ class FileStore implements StoreInterface
 		// If the current time is greater than expiration timestamps we will delete
 		// the file and return null. This helps clean up the old files and keeps
 		// this directory much cleaner for us as old files aren't hanging out.
-		if (time () >= $expire)
+		if (time() >= $expire)
 		{
-			return $this->forget ($key);
+			return $this->forget($key);
 		}
 
-		return unserialize (substr ($contents, 10));
+		return unserialize(substr($contents, 10));
 	}
 
 	/**
@@ -80,13 +77,13 @@ class FileStore implements StoreInterface
 	 * @param  int     $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		$value = $this->expiration ($minutes) . serialize ($value);
+		$value = $this->expiration($minutes).serialize($value);
 
-		$this->createCacheDirectory ($path = $this->path ($key));
+		$this->createCacheDirectory($path = $this->path($key));
 
-		$this->files->put ($path, $value);
+		$this->files->put($path, $value);
 	}
 
 	/**
@@ -95,11 +92,11 @@ class FileStore implements StoreInterface
 	 * @param  string  $path
 	 * @return void
 	 */
-	protected function createCacheDirectory ($path)
+	protected function createCacheDirectory($path)
 	{
 		try
 		{
-			$this->files->makeDirectory (dirname ($path), 0777, true, true);
+			$this->files->makeDirectory(dirname($path), 0777, true, true);
 		}
 		catch (\Exception $e)
 		{
@@ -116,9 +113,9 @@ class FileStore implements StoreInterface
 	 *
 	 * @throws \LogicException
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
-		throw new \LogicException ("Increment operations not supported by this driver.");
+		throw new \LogicException("Increment operations not supported by this driver.");
 	}
 
 	/**
@@ -130,9 +127,9 @@ class FileStore implements StoreInterface
 	 *
 	 * @throws \LogicException
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
-		throw new \LogicException ("Decrement operations not supported by this driver.");
+		throw new \LogicException("Decrement operations not supported by this driver.");
 	}
 
 	/**
@@ -142,9 +139,9 @@ class FileStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		return $this->put ($key, $value, 0);
+		return $this->put($key, $value, 0);
 	}
 
 	/**
@@ -153,13 +150,13 @@ class FileStore implements StoreInterface
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		$file = $this->path ($key);
+		$file = $this->path($key);
 
-		if ($this->files->exists ($file))
+		if ($this->files->exists($file))
 		{
-			$this->files->delete ($file);
+			$this->files->delete($file);
 		}
 	}
 
@@ -168,11 +165,11 @@ class FileStore implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		foreach ($this->files->directories ($this->directory) as $directory)
+		foreach ($this->files->directories($this->directory) as $directory)
 		{
-			$this->files->deleteDirectory ($directory);
+			$this->files->deleteDirectory($directory);
 		}
 	}
 
@@ -182,11 +179,11 @@ class FileStore implements StoreInterface
 	 * @param  string  $key
 	 * @return string
 	 */
-	protected function path ($key)
+	protected function path($key)
 	{
-		$parts = array_slice (str_split ($hash = md5 ($key), 2), 0, 2);
+		$parts = array_slice(str_split($hash = md5($key), 2), 0, 2);
 
-		return $this->directory . '/' . join ('/', $parts) . '/' . $hash;
+		return $this->directory.'/'.join('/', $parts).'/'.$hash;
 	}
 
 	/**
@@ -195,12 +192,11 @@ class FileStore implements StoreInterface
 	 * @param  int  $minutes
 	 * @return int
 	 */
-	protected function expiration ($minutes)
+	protected function expiration($minutes)
 	{
-		if ($minutes === 0)
-			return 9999999999;
+		if ($minutes === 0) return 9999999999;
 
-		return time () + ($minutes * 60);
+		return time() + ($minutes * 60);
 	}
 
 	/**
@@ -208,7 +204,7 @@ class FileStore implements StoreInterface
 	 *
 	 * @return \Illuminate\Filesystem\Filesystem
 	 */
-	public function getFilesystem ()
+	public function getFilesystem()
 	{
 		return $this->files;
 	}
@@ -218,7 +214,7 @@ class FileStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getDirectory ()
+	public function getDirectory()
 	{
 		return $this->directory;
 	}
@@ -228,7 +224,7 @@ class FileStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return '';
 	}

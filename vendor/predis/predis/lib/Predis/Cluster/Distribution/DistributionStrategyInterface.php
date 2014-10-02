@@ -21,34 +21,33 @@ use Predis\Cluster\Hash\HashGeneratorInterface;
  */
 interface DistributionStrategyInterface
 {
+    /**
+     * Adds a node to the distributor with an optional weight.
+     *
+     * @param mixed $node   Node object.
+     * @param int   $weight Weight for the node.
+     */
+    public function add($node, $weight = null);
 
-	/**
-	 * Adds a node to the distributor with an optional weight.
-	 *
-	 * @param mixed $node   Node object.
-	 * @param int   $weight Weight for the node.
-	 */
-	public function add ($node, $weight = null);
+    /**
+     * Removes a node from the distributor.
+     *
+     * @param mixed $node Node object.
+     */
+    public function remove($node);
 
-	/**
-	 * Removes a node from the distributor.
-	 *
-	 * @param mixed $node Node object.
-	 */
-	public function remove ($node);
+    /**
+     * Gets a node from the distributor using the computed hash of a key.
+     *
+     * @param  mixed $key
+     * @return mixed
+     */
+    public function get($key);
 
-	/**
-	 * Gets a node from the distributor using the computed hash of a key.
-	 *
-	 * @param  mixed $key
-	 * @return mixed
-	 */
-	public function get ($key);
-
-	/**
-	 * Returns the underlying hash generator instance.
-	 *
-	 * @return HashGeneratorInterface
-	 */
-	public function getHashGenerator ();
+    /**
+     * Returns the underlying hash generator instance.
+     *
+     * @return HashGeneratorInterface
+     */
+    public function getHashGenerator();
 }

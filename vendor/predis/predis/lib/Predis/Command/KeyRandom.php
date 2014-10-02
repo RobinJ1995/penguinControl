@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class KeyRandom extends AbstractCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'RANDOMKEY';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'RANDOMKEY';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return $data !== '' ? $data : null;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data !== '' ? $data : null;
+    }
 }

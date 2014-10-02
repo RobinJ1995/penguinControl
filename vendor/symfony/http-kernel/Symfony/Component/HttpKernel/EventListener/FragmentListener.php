@@ -12,7 +12,6 @@
 namespace Symfony\Component\HttpKernel\EventListener;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -25,89 +24,83 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * All URL paths starting with /_fragment are handled as
  * content fragments by this listener.
  *
- * If the request does not come from a trusted IP, it throws an
- * AccessDeniedHttpException exception.
+ * If throws an AccessDeniedHttpException exception if the request
+ * is not signed or if it is not an internal sub-request.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class FragmentListener implements EventSubscriberInterface
 {
+    private $signer;
+    private $fragmentPath;
 
-	private $signer;
-	private $fragmentPath;
+    /**
+     * Constructor.
+     *
+     * @param UriSigner $signer       A UriSigner instance
+     * @param string    $fragmentPath The path that triggers this listener
+     */
+    public function __construct(UriSigner $signer, $fragmentPath = '/_fragment')
+    {
+        $this->signer = $signer;
+        $this->fragmentPath = $fragmentPath;
+    }
 
-	/**
-	 * Constructor.
-	 *
-	 * @param UriSigner $signer       A UriSigner instance
-	 * @param string    $fragmentPath The path that triggers this listener
-	 */
-	public function __construct (UriSigner $signer, $fragmentPath = '/_fragment')
-	{
-		$this->signer = $signer;
-		$this->fragmentPath = $fragmentPath;
-	}
+    /**
+     * Fixes request attributes when the path is '/_fragment'.
+     *
+     * @param GetResponseEvent $event A GetResponseEvent instance
+     *
+     * @throws AccessDeniedHttpException if the request does not come from a trusted IP.
+     */
+    public function onKernelRequest(GetResponseEvent $event)
+    {
+        $request = $event->getRequest();
 
-	/**
-	 * Fixes request attributes when the path is '/_fragment'.
-	 *
-	 * @param GetResponseEvent $event A GetResponseEvent instance
-	 *
-	 * @throws AccessDeniedHttpException if the request does not come from a trusted IP.
-	 */
-	public function onKernelRequest (GetResponseEvent $event)
-	{
-		$request = $event->getRequest ();
+        if ($this->fragmentPath !== rawurldecode($request->getPathInfo())) {
+            return;
+        }
 
-		if ($this->fragmentPath !== rawurldecode ($request->getPathInfo ()))
-		{
-			return;
-		}
+        if ($event->isMasterRequest()) {
+            $this->validateRequest($request);
+        }
 
-		$this->validateRequest ($request);
+        parse_str($request->query->get('_path', ''), $attributes);
+        $request->attributes->add($attributes);
+        $request->attributes->set('_route_params', array_replace($request->attributes->get('_route_params', array()), $attributes));
+        $request->query->remove('_path');
+    }
 
-		parse_str ($request->query->get ('_path', ''), $attributes);
-		$request->attributes->add ($attributes);
-		$request->attributes->set ('_route_params', array_replace ($request->attributes->get ('_route_params', array ()), $attributes));
-		$request->query->remove ('_path');
-	}
+    protected function validateRequest(Request $request)
+    {
+        // is the Request safe?
+        if (!$request->isMethodSafe()) {
+            throw new AccessDeniedHttpException();
+        }
 
-	protected function validateRequest (Request $request)
-	{
-		// is the Request safe?
-		if (!$request->isMethodSafe ())
-		{
-			throw new AccessDeniedHttpException();
-		}
+        // is the Request signed?
+        // we cannot use $request->getUri() here as we want to work with the original URI (no query string reordering)
+        if ($this->signer->check($request->getSchemeAndHttpHost().$request->getBaseUrl().$request->getPathInfo().(null !== ($qs = $request->server->get('QUERY_STRING')) ? '?'.$qs : ''))) {
+            return;
+        }
 
-		// does the Request come from a trusted IP?
-		$trustedIps = array_merge ($this->getLocalIpAddresses (), $request->getTrustedProxies ());
-		$remoteAddress = $request->server->get ('REMOTE_ADDR');
-		if (IpUtils::checkIp ($remoteAddress, $trustedIps))
-		{
-			return;
-		}
+        throw new AccessDeniedHttpException();
+    }
 
-		// is the Request signed?
-		// we cannot use $request->getUri() here as we want to work with the original URI (no query string reordering)
-		if ($this->signer->check ($request->getSchemeAndHttpHost () . $request->getBaseUrl () . $request->getPathInfo () . (null !== ($qs = $request->server->get ('QUERY_STRING')) ? '?' . $qs : '')))
-		{
-			return;
-		}
+    /**
+     * @deprecated Deprecated since 2.3.19, to be removed in 3.0.
+     *
+     * @return string[]
+     */
+    protected function getLocalIpAddresses()
+    {
+        return array('127.0.0.1', 'fe80::1', '::1');
+    }
 
-		throw new AccessDeniedHttpException();
-	}
-
-	protected function getLocalIpAddresses ()
-	{
-		return array ('127.0.0.1', 'fe80::1', '::1');
-	}
-
-	public static function getSubscribedEvents ()
-	{
-		return array (
-		    KernelEvents::REQUEST => array (array ('onKernelRequest', 48)),
-		);
-	}
-
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::REQUEST => array(array('onKernelRequest', 48)),
+        );
+    }
 }

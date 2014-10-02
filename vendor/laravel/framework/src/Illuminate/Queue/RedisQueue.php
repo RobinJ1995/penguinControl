@@ -1,16 +1,13 @@
-<?php
-
-namespace Illuminate\Queue;
+<?php namespace Illuminate\Queue;
 
 use Illuminate\Redis\Database;
 use Illuminate\Queue\Jobs\RedisJob;
 
-class RedisQueue extends Queue implements QueueInterface
-{
+class RedisQueue extends Queue implements QueueInterface {
 
 	/**
-	 * The Redis database instance.
-	 *
+	* The Redis database instance.
+	*
 	 * @var \Illuminate\Redis\Database
 	 */
 	protected $redis;
@@ -37,7 +34,7 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $connection
 	 * @return void
 	 */
-	public function __construct (Database $redis, $default = 'default', $connection = null)
+	public function __construct(Database $redis, $default = 'default', $connection = null)
 	{
 		$this->redis = $redis;
 		$this->default = $default;
@@ -52,9 +49,9 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return void
 	 */
-	public function push ($job, $data = '', $queue = null)
+	public function push($job, $data = '', $queue = null)
 	{
-		return $this->pushRaw ($this->createPayload ($job, $data), $queue);
+		return $this->pushRaw($this->createPayload($job, $data), $queue);
 	}
 
 	/**
@@ -65,11 +62,11 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  array   $options
 	 * @return mixed
 	 */
-	public function pushRaw ($payload, $queue = null, array $options = array ())
+	public function pushRaw($payload, $queue = null, array $options = array())
 	{
-		$this->redis->rpush ($this->getQueue ($queue), $payload);
+		$this->redis->rpush($this->getQueue($queue), $payload);
 
-		return array_get (json_decode ($payload, true), 'id');
+		return array_get(json_decode($payload, true), 'id');
 	}
 
 	/**
@@ -81,15 +78,15 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return void
 	 */
-	public function later ($delay, $job, $data = '', $queue = null)
+	public function later($delay, $job, $data = '', $queue = null)
 	{
-		$payload = $this->createPayload ($job, $data);
+		$payload = $this->createPayload($job, $data);
 
-		$delay = $this->getSeconds ($delay);
+		$delay = $this->getSeconds($delay);
 
-		$this->redis->zadd ($this->getQueue ($queue) . ':delayed', $this->getTime () + $delay, $payload);
+		$this->redis->zadd($this->getQueue($queue).':delayed', $this->getTime() + $delay, $payload);
 
-		return array_get (json_decode ($payload, true), 'id');
+		return array_get(json_decode($payload, true), 'id');
 	}
 
 	/**
@@ -97,15 +94,15 @@ class RedisQueue extends Queue implements QueueInterface
 	 *
 	 * @param  string  $queue
 	 * @param  string  $payload
-	 * @param  string  $delay
+	 * @param  int  $delay
 	 * @param  int  $attempts
 	 * @return void
 	 */
-	public function release ($queue, $payload, $delay, $attempts)
+	public function release($queue, $payload, $delay, $attempts)
 	{
-		$payload = $this->setMeta ($payload, 'attempts', $attempts);
+		$payload = $this->setMeta($payload, 'attempts', $attempts);
 
-		$this->redis->zadd ($this->getQueue ($queue) . ':delayed', $this->getTime () + $delay, $payload);
+		$this->redis->zadd($this->getQueue($queue).':delayed', $this->getTime() + $delay, $payload);
 	}
 
 	/**
@@ -114,19 +111,19 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return \Illuminate\Queue\Jobs\Job|null
 	 */
-	public function pop ($queue = null)
+	public function pop($queue = null)
 	{
-		$original = $queue ? : $this->default;
+		$original = $queue ?: $this->default;
 
-		$this->migrateAllExpiredJobs ($queue = $this->getQueue ($queue));
+		$this->migrateAllExpiredJobs($queue = $this->getQueue($queue));
 
-		$job = $this->redis->lpop ($queue);
+		$job = $this->redis->lpop($queue);
 
-		if (!is_null ($job))
+		if ( ! is_null($job))
 		{
-			$this->redis->zadd ($queue . ':reserved', $this->getTime () + 60, $job);
+			$this->redis->zadd($queue.':reserved', $this->getTime() + 60, $job);
 
-			return new RedisJob ($this->container, $this, $job, $original);
+			return new RedisJob($this->container, $this, $job, $original);
 		}
 	}
 
@@ -137,9 +134,9 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $job
 	 * @return void
 	 */
-	public function deleteReserved ($queue, $job)
+	public function deleteReserved($queue, $job)
 	{
-		$this->redis->zrem ($this->getQueue ($queue) . ':reserved', $job);
+		$this->redis->zrem($this->getQueue($queue).':reserved', $job);
 	}
 
 	/**
@@ -148,11 +145,11 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return void
 	 */
-	protected function migrateAllExpiredJobs ($queue)
+	protected function migrateAllExpiredJobs($queue)
 	{
-		$this->migrateExpiredJobs ($queue . ':delayed', $queue);
+		$this->migrateExpiredJobs($queue.':delayed', $queue);
 
-		$this->migrateExpiredJobs ($queue . ':reserved', $queue);
+		$this->migrateExpiredJobs($queue.':reserved', $queue);
 	}
 
 	/**
@@ -162,15 +159,15 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $to
 	 * @return void
 	 */
-	public function migrateExpiredJobs ($from, $to)
+	public function migrateExpiredJobs($from, $to)
 	{
-		$jobs = $this->getExpiredJobs ($from, $time = $this->getTime ());
+		$jobs = $this->getExpiredJobs($from, $time = $this->getTime());
 
-		if (count ($jobs) > 0)
+		if (count($jobs) > 0)
 		{
-			$this->removeExpiredJobs ($from, $time);
+			$this->removeExpiredJobs($from, $time);
 
-			call_user_func_array (array ($this->redis, 'rpush'), array_merge (array ($to), $jobs));
+			call_user_func_array(array($this->redis, 'rpush'), array_merge(array($to), $jobs));
 		}
 	}
 
@@ -181,9 +178,9 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  int     $time
 	 * @return array
 	 */
-	protected function getExpiredJobs ($queue, $time)
+	protected function getExpiredJobs($queue, $time)
 	{
-		return $this->redis->zrangebyscore ($queue, '-inf', $time);
+		return $this->redis->zrangebyscore($queue, '-inf', $time);
 	}
 
 	/**
@@ -193,9 +190,9 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  int     $time
 	 * @return void
 	 */
-	protected function removeExpiredJobs ($queue, $time)
+	protected function removeExpiredJobs($queue, $time)
 	{
-		$this->redis->zremrangebyscore ($queue, '-inf', $time);
+		$this->redis->zremrangebyscore($queue, '-inf', $time);
 	}
 
 	/**
@@ -206,13 +203,13 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return string
 	 */
-	protected function createPayload ($job, $data = '', $queue = null)
+	protected function createPayload($job, $data = '', $queue = null)
 	{
-		$payload = parent::createPayload ($job, $data);
+		$payload = parent::createPayload($job, $data);
 
-		$payload = $this->setMeta ($payload, 'id', $this->getRandomId ());
+		$payload = $this->setMeta($payload, 'id', $this->getRandomId());
 
-		return $this->setMeta ($payload, 'attempts', 1);
+		return $this->setMeta($payload, 'attempts', 1);
 	}
 
 	/**
@@ -220,9 +217,9 @@ class RedisQueue extends Queue implements QueueInterface
 	 *
 	 * @return string
 	 */
-	protected function getRandomId ()
+	protected function getRandomId()
 	{
-		return str_random (20);
+		return str_random(20);
 	}
 
 	/**
@@ -231,9 +228,9 @@ class RedisQueue extends Queue implements QueueInterface
 	 * @param  string|null  $queue
 	 * @return string
 	 */
-	protected function getQueue ($queue)
+	protected function getQueue($queue)
 	{
-		return 'queues:' . ($queue ? : $this->default);
+		return 'queues:'.($queue ?: $this->default);
 	}
 
 	/**
@@ -241,7 +238,7 @@ class RedisQueue extends Queue implements QueueInterface
 	 *
 	 * @return \Illuminate\Redis\Database
 	 */
-	public function getRedis ()
+	public function getRedis()
 	{
 		return $this->redis;
 	}

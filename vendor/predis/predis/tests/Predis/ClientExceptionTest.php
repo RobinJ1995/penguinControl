@@ -18,28 +18,26 @@ use PredisTestCase;
  */
 class ClientExceptionTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testExceptionMessage()
+    {
+        $message = 'This is a client exception.';
 
-	/**
-	 * @group disconnected
-	 */
-	public function testExceptionMessage ()
-	{
-		$message = 'This is a client exception.';
+        $this->setExpectedException('Predis\ClientException', $message);
 
-		$this->setExpectedException ('Predis\ClientException', $message);
+        throw new ClientException($message);
+    }
 
-		throw new ClientException ($message);
-	}
+    /**
+     * @group disconnected
+     */
+    public function testExceptionClass()
+    {
+        $exception = new ClientException();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testExceptionClass ()
-	{
-		$exception = new ClientException();
-
-		$this->assertInstanceOf ('Predis\ClientException', $exception);
-		$this->assertInstanceOf ('Predis\PredisException', $exception);
-	}
-
+        $this->assertInstanceOf('Predis\ClientException', $exception);
+        $this->assertInstanceOf('Predis\PredisException', $exception);
+    }
 }

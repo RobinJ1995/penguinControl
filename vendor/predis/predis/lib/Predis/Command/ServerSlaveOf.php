@@ -17,26 +17,23 @@ namespace Predis\Command;
  */
 class ServerSlaveOf extends AbstractCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SLAVEOF';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SLAVEOF';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
+            return array('NO', 'ONE');
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		if (count ($arguments) === 0 || $arguments[0] === 'NO ONE')
-		{
-			return array ('NO', 'ONE');
-		}
-
-		return $arguments;
-	}
-
+        return $arguments;
+    }
 }

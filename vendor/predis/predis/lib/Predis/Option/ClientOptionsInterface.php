@@ -18,5 +18,4 @@ namespace Predis\Option;
  */
 interface ClientOptionsInterface
 {
-	
 }

@@ -18,32 +18,31 @@ namespace Predis\Connection;
  */
 interface ReplicationConnectionInterface extends AggregatedConnectionInterface
 {
+    /**
+     * Switches the internal connection object being used.
+     *
+     * @param string $connection Alias of a connection
+     */
+    public function switchTo($connection);
 
-	/**
-	 * Switches the internal connection object being used.
-	 *
-	 * @param string $connection Alias of a connection
-	 */
-	public function switchTo ($connection);
+    /**
+     * Retrieves the connection object currently being used.
+     *
+     * @return SingleConnectionInterface
+     */
+    public function getCurrent();
 
-	/**
-	 * Retrieves the connection object currently being used.
-	 *
-	 * @return SingleConnectionInterface
-	 */
-	public function getCurrent ();
+    /**
+     * Retrieves the connection object to the master Redis server.
+     *
+     * @return SingleConnectionInterface
+     */
+    public function getMaster();
 
-	/**
-	 * Retrieves the connection object to the master Redis server.
-	 *
-	 * @return SingleConnectionInterface
-	 */
-	public function getMaster ();
-
-	/**
-	 * Retrieves a list of connection objects to slaves Redis servers.
-	 *
-	 * @return SingleConnectionInterface
-	 */
-	public function getSlaves ();
+    /**
+     * Retrieves a list of connection objects to slaves Redis servers.
+     *
+     * @return SingleConnectionInterface
+     */
+    public function getSlaves();
 }

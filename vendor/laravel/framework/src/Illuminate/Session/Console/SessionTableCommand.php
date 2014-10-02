@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Session\Console;
+<?php namespace Illuminate\Session\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class SessionTableCommand extends Command
-{
+class SessionTableCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -35,9 +32,9 @@ class SessionTableCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->files = $files;
 	}
@@ -47,13 +44,13 @@ class SessionTableCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$fullPath = $this->createBaseMigration ();
+		$fullPath = $this->createBaseMigration();
 
-		$this->files->put ($fullPath, $this->files->get (__DIR__ . '/stubs/database.stub'));
+		$this->files->put($fullPath, $this->files->get(__DIR__.'/stubs/database.stub'));
 
-		$this->info ('Migration created successfully!');
+		$this->info('Migration created successfully!');
 	}
 
 	/**
@@ -61,13 +58,13 @@ class SessionTableCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function createBaseMigration ()
+	protected function createBaseMigration()
 	{
 		$name = 'create_session_table';
 
-		$path = $this->laravel['path'] . '/database/migrations';
+		$path = $this->laravel['path'].'/database/migrations';
 
-		return $this->laravel['migration.creator']->create ($name, $path);
+		return $this->laravel['migration.creator']->create($name, $path);
 	}
 
 }

@@ -17,51 +17,49 @@ namespace Predis\Command;
  */
 class ServerDatabaseSizeTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerDatabaseSize';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerDatabaseSize';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'DBSIZE';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'DBSIZE';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame(100, $this->getCommand()->parseResponse(100));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame (100, $this->getCommand ()->parseResponse (100));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsCurrentSizeOfDatabase()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsCurrentSizeOfDatabase ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->set ('foo', 'bar');
-		$this->assertGreaterThan (0, $redis->dbsize ());
-	}
-
+        $redis->set('foo', 'bar');
+        $this->assertGreaterThan(0, $redis->dbsize());
+    }
 }

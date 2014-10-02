@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Jobs;
+<?php namespace Illuminate\Queue\Jobs;
 
 use Illuminate\Queue\RedisQueue;
 use Illuminate\Container\Container;
 
-class RedisJob extends Job
-{
+class RedisJob extends Job {
 
 	/**
 	 * The Redis queue instance.
@@ -31,7 +28,7 @@ class RedisJob extends Job
 	 * @param  string  $queue
 	 * @return void
 	 */
-	public function __construct (Container $container, RedisQueue $redis, $job, $queue)
+	public function __construct(Container $container, RedisQueue $redis, $job, $queue)
 	{
 		$this->job = $job;
 		$this->redis = $redis;
@@ -44,9 +41,9 @@ class RedisJob extends Job
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->resolveAndFire (json_decode ($this->getRawBody (), true));
+		$this->resolveAndFire(json_decode($this->getRawBody(), true));
 	}
 
 	/**
@@ -54,7 +51,7 @@ class RedisJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getRawBody ()
+	public function getRawBody()
 	{
 		return $this->job;
 	}
@@ -64,11 +61,11 @@ class RedisJob extends Job
 	 *
 	 * @return void
 	 */
-	public function delete ()
+	public function delete()
 	{
-		parent::delete ();
+		parent::delete();
 
-		$this->redis->deleteReserved ($this->queue, $this->job);
+		$this->redis->deleteReserved($this->queue, $this->job);
 	}
 
 	/**
@@ -77,11 +74,11 @@ class RedisJob extends Job
 	 * @param  int   $delay
 	 * @return void
 	 */
-	public function release ($delay = 0)
+	public function release($delay = 0)
 	{
-		$this->delete ();
+		$this->delete();
 
-		$this->redis->release ($this->queue, $this->job, $delay, $this->attempts () + 1);
+		$this->redis->release($this->queue, $this->job, $delay, $this->attempts() + 1);
 	}
 
 	/**
@@ -89,9 +86,9 @@ class RedisJob extends Job
 	 *
 	 * @return int
 	 */
-	public function attempts ()
+	public function attempts()
 	{
-		return array_get (json_decode ($this->job, true), 'attempts');
+		return array_get(json_decode($this->job, true), 'attempts');
 	}
 
 	/**
@@ -99,9 +96,9 @@ class RedisJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getJobId ()
+	public function getJobId()
 	{
-		return array_get (json_decode ($this->job, true), 'id');
+		return array_get(json_decode($this->job, true), 'id');
 	}
 
 	/**
@@ -109,7 +106,7 @@ class RedisJob extends Job
 	 *
 	 * @return \Illuminate\Container\Container
 	 */
-	public function getContainer ()
+	public function getContainer()
 	{
 		return $this->container;
 	}
@@ -119,7 +116,7 @@ class RedisJob extends Job
 	 *
 	 * @return \Illuminate\Redis\Database
 	 */
-	public function getRedisQueue ()
+	public function getRedisQueue()
 	{
 		return $this->redis;
 	}
@@ -129,7 +126,7 @@ class RedisJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getRedisJob ()
+	public function getRedisJob()
 	{
 		return $this->job;
 	}

@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Remote;
+<?php namespace Illuminate\Remote;
 
 use Illuminate\Support\ServiceProvider;
 
-class RemoteServiceProvider extends ServiceProvider
-{
+class RemoteServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -19,11 +16,11 @@ class RemoteServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('remote', function($app)
+		$this->app->bindShared('remote', function($app)
 		{
-			return new RemoteManager ($app);
+			return new RemoteManager($app);
 		});
 	}
 
@@ -32,9 +29,9 @@ class RemoteServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('remote');
+		return array('remote');
 	}
 
 }

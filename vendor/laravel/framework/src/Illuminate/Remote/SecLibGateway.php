@@ -1,13 +1,9 @@
-<?php
+<?php namespace Illuminate\Remote;
 
-namespace Illuminate\Remote;
-
-use Net_SFTP,
-    Crypt_RSA;
 use Illuminate\Filesystem\Filesystem;
+use Net_SFTP, Crypt_RSA, System_SSH_Agent;
 
-class SecLibGateway implements GatewayInterface
-{
+class SecLibGateway implements GatewayInterface {
 
 	/**
 	 * The host name of the server.
@@ -51,11 +47,11 @@ class SecLibGateway implements GatewayInterface
 	 * @param  array   $auth
 	 * @return void
 	 */
-	public function __construct ($host, array $auth, Filesystem $files)
+	public function __construct($host, array $auth, Filesystem $files)
 	{
 		$this->auth = $auth;
 		$this->files = $files;
-		$this->setHostAndPort ($host);
+		$this->setHostAndPort($host);
 	}
 
 	/**
@@ -64,15 +60,15 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $host
 	 * @return void
 	 */
-	protected function setHostAndPort ($host)
+	protected function setHostAndPort($host)
 	{
-		if (!str_contains ($host, ':'))
+		if ( ! str_contains($host, ':'))
 		{
 			$this->host = $host;
 		}
 		else
 		{
-			list($this->host, $this->port) = explode (':', $host);
+			list($this->host, $this->port) = explode(':', $host);
 
 			$this->port = (int) $this->port;
 		}
@@ -84,9 +80,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $username
 	 * @return bool
 	 */
-	public function connect ($username)
+	public function connect($username)
 	{
-		return $this->getConnection ()->login ($username, $this->getAuthForLogin ());
+		return $this->getConnection()->login($username, $this->getAuthForLogin());
 	}
 
 	/**
@@ -94,9 +90,9 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return bool
 	 */
-	public function connected ()
+	public function connected()
 	{
-		return $this->getConnection ()->isConnected ();
+		return $this->getConnection()->isConnected();
 	}
 
 	/**
@@ -105,9 +101,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $command
 	 * @return void
 	 */
-	public function run ($command)
+	public function run($command)
 	{
-		$this->getConnection ()->exec ($command, false);
+		$this->getConnection()->exec($command, false);
 	}
 
 	/**
@@ -117,9 +113,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $local
 	 * @return void
 	 */
-	public function get ($remote, $local)
+	public function get($remote, $local)
 	{
-		$this->getConnection ()->get ($remote, $local);
+		$this->getConnection()->get($remote, $local);
 	}
 
 	/**
@@ -128,9 +124,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $remote
 	 * @return string
 	 */
-	public function getString ($remote)
+	public function getString($remote)
 	{
-		return $this->getConnection ()->get ($remote);
+		return $this->getConnection()->get($remote);
 	}
 
 	/**
@@ -140,9 +136,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $remote
 	 * @return void
 	 */
-	public function put ($local, $remote)
+	public function put($local, $remote)
 	{
-		$this->getConnection ()->put ($remote, $local, NET_SFTP_LOCAL_FILE);
+		$this->getConnection()->put($remote, $local, NET_SFTP_LOCAL_FILE);
 	}
 
 	/**
@@ -152,9 +148,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  string  $contents
 	 * @return void
 	 */
-	public function putString ($remote, $contents)
+	public function putString($remote, $contents)
 	{
-		$this->getConnection ()->put ($remote, $contents);
+		$this->getConnection()->put($remote, $contents);
 	}
 
 	/**
@@ -162,9 +158,9 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return string|null
 	 */
-	public function nextLine ()
+	public function nextLine()
 	{
-		$value = $this->getConnection ()->_get_channel_packet (NET_SSH2_CHANNEL_EXEC);
+		$value = $this->getConnection()->_get_channel_packet(NET_SSH2_CHANNEL_EXEC);
 
 		return $value === true ? null : $value;
 	}
@@ -172,28 +168,30 @@ class SecLibGateway implements GatewayInterface
 	/**
 	 * Get the authentication object for login.
 	 *
-	 * @return \Crypt_RSA|string
+	 * @return \Crypt_RSA|\System_SSH_Agent|string
 	 * @throws \InvalidArgumentException
 	 */
-	protected function getAuthForLogin ()
+	protected function getAuthForLogin()
 	{
+		if ($this->useAgent()) return $this->getAgent();
+
 		// If a "key" was specified in the auth credentials, we will load it into a
 		// secure RSA key instance, which will be used to connect to the servers
 		// in place of a password, and avoids the developer specifying a pass.
-		if ($this->hasRsaKey ())
+		elseif ($this->hasRsaKey())
 		{
-			return $this->loadRsaKey ($this->auth);
+			return $this->loadRsaKey($this->auth);
 		}
 
 		// If a plain password was set on the auth credentials, we will just return
 		// that as it can be used to connect to the server. This will be used if
 		// there is no RSA key and it gets specified in the credential arrays.
-		elseif (isset ($this->auth['password']))
+		elseif (isset($this->auth['password']))
 		{
 			return $this->auth['password'];
 		}
 
-		throw new \InvalidArgumentException ('Password / key is required.');
+		throw new \InvalidArgumentException('Password / key is required.');
 	}
 
 	/**
@@ -201,11 +199,11 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return bool
 	 */
-	protected function hasRsaKey ()
+	protected function hasRsaKey()
 	{
-		$hasKey = (isset ($this->auth['key']) && trim ($this->auth['key']) != '');
+		$hasKey = (isset($this->auth['key']) && trim($this->auth['key']) != '');
 
-		return $hasKey || (isset ($this->auth['keytext']) && trim ($this->auth['keytext']) != '');
+		return $hasKey || (isset($this->auth['keytext']) && trim($this->auth['keytext']) != '');
 	}
 
 	/**
@@ -214,9 +212,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  array  $auth
 	 * @return \Crypt_RSA
 	 */
-	protected function loadRsaKey (array $auth)
+	protected function loadRsaKey(array $auth)
 	{
-		with ($key = $this->getKey ($auth))->loadKey ($this->readRsaKey ($auth));
+		with($key = $this->getKey($auth))->loadKey($this->readRsaKey($auth));
 
 		return $key;
 	}
@@ -227,10 +225,9 @@ class SecLibGateway implements GatewayInterface
 	 * @param  array  $auth
 	 * @return string
 	 */
-	protected function readRsaKey (array $auth)
+	protected function readRsaKey(array $auth)
 	{
-		if (isset ($auth['key']))
-			return $this->files->get ($auth['key']);
+		if (isset($auth['key'])) return $this->files->get($auth['key']);
 
 		return $auth['keytext'];
 	}
@@ -241,11 +238,31 @@ class SecLibGateway implements GatewayInterface
 	 * @param  array  $auth
 	 * @return \Crypt_RSA
 	 */
-	protected function getKey (array $auth)
+	protected function getKey(array $auth)
 	{
-		with ($key = $this->getNewKey ())->setPassword (array_get ($auth, 'keyphrase'));
+		with($key = $this->getNewKey())->setPassword(array_get($auth, 'keyphrase'));
 
 		return $key;
+	}
+
+	/**
+	 * Determine if the SSH Agent should provide an RSA key.
+	 *
+	 * @return bool
+	 */
+	protected function useAgent()
+	{
+		return isset($this->auth['agent']) && $this->auth['agent'] === true;
+	}
+
+	/**
+	 * Get a new SSH Agent instance.
+	 *
+	 * @return \System_SSH_Agent
+	 */
+	public function getAgent()
+	{
+		return new System_SSH_Agent;
 	}
 
 	/**
@@ -253,7 +270,7 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return \Crypt_RSA
 	 */
-	public function getNewKey ()
+	public function getNewKey()
 	{
 		return new Crypt_RSA;
 	}
@@ -263,9 +280,9 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return int|bool
 	 */
-	public function status ()
+	public function status()
 	{
-		return $this->getConnection ()->getExitStatus ();
+		return $this->getConnection()->getExitStatus();
 	}
 
 	/**
@@ -273,7 +290,7 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return string
 	 */
-	public function getHost ()
+	public function getHost()
 	{
 		return $this->host;
 	}
@@ -283,7 +300,7 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return int
 	 */
-	public function getPort ()
+	public function getPort()
 	{
 		return $this->port;
 	}
@@ -293,12 +310,11 @@ class SecLibGateway implements GatewayInterface
 	 *
 	 * @return \Net_SFTP
 	 */
-	public function getConnection ()
+	public function getConnection()
 	{
-		if ($this->connection)
-			return $this->connection;
+		if ($this->connection) return $this->connection;
 
-		return $this->connection = new Net_SFTP ($this->host, $this->port);
+		return $this->connection = new Net_SFTP($this->host, $this->port);
 	}
 
 }

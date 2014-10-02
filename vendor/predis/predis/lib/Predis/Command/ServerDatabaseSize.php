@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerDatabaseSize extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'DBSIZE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'DBSIZE';
+    }
 }

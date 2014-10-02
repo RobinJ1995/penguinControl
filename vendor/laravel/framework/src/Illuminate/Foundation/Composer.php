@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Foundation;
+<?php namespace Illuminate\Foundation;
 
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
-class Composer
-{
+class Composer {
 
 	/**
 	 * The filesystem instance.
@@ -29,7 +26,7 @@ class Composer
 	 * @param  string  $workingPath
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $workingPath = null)
+	public function __construct(Filesystem $files, $workingPath = null)
 	{
 		$this->files = $files;
 		$this->workingPath = $workingPath;
@@ -41,13 +38,13 @@ class Composer
 	 * @param  string  $extra
 	 * @return void
 	 */
-	public function dumpAutoloads ($extra = '')
+	public function dumpAutoloads($extra = '')
 	{
-		$process = $this->getProcess ();
+		$process = $this->getProcess();
 
-		$process->setCommandLine (trim ($this->findComposer () . ' dump-autoload ' . $extra));
+		$process->setCommandLine(trim($this->findComposer().' dump-autoload '.$extra));
 
-		$process->run ();
+		$process->run();
 	}
 
 	/**
@@ -55,9 +52,9 @@ class Composer
 	 *
 	 * @return void
 	 */
-	public function dumpOptimized ()
+	public function dumpOptimized()
 	{
-		$this->dumpAutoloads ('--optimize');
+		$this->dumpAutoloads('--optimize');
 	}
 
 	/**
@@ -65,9 +62,9 @@ class Composer
 	 *
 	 * @return string
 	 */
-	protected function findComposer ()
+	protected function findComposer()
 	{
-		if ($this->files->exists ($this->workingPath . '/composer.phar'))
+		if ($this->files->exists($this->workingPath.'/composer.phar'))
 		{
 			return 'php composer.phar';
 		}
@@ -80,9 +77,9 @@ class Composer
 	 *
 	 * @return \Symfony\Component\Process\Process
 	 */
-	protected function getProcess ()
+	protected function getProcess()
 	{
-		return with (new Process ('', $this->workingPath))->setTimeout (null);
+		return with(new Process('', $this->workingPath))->setTimeout(null);
 	}
 
 	/**
@@ -91,9 +88,9 @@ class Composer
 	 * @param  string  $path
 	 * @return \Illuminate\Foundation\Composer
 	 */
-	public function setWorkingPath ($path)
+	public function setWorkingPath($path)
 	{
-		$this->workingPath = realpath ($path);
+		$this->workingPath = realpath($path);
 
 		return $this;
 	}

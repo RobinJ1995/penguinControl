@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class KeyRename extends AbstractCommand implements PrefixableCommandInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'RENAME';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'RENAME';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function prefixKeys ($prefix)
-	{
-		PrefixHelpers::all ($this, $prefix);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        PrefixHelpers::all($this, $prefix);
+    }
 }

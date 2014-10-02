@@ -23,36 +23,34 @@ use Predis\ClientInterface;
  */
 class HashKey extends CursorBasedIterator
 {
+    protected $key;
 
-	protected $key;
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(ClientInterface $client, $key, $match = null, $count = null)
+    {
+        $this->requiredCommand($client, 'HSCAN');
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct (ClientInterface $client, $key, $match = null, $count = null)
-	{
-		$this->requiredCommand ($client, 'HSCAN');
+        parent::__construct($client, $match, $count);
 
-		parent::__construct ($client, $match, $count);
+        $this->key = $key;
+    }
 
-		$this->key = $key;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function executeCommand()
+    {
+        return $this->client->hscan($this->key, $this->cursor, $this->getScanOptions());
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function executeCommand ()
-	{
-		return $this->client->hscan ($this->key, $this->cursor, $this->getScanOptions ());
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function extractNext ()
-	{
-		$this->position = key ($this->elements);
-		$this->current = array_shift ($this->elements);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    protected function extractNext()
+    {
+        $this->position = key($this->elements);
+        $this->current = array_shift($this->elements);
+    }
 }

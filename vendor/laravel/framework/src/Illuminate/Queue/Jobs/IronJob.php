@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Jobs;
+<?php namespace Illuminate\Queue\Jobs;
 
 use Illuminate\Queue\IronQueue;
 use Illuminate\Container\Container;
 
-class IronJob extends Job
-{
+class IronJob extends Job {
 
 	/**
 	 * The Iron queue instance.
@@ -39,7 +36,10 @@ class IronJob extends Job
 	 * @param  bool    $pushed
 	 * @return void
 	 */
-	public function __construct (Container $container, IronQueue $iron, $job, $pushed = false)
+	public function __construct(Container $container,
+                                IronQueue $iron,
+                                $job,
+                                $pushed = false)
 	{
 		$this->job = $job;
 		$this->iron = $iron;
@@ -52,9 +52,9 @@ class IronJob extends Job
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->resolveAndFire (json_decode ($this->getRawBody (), true));
+		$this->resolveAndFire(json_decode($this->getRawBody(), true));
 	}
 
 	/**
@@ -62,7 +62,7 @@ class IronJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getRawBody ()
+	public function getRawBody()
 	{
 		return $this->job->body;
 	}
@@ -72,14 +72,13 @@ class IronJob extends Job
 	 *
 	 * @return void
 	 */
-	public function delete ()
+	public function delete()
 	{
-		parent::delete ();
+		parent::delete();
 
-		if (isset ($this->job->pushed))
-			return;
+		if (isset($this->job->pushed)) return;
 
-		$this->iron->deleteMessage ($this->getQueue (), $this->job->id);
+		$this->iron->deleteMessage($this->getQueue(), $this->job->id);
 	}
 
 	/**
@@ -88,12 +87,11 @@ class IronJob extends Job
 	 * @param  int   $delay
 	 * @return void
 	 */
-	public function release ($delay = 0)
+	public function release($delay = 0)
 	{
-		if (!$this->pushed)
-			$this->delete ();
+		if ( ! $this->pushed) $this->delete();
 
-		$this->recreateJob ($delay);
+		$this->recreateJob($delay);
 	}
 
 	/**
@@ -102,13 +100,13 @@ class IronJob extends Job
 	 * @param  int  $delay
 	 * @return void
 	 */
-	protected function recreateJob ($delay)
+	protected function recreateJob($delay)
 	{
-		$payload = json_decode ($this->job->body, true);
+		$payload = json_decode($this->job->body, true);
 
-		array_set ($payload, 'attempts', array_get ($payload, 'attempts', 1) + 1);
+		array_set($payload, 'attempts', array_get($payload, 'attempts', 1) + 1);
 
-		$this->iron->recreate (json_encode ($payload), $this->getQueue (), $delay);
+		$this->iron->recreate(json_encode($payload), $this->getQueue(), $delay);
 	}
 
 	/**
@@ -116,9 +114,9 @@ class IronJob extends Job
 	 *
 	 * @return int
 	 */
-	public function attempts ()
+	public function attempts()
 	{
-		return array_get (json_decode ($this->job->body, true), 'attempts', 1);
+		return array_get(json_decode($this->job->body, true), 'attempts', 1);
 	}
 
 	/**
@@ -126,7 +124,7 @@ class IronJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getJobId ()
+	public function getJobId()
 	{
 		return $this->job->id;
 	}
@@ -136,7 +134,7 @@ class IronJob extends Job
 	 *
 	 * @return \Illuminate\Container\Container
 	 */
-	public function getContainer ()
+	public function getContainer()
 	{
 		return $this->container;
 	}
@@ -146,7 +144,7 @@ class IronJob extends Job
 	 *
 	 * @return \Illuminate\Queue\IronQueue
 	 */
-	public function getIron ()
+	public function getIron()
 	{
 		return $this->iron;
 	}
@@ -156,7 +154,7 @@ class IronJob extends Job
 	 *
 	 * @return array
 	 */
-	public function getIronJob ()
+	public function getIronJob()
 	{
 		return $this->job;
 	}
@@ -166,9 +164,9 @@ class IronJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getQueue ()
+	public function getQueue()
 	{
-		return array_get (json_decode ($this->job->body, true), 'queue');
+		return array_get(json_decode($this->job->body, true), 'queue');
 	}
 
 }

@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Support\Facades;
+<?php namespace Illuminate\Support\Facades;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
@@ -9,15 +7,14 @@ use Illuminate\Support\Contracts\ArrayableInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class Response
-{
+class Response {
 
 	/**
 	 * An array of registered Response macros.
 	 *
 	 * @var array
 	 */
-	protected static $macros = array ();
+	protected static $macros = array();
 
 	/**
 	 * Return a new response from the application.
@@ -27,9 +24,9 @@ class Response
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\Response
 	 */
-	public static function make ($content = '', $status = 200, array $headers = array ())
+	public static function make($content = '', $status = 200, array $headers = array())
 	{
-		return new IlluminateResponse ($content, $status, $headers);
+		return new IlluminateResponse($content, $status, $headers);
 	}
 
 	/**
@@ -41,11 +38,11 @@ class Response
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\Response
 	 */
-	public static function view ($view, $data = array (), $status = 200, array $headers = array ())
+	public static function view($view, $data = array(), $status = 200, array $headers = array())
 	{
-		$app = Facade::getFacadeApplication ();
+		$app = Facade::getFacadeApplication();
 
-		return static::make ($app['view']->make ($view, $data), $status, $headers);
+		return static::make($app['view']->make($view, $data), $status, $headers);
 	}
 
 	/**
@@ -57,14 +54,14 @@ class Response
 	 * @param  int    $options
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	public static function json ($data = array (), $status = 200, array $headers = array (), $options = 0)
+	public static function json($data = array(), $status = 200, array $headers = array(), $options = 0)
 	{
 		if ($data instanceof ArrayableInterface)
 		{
-			$data = $data->toArray ();
+			$data = $data->toArray();
 		}
 
-		return new JsonResponse ($data, $status, $headers, $options);
+		return new JsonResponse($data, $status, $headers, $options);
 	}
 
 	/**
@@ -75,9 +72,9 @@ class Response
 	 * @param  array    $headers
 	 * @return \Symfony\Component\HttpFoundation\StreamedResponse
 	 */
-	public static function stream ($callback, $status = 200, array $headers = array ())
+	public static function stream($callback, $status = 200, array $headers = array())
 	{
-		return new StreamedResponse ($callback, $status, $headers);
+		return new StreamedResponse($callback, $status, $headers);
 	}
 
 	/**
@@ -89,13 +86,13 @@ class Response
 	 * @param  null|string  $disposition
 	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
 	 */
-	public static function download ($file, $name = null, array $headers = array (), $disposition = 'attachment')
+	public static function download($file, $name = null, array $headers = array(), $disposition = 'attachment')
 	{
-		$response = new BinaryFileResponse ($file, 200, $headers, true, $disposition);
+		$response = new BinaryFileResponse($file, 200, $headers, true, $disposition);
 
-		if (!is_null ($name))
+		if ( ! is_null($name))
 		{
-			return $response->setContentDisposition ($disposition, $name, Str::ascii ($name));
+			return $response->setContentDisposition($disposition, $name, Str::ascii($name));
 		}
 
 		return $response;
@@ -108,7 +105,7 @@ class Response
 	 * @param  callable  $callback
 	 * @return void
 	 */
-	public static function macro ($name, $callback)
+	public static function macro($name, $callback)
 	{
 		static::$macros[$name] = $callback;
 	}
@@ -122,14 +119,14 @@ class Response
 	 *
 	 * @throws \BadMethodCallException
 	 */
-	public static function __callStatic ($method, $parameters)
+	public static function __callStatic($method, $parameters)
 	{
-		if (isset (static::$macros[$method]))
+		if (isset(static::$macros[$method]))
 		{
-			return call_user_func_array (static::$macros[$method], $parameters);
+			return call_user_func_array(static::$macros[$method], $parameters);
 		}
 
-		throw new \BadMethodCallException ("Call to undefined method $method");
+		throw new \BadMethodCallException("Call to undefined method $method");
 	}
 
 }

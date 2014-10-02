@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ConnectionEcho extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ECHO';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ECHO';
+    }
 }

@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class TagSet
-{
+class TagSet {
 
 	/**
 	 * The cache store implementation.
@@ -17,7 +14,7 @@ class TagSet
 	 *
 	 * @var array
 	 */
-	protected $names = array ();
+	protected $names = array();
 
 	/**
 	 * Create a new TagSet instance.
@@ -26,7 +23,7 @@ class TagSet
 	 * @param  array  $names
 	 * @return void
 	 */
-	public function __construct (StoreInterface $store, array $names = array ())
+	public function __construct(StoreInterface $store, array $names = array())
 	{
 		$this->store = $store;
 		$this->names = $names;
@@ -37,9 +34,9 @@ class TagSet
 	 *
 	 * @return void
 	 */
-	public function reset ()
+	public function reset()
 	{
-		array_walk ($this->names, array ($this, 'resetTag'));
+		array_walk($this->names, array($this, 'resetTag'));
 	}
 
 	/**
@@ -48,9 +45,9 @@ class TagSet
 	 * @param  string  $name
 	 * @return string
 	 */
-	public function tagId ($name)
+	public function tagId($name)
 	{
-		return $this->store->get ($this->tagKey ($name)) ? : $this->resetTag ($name);
+		return $this->store->get($this->tagKey($name)) ?: $this->resetTag($name);
 	}
 
 	/**
@@ -58,9 +55,9 @@ class TagSet
 	 *
 	 * @return array
 	 */
-	protected function tagIds ()
+	protected function tagIds()
 	{
-		return array_map (array ($this, 'tagId'), $this->names);
+		return array_map(array($this, 'tagId'), $this->names);
 	}
 
 	/**
@@ -68,9 +65,9 @@ class TagSet
 	 *
 	 * @return string
 	 */
-	public function getNamespace ()
+	public function getNamespace()
 	{
-		return implode ('|', $this->tagIds ());
+		return implode('|', $this->tagIds());
 	}
 
 	/**
@@ -79,9 +76,9 @@ class TagSet
 	 * @param  string  $name
 	 * @return string
 	 */
-	public function resetTag ($name)
+	public function resetTag($name)
 	{
-		$this->store->forever ($this->tagKey ($name), $id = str_replace ('.', '', uniqid ('', true)));
+		$this->store->forever($this->tagKey($name), $id = str_replace('.', '', uniqid('', true)));
 
 		return $id;
 	}
@@ -92,9 +89,9 @@ class TagSet
 	 * @param  string  $name
 	 * @return string
 	 */
-	public function tagKey ($name)
+	public function tagKey($name)
 	{
-		return 'tag:' . $name . ':key';
+		return 'tag:'.$name.':key';
 	}
 
 }

@@ -17,71 +17,69 @@ namespace Predis\Command;
  */
 class KeyRandomTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\KeyRandom';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\KeyRandom';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'RANDOMKEY';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'RANDOMKEY';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array();
+        $expected = array();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ();
-		$expected = array ();
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $raw = 'key';
+        $expected = 'key';
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$raw = 'key';
-		$expected = 'key';
+        $command = $this->getCommand();
 
-		$command = $this->getCommand ();
+        $this->assertSame($expected, $command->parseResponse($raw));
+    }
 
-		$this->assertSame ($expected, $command->parseResponse ($raw));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsFalseOnNonExpiringKeys()
+    {
+        $keys = array('key:1' => 1, 'key:2' => 2, 'key:3' => 3);
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsFalseOnNonExpiringKeys ()
-	{
-		$keys = array ('key:1' => 1, 'key:2' => 2, 'key:3' => 3);
+        $redis = $this->getClient();
+        $redis->mset($keys);
 
-		$redis = $this->getClient ();
-		$redis->mset ($keys);
+        $this->assertContains($redis->randomkey(), array_keys($keys));
+    }
 
-		$this->assertContains ($redis->randomkey (), array_keys ($keys));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsNullOnEmptyDatabase()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsNullOnEmptyDatabase ()
-	{
-		$redis = $this->getClient ();
-
-		$this->assertNull ($redis->randomkey ());
-	}
-
+        $this->assertNull($redis->randomkey());
+    }
 }

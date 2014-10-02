@@ -17,29 +17,27 @@ namespace Predis\Command;
  */
 class StringGetMultiple extends AbstractCommand implements PrefixableCommandInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'MGET';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'MGET';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeArguments($arguments);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		return self::normalizeArguments ($arguments);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function prefixKeys ($prefix)
-	{
-		PrefixHelpers::all ($this, $prefix);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        PrefixHelpers::all($this, $prefix);
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListInsert extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LINSERT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LINSERT';
+    }
 }

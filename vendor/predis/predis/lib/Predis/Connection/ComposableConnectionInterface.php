@@ -22,37 +22,36 @@ use Predis\Protocol\ProtocolInterface;
  */
 interface ComposableConnectionInterface extends SingleConnectionInterface
 {
+    /**
+     * Sets the protocol processor used by the connection.
+     *
+     * @param ProtocolInterface $protocol Protocol processor.
+     */
+    public function setProtocol(ProtocolInterface $protocol);
 
-	/**
-	 * Sets the protocol processor used by the connection.
-	 *
-	 * @param ProtocolInterface $protocol Protocol processor.
-	 */
-	public function setProtocol (ProtocolInterface $protocol);
+    /**
+     * Gets the protocol processor used by the connection.
+     */
+    public function getProtocol();
 
-	/**
-	 * Gets the protocol processor used by the connection.
-	 */
-	public function getProtocol ();
+    /**
+     * Writes a buffer that contains a serialized Redis command.
+     *
+     * @param string $buffer Serialized Redis command.
+     */
+    public function writeBytes($buffer);
 
-	/**
-	 * Writes a buffer that contains a serialized Redis command.
-	 *
-	 * @param string $buffer Serialized Redis command.
-	 */
-	public function writeBytes ($buffer);
+    /**
+     * Reads a specified number of bytes from the connection.
+     *
+     * @param string
+     */
+    public function readBytes($length);
 
-	/**
-	 * Reads a specified number of bytes from the connection.
-	 *
-	 * @param string
-	 */
-	public function readBytes ($length);
-
-	/**
-	 * Reads a line from the connection.
-	 *
-	 * @param string
-	 */
-	public function readLine ();
+    /**
+     * Reads a line from the connection.
+     *
+     * @param string
+     */
+    public function readLine();
 }

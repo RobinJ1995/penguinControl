@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class TailCommand extends Command
-{
+class TailCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -29,17 +26,17 @@ class TailCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$path = $this->getPath ($this->argument ('connection'));
+		$path = $this->getPath($this->argument('connection'));
 
 		if ($path)
 		{
-			$this->tailLogFile ($path, $this->argument ('connection'));
+			$this->tailLogFile($path, $this->argument('connection'));
 		}
 		else
 		{
-			$this->error ('Could not determine path to log file.');
+			$this->error('Could not determine path to log file.');
 		}
 	}
 
@@ -50,15 +47,15 @@ class TailCommand extends Command
 	 * @param  string  $connection
 	 * @return void
 	 */
-	protected function tailLogFile ($path, $connection)
+	protected function tailLogFile($path, $connection)
 	{
-		if (is_null ($connection))
+		if (is_null($connection))
 		{
-			$this->tailLocalLogs ($path);
+			$this->tailLocalLogs($path);
 		}
 		else
 		{
-			$this->tailRemoteLogs ($path, $connection);
+			$this->tailRemoteLogs($path, $connection);
 		}
 	}
 
@@ -68,15 +65,15 @@ class TailCommand extends Command
 	 * @param  string  $path
 	 * @return string
 	 */
-	protected function tailLocalLogs ($path)
+	protected function tailLocalLogs($path)
 	{
 		$output = $this->output;
 
-		$lines = $this->option ('lines');
+		$lines = $this->option('lines');
 
-		with (new Process ('tail -f -n ' . $lines . ' ' . $path))->setTimeout (null)->run (function($type, $line) use ($output)
+		with(new Process('tail -f -n '.$lines.' '.$path))->setTimeout(null)->run(function($type, $line) use ($output)
 		{
-			$output->write ($line);
+			$output->write($line);
 		});
 	}
 
@@ -87,15 +84,15 @@ class TailCommand extends Command
 	 * @param  string  $connection
 	 * @return void
 	 */
-	protected function tailRemoteLogs ($path, $connection)
+	protected function tailRemoteLogs($path, $connection)
 	{
 		$out = $this->output;
 
-		$lines = $this->option ('lines');
+		$lines = $this->option('lines');
 
-		$this->getRemote ($connection)->run ('tail -f -n ' . $lines . ' ' . $path, function($line) use ($out)
+		$this->getRemote($connection)->run('tail -f -n '.$lines.' '.$path, function($line) use ($out)
 		{
-			$out->write ($line);
+			$out->write($line);
 		});
 	}
 
@@ -105,9 +102,9 @@ class TailCommand extends Command
 	 * @param  string  $connection
 	 * @return \Illuminate\Remote\Connection
 	 */
-	protected function getRemote ($connection)
+	protected function getRemote($connection)
 	{
-		return $this->laravel['remote']->connection ($connection);
+		return $this->laravel['remote']->connection($connection);
 	}
 
 	/**
@@ -116,18 +113,17 @@ class TailCommand extends Command
 	 * @param  string  $connection
 	 * @return string
 	 */
-	protected function getPath ($connection)
+	protected function getPath($connection)
 	{
-		if ($this->option ('path'))
-			return $this->option ('path');
+		if ($this->option('path')) return $this->option('path');
 
-		if (is_null ($connection))
+		if (is_null($connection))
 		{
-			return base_path () . '/app/storage/logs/laravel.log';
+			return base_path().'/app/storage/logs/laravel.log';
 		}
 		else
 		{
-			return $this->getRoot ($connection) . '/app/storage/logs/laravel.log';
+			return $this->getRoot($connection).'/app/storage/logs/laravel.log';
 		}
 	}
 
@@ -137,9 +133,9 @@ class TailCommand extends Command
 	 * @param  string  $connection
 	 * @return string
 	 */
-	protected function getRoot ($connection)
+	protected function getRoot($connection)
 	{
-		return $this->laravel['config']['remote.connections.' . $connection . '.root'];
+		return $this->laravel['config']['remote.connections.'.$connection.'.root'];
 	}
 
 	/**
@@ -147,10 +143,10 @@ class TailCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('connection', InputArgument::OPTIONAL, 'The remote connection name'),
+		return array(
+			array('connection', InputArgument::OPTIONAL, 'The remote connection name'),
 		);
 	}
 
@@ -159,11 +155,12 @@ class TailCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'The fully qualified path to the log file.'),
-		    array ('lines', null, InputOption::VALUE_OPTIONAL, 'The number of lines to tail.', 20),
+		return array(
+			array('path', null, InputOption::VALUE_OPTIONAL, 'The fully qualified path to the log file.'),
+
+			array('lines', null, InputOption::VALUE_OPTIONAL, 'The number of lines to tail.', 20),
 		);
 	}
 

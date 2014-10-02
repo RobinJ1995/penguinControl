@@ -11,6 +11,8 @@
 
 namespace Monolog\Handler\FingersCrossed;
 
+use Monolog\Logger;
+
 /**
  * Error level based activation strategy.
  *
@@ -18,17 +20,15 @@ namespace Monolog\Handler\FingersCrossed;
  */
 class ErrorLevelActivationStrategy implements ActivationStrategyInterface
 {
+    private $actionLevel;
 
-	private $actionLevel;
+    public function __construct($actionLevel)
+    {
+        $this->actionLevel = Logger::toMonologLevel($actionLevel);
+    }
 
-	public function __construct ($actionLevel)
-	{
-		$this->actionLevel = $actionLevel;
-	}
-
-	public function isHandlerActivated (array $record)
-	{
-		return $record['level'] >= $this->actionLevel;
-	}
-
+    public function isHandlerActivated(array $record)
+    {
+        return $record['level'] >= $this->actionLevel;
+    }
 }

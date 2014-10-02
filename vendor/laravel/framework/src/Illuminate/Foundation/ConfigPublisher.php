@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation;
+<?php namespace Illuminate\Foundation;
 
 use Illuminate\Filesystem\Filesystem;
 
-class ConfigPublisher
-{
+class ConfigPublisher {
 
 	/**
 	 * The filesystem instance.
@@ -35,7 +32,7 @@ class ConfigPublisher
 	 * @param  string  $publishPath
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $publishPath)
+	public function __construct(Filesystem $files, $publishPath)
 	{
 		$this->files = $files;
 		$this->publishPath = $publishPath;
@@ -46,15 +43,15 @@ class ConfigPublisher
 	 *
 	 * @param  string  $package
 	 * @param  string  $source
-	 * @return void
+	 * @return bool
 	 */
-	public function publish ($package, $source)
+	public function publish($package, $source)
 	{
-		$destination = $this->publishPath . "/packages/{$package}";
+		$destination = $this->publishPath."/packages/{$package}";
 
-		$this->makeDestination ($destination);
+		$this->makeDestination($destination);
 
-		return $this->files->copyDirectory ($source, $destination);
+		return $this->files->copyDirectory($source, $destination);
 	}
 
 	/**
@@ -62,39 +59,36 @@ class ConfigPublisher
 	 *
 	 * @param  string  $package
 	 * @param  string  $packagePath
-	 * @return void
+	 * @return bool
 	 */
-	public function publishPackage ($package, $packagePath = null)
+	public function publishPackage($package, $packagePath = null)
 	{
-		list($vendor, $name) = explode ('/', $package);
-
 		// First we will figure out the source of the package's configuration location
 		// which we do by convention. Once we have that we will move the files over
 		// to the "main" configuration directory for this particular application.
-		$path = $packagePath ? : $this->packagePath;
+		$path = $packagePath ?: $this->packagePath;
 
-		$source = $this->getSource ($package, $name, $path);
+		$source = $this->getSource($package, $path);
 
-		return $this->publish ($package, $source);
+		return $this->publish($package, $source);
 	}
 
 	/**
 	 * Get the source configuration directory to publish.
 	 *
 	 * @param  string  $package
-	 * @param  string  $name
 	 * @param  string  $packagePath
 	 * @return string
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function getSource ($package, $name, $packagePath)
+	protected function getSource($package, $packagePath)
 	{
-		$source = $packagePath . "/{$package}/src/config";
+		$source = $packagePath."/{$package}/src/config";
 
-		if (!$this->files->isDirectory ($source))
+		if ( ! $this->files->isDirectory($source))
 		{
-			throw new \InvalidArgumentException ("Configuration not found.");
+			throw new \InvalidArgumentException("Configuration not found.");
 		}
 
 		return $source;
@@ -106,11 +100,11 @@ class ConfigPublisher
 	 * @param  string  $destination
 	 * @return void
 	 */
-	protected function makeDestination ($destination)
+	protected function makeDestination($destination)
 	{
-		if (!$this->files->isDirectory ($destination))
+		if ( ! $this->files->isDirectory($destination))
 		{
-			$this->files->makeDirectory ($destination, 0777, true);
+			$this->files->makeDirectory($destination, 0777, true);
 		}
 	}
 
@@ -120,7 +114,7 @@ class ConfigPublisher
 	 * @param  string  $packagePath
 	 * @return void
 	 */
-	public function setPackagePath ($packagePath)
+	public function setPackagePath($packagePath)
 	{
 		$this->packagePath = $packagePath;
 	}

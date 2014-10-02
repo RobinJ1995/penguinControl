@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Queue\Connectors;
+<?php namespace Illuminate\Queue\Connectors;
 
 use Illuminate\Queue\SyncQueue;
 
-class SyncConnector implements ConnectorInterface
-{
+class SyncConnector implements ConnectorInterface {
 
 	/**
 	 * Establish a queue connection.
@@ -13,7 +10,7 @@ class SyncConnector implements ConnectorInterface
 	 * @param  array  $config
 	 * @return \Illuminate\Queue\QueueInterface
 	 */
-	public function connect (array $config)
+	public function connect(array $config)
 	{
 		return new SyncQueue;
 	}

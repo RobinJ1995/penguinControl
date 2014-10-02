@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 
-class ClearCompiledCommand extends Command
-{
+class ClearCompiledCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -26,16 +23,16 @@ class ClearCompiledCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		if (file_exists ($path = $this->laravel['path.base'] . '/bootstrap/compiled.php'))
+		if (file_exists($path = $this->laravel['path.base'].'/bootstrap/compiled.php'))
 		{
-			@unlink ($path);
+			@unlink($path);
 		}
 
-		if (file_exists ($path = $this->laravel['path.storage'] . '/meta/services.json'))
+		if (file_exists($path = $this->laravel['path.storage'].'/meta/services.json'))
 		{
-			@unlink ($path);
+			@unlink($path);
 		}
 	}
 

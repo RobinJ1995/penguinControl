@@ -20,11 +20,10 @@ use Predis\Command\CommandInterface;
  */
 interface CommandProcessorInterface
 {
-
-	/**
-	 * Processes a Redis command.
-	 *
-	 * @param CommandInterface $command Redis command.
-	 */
-	public function process (CommandInterface $command);
+    /**
+     * Processes a Redis command.
+     *
+     * @param CommandInterface $command Redis command.
+     */
+    public function process(CommandInterface $command);
 }

@@ -17,105 +17,103 @@ namespace Predis\Command;
  */
 class ListPopLastTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ListPopLast';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ListPopLast';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'RPOP';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'RPOP';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key');
+        $expected = array('key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key');
-		$expected = array ('key');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame('element', $this->getCommand()->parseResponse('element'));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame ('element', $this->getCommand ()->parseResponse ('element'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key');
+        $expected = array('prefix:key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key');
-		$expected = array ('prefix:key');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group connected
+     */
+    public function testPopsTheLastElementFromList()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testPopsTheLastElementFromList ()
-	{
-		$redis = $this->getClient ();
+        $redis->rpush('letters', 'a', 'b', 'c', 'd');
 
-		$redis->rpush ('letters', 'a', 'b', 'c', 'd');
+        $this->assertSame('d', $redis->rpop('letters'));
+        $this->assertSame('c', $redis->rpop('letters'));
+        $this->assertSame(array('a', 'b'), $redis->lrange('letters', 0, -1));
+    }
 
-		$this->assertSame ('d', $redis->rpop ('letters'));
-		$this->assertSame ('c', $redis->rpop ('letters'));
-		$this->assertSame (array ('a', 'b'), $redis->lrange ('letters', 0, -1));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsNullOnEmptyList()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsNullOnEmptyList ()
-	{
-		$redis = $this->getClient ();
+        $this->assertNull($redis->rpop('letters'));
+    }
 
-		$this->assertNull ($redis->rpop ('letters'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongType()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongType ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->set ('foo', 'bar');
-		$redis->rpop ('foo');
-	}
-
+        $redis->set('foo', 'bar');
+        $redis->rpop('foo');
+    }
 }

@@ -1,7 +1,6 @@
 <?php
 
-class IlluminateQueueClosure
-{
+class IlluminateQueueClosure {
 
 	/**
 	 * Fire the Closure based queue job.
@@ -10,11 +9,11 @@ class IlluminateQueueClosure
 	 * @param  array  $data
 	 * @return void
 	 */
-	public function fire ($job, $data)
+	public function fire($job, $data)
 	{
-		$closure = unserialize ($data['closure']);
+		$closure = unserialize($data['closure']);
 
-		$closure ($job);
+		$closure($job);
 	}
 
 }

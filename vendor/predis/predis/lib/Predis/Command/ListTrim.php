@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListTrim extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LTRIM';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LTRIM';
+    }
 }

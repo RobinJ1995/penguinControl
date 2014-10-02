@@ -17,55 +17,53 @@ namespace Predis\Command;
  */
 class ConnectionPingTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ConnectionPing';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ConnectionPing';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'PING';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'PING';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array();
+        $expected = array();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ();
-		$expected = array ();
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $command = $this->getCommand();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$command = $this->getCommand ();
+        $this->assertTrue($command->parseResponse('PONG'));
+    }
 
-		$this->assertTrue ($command->parseResponse ('PONG'));
-	}
+    /**
+     * @group connected
+     */
+    public function testAlwaysReturnsTrue()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testAlwaysReturnsTrue ()
-	{
-		$redis = $this->getClient ();
-
-		$this->assertTrue ($redis->ping ());
-	}
-
+        $this->assertTrue($redis->ping());
+    }
 }

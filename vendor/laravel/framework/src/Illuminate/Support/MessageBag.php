@@ -1,21 +1,18 @@
-<?php
-
-namespace Illuminate\Support;
+<?php namespace Illuminate\Support;
 
 use Countable;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 
-class MessageBag implements ArrayableInterface, Countable, JsonableInterface, MessageProviderInterface
-{
+class MessageBag implements ArrayableInterface, Countable, JsonableInterface, MessageProviderInterface {
 
 	/**
 	 * All of the registered messages.
 	 *
 	 * @var array
 	 */
-	protected $messages = array ();
+	protected $messages = array();
 
 	/**
 	 * Default format for message output.
@@ -30,7 +27,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  array  $messages
 	 * @return void
 	 */
-	public function __construct (array $messages = array ())
+	public function __construct(array $messages = array())
 	{
 		foreach ($messages as $key => $value)
 		{
@@ -45,9 +42,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $message
 	 * @return \Illuminate\Support\MessageBag
 	 */
-	public function add ($key, $message)
+	public function add($key, $message)
 	{
-		if ($this->isUnique ($key, $message))
+		if ($this->isUnique($key, $message))
 		{
 			$this->messages[$key][] = $message;
 		}
@@ -61,14 +58,14 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  \Illuminate\Support\Contracts\MessageProviderInterface|array  $messages
 	 * @return \Illuminate\Support\MessageBag
 	 */
-	public function merge ($messages)
+	public function merge($messages)
 	{
 		if ($messages instanceof MessageProviderInterface)
 		{
-			$messages = $messages->getMessageBag ()->getMessages ();
+			$messages = $messages->getMessageBag()->getMessages();
 		}
 
-		$this->messages = array_merge_recursive ($this->messages, $messages);
+		$this->messages = array_merge_recursive($this->messages, $messages);
 
 		return $this;
 	}
@@ -80,11 +77,11 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $message
 	 * @return bool
 	 */
-	protected function isUnique ($key, $message)
+	protected function isUnique($key, $message)
 	{
 		$messages = (array) $this->messages;
 
-		return !isset ($messages[$key]) || !in_array ($message, $messages[$key]);
+		return ! isset($messages[$key]) || ! in_array($message, $messages[$key]);
 	}
 
 	/**
@@ -93,9 +90,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function has ($key = null)
+	public function has($key = null)
 	{
-		return $this->first ($key) !== '';
+		return $this->first($key) !== '';
 	}
 
 	/**
@@ -105,11 +102,11 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $format
 	 * @return string
 	 */
-	public function first ($key = null, $format = null)
+	public function first($key = null, $format = null)
 	{
-		$messages = is_null ($key) ? $this->all ($format) : $this->get ($key, $format);
+		$messages = is_null($key) ? $this->all($format) : $this->get($key, $format);
 
-		return (count ($messages) > 0) ? $messages[0] : '';
+		return (count($messages) > 0) ? $messages[0] : '';
 	}
 
 	/**
@@ -119,19 +116,19 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $format
 	 * @return array
 	 */
-	public function get ($key, $format = null)
+	public function get($key, $format = null)
 	{
-		$format = $this->checkFormat ($format);
+		$format = $this->checkFormat($format);
 
 		// If the message exists in the container, we will transform it and return
 		// the message. Otherwise, we'll return an empty array since the entire
 		// methods is to return back an array of messages in the first place.
-		if (array_key_exists ($key, $this->messages))
+		if (array_key_exists($key, $this->messages))
 		{
-			return $this->transform ($this->messages[$key], $format, $key);
+			return $this->transform($this->messages[$key], $format, $key);
 		}
 
-		return array ();
+		return array();
 	}
 
 	/**
@@ -140,15 +137,15 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $format
 	 * @return array
 	 */
-	public function all ($format = null)
+	public function all($format = null)
 	{
-		$format = $this->checkFormat ($format);
+		$format = $this->checkFormat($format);
 
-		$all = array ();
+		$all = array();
 
 		foreach ($this->messages as $key => $messages)
 		{
-			$all = array_merge ($all, $this->transform ($messages, $format, $key));
+			$all = array_merge($all, $this->transform($messages, $format, $key));
 		}
 
 		return $all;
@@ -162,7 +159,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $messageKey
 	 * @return array
 	 */
-	protected function transform ($messages, $format, $messageKey)
+	protected function transform($messages, $format, $messageKey)
 	{
 		$messages = (array) $messages;
 
@@ -171,9 +168,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 		// the messages to be easily formatted to each developer's desires.
 		foreach ($messages as $key => &$message)
 		{
-			$replace = array (':message', ':key');
+			$replace = array(':message', ':key');
 
-			$message = str_replace ($replace, array ($message, $messageKey), $format);
+			$message = str_replace($replace, array($message, $messageKey), $format);
 		}
 
 		return $messages;
@@ -185,7 +182,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $format
 	 * @return string
 	 */
-	protected function checkFormat ($format)
+	protected function checkFormat($format)
 	{
 		return ($format === null) ? $this->format : $format;
 	}
@@ -195,7 +192,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return array
 	 */
-	public function getMessages ()
+	public function getMessages()
 	{
 		return $this->messages;
 	}
@@ -205,7 +202,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return \Illuminate\Support\MessageBag
 	 */
-	public function getMessageBag ()
+	public function getMessageBag()
 	{
 		return $this;
 	}
@@ -215,7 +212,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return string
 	 */
-	public function getFormat ()
+	public function getFormat()
 	{
 		return $this->format;
 	}
@@ -226,7 +223,7 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  string  $format
 	 * @return \Illuminate\Support\MessageBag
 	 */
-	public function setFormat ($format = ':message')
+	public function setFormat($format = ':message')
 	{
 		$this->format = $format;
 
@@ -238,9 +235,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return bool
 	 */
-	public function isEmpty ()
+	public function isEmpty()
 	{
-		return !$this->any ();
+		return ! $this->any();
 	}
 
 	/**
@@ -248,9 +245,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return bool
 	 */
-	public function any ()
+	public function any()
 	{
-		return $this->count () > 0;
+		return $this->count() > 0;
 	}
 
 	/**
@@ -258,9 +255,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return int
 	 */
-	public function count ()
+	public function count()
 	{
-		return count ($this->messages, COUNT_RECURSIVE) - count ($this->messages);
+		return count($this->messages, COUNT_RECURSIVE) - count($this->messages);
 	}
 
 	/**
@@ -268,9 +265,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return array
 	 */
-	public function toArray ()
+	public function toArray()
 	{
-		return $this->getMessages ();
+		return $this->getMessages();
 	}
 
 	/**
@@ -279,9 +276,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 * @param  int  $options
 	 * @return string
 	 */
-	public function toJson ($options = 0)
+	public function toJson($options = 0)
 	{
-		return json_encode ($this->toArray (), $options);
+		return json_encode($this->toArray(), $options);
 	}
 
 	/**
@@ -289,9 +286,9 @@ class MessageBag implements ArrayableInterface, Countable, JsonableInterface, Me
 	 *
 	 * @return string
 	 */
-	public function __toString ()
+	public function __toString()
 	{
-		return $this->toJson ();
+		return $this->toJson();
 	}
 
 }

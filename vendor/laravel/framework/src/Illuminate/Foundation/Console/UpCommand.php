@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 
-class UpCommand extends Command
-{
+class UpCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -26,11 +23,11 @@ class UpCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		@unlink ($this->laravel['path.storage'] . '/meta/down');
+		@unlink($this->laravel['path.storage'].'/meta/down');
 
-		$this->info ('Application is now live.');
+		$this->info('Application is now live.');
 	}
 
 }

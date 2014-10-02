@@ -17,70 +17,68 @@ namespace Predis\Command;
  */
 class TransactionUnwatchTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\TransactionUnwatch';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\TransactionUnwatch';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'UNWATCH';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'UNWATCH';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
+    /**
+     * @group connected
+     */
+    public function testUnwatchWatchedKeys()
+    {
+        $redis1 = $this->getClient();
+        $redis2 = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testUnwatchWatchedKeys ()
-	{
-		$redis1 = $this->getClient ();
-		$redis2 = $this->getClient ();
+        $redis1->set('foo', 'bar');
+        $redis1->watch('foo');
+        $this->assertTrue($redis1->unwatch());
+        $redis1->multi();
+        $redis1->get('foo');
 
-		$redis1->set ('foo', 'bar');
-		$redis1->watch ('foo');
-		$this->assertTrue ($redis1->unwatch ());
-		$redis1->multi ();
-		$redis1->get ('foo');
+        $redis2->set('foo', 'hijacked');
 
-		$redis2->set ('foo', 'hijacked');
+        $this->assertSame(array('hijacked'), $redis1->exec());
+    }
 
-		$this->assertSame (array ('hijacked'), $redis1->exec ());
-	}
+    /**
+     * @group connected
+     */
+    public function testCanBeCalledInsideTransaction()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testCanBeCalledInsideTransaction ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->multi ();
-		$this->assertInstanceOf ('Predis\ResponseQueued', $redis->unwatch ());
-	}
-
+        $redis->multi();
+        $this->assertInstanceOf('Predis\ResponseQueued', $redis->unwatch());
+    }
 }

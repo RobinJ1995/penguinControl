@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListPopLast extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'RPOP';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'RPOP';
+    }
 }

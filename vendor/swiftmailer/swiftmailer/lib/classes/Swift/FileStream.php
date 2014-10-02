@@ -11,17 +11,14 @@
 /**
  * An OutputByteStream which specifically reads from a file.
  *
- * @package    Swift
- * @subpackage ByteStream
  * @author     Chris Corbyn
  */
 interface Swift_FileStream extends Swift_OutputByteStream
 {
-
-	/**
-	 * Get the complete path to the file.
-	 *
-	 * @return string
-	 */
-	public function getPath ();
+    /**
+     * Get the complete path to the file.
+     *
+     * @return string
+     */
+    public function getPath();
 }

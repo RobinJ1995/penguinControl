@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetIncrementBy extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZINCRBY';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZINCRBY';
+    }
 }

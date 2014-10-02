@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Hashing;
 
-namespace Illuminate\Hashing;
-
-interface HasherInterface
-{
+interface HasherInterface {
 
 	/**
 	 * Hash the given value.
@@ -12,7 +9,7 @@ interface HasherInterface
 	 * @param  array   $options
 	 * @return string
 	 */
-	public function make ($value, array $options = array ());
+	public function make($value, array $options = array());
 
 	/**
 	 * Check the given plain value against a hash.
@@ -22,7 +19,7 @@ interface HasherInterface
 	 * @param  array   $options
 	 * @return bool
 	 */
-	public function check ($value, $hashedValue, array $options = array ());
+	public function check($value, $hashedValue, array $options = array());
 
 	/**
 	 * Check if the given hash has been hashed using the given options.
@@ -31,5 +28,6 @@ interface HasherInterface
 	 * @param  array   $options
 	 * @return bool
 	 */
-	public function needsRehash ($hashedValue, array $options = array ());
+	public function needsRehash($hashedValue, array $options = array());
+
 }

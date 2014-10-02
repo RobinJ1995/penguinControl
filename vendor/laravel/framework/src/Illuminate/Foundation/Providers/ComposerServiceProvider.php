@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Foundation\Providers;
+<?php namespace Illuminate\Foundation\Providers;
 
 use Illuminate\Foundation\Composer;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Console\AutoloadCommand;
 
-class ComposerServiceProvider extends ServiceProvider
-{
+class ComposerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -21,19 +18,19 @@ class ComposerServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('composer', function($app)
+		$this->app->bindShared('composer', function($app)
 		{
-			return new Composer ($app['files'], $app['path.base']);
+			return new Composer($app['files'], $app['path.base']);
 		});
 
-		$this->app->bindShared ('command.dump-autoload', function($app)
+		$this->app->bindShared('command.dump-autoload', function($app)
 		{
-			return new AutoloadCommand ($app['composer']);
+			return new AutoloadCommand($app['composer']);
 		});
 
-		$this->commands ('command.dump-autoload');
+		$this->commands('command.dump-autoload');
 	}
 
 	/**
@@ -41,9 +38,9 @@ class ComposerServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('composer', 'command.dump-autoload');
+		return array('composer', 'command.dump-autoload');
 	}
 
 }

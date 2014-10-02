@@ -17,35 +17,31 @@ namespace Predis\Command;
  */
 class HashSetMultiple extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HMSET';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HMSET';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flattenedKVs = array($arguments[0]);
+            $args = $arguments[1];
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		if (count ($arguments) === 2 && is_array ($arguments[1]))
-		{
-			$flattenedKVs = array ($arguments[0]);
-			$args = $arguments[1];
+            foreach ($args as $k => $v) {
+                $flattenedKVs[] = $k;
+                $flattenedKVs[] = $v;
+            }
 
-			foreach ($args as $k => $v)
-			{
-				$flattenedKVs[] = $k;
-				$flattenedKVs[] = $v;
-			}
+            return $flattenedKVs;
+        }
 
-			return $flattenedKVs;
-		}
-
-		return $arguments;
-	}
-
+        return $arguments;
+    }
 }

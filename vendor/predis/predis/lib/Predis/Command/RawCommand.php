@@ -25,137 +25,133 @@ use InvalidArgumentException;
  */
 class RawCommand implements CommandInterface
 {
+    private $hash;
+    private $commandID;
+    private $arguments;
 
-	private $hash;
-	private $commandID;
-	private $arguments;
+    public function __construct(array $arguments)
+    {
+        if (!$arguments) {
+            throw new InvalidArgumentException("Arguments array is missing the command ID");
+        }
 
-	public function __construct (array $arguments)
-	{
-		if (!$arguments)
-		{
-			throw new InvalidArgumentException ("Arguments array is missing the command ID");
-		}
+        $this->commandID = strtoupper(array_shift($arguments));
+        $this->arguments = $arguments;
+    }
 
-		$this->commandID = strtoupper (array_shift ($arguments));
-		$this->arguments = $arguments;
-	}
+    /**
+     * Creates a new raw command using a variadic method.
+     *
+     * @param  string           $commandID Redis command ID.
+     * @param string ... Arguments list for the command.
+     * @return CommandInterface
+     */
+    public static function create($commandID /* [ $arg, ... */)
+    {
+        $arguments = func_get_args();
+        $command = new self($arguments);
 
-	/**
-	 * Creates a new raw command using a variadic method.
-	 *
-	 * @param string $commandID Redis command ID.
-	 * @param string ... Arguments list for the command.
-	 * @return CommandInterface
-	 */
-	public static function create ($commandID /* [ $arg, ... */)
-	{
-		$arguments = func_get_args ();
-		$command = new self ($arguments);
+        return $command;
+    }
 
-		return $command;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return $this->commandID;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return $this->commandID;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = $arguments;
+        unset($this->hash);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setArguments (array $arguments)
-	{
-		$this->arguments = $arguments;
-		unset ($this->hash);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function setRawArguments(array $arguments)
+    {
+        $this->setArguments($arguments);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setRawArguments (array $arguments)
-	{
-		$this->setArguments ($arguments);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getArguments ()
-	{
-		return $this->arguments;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getArgument($index)
+    {
+        if (isset($this->arguments[$index])) {
+            return $this->arguments[$index];
+        }
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getArgument ($index)
-	{
-		if (isset ($this->arguments[$index]))
-		{
-			return $this->arguments[$index];
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setHash ($hash)
-	{
-		$this->hash = $hash;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getHash()
+    {
+        if (isset($this->hash)) {
+            return $this->hash;
+        }
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getHash ()
-	{
-		if (isset ($this->hash))
-		{
-			return $this->hash;
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return $data;
-	}
+    /**
+     * Helper function used to reduce a list of arguments to a string.
+     *
+     * @param  string $accumulator Temporary string.
+     * @param  string $argument    Current argument.
+     * @return string
+     */
+    protected function toStringArgumentReducer($accumulator, $argument)
+    {
+        if (strlen($argument) > 32) {
+            $argument = substr($argument, 0, 32) . '[...]';
+        }
 
-	/**
-	 * Helper function used to reduce a list of arguments to a string.
-	 *
-	 * @param  string $accumulator Temporary string.
-	 * @param  string $argument    Current argument.
-	 * @return string
-	 */
-	protected function toStringArgumentReducer ($accumulator, $argument)
-	{
-		if (strlen ($argument) > 32)
-		{
-			$argument = substr ($argument, 0, 32) . '[...]';
-		}
+        $accumulator .= " $argument";
 
-		$accumulator .= " $argument";
+        return $accumulator;
+    }
 
-		return $accumulator;
-	}
-
-	/**
-	 * Returns a partial string representation of the command with its arguments.
-	 *
-	 * @return string
-	 */
-	public function __toString ()
-	{
-		return array_reduce (
-			$this->getArguments (), array ($this, 'toStringArgumentReducer'), $this->getId ()
-		);
-	}
-
+    /**
+     * Returns a partial string representation of the command with its arguments.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return array_reduce(
+            $this->getArguments(),
+            array($this, 'toStringArgumentReducer'),
+            $this->getId()
+        );
+    }
 }

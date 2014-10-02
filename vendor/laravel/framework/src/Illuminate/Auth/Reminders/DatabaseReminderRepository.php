@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Auth\Reminders;
+<?php namespace Illuminate\Auth\Reminders;
 
 use Carbon\Carbon;
 use Illuminate\Database\Connection;
 
-class DatabaseReminderRepository implements ReminderRepositoryInterface
-{
+class DatabaseReminderRepository implements ReminderRepositoryInterface {
 
 	/**
 	 * The database connection instance.
@@ -45,7 +42,7 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  int  $expires
 	 * @return void
 	 */
-	public function __construct (Connection $connection, $table, $hashKey, $expires = 60)
+	public function __construct(Connection $connection, $table, $hashKey, $expires = 60)
 	{
 		$this->table = $table;
 		$this->hashKey = $hashKey;
@@ -59,16 +56,16 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  \Illuminate\Auth\Reminders\RemindableInterface  $user
 	 * @return string
 	 */
-	public function create (RemindableInterface $user)
+	public function create(RemindableInterface $user)
 	{
-		$email = $user->getReminderEmail ();
+		$email = $user->getReminderEmail();
 
 		// We will create a new, random token for the user so that we can e-mail them
 		// a safe link to the password reset form. Then we will insert a record in
 		// the database so that we can verify the token within the actual reset.
-		$token = $this->createNewToken ($user);
+		$token = $this->createNewToken($user);
 
-		$this->getTable ()->insert ($this->getPayload ($email, $token));
+		$this->getTable()->insert($this->getPayload($email, $token));
 
 		return $token;
 	}
@@ -80,9 +77,9 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  string  $token
 	 * @return array
 	 */
-	protected function getPayload ($email, $token)
+	protected function getPayload($email, $token)
 	{
-		return array ('email' => $email, 'token' => $token, 'created_at' => new Carbon);
+		return array('email' => $email, 'token' => $token, 'created_at' => new Carbon);
 	}
 
 	/**
@@ -92,13 +89,13 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  string  $token
 	 * @return bool
 	 */
-	public function exists (RemindableInterface $user, $token)
+	public function exists(RemindableInterface $user, $token)
 	{
-		$email = $user->getReminderEmail ();
+		$email = $user->getReminderEmail();
 
-		$reminder = (array) $this->getTable ()->where ('email', $email)->where ('token', $token)->first ();
+		$reminder = (array) $this->getTable()->where('email', $email)->where('token', $token)->first();
 
-		return $reminder && !$this->reminderExpired ($reminder);
+		return $reminder && ! $this->reminderExpired($reminder);
 	}
 
 	/**
@@ -107,11 +104,11 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  array  $reminder
 	 * @return bool
 	 */
-	protected function reminderExpired ($reminder)
+	protected function reminderExpired($reminder)
 	{
-		$createdPlusHour = strtotime ($reminder['created_at']) + $this->expires;
+		$createdPlusHour = strtotime($reminder['created_at']) + $this->expires;
 
-		return $createdPlusHour < $this->getCurrentTime ();
+		return $createdPlusHour < $this->getCurrentTime();
 	}
 
 	/**
@@ -119,9 +116,9 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 *
 	 * @return int
 	 */
-	protected function getCurrentTime ()
+	protected function getCurrentTime()
 	{
-		return time ();
+		return time();
 	}
 
 	/**
@@ -130,9 +127,9 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  string  $token
 	 * @return void
 	 */
-	public function delete ($token)
+	public function delete($token)
 	{
-		$this->getTable ()->where ('token', $token)->delete ();
+		$this->getTable()->where('token', $token)->delete();
 	}
 
 	/**
@@ -140,11 +137,11 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 *
 	 * @return void
 	 */
-	public function deleteExpired ()
+	public function deleteExpired()
 	{
-		$expired = Carbon::now ()->subSeconds ($this->expires);
+		$expired = Carbon::now()->subSeconds($this->expires);
 
-		$this->getTable ()->where ('created_at', '<', $expired)->delete ();
+		$this->getTable()->where('created_at', '<', $expired)->delete();
 	}
 
 	/**
@@ -153,13 +150,13 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 * @param  \Illuminate\Auth\Reminders\RemindableInterface  $user
 	 * @return string
 	 */
-	public function createNewToken (RemindableInterface $user)
+	public function createNewToken(RemindableInterface $user)
 	{
-		$email = $user->getReminderEmail ();
+		$email = $user->getReminderEmail();
 
-		$value = str_shuffle (sha1 ($email . spl_object_hash ($this) . microtime (true)));
+		$value = str_shuffle(sha1($email.spl_object_hash($this).microtime(true)));
 
-		return hash_hmac ('sha1', $value, $this->hashKey);
+		return hash_hmac('sha1', $value, $this->hashKey);
 	}
 
 	/**
@@ -167,9 +164,9 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 *
 	 * @return \Illuminate\Database\Query\Builder
 	 */
-	protected function getTable ()
+	protected function getTable()
 	{
-		return $this->connection->table ($this->table);
+		return $this->connection->table($this->table);
 	}
 
 	/**
@@ -177,7 +174,7 @@ class DatabaseReminderRepository implements ReminderRepositoryInterface
 	 *
 	 * @return \Illuminate\Database\Connection
 	 */
-	public function getConnection ()
+	public function getConnection()
 	{
 		return $this->connection;
 	}

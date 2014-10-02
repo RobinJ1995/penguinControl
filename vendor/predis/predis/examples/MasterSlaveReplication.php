@@ -21,28 +21,28 @@ require 'SharedConfigurations.php';
 // of the first one using the SLAVEOF command.
 //
 
-$parameters = array (
+$parameters = array(
     'tcp://127.0.0.1:6379?database=15&alias=master',
     'tcp://127.0.0.1:6380?database=15&alias=slave',
 );
 
-$options = array ('replication' => true);
+$options = array('replication' => true);
 
-$client = new Predis\Client ($parameters, $options);
+$client = new Predis\Client($parameters, $options);
 
 // Read operation.
-$exists = $client->exists ('foo') ? 'yes' : 'no';
-$current = $client->getConnection ()->getCurrent ()->getParameters ();
+$exists = $client->exists('foo') ? 'yes' : 'no';
+$current = $client->getConnection()->getCurrent()->getParameters();
 echo "Does 'foo' exist on {$current->alias}? $exists.\n";
 
 // Write operation.
-$client->set ('foo', 'bar');
-$current = $client->getConnection ()->getCurrent ()->getParameters ();
+$client->set('foo', 'bar');
+$current = $client->getConnection()->getCurrent()->getParameters();
 echo "Now 'foo' has been set to 'bar' on {$current->alias}!\n";
 
 // Read operation.
-$bar = $client->get ('foo');
-$current = $client->getConnection ()->getCurrent ()->getParameters ();
+$bar = $client->get('foo');
+$current = $client->getConnection()->getCurrent()->getParameters();
 echo "We just fetched 'foo' from {$current->alias} and its value is '$bar'.\n";
 
 /* OUTPUT:

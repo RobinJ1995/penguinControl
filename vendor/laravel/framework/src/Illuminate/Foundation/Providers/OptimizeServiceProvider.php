@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Foundation\Providers;
+<?php namespace Illuminate\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Console\OptimizeCommand;
 use Illuminate\Foundation\Console\ClearCompiledCommand;
 
-class OptimizeServiceProvider extends ServiceProvider
-{
+class OptimizeServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -21,13 +18,13 @@ class OptimizeServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->registerOptimizeCommand ();
+		$this->registerOptimizeCommand();
 
-		$this->registerClearCompiledCommand ();
+		$this->registerClearCompiledCommand();
 
-		$this->commands ('command.optimize', 'command.clear-compiled');
+		$this->commands('command.optimize', 'command.clear-compiled');
 	}
 
 	/**
@@ -35,11 +32,11 @@ class OptimizeServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerOptimizeCommand ()
+	protected function registerOptimizeCommand()
 	{
-		$this->app->bindShared ('command.optimize', function($app)
+		$this->app->bindShared('command.optimize', function($app)
 		{
-			return new OptimizeCommand ($app['composer']);
+			return new OptimizeCommand($app['composer']);
 		});
 	}
 
@@ -48,9 +45,9 @@ class OptimizeServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerClearCompiledCommand ()
+	protected function registerClearCompiledCommand()
 	{
-		$this->app->bindShared ('command.clear-compiled', function()
+		$this->app->bindShared('command.clear-compiled', function()
 		{
 			return new ClearCompiledCommand;
 		});
@@ -61,9 +58,9 @@ class OptimizeServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('command.optimize', 'command.clear-compiled');
+		return array('command.optimize', 'command.clear-compiled');
 	}
 
 }

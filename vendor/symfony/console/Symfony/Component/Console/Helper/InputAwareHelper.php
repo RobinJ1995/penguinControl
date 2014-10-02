@@ -21,15 +21,13 @@ use Symfony\Component\Console\Input\InputAwareInterface;
  */
 abstract class InputAwareHelper extends Helper implements InputAwareInterface
 {
+    protected $input;
 
-	protected $input;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setInput (InputInterface $input)
-	{
-		$this->input = $input;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function setInput(InputInterface $input)
+    {
+        $this->input = $input;
+    }
 }

@@ -20,32 +20,31 @@ namespace Predis\Protocol;
  */
 interface ComposableProtocolInterface extends ProtocolInterface
 {
+    /**
+     * Sets the command serializer to be used by the protocol processor.
+     *
+     * @param CommandSerializerInterface $serializer Command serializer.
+     */
+    public function setSerializer(CommandSerializerInterface $serializer);
 
-	/**
-	 * Sets the command serializer to be used by the protocol processor.
-	 *
-	 * @param CommandSerializerInterface $serializer Command serializer.
-	 */
-	public function setSerializer (CommandSerializerInterface $serializer);
+    /**
+     * Returns the command serializer used by the protocol processor.
+     *
+     * @return CommandSerializerInterface
+     */
+    public function getSerializer();
 
-	/**
-	 * Returns the command serializer used by the protocol processor.
-	 *
-	 * @return CommandSerializerInterface
-	 */
-	public function getSerializer ();
+    /**
+     * Sets the response reader to be used by the protocol processor.
+     *
+     * @param ResponseReaderInterface $reader Response reader.
+     */
+    public function setReader(ResponseReaderInterface $reader);
 
-	/**
-	 * Sets the response reader to be used by the protocol processor.
-	 *
-	 * @param ResponseReaderInterface $reader Response reader.
-	 */
-	public function setReader (ResponseReaderInterface $reader);
-
-	/**
-	 * Returns the response reader used by the protocol processor.
-	 *
-	 * @return ResponseReaderInterface
-	 */
-	public function getReader ();
+    /**
+     * Returns the response reader used by the protocol processor.
+     *
+     * @return ResponseReaderInterface
+     */
+    public function getReader();
 }

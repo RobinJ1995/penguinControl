@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Auth;
 
-namespace Illuminate\Auth;
-
-class GenericUser implements UserInterface
-{
+class GenericUser implements UserInterface {
 
 	/**
 	 * All of the user's attributes.
@@ -18,7 +15,7 @@ class GenericUser implements UserInterface
 	 * @param  array  $attributes
 	 * @return void
 	 */
-	public function __construct (array $attributes)
+	public function __construct(array $attributes)
 	{
 		$this->attributes = $attributes;
 	}
@@ -28,7 +25,7 @@ class GenericUser implements UserInterface
 	 *
 	 * @return mixed
 	 */
-	public function getAuthIdentifier ()
+	public function getAuthIdentifier()
 	{
 		return $this->attributes['id'];
 	}
@@ -38,7 +35,7 @@ class GenericUser implements UserInterface
 	 *
 	 * @return string
 	 */
-	public function getAuthPassword ()
+	public function getAuthPassword()
 	{
 		return $this->attributes['password'];
 	}
@@ -48,7 +45,7 @@ class GenericUser implements UserInterface
 	 *
 	 * @return string
 	 */
-	public function getRememberToken ()
+	public function getRememberToken()
 	{
 		return $this->attributes['remember_token'];
 	}
@@ -59,7 +56,7 @@ class GenericUser implements UserInterface
 	 * @param  string  $value
 	 * @return void
 	 */
-	public function setRememberToken ($value)
+	public function setRememberToken($value)
 	{
 		$this->attributes['remember_token'] = $value;
 	}
@@ -69,7 +66,7 @@ class GenericUser implements UserInterface
 	 *
 	 * @return string
 	 */
-	public function getRememberTokenName ()
+	public function getRememberTokenName()
 	{
 		return 'remember_token';
 	}
@@ -80,7 +77,7 @@ class GenericUser implements UserInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function __get ($key)
+	public function __get($key)
 	{
 		return $this->attributes[$key];
 	}
@@ -92,7 +89,7 @@ class GenericUser implements UserInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function __set ($key, $value)
+	public function __set($key, $value)
 	{
 		$this->attributes[$key] = $value;
 	}
@@ -103,9 +100,9 @@ class GenericUser implements UserInterface
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function __isset ($key)
+	public function __isset($key)
 	{
-		return isset ($this->attributes[$key]);
+		return isset($this->attributes[$key]);
 	}
 
 	/**
@@ -114,9 +111,9 @@ class GenericUser implements UserInterface
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function __unset ($key)
+	public function __unset($key)
 	{
-		unset ($this->attributes[$key]);
+		unset($this->attributes[$key]);
 	}
 
 }

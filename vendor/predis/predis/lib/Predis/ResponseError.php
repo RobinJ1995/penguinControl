@@ -19,43 +19,41 @@ namespace Predis;
  */
 class ResponseError implements ResponseErrorInterface
 {
+    private $message;
 
-	private $message;
+    /**
+     * @param string $message Error message returned by Redis
+     */
+    public function __construct($message)
+    {
+        $this->message = $message;
+    }
 
-	/**
-	 * @param string $message Error message returned by Redis
-	 */
-	public function __construct ($message)
-	{
-		$this->message = $message;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getMessage ()
-	{
-		return $this->message;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getErrorType()
+    {
+        list($errorType, ) = explode(' ', $this->getMessage(), 2);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getErrorType ()
-	{
-		list($errorType, ) = explode (' ', $this->getMessage (), 2);
+        return $errorType;
+    }
 
-		return $errorType;
-	}
-
-	/**
-	 * Converts the object to its string representation.
-	 *
-	 * @return string
-	 */
-	public function __toString ()
-	{
-		return $this->getMessage ();
-	}
-
+    /**
+     * Converts the object to its string representation.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getMessage();
+    }
 }

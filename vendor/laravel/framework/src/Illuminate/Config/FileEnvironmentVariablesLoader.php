@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Config;
+<?php namespace Illuminate\Config;
 
 use Illuminate\Filesystem\Filesystem;
 
-class FileEnvironmentVariablesLoader implements EnvironmentVariablesLoaderInterface
-{
+class FileEnvironmentVariablesLoader implements EnvironmentVariablesLoaderInterface {
 
 	/**
 	 * The filesystem instance.
@@ -24,13 +21,13 @@ class FileEnvironmentVariablesLoader implements EnvironmentVariablesLoaderInterf
 	/**
 	 * Create a new file environment loader instance.
 	 *
-	 * @param  \Illumiante\Filesystem\Filesystem  $files
+	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $path = null)
+	public function __construct(Filesystem $files, $path = null)
 	{
 		$this->files = $files;
-		$this->path = $path ? : base_path ();
+		$this->path = $path ?: base_path();
 	}
 
 	/**
@@ -39,18 +36,17 @@ class FileEnvironmentVariablesLoader implements EnvironmentVariablesLoaderInterf
 	 * @param  string  $environment
 	 * @return array
 	 */
-	public function load ($environment = null)
+	public function load($environment = null)
 	{
-		if ($environment == 'production')
-			$environment = null;
+		if ($environment == 'production') $environment = null;
 
-		if (!$this->files->exists ($path = $this->getFile ($environment)))
+		if ( ! $this->files->exists($path = $this->getFile($environment)))
 		{
-			return array ();
+			return array();
 		}
 		else
 		{
-			return $this->files->getRequire ($path);
+			return $this->files->getRequire($path);
 		}
 	}
 
@@ -60,15 +56,15 @@ class FileEnvironmentVariablesLoader implements EnvironmentVariablesLoaderInterf
 	 * @param  string  $environment
 	 * @return string
 	 */
-	protected function getFile ($environment)
+	protected function getFile($environment)
 	{
 		if ($environment)
 		{
-			return $this->path . '/.env.' . $environment . '.php';
+			return $this->path.'/.env.'.$environment.'.php';
 		}
 		else
 		{
-			return $this->path . '/.env.php';
+			return $this->path.'/.env.php';
 		}
 	}
 

@@ -17,70 +17,68 @@ namespace Predis\Command;
  */
 class ConnectionSelectTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ConnectionSelect';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ConnectionSelect';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'SELECT';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'SELECT';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array(10);
+        $expected = array(10);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array (10);
-		$expected = array (10);
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $command = $this->getCommand();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$command = $this->getCommand ();
+        $this->assertTrue($command->parseResponse(true));
+    }
 
-		$this->assertTrue ($command->parseResponse (true));
-	}
+    /**
+     * @group connected
+     */
+    public function testCanSelectDifferentDatabase()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testCanSelectDifferentDatabase ()
-	{
-		$redis = $this->getClient ();
+        $redis->set('foo', 'bar');
 
-		$redis->set ('foo', 'bar');
+        $this->assertTrue($redis->select(REDIS_SERVER_DBNUM - 1));
+        $this->assertFalse($redis->exists('foo'));
+    }
 
-		$this->assertTrue ($redis->select (REDIS_SERVER_DBNUM - 1));
-		$this->assertFalse ($redis->exists ('foo'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage ERR invalid DB index
+     */
+    public function testThrowsExceptionOnUnexpectedDatabase()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage ERR invalid DB index
-	 */
-	public function testThrowsExceptionOnUnexpectedDatabase ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->select (100000000);
-	}
-
+        $redis->select(100000000);
+    }
 }

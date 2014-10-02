@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\View\Engines;
 
-namespace Illuminate\View\Engines;
-
-abstract class Engine
-{
+abstract class Engine {
 
 	/**
 	 * The view that was last to be rendered.
@@ -17,7 +14,7 @@ abstract class Engine
 	 *
 	 * @return string
 	 */
-	public function getLastRendered ()
+	public function getLastRendered()
 	{
 		return $this->lastRendered;
 	}

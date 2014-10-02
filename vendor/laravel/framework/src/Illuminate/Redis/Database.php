@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Redis;
+<?php namespace Illuminate\Redis;
 
 use Predis\Client;
 
-class Database
-{
+class Database {
 
 	/**
 	 * The host address of the database.
@@ -20,15 +17,15 @@ class Database
 	 * @param  array  $servers
 	 * @return void
 	 */
-	public function __construct (array $servers = array ())
+	public function __construct(array $servers = array())
 	{
-		if (isset ($servers['cluster']) && $servers['cluster'])
+		if (isset($servers['cluster']) && $servers['cluster'])
 		{
-			$this->clients = $this->createAggregateClient ($servers);
+			$this->clients = $this->createAggregateClient($servers);
 		}
 		else
 		{
-			$this->clients = $this->createSingleClients ($servers);
+			$this->clients = $this->createSingleClients($servers);
 		}
 	}
 
@@ -38,11 +35,11 @@ class Database
 	 * @param  array  $servers
 	 * @return array
 	 */
-	protected function createAggregateClient (array $servers)
+	protected function createAggregateClient(array $servers)
 	{
-		$servers = array_except ($servers, array ('cluster'));
+		$servers = array_except($servers, array('cluster'));
 
-		return array ('default' => new Client (array_values ($servers)));
+		return array('default' => new Client(array_values($servers)));
 	}
 
 	/**
@@ -51,13 +48,13 @@ class Database
 	 * @param  array  $servers
 	 * @return array
 	 */
-	protected function createSingleClients (array $servers)
+	protected function createSingleClients(array $servers)
 	{
-		$clients = array ();
+		$clients = array();
 
 		foreach ($servers as $key => $server)
 		{
-			$clients[$key] = new Client ($server);
+			$clients[$key] = new Client($server);
 		}
 
 		return $clients;
@@ -69,9 +66,9 @@ class Database
 	 * @param  string  $name
 	 * @return \Predis\Connection\SingleConnectionInterface
 	 */
-	public function connection ($name = 'default')
+	public function connection($name = 'default')
 	{
-		return $this->clients[$name ? : 'default'];
+		return $this->clients[$name ?: 'default'];
 	}
 
 	/**
@@ -81,9 +78,9 @@ class Database
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function command ($method, array $parameters = array ())
+	public function command($method, array $parameters = array())
 	{
-		return call_user_func_array (array ($this->clients['default'], $method), $parameters);
+		return call_user_func_array(array($this->clients['default'], $method), $parameters);
 	}
 
 	/**
@@ -93,9 +90,9 @@ class Database
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		return $this->command ($method, $parameters);
+		return $this->command($method, $parameters);
 	}
 
 }

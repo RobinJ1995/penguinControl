@@ -1,5 +1,4 @@
 <?php
-
 $meta #
 #semval($) $this->yyval
 #semval($,%t) $this->yyval

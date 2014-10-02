@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Database\Eloquent;
+<?php namespace Illuminate\Database\Eloquent;
 
 use Closure;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
-class Builder
-{
+class Builder {
 
 	/**
 	 * The base query builder instance.
@@ -29,16 +26,16 @@ class Builder
 	 *
 	 * @var array
 	 */
-	protected $eagerLoad = array ();
+	protected $eagerLoad = array();
 
 	/**
 	 * The methods that should be returned from query builder.
 	 *
 	 * @var array
 	 */
-	protected $passthru = array (
-	    'toSql', 'lists', 'insert', 'insertGetId', 'pluck', 'count',
-	    'min', 'max', 'avg', 'sum', 'exists', 'getBindings',
+	protected $passthru = array(
+		'toSql', 'lists', 'insert', 'insertGetId', 'pluck', 'count',
+		'min', 'max', 'avg', 'sum', 'exists', 'getBindings',
 	);
 
 	/**
@@ -47,7 +44,7 @@ class Builder
 	 * @param  \Illuminate\Database\Query\Builder  $query
 	 * @return void
 	 */
-	public function __construct (QueryBuilder $query)
+	public function __construct(QueryBuilder $query)
 	{
 		$this->query = $query;
 	}
@@ -59,16 +56,16 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Database\Eloquent\Model|static|null
 	 */
-	public function find ($id, $columns = array ('*'))
+	public function find($id, $columns = array('*'))
 	{
-		if (is_array ($id))
+		if (is_array($id))
 		{
-			return $this->findMany ($id, $columns);
+		    return $this->findMany($id, $columns);
 		}
 
-		$this->query->where ($this->model->getKeyName (), '=', $id);
+		$this->query->where($this->model->getKeyName(), '=', $id);
 
-		return $this->first ($columns);
+		return $this->first($columns);
 	}
 
 	/**
@@ -78,15 +75,14 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
 	 */
-	public function findMany ($id, $columns = array ('*'))
+	public function findMany($id, $columns = array('*'))
 	{
-		if (empty ($id))
-			return new Collection;
+		if (empty($id)) return $this->model->newCollection();
 
-		$this->query->whereIn ($this->model->getKeyName (), $id);
+		$this->query->whereIn($this->model->getKeyName(), $id);
 
-		return $this->get ($columns);
-	}
+		return $this->get($columns);
+    }
 
 	/**
 	 * Find a model by its primary key or throw an exception.
@@ -97,12 +93,11 @@ class Builder
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function findOrFail ($id, $columns = array ('*'))
+	public function findOrFail($id, $columns = array('*'))
 	{
-		if (!is_null ($model = $this->find ($id, $columns)))
-			return $model;
+		if ( ! is_null($model = $this->find($id, $columns))) return $model;
 
-		throw with (new ModelNotFoundException)->setModel (get_class ($this->model));
+		throw with(new ModelNotFoundException)->setModel(get_class($this->model));
 	}
 
 	/**
@@ -111,9 +106,9 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Database\Eloquent\Model|static|null
 	 */
-	public function first ($columns = array ('*'))
+	public function first($columns = array('*'))
 	{
-		return $this->take (1)->get ($columns)->first ();
+		return $this->take(1)->get($columns)->first();
 	}
 
 	/**
@@ -124,12 +119,11 @@ class Builder
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function firstOrFail ($columns = array ('*'))
+	public function firstOrFail($columns = array('*'))
 	{
-		if (!is_null ($model = $this->first ($columns)))
-			return $model;
+		if ( ! is_null($model = $this->first($columns))) return $model;
 
-		throw with (new ModelNotFoundException)->setModel (get_class ($this->model));
+		throw with(new ModelNotFoundException)->setModel(get_class($this->model));
 	}
 
 	/**
@@ -138,19 +132,19 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Database\Eloquent\Collection|static[]
 	 */
-	public function get ($columns = array ('*'))
+	public function get($columns = array('*'))
 	{
-		$models = $this->getModels ($columns);
+		$models = $this->getModels($columns);
 
 		// If we actually found models we will also eager load any relationships that
 		// have been specified as needing to be eager loaded, which will solve the
 		// n+1 query issue for the developers to avoid running a lot of queries.
-		if (count ($models) > 0)
+		if (count($models) > 0)
 		{
-			$models = $this->eagerLoadRelations ($models);
+			$models = $this->eagerLoadRelations($models);
 		}
 
-		return $this->model->newCollection ($models);
+		return $this->model->newCollection($models);
 	}
 
 	/**
@@ -159,12 +153,11 @@ class Builder
 	 * @param  string  $column
 	 * @return mixed
 	 */
-	public function pluck ($column)
+	public function pluck($column)
 	{
-		$result = $this->first (array ($column));
+		$result = $this->first(array($column));
 
-		if ($result)
-			return $result->{$column};
+		if ($result) return $result->{$column};
 	}
 
 	/**
@@ -174,20 +167,20 @@ class Builder
 	 * @param  callable  $callback
 	 * @return void
 	 */
-	public function chunk ($count, $callback)
+	public function chunk($count, $callback)
 	{
-		$results = $this->forPage ($page = 1, $count)->get ();
+		$results = $this->forPage($page = 1, $count)->get();
 
-		while (count ($results) > 0)
+		while (count($results) > 0)
 		{
 			// On each chunk result set, we will pass them to the callback and then let the
 			// developer take care of everything within the callback, which allows us to
 			// keep the memory low for spinning through large result sets for working.
-			call_user_func ($callback, $results);
+			call_user_func($callback, $results);
 
 			$page++;
 
-			$results = $this->forPage ($page, $count)->get ();
+			$results = $this->forPage($page, $count)->get();
 		}
 	}
 
@@ -198,20 +191,20 @@ class Builder
 	 * @param  string  $key
 	 * @return array
 	 */
-	public function lists ($column, $key = null)
+	public function lists($column, $key = null)
 	{
-		$results = $this->query->lists ($column, $key);
+		$results = $this->query->lists($column, $key);
 
 		// If the model has a mutator for the requested column, we will spin through
 		// the results and mutate the values so that the mutated version of these
 		// columns are returned as you would expect from these Eloquent models.
-		if ($this->model->hasGetMutator ($column))
+		if ($this->model->hasGetMutator($column))
 		{
 			foreach ($results as $key => &$value)
 			{
-				$fill = array ($column => $value);
+				$fill = array($column => $value);
 
-				$value = $this->model->newFromBuilder ($fill)->$column;
+				$value = $this->model->newFromBuilder($fill)->$column;
 			}
 		}
 
@@ -225,19 +218,19 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Pagination\Paginator
 	 */
-	public function paginate ($perPage = null, $columns = array ('*'))
+	public function paginate($perPage = null, $columns = array('*'))
 	{
-		$perPage = $perPage ? : $this->model->getPerPage ();
+		$perPage = $perPage ?: $this->model->getPerPage();
 
-		$paginator = $this->query->getConnection ()->getPaginator ();
+		$paginator = $this->query->getConnection()->getPaginator();
 
-		if (isset ($this->query->groups))
+		if (isset($this->query->groups))
 		{
-			return $this->groupedPaginate ($paginator, $perPage, $columns);
+			return $this->groupedPaginate($paginator, $perPage, $columns);
 		}
 		else
 		{
-			return $this->ungroupedPaginate ($paginator, $perPage, $columns);
+			return $this->ungroupedPaginate($paginator, $perPage, $columns);
 		}
 	}
 
@@ -249,11 +242,11 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Pagination\Paginator
 	 */
-	protected function groupedPaginate ($paginator, $perPage, $columns)
+	protected function groupedPaginate($paginator, $perPage, $columns)
 	{
-		$results = $this->get ($columns)->all ();
+		$results = $this->get($columns)->all();
 
-		return $this->query->buildRawPaginator ($paginator, $results, $perPage);
+		return $this->query->buildRawPaginator($paginator, $results, $perPage);
 	}
 
 	/**
@@ -264,18 +257,18 @@ class Builder
 	 * @param  array  $columns
 	 * @return \Illuminate\Pagination\Paginator
 	 */
-	protected function ungroupedPaginate ($paginator, $perPage, $columns)
+	protected function ungroupedPaginate($paginator, $perPage, $columns)
 	{
-		$total = $this->query->getPaginationCount ();
+		$total = $this->query->getPaginationCount();
 
 		// Once we have the paginator we need to set the limit and offset values for
 		// the query so we can get the properly paginated items. Once we have an
 		// array of items we can create the paginator instances for the items.
-		$page = $paginator->getCurrentPage ($total);
+		$page = $paginator->getCurrentPage($total);
 
-		$this->query->forPage ($page, $perPage);
+		$this->query->forPage($page, $perPage);
 
-		return $paginator->make ($this->get ($columns)->all (), $total, $perPage);
+		return $paginator->make($this->get($columns)->all(), $total, $perPage);
 	}
 
 	/**
@@ -284,9 +277,9 @@ class Builder
 	 * @param  array  $values
 	 * @return int
 	 */
-	public function update (array $values)
+	public function update(array $values)
 	{
-		return $this->query->update ($this->addUpdatedAtColumn ($values));
+		return $this->query->update($this->addUpdatedAtColumn($values));
 	}
 
 	/**
@@ -297,11 +290,11 @@ class Builder
 	 * @param  array   $extra
 	 * @return int
 	 */
-	public function increment ($column, $amount = 1, array $extra = array ())
+	public function increment($column, $amount = 1, array $extra = array())
 	{
-		$extra = $this->addUpdatedAtColumn ($extra);
+		$extra = $this->addUpdatedAtColumn($extra);
 
-		return $this->query->increment ($column, $amount, $extra);
+		return $this->query->increment($column, $amount, $extra);
 	}
 
 	/**
@@ -312,11 +305,11 @@ class Builder
 	 * @param  array   $extra
 	 * @return int
 	 */
-	public function decrement ($column, $amount = 1, array $extra = array ())
+	public function decrement($column, $amount = 1, array $extra = array())
 	{
-		$extra = $this->addUpdatedAtColumn ($extra);
+		$extra = $this->addUpdatedAtColumn($extra);
 
-		return $this->query->decrement ($column, $amount, $extra);
+		return $this->query->decrement($column, $amount, $extra);
 	}
 
 	/**
@@ -325,14 +318,13 @@ class Builder
 	 * @param  array  $values
 	 * @return array
 	 */
-	protected function addUpdatedAtColumn (array $values)
+	protected function addUpdatedAtColumn(array $values)
 	{
-		if (!$this->model->usesTimestamps ())
-			return $values;
+		if ( ! $this->model->usesTimestamps()) return $values;
 
-		$column = $this->model->getUpdatedAtColumn ();
+		$column = $this->model->getUpdatedAtColumn();
 
-		return array_add ($values, $column, $this->model->freshTimestampString ());
+		return array_add($values, $column, $this->model->freshTimestampString());
 	}
 
 	/**
@@ -340,15 +332,15 @@ class Builder
 	 *
 	 * @return int
 	 */
-	public function delete ()
+	public function delete()
 	{
-		if ($this->model->isSoftDeleting ())
+		if ($this->model->isSoftDeleting())
 		{
-			return $this->softDelete ();
+			return $this->softDelete();
 		}
 		else
 		{
-			return $this->query->delete ();
+			return $this->query->delete();
 		}
 	}
 
@@ -357,11 +349,11 @@ class Builder
 	 *
 	 * @return int
 	 */
-	protected function softDelete ()
+	protected function softDelete()
 	{
-		$column = $this->model->getDeletedAtColumn ();
+		$column = $this->model->getDeletedAtColumn();
 
-		return $this->update (array ($column => $this->model->freshTimestampString ()));
+		return $this->update(array($column => $this->model->freshTimestampString()));
 	}
 
 	/**
@@ -369,9 +361,9 @@ class Builder
 	 *
 	 * @return int
 	 */
-	public function forceDelete ()
+	public function forceDelete()
 	{
-		return $this->query->delete ();
+		return $this->query->delete();
 	}
 
 	/**
@@ -379,13 +371,13 @@ class Builder
 	 *
 	 * @return int
 	 */
-	public function restore ()
+	public function restore()
 	{
-		if ($this->model->isSoftDeleting ())
+		if ($this->model->isSoftDeleting())
 		{
-			$column = $this->model->getDeletedAtColumn ();
+			$column = $this->model->getDeletedAtColumn();
 
-			return $this->update (array ($column => null));
+			return $this->update(array($column => null));
 		}
 	}
 
@@ -394,20 +386,20 @@ class Builder
 	 *
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function withTrashed ()
+	public function withTrashed()
 	{
-		$column = $this->model->getQualifiedDeletedAtColumn ();
+		$column = $this->model->getQualifiedDeletedAtColumn();
 
 		foreach ((array) $this->query->wheres as $key => $where)
 		{
 			// If the where clause is a soft delete date constraint, we will remove it from
 			// the query and reset the keys on the wheres. This allows this developer to
 			// include deleted model in a relationship result set that is lazy loaded.
-			if ($this->isSoftDeleteConstraint ($where, $column))
+			if ($this->isSoftDeleteConstraint($where, $column))
 			{
-				unset ($this->query->wheres[$key]);
+				unset($this->query->wheres[$key]);
 
-				$this->query->wheres = array_values ($this->query->wheres);
+				$this->query->wheres = array_values($this->query->wheres);
 			}
 		}
 
@@ -419,11 +411,11 @@ class Builder
 	 *
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function onlyTrashed ()
+	public function onlyTrashed()
 	{
-		$this->withTrashed ();
+		$this->withTrashed();
 
-		$this->query->whereNotNull ($this->model->getQualifiedDeletedAtColumn ());
+		$this->query->whereNotNull($this->model->getQualifiedDeletedAtColumn());
 
 		return $this;
 	}
@@ -435,7 +427,7 @@ class Builder
 	 * @param  string  $column
 	 * @return bool
 	 */
-	protected function isSoftDeleteConstraint (array $where, $column)
+	protected function isSoftDeleteConstraint(array $where, $column)
 	{
 		return $where['type'] == 'Null' && $where['column'] == $column;
 	}
@@ -446,25 +438,25 @@ class Builder
 	 * @param  array  $columns
 	 * @return array|static[]
 	 */
-	public function getModels ($columns = array ('*'))
+	public function getModels($columns = array('*'))
 	{
 		// First, we will simply get the raw results from the query builders which we
 		// can use to populate an array with Eloquent models. We will pass columns
 		// that should be selected as well, which are typically just everything.
-		$results = $this->query->get ($columns);
+		$results = $this->query->get($columns);
 
-		$connection = $this->model->getConnectionName ();
+		$connection = $this->model->getConnectionName();
 
-		$models = array ();
+		$models = array();
 
 		// Once we have the results, we can spin through them and instantiate a fresh
 		// model instance for each records we retrieved from the database. We will
 		// also set the proper connection name for the model after we create it.
 		foreach ($results as $result)
 		{
-			$models[] = $model = $this->model->newFromBuilder ($result);
+			$models[] = $model = $this->model->newFromBuilder($result);
 
-			$model->setConnection ($connection);
+			$model->setConnection($connection);
 		}
 
 		return $models;
@@ -476,16 +468,16 @@ class Builder
 	 * @param  array  $models
 	 * @return array
 	 */
-	public function eagerLoadRelations (array $models)
+	public function eagerLoadRelations(array $models)
 	{
 		foreach ($this->eagerLoad as $name => $constraints)
 		{
 			// For nested eager loads we'll skip loading them here and they will be set as an
 			// eager load on the query to retrieve the relation so that they will be eager
 			// loaded on that query, because that is where they get hydrated as models.
-			if (strpos ($name, '.') === false)
+			if (strpos($name, '.') === false)
 			{
-				$models = $this->loadRelation ($models, $name, $constraints);
+				$models = $this->loadRelation($models, $name, $constraints);
 			}
 		}
 
@@ -500,25 +492,25 @@ class Builder
 	 * @param  \Closure  $constraints
 	 * @return array
 	 */
-	protected function loadRelation (array $models, $name, Closure $constraints)
+	protected function loadRelation(array $models, $name, Closure $constraints)
 	{
 		// First we will "back up" the existing where conditions on the query so we can
 		// add our eager constraints. Then we will merge the wheres that were on the
 		// query back to it in order that any where conditions might be specified.
-		$relation = $this->getRelation ($name);
+		$relation = $this->getRelation($name);
 
-		$relation->addEagerConstraints ($models);
+		$relation->addEagerConstraints($models);
 
-		call_user_func ($constraints, $relation);
+		call_user_func($constraints, $relation);
 
-		$models = $relation->initRelation ($models, $name);
+		$models = $relation->initRelation($models, $name);
 
 		// Once we have the results, we just match those back up to their parent models
 		// using the relationship instance. Then we just return the finished arrays
 		// of models which have been eagerly hydrated and are readied for return.
-		$results = $relation->getEager ();
+		$results = $relation->getEager();
 
-		return $relation->match ($models, $results, $name);
+		return $relation->match($models, $results, $name);
 	}
 
 	/**
@@ -527,26 +519,26 @@ class Builder
 	 * @param  string  $relation
 	 * @return \Illuminate\Database\Eloquent\Relations\Relation
 	 */
-	public function getRelation ($relation)
+	public function getRelation($relation)
 	{
 		$me = $this;
 
-		// We want to run a relationship query without any constrains so that we will
+		// We want to do a relationship query without any constraints so that we will
 		// not have to remove these where clauses manually which gets really hacky
 		// and is error prone while we remove the developer's own where clauses.
-		$query = Relation::noConstraints (function() use ($me, $relation)
-			{
-				return $me->getModel ()->$relation ();
-			});
+		$query = Relation::noConstraints(function() use ($me, $relation)
+		{
+			return $me->getModel()->$relation();
+		});
 
-		$nested = $this->nestedRelations ($relation);
+		$nested = $this->nestedRelations($relation);
 
 		// If there are nested relationships set on the query, we will put those onto
 		// the query instances so that they can be handled after this relationship
 		// is loaded. In this way they will all trickle down as they are loaded.
-		if (count ($nested) > 0)
+		if (count($nested) > 0)
 		{
-			$query->getQuery ()->with ($nested);
+			$query->getQuery()->with($nested);
 		}
 
 		return $query;
@@ -558,18 +550,18 @@ class Builder
 	 * @param  string  $relation
 	 * @return array
 	 */
-	protected function nestedRelations ($relation)
+	protected function nestedRelations($relation)
 	{
-		$nested = array ();
+		$nested = array();
 
 		// We are basically looking for any relationships that are nested deeper than
 		// the given top-level relationship. We will just check for any relations
 		// that start with the given top relations and adds them to our arrays.
 		foreach ($this->eagerLoad as $name => $constraints)
 		{
-			if ($this->isNested ($name, $relation))
+			if ($this->isNested($name, $relation))
 			{
-				$nested[substr ($name, strlen ($relation . '.'))] = $constraints;
+				$nested[substr($name, strlen($relation.'.'))] = $constraints;
 			}
 		}
 
@@ -583,11 +575,11 @@ class Builder
 	 * @param  string  $relation
 	 * @return bool
 	 */
-	protected function isNested ($name, $relation)
+	protected function isNested($name, $relation)
 	{
-		$dots = str_contains ($name, '.');
+		$dots = str_contains($name, '.');
 
-		return $dots && starts_with ($name, $relation . '.');
+		return $dots && starts_with($name, $relation.'.');
 	}
 
 	/**
@@ -599,19 +591,19 @@ class Builder
 	 * @param  string  $boolean
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function where ($column, $operator = null, $value = null, $boolean = 'and')
+	public function where($column, $operator = null, $value = null, $boolean = 'and')
 	{
 		if ($column instanceof Closure)
 		{
-			$query = $this->model->newQuery (false);
+			$query = $this->model->newQuery(false);
 
-			call_user_func ($column, $query);
+			call_user_func($column, $query);
 
-			$this->query->addNestedWhereQuery ($query->getQuery (), $boolean);
+			$this->query->addNestedWhereQuery($query->getQuery(), $boolean);
 		}
 		else
 		{
-			call_user_func_array (array ($this->query, 'where'), func_get_args ());
+			call_user_func_array(array($this->query, 'where'), func_get_args());
 		}
 
 		return $this;
@@ -625,9 +617,9 @@ class Builder
 	 * @param  mixed   $value
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function orWhere ($column, $operator = null, $value = null)
+	public function orWhere($column, $operator = null, $value = null)
 	{
-		return $this->where ($column, $operator, $value, 'or');
+		return $this->where($column, $operator, $value, 'or');
 	}
 
 	/**
@@ -640,16 +632,15 @@ class Builder
 	 * @param  \Closure  $callback
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function has ($relation, $operator = '>=', $count = 1, $boolean = 'and', $callback = null)
+	public function has($relation, $operator = '>=', $count = 1, $boolean = 'and', $callback = null)
 	{
-		$relation = $this->getHasRelationQuery ($relation);
+		$relation = $this->getHasRelationQuery($relation);
 
-		$query = $relation->getRelationCountQuery ($relation->getRelated ()->newQuery (), $this);
+		$query = $relation->getRelationCountQuery($relation->getRelated()->newQuery(), $this);
 
-		if ($callback)
-			call_user_func ($callback, $query);
+		if ($callback) call_user_func($callback, $query);
 
-		return $this->addHasWhere ($query, $relation, $operator, $count, $boolean);
+		return $this->addHasWhere($query, $relation, $operator, $count, $boolean);
 	}
 
 	/**
@@ -661,9 +652,9 @@ class Builder
 	 * @param  int     $count
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function whereHas ($relation, Closure $callback, $operator = '>=', $count = 1)
+	public function whereHas($relation, Closure $callback, $operator = '>=', $count = 1)
 	{
-		return $this->has ($relation, $operator, $count, 'and', $callback);
+		return $this->has($relation, $operator, $count, 'and', $callback);
 	}
 
 	/**
@@ -674,9 +665,9 @@ class Builder
 	 * @param  int     $count
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function orHas ($relation, $operator = '>=', $count = 1)
+	public function orHas($relation, $operator = '>=', $count = 1)
 	{
-		return $this->has ($relation, $operator, $count, 'or');
+		return $this->has($relation, $operator, $count, 'or');
 	}
 
 	/**
@@ -688,9 +679,9 @@ class Builder
 	 * @param  int     $count
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function orWhereHas ($relation, Closure $callback, $operator = '>=', $count = 1)
+	public function orWhereHas($relation, Closure $callback, $operator = '>=', $count = 1)
 	{
-		return $this->has ($relation, $operator, $count, 'or', $callback);
+		return $this->has($relation, $operator, $count, 'or', $callback);
 	}
 
 	/**
@@ -703,16 +694,16 @@ class Builder
 	 * @param  string  $boolean
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	protected function addHasWhere (Builder $hasQuery, Relation $relation, $operator, $count, $boolean)
+	protected function addHasWhere(Builder $hasQuery, Relation $relation, $operator, $count, $boolean)
 	{
-		$this->mergeWheresToHas ($hasQuery, $relation);
+		$this->mergeWheresToHas($hasQuery, $relation);
 
-		if (is_numeric ($count))
+		if (is_numeric($count))
 		{
-			$count = new Expression ($count);
+			$count = new Expression($count);
 		}
 
-		return $this->where (new Expression ('(' . $hasQuery->toSql () . ')'), $operator, $count, $boolean);
+		return $this->where(new Expression('('.$hasQuery->toSql().')'), $operator, $count, $boolean);
 	}
 
 	/**
@@ -722,18 +713,18 @@ class Builder
 	 * @param  \Illuminate\Database\Eloquent\Relations\Relation  $relation
 	 * @return void
 	 */
-	protected function mergeWheresToHas (Builder $hasQuery, Relation $relation)
+	protected function mergeWheresToHas(Builder $hasQuery, Relation $relation)
 	{
 		// Here we have the "has" query and the original relation. We need to copy over any
 		// where clauses the developer may have put in the relationship function over to
 		// the has query, and then copy the bindings from the "has" query to the main.
-		$relationQuery = $relation->getBaseQuery ();
+		$relationQuery = $relation->getBaseQuery();
 
-		$hasQuery->mergeWheres (
-			$relationQuery->wheres, $relationQuery->getBindings ()
+		$hasQuery->mergeWheres(
+			$relationQuery->wheres, $relationQuery->getBindings()
 		);
 
-		$this->query->mergeBindings ($hasQuery->getQuery ());
+		$this->query->mergeBindings($hasQuery->getQuery());
 	}
 
 	/**
@@ -742,14 +733,14 @@ class Builder
 	 * @param  string  $relation
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	protected function getHasRelationQuery ($relation)
+	protected function getHasRelationQuery($relation)
 	{
 		$me = $this;
 
-		return Relation::noConstraints (function() use ($me, $relation)
-			{
-				return $me->getModel ()->$relation ();
-			});
+		return Relation::noConstraints(function() use ($me, $relation)
+		{
+			return $me->getModel()->$relation();
+		});
 	}
 
 	/**
@@ -758,14 +749,13 @@ class Builder
 	 * @param  dynamic  $relations
 	 * @return \Illuminate\Database\Eloquent\Builder|static
 	 */
-	public function with ($relations)
+	public function with($relations)
 	{
-		if (is_string ($relations))
-			$relations = func_get_args ();
+		if (is_string($relations)) $relations = func_get_args();
 
-		$eagers = $this->parseRelations ($relations);
+		$eagers = $this->parseRelations($relations);
 
-		$this->eagerLoad = array_merge ($this->eagerLoad, $eagers);
+		$this->eagerLoad = array_merge($this->eagerLoad, $eagers);
 
 		return $this;
 	}
@@ -776,29 +766,26 @@ class Builder
 	 * @param  array  $relations
 	 * @return array
 	 */
-	protected function parseRelations (array $relations)
+	protected function parseRelations(array $relations)
 	{
-		$results = array ();
+		$results = array();
 
 		foreach ($relations as $name => $constraints)
 		{
 			// If the "relation" value is actually a numeric key, we can assume that no
 			// constraints have been specified for the eager load and we'll just put
 			// an empty Closure with the loader so that we can treat all the same.
-			if (is_numeric ($name))
+			if (is_numeric($name))
 			{
-				$f = function()
-				{
-					
-				};
+				$f = function() {};
 
-				list($name, $constraints) = array ($constraints, $f);
+				list($name, $constraints) = array($constraints, $f);
 			}
 
 			// We need to separate out any nested includes. Which allows the developers
 			// to load deep relationships using "dots" without stating each level of
 			// the relationship with its own key in the array of eager load names.
-			$results = $this->parseNested ($name, $results);
+			$results = $this->parseNested($name, $results);
 
 			$results[$name] = $constraints;
 		}
@@ -813,24 +800,21 @@ class Builder
 	 * @param  array   $results
 	 * @return array
 	 */
-	protected function parseNested ($name, $results)
+	protected function parseNested($name, $results)
 	{
-		$progress = array ();
+		$progress = array();
 
 		// If the relation has already been set on the result array, we will not set it
 		// again, since that would override any constraints that were already placed
 		// on the relationships. We will only set the ones that are not specified.
-		foreach (explode ('.', $name) as $segment)
+		foreach (explode('.', $name) as $segment)
 		{
 			$progress[] = $segment;
 
-			if (!isset ($results[$last = implode ('.', $progress)]))
+			if ( ! isset($results[$last = implode('.', $progress)]))
 			{
-				$results[$last] = function()
-				{
-					
-				};
-			}
+ 				$results[$last] = function() {};
+ 			}
 		}
 
 		return $results;
@@ -843,11 +827,11 @@ class Builder
 	 * @param  array  $parameters
 	 * @return \Illuminate\Database\Query\Builder
 	 */
-	protected function callScope ($scope, $parameters)
+	protected function callScope($scope, $parameters)
 	{
-		array_unshift ($parameters, $this);
+		array_unshift($parameters, $this);
 
-		return call_user_func_array (array ($this->model, $scope), $parameters) ? : $this;
+		return call_user_func_array(array($this->model, $scope), $parameters) ?: $this;
 	}
 
 	/**
@@ -855,7 +839,7 @@ class Builder
 	 *
 	 * @return \Illuminate\Database\Query\Builder|static
 	 */
-	public function getQuery ()
+	public function getQuery()
 	{
 		return $this->query;
 	}
@@ -866,7 +850,7 @@ class Builder
 	 * @param  \Illuminate\Database\Query\Builder  $query
 	 * @return void
 	 */
-	public function setQuery ($query)
+	public function setQuery($query)
 	{
 		$this->query = $query;
 	}
@@ -876,7 +860,7 @@ class Builder
 	 *
 	 * @return array
 	 */
-	public function getEagerLoads ()
+	public function getEagerLoads()
 	{
 		return $this->eagerLoad;
 	}
@@ -887,7 +871,7 @@ class Builder
 	 * @param  array  $eagerLoad
 	 * @return void
 	 */
-	public function setEagerLoads (array $eagerLoad)
+	public function setEagerLoads(array $eagerLoad)
 	{
 		$this->eagerLoad = $eagerLoad;
 	}
@@ -897,7 +881,7 @@ class Builder
 	 *
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function getModel ()
+	public function getModel()
 	{
 		return $this->model;
 	}
@@ -908,11 +892,11 @@ class Builder
 	 * @param  \Illuminate\Database\Eloquent\Model  $model
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function setModel (Model $model)
+	public function setModel(Model $model)
 	{
 		$this->model = $model;
 
-		$this->query->from ($model->getTable ());
+		$this->query->from($model->getTable());
 
 		return $this;
 	}
@@ -924,18 +908,18 @@ class Builder
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		if (method_exists ($this->model, $scope = 'scope' . ucfirst ($method)))
+		if (method_exists($this->model, $scope = 'scope'.ucfirst($method)))
 		{
-			return $this->callScope ($scope, $parameters);
+			return $this->callScope($scope, $parameters);
 		}
 		else
 		{
-			$result = call_user_func_array (array ($this->query, $method), $parameters);
+			$result = call_user_func_array(array($this->query, $method), $parameters);
 		}
 
-		return in_array ($method, $this->passthru) ? $result : $this;
+		return in_array($method, $this->passthru) ? $result : $this;
 	}
 
 	/**
@@ -943,7 +927,7 @@ class Builder
 	 *
 	 * @return void
 	 */
-	public function __clone ()
+	public function __clone()
 	{
 		$this->query = clone $this->query;
 	}

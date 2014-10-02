@@ -15,17 +15,15 @@ use Monolog\TestCase;
 
 class TagProcessorTest extends TestCase
 {
+    /**
+     * @covers Monolog\Processor\TagProcessor::__invoke
+     */
+    public function testProcessor()
+    {
+        $tags = array(1, 2, 3);
+        $processor = new TagProcessor($tags);
+        $record = $processor($this->getRecord());
 
-	/**
-	 * @covers Monolog\Processor\TagProcessor::__invoke
-	 */
-	public function testProcessor ()
-	{
-		$tags = array (1, 2, 3);
-		$processor = new TagProcessor ($tags);
-		$record = $processor ($this->getRecord ());
-
-		$this->assertEquals ($tags, $record['extra']['tags']);
-	}
-
+        $this->assertEquals($tags, $record['extra']['tags']);
+    }
 }

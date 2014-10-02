@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class SetRemove extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SREM';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SREM';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		return self::normalizeVariadic ($arguments);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeVariadic($arguments);
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListPushHeadX extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LPUSHX';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LPUSHX';
+    }
 }

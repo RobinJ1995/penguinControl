@@ -1,25 +1,22 @@
-<?php
-
-namespace Illuminate\View\Engines;
+<?php namespace Illuminate\View\Engines;
 
 use Closure;
 
-class EngineResolver
-{
+class EngineResolver {
 
 	/**
 	 * The array of engine resolvers.
 	 *
 	 * @var array
 	 */
-	protected $resolvers = array ();
+	protected $resolvers = array();
 
 	/**
 	 * The resolved engine instances.
 	 *
 	 * @var array
 	 */
-	protected $resolved = array ();
+	protected $resolved = array();
 
 	/**
 	 * Register a new engine resolver.
@@ -30,7 +27,7 @@ class EngineResolver
 	 * @param  Closure  $resolver
 	 * @return void
 	 */
-	public function register ($engine, Closure $resolver)
+	public function register($engine, Closure $resolver)
 	{
 		$this->resolvers[$engine] = $resolver;
 	}
@@ -41,11 +38,11 @@ class EngineResolver
 	 * @param  string  $engine
 	 * @return \Illuminate\View\Engines\EngineInterface
 	 */
-	public function resolve ($engine)
+	public function resolve($engine)
 	{
-		if (!isset ($this->resolved[$engine]))
+		if ( ! isset($this->resolved[$engine]))
 		{
-			$this->resolved[$engine] = call_user_func ($this->resolvers[$engine]);
+			$this->resolved[$engine] = call_user_func($this->resolvers[$engine]);
 		}
 
 		return $this->resolved[$engine];

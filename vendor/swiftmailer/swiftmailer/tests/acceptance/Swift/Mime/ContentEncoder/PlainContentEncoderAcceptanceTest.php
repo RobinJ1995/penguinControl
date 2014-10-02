@@ -1,104 +1,88 @@
 <?php
 
-require_once 'Swift/Mime/ContentEncoder/PlainContentEncoder.php';
-require_once 'Swift/ByteStream/ArrayByteStream.php';
-
-class Swift_Mime_ContentEncoder_PlainContentEncoderAcceptanceTest extends UnitTestCase
+class Swift_Mime_ContentEncoder_PlainContentEncoderAcceptanceTest extends \PHPUnit_Framework_TestCase
 {
+    private $_samplesDir;
+    private $_encoder;
 
-	private $_samplesDir;
-	private $_encoder;
+    public function setUp()
+    {
+        $this->_samplesDir = realpath(__DIR__.'/../../../../_samples/charsets');
+        $this->_encoder = new Swift_Mime_ContentEncoder_PlainContentEncoder('8bit');
+    }
 
-	public function setUp ()
-	{
-		$this->_samplesDir = realpath (dirname (__FILE__) . '/../../../../_samples/charsets');
-		$this->_encoder = new Swift_Mime_ContentEncoder_PlainContentEncoder ('8bit');
-	}
+    public function testEncodingAndDecodingSamplesString()
+    {
+        $sampleFp = opendir($this->_samplesDir);
+        while (false !== $encodingDir = readdir($sampleFp)) {
+            if (substr($encodingDir, 0, 1) == '.') {
+                continue;
+            }
 
-	public function testEncodingAndDecodingSamplesString ()
-	{
-		$sampleFp = opendir ($this->_samplesDir);
-		while (false !== $encodingDir = readdir ($sampleFp))
-		{
-			if (substr ($encodingDir, 0, 1) == '.')
-			{
-				continue;
-			}
+            $sampleDir = $this->_samplesDir.'/'.$encodingDir;
 
-			$sampleDir = $this->_samplesDir . '/' . $encodingDir;
+            if (is_dir($sampleDir)) {
+                $fileFp = opendir($sampleDir);
+                while (false !== $sampleFile = readdir($fileFp)) {
+                    if (substr($sampleFile, 0, 1) == '.') {
+                        continue;
+                    }
 
-			if (is_dir ($sampleDir))
-			{
+                    $text = file_get_contents($sampleDir.'/'.$sampleFile);
+                    $encodedText = $this->_encoder->encodeString($text);
 
-				$fileFp = opendir ($sampleDir);
-				while (false !== $sampleFile = readdir ($fileFp))
-				{
-					if (substr ($sampleFile, 0, 1) == '.')
-					{
-						continue;
-					}
+                    $this->assertEquals(
+                        $encodedText, $text,
+                        '%s: Encoded string should be identical to original string for sample '.
+                        $sampleDir.'/'.$sampleFile
+                        );
+                }
+                closedir($fileFp);
+            }
+        }
+        closedir($sampleFp);
+    }
 
-					$text = file_get_contents ($sampleDir . '/' . $sampleFile);
-					$encodedText = $this->_encoder->encodeString ($text);
+    public function testEncodingAndDecodingSamplesByteStream()
+    {
+        $sampleFp = opendir($this->_samplesDir);
+        while (false !== $encodingDir = readdir($sampleFp)) {
+            if (substr($encodingDir, 0, 1) == '.') {
+                continue;
+            }
 
-					$this->assertEqual (
-						$encodedText, $text, '%s: Encoded string should be identical to original string for sample ' .
-						$sampleDir . '/' . $sampleFile
-					);
-				}
-				closedir ($fileFp);
-			}
-		}
-		closedir ($sampleFp);
-	}
+            $sampleDir = $this->_samplesDir.'/'.$encodingDir;
 
-	public function testEncodingAndDecodingSamplesByteStream ()
-	{
-		$sampleFp = opendir ($this->_samplesDir);
-		while (false !== $encodingDir = readdir ($sampleFp))
-		{
-			if (substr ($encodingDir, 0, 1) == '.')
-			{
-				continue;
-			}
+            if (is_dir($sampleDir)) {
+                $fileFp = opendir($sampleDir);
+                while (false !== $sampleFile = readdir($fileFp)) {
+                    if (substr($sampleFile, 0, 1) == '.') {
+                        continue;
+                    }
 
-			$sampleDir = $this->_samplesDir . '/' . $encodingDir;
+                    $text = file_get_contents($sampleDir.'/'.$sampleFile);
 
-			if (is_dir ($sampleDir))
-			{
+                    $os = new Swift_ByteStream_ArrayByteStream();
+                    $os->write($text);
 
-				$fileFp = opendir ($sampleDir);
-				while (false !== $sampleFile = readdir ($fileFp))
-				{
-					if (substr ($sampleFile, 0, 1) == '.')
-					{
-						continue;
-					}
+                    $is = new Swift_ByteStream_ArrayByteStream();
 
-					$text = file_get_contents ($sampleDir . '/' . $sampleFile);
+                    $this->_encoder->encodeByteStream($os, $is);
 
-					$os = new Swift_ByteStream_ArrayByteStream();
-					$os->write ($text);
+                    $encoded = '';
+                    while (false !== $bytes = $is->read(8192)) {
+                        $encoded .= $bytes;
+                    }
 
-					$is = new Swift_ByteStream_ArrayByteStream();
-
-					$this->_encoder->encodeByteStream ($os, $is);
-
-					$encoded = '';
-					while (false !== $bytes = $is->read (8192))
-					{
-						$encoded .= $bytes;
-					}
-
-					$this->assertEqual (
-						$encoded, $text, '%s: Encoded string should be identical to original string for sample ' .
-						$sampleDir . '/' . $sampleFile
-					);
-				}
-				closedir ($fileFp);
-			}
-		}
-		closedir ($sampleFp);
-	}
-
+                    $this->assertEquals(
+                        $encoded, $text,
+                        '%s: Encoded string should be identical to original string for sample '.
+                        $sampleDir.'/'.$sampleFile
+                        );
+                }
+                closedir($fileFp);
+            }
+        }
+        closedir($sampleFp);
+    }
 }

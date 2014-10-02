@@ -23,105 +23,108 @@ use Exception;
  */
 class LineFormatter extends NormalizerFormatter
 {
+    const SIMPLE_FORMAT = "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n";
 
-	const SIMPLE_FORMAT = "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n";
+    protected $format;
+    protected $allowInlineLineBreaks;
+    protected $ignoreEmptyContextAndExtra;
 
-	protected $format;
-	protected $allowInlineLineBreaks;
+    /**
+     * @param string $format                     The format of the message
+     * @param string $dateFormat                 The format of the timestamp: one supported by DateTime::format
+     * @param bool   $allowInlineLineBreaks      Whether to allow inline line breaks in log entries
+     * @param bool   $ignoreEmptyContextAndExtra
+     */
+    public function __construct($format = null, $dateFormat = null, $allowInlineLineBreaks = false, $ignoreEmptyContextAndExtra = false)
+    {
+        $this->format = $format ?: static::SIMPLE_FORMAT;
+        $this->allowInlineLineBreaks = $allowInlineLineBreaks;
+        $this->ignoreEmptyContextAndExtra = $ignoreEmptyContextAndExtra;
+        parent::__construct($dateFormat);
+    }
 
-	/**
-	 * @param string $format                The format of the message
-	 * @param string $dateFormat            The format of the timestamp: one supported by DateTime::format
-	 * @param bool   $allowInlineLineBreaks Whether to allow inline line breaks in log entries
-	 */
-	public function __construct ($format = null, $dateFormat = null, $allowInlineLineBreaks = false)
-	{
-		$this->format = $format ? : static::SIMPLE_FORMAT;
-		$this->allowInlineLineBreaks = $allowInlineLineBreaks;
-		parent::__construct ($dateFormat);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function format(array $record)
+    {
+        $vars = parent::format($record);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function format (array $record)
-	{
-		$vars = parent::format ($record);
+        $output = $this->format;
 
-		$output = $this->format;
-		foreach ($vars['extra'] as $var => $val)
-		{
-			if (false !== strpos ($output, '%extra.' . $var . '%'))
-			{
-				$output = str_replace ('%extra.' . $var . '%', $this->replaceNewlines ($this->convertToString ($val)), $output);
-				unset ($vars['extra'][$var]);
-			}
-		}
-		foreach ($vars as $var => $val)
-		{
-			if (false !== strpos ($output, '%' . $var . '%'))
-			{
-				$output = str_replace ('%' . $var . '%', $this->replaceNewlines ($this->convertToString ($val)), $output);
-			}
-		}
+        foreach ($vars['extra'] as $var => $val) {
+            if (false !== strpos($output, '%extra.'.$var.'%')) {
+                $output = str_replace('%extra.'.$var.'%', $this->replaceNewlines($this->convertToString($val)), $output);
+                unset($vars['extra'][$var]);
+            }
+        }
 
-		return $output;
-	}
+        if ($this->ignoreEmptyContextAndExtra) {
+            if (empty($vars['context'])) {
+                unset($vars['context']);
+                $output = str_replace('%context%', '', $output);
+            }
 
-	public function formatBatch (array $records)
-	{
-		$message = '';
-		foreach ($records as $record)
-		{
-			$message .= $this->format ($record);
-		}
+            if (empty($vars['extra'])) {
+                unset($vars['extra']);
+                $output = str_replace('%extra%', '', $output);
+            }
+        }
 
-		return $message;
-	}
+        foreach ($vars as $var => $val) {
+            if (false !== strpos($output, '%'.$var.'%')) {
+                $output = str_replace('%'.$var.'%', $this->replaceNewlines($this->convertToString($val)), $output);
+            }
+        }
 
-	protected function normalizeException (Exception $e)
-	{
-		$previousText = '';
-		if ($previous = $e->getPrevious ())
-		{
-			do
-			{
-				$previousText .= ', ' . get_class ($previous) . ': ' . $previous->getMessage () . ' at ' . $previous->getFile () . ':' . $previous->getLine ();
-			}
-			while ($previous = $previous->getPrevious ());
-		}
+        return $output;
+    }
 
-		return '[object] (' . get_class ($e) . ': ' . $e->getMessage () . ' at ' . $e->getFile () . ':' . $e->getLine () . $previousText . ')';
-	}
+    public function formatBatch(array $records)
+    {
+        $message = '';
+        foreach ($records as $record) {
+            $message .= $this->format($record);
+        }
 
-	protected function convertToString ($data)
-	{
-		if (null === $data || is_bool ($data))
-		{
-			return var_export ($data, true);
-		}
+        return $message;
+    }
 
-		if (is_scalar ($data))
-		{
-			return (string) $data;
-		}
+    protected function normalizeException(Exception $e)
+    {
+        $previousText = '';
+        if ($previous = $e->getPrevious()) {
+            do {
+                $previousText .= ', '.get_class($previous).': '.$previous->getMessage().' at '.$previous->getFile().':'.$previous->getLine();
+            } while ($previous = $previous->getPrevious());
+        }
 
-		if (version_compare (PHP_VERSION, '5.4.0', '>='))
-		{
-			return $this->toJson ($data, true);
-		}
+        return '[object] ('.get_class($e).': '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine().$previousText.')';
+    }
 
-		return str_replace ('\\/', '/', @json_encode ($data));
-	}
+    protected function convertToString($data)
+    {
+        if (null === $data || is_bool($data)) {
+            return var_export($data, true);
+        }
 
-	protected function replaceNewlines ($str)
-	{
-		if ($this->allowInlineLineBreaks)
-		{
-			return $str;
-		}
+        if (is_scalar($data)) {
+            return (string) $data;
+        }
 
-		return preg_replace ('{[\r\n]+}', ' ', $str);
-	}
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+            return $this->toJson($data, true);
+        }
 
+        return str_replace('\\/', '/', @json_encode($data));
+    }
+
+    protected function replaceNewlines($str)
+    {
+        if ($this->allowInlineLineBreaks) {
+            return $str;
+        }
+
+        return strtr($str, array("\r\n" => ' ', "\r" => ' ', "\n" => ' '));
+    }
 }

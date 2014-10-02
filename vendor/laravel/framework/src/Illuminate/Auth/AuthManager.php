@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Auth;
+<?php namespace Illuminate\Auth;
 
 use Illuminate\Support\Manager;
 
-class AuthManager extends Manager
-{
+class AuthManager extends Manager {
 
 	/**
 	 * Create a new driver instance.
@@ -13,18 +10,18 @@ class AuthManager extends Manager
 	 * @param  string  $driver
 	 * @return mixed
 	 */
-	protected function createDriver ($driver)
+	protected function createDriver($driver)
 	{
-		$guard = parent::createDriver ($driver);
+		$guard = parent::createDriver($driver);
 
 		// When using the remember me functionality of the authentication services we
 		// will need to be set the encryption instance of the guard, which allows
 		// secure, encrypted cookie values to get generated for those cookies.
-		$guard->setCookieJar ($this->app['cookie']);
+		$guard->setCookieJar($this->app['cookie']);
 
-		$guard->setDispatcher ($this->app['events']);
+		$guard->setDispatcher($this->app['events']);
 
-		return $guard->setRequest ($this->app->refresh ('request', $guard, 'setRequest'));
+		return $guard->setRequest($this->app->refresh('request', $guard, 'setRequest'));
 	}
 
 	/**
@@ -33,14 +30,13 @@ class AuthManager extends Manager
 	 * @param  string  $driver
 	 * @return mixed
 	 */
-	protected function callCustomCreator ($driver)
+	protected function callCustomCreator($driver)
 	{
-		$custom = parent::callCustomCreator ($driver);
+		$custom = parent::callCustomCreator($driver);
 
-		if ($custom instanceof Guard)
-			return $custom;
+		if ($custom instanceof Guard) return $custom;
 
-		return new Guard ($custom, $this->app['session.store']);
+		return new Guard($custom, $this->app['session.store']);
 	}
 
 	/**
@@ -48,11 +44,11 @@ class AuthManager extends Manager
 	 *
 	 * @return \Illuminate\Auth\Guard
 	 */
-	public function createDatabaseDriver ()
+	public function createDatabaseDriver()
 	{
-		$provider = $this->createDatabaseProvider ();
+		$provider = $this->createDatabaseProvider();
 
-		return new Guard ($provider, $this->app['session.store']);
+		return new Guard($provider, $this->app['session.store']);
 	}
 
 	/**
@@ -60,16 +56,16 @@ class AuthManager extends Manager
 	 *
 	 * @return \Illuminate\Auth\DatabaseUserProvider
 	 */
-	protected function createDatabaseProvider ()
+	protected function createDatabaseProvider()
 	{
-		$connection = $this->app['db']->connection ();
+		$connection = $this->app['db']->connection();
 
 		// When using the basic database user provider, we need to inject the table we
 		// want to use, since this is not an Eloquent model we will have no way to
 		// know without telling the provider, so we'll inject the config value.
 		$table = $this->app['config']['auth.table'];
 
-		return new DatabaseUserProvider ($connection, $this->app['hash'], $table);
+		return new DatabaseUserProvider($connection, $this->app['hash'], $table);
 	}
 
 	/**
@@ -77,11 +73,11 @@ class AuthManager extends Manager
 	 *
 	 * @return \Illuminate\Auth\Guard
 	 */
-	public function createEloquentDriver ()
+	public function createEloquentDriver()
 	{
-		$provider = $this->createEloquentProvider ();
+		$provider = $this->createEloquentProvider();
 
-		return new Guard ($provider, $this->app['session.store']);
+		return new Guard($provider, $this->app['session.store']);
 	}
 
 	/**
@@ -89,11 +85,11 @@ class AuthManager extends Manager
 	 *
 	 * @return \Illuminate\Auth\EloquentUserProvider
 	 */
-	protected function createEloquentProvider ()
+	protected function createEloquentProvider()
 	{
 		$model = $this->app['config']['auth.model'];
 
-		return new EloquentUserProvider ($this->app['hash'], $model);
+		return new EloquentUserProvider($this->app['hash'], $model);
 	}
 
 	/**
@@ -101,7 +97,7 @@ class AuthManager extends Manager
 	 *
 	 * @return string
 	 */
-	public function getDefaultDriver ()
+	public function getDefaultDriver()
 	{
 		return $this->app['config']['auth.driver'];
 	}
@@ -112,7 +108,7 @@ class AuthManager extends Manager
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setDefaultDriver ($name)
+	public function setDefaultDriver($name)
 	{
 		$this->app['config']['auth.driver'] = $name;
 	}

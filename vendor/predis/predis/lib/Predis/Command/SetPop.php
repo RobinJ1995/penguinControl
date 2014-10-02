@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetPop extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SPOP';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SPOP';
+    }
 }

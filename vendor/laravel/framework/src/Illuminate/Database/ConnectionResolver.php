@@ -1,16 +1,13 @@
-<?php
+<?php namespace Illuminate\Database;
 
-namespace Illuminate\Database;
-
-class ConnectionResolver implements ConnectionResolverInterface
-{
+class ConnectionResolver implements ConnectionResolverInterface {
 
 	/**
 	 * All of the registered connections.
 	 *
 	 * @var array
 	 */
-	protected $connections = array ();
+	protected $connections = array();
 
 	/**
 	 * The default connection name.
@@ -25,11 +22,11 @@ class ConnectionResolver implements ConnectionResolverInterface
 	 * @param  array  $connections
 	 * @return void
 	 */
-	public function __construct (array $connections = array ())
+	public function __construct(array $connections = array())
 	{
 		foreach ($connections as $name => $connection)
 		{
-			$this->addConnection ($name, $connection);
+			$this->addConnection($name, $connection);
 		}
 	}
 
@@ -39,10 +36,9 @@ class ConnectionResolver implements ConnectionResolverInterface
 	 * @param  string  $name
 	 * @return \Illuminate\Database\Connection
 	 */
-	public function connection ($name = null)
+	public function connection($name = null)
 	{
-		if (is_null ($name))
-			$name = $this->getDefaultConnection ();
+		if (is_null($name)) $name = $this->getDefaultConnection();
 
 		return $this->connections[$name];
 	}
@@ -54,7 +50,7 @@ class ConnectionResolver implements ConnectionResolverInterface
 	 * @param  \Illuminate\Database\Connection  $connection
 	 * @return void
 	 */
-	public function addConnection ($name, Connection $connection)
+	public function addConnection($name, Connection $connection)
 	{
 		$this->connections[$name] = $connection;
 	}
@@ -65,9 +61,9 @@ class ConnectionResolver implements ConnectionResolverInterface
 	 * @param  string  $name
 	 * @return bool
 	 */
-	public function hasConnection ($name)
+	public function hasConnection($name)
 	{
-		return isset ($this->connections[$name]);
+		return isset($this->connections[$name]);
 	}
 
 	/**
@@ -75,7 +71,7 @@ class ConnectionResolver implements ConnectionResolverInterface
 	 *
 	 * @return string
 	 */
-	public function getDefaultConnection ()
+	public function getDefaultConnection()
 	{
 		return $this->default;
 	}
@@ -86,7 +82,7 @@ class ConnectionResolver implements ConnectionResolverInterface
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setDefaultConnection ($name)
+	public function setDefaultConnection($name)
 	{
 		$this->default = $name;
 	}

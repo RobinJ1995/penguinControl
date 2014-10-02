@@ -17,62 +17,61 @@ namespace Predis\Command;
  */
 interface CommandInterface
 {
+    /**
+     * Gets the ID of a Redis command.
+     *
+     * @return string
+     */
+    public function getId();
 
-	/**
-	 * Gets the ID of a Redis command.
-	 *
-	 * @return string
-	 */
-	public function getId ();
+    /**
+     * Set the hash for the command.
+     *
+     * @param int $hash Calculated hash.
+     */
+    public function setHash($hash);
 
-	/**
-	 * Set the hash for the command.
-	 *
-	 * @param int $hash Calculated hash.
-	 */
-	public function setHash ($hash);
+    /**
+     * Returns the hash of the command.
+     *
+     * @return int
+     */
+    public function getHash();
 
-	/**
-	 * Returns the hash of the command.
-	 *
-	 * @return int
-	 */
-	public function getHash ();
+    /**
+     * Sets the arguments for the command.
+     *
+     * @param array $arguments List of arguments.
+     */
+    public function setArguments(Array $arguments);
 
-	/**
-	 * Sets the arguments for the command.
-	 *
-	 * @param array $arguments List of arguments.
-	 */
-	public function setArguments (Array $arguments);
+    /**
+     * Sets the raw arguments for the command without processing them.
+     *
+     * @param array $arguments List of arguments.
+     */
+    public function setRawArguments(Array $arguments);
 
-	/**
-	 * Sets the raw arguments for the command without processing them.
-	 *
-	 * @param array $arguments List of arguments.
-	 */
-	public function setRawArguments (Array $arguments);
+    /**
+     * Gets the arguments of the command.
+     *
+     * @return array
+     */
+    public function getArguments();
 
-	/**
-	 * Gets the arguments of the command.
-	 *
-	 * @return array
-	 */
-	public function getArguments ();
+    /**
+     * Gets the argument of the command at the specified index.
+     *
+     * @param  int   $index Index of the desired argument.
+     * @return mixed
+     */
+    public function getArgument($index);
 
-	/**
-	 * Gets the argument of the command at the specified index.
-	 *
-	 * @param  int   $index Index of the desired argument.
-	 * @return mixed
-	 */
-	public function getArgument ($index);
-
-	/**
-	 * Parses a reply buffer and returns a PHP object.
-	 *
-	 * @param  string $data Binary string containing the whole reply.
-	 * @return mixed
-	 */
-	public function parseResponse ($data);
+    /**
+     * Parses a reply buffer and returns a PHP object.
+     *
+     * @param  string $data Binary string containing the whole reply.
+     * @return mixed
+     */
+    public function parseResponse($data);
 }

@@ -20,14 +20,13 @@ use Predis\Connection\ComposableConnectionInterface;
  */
 interface ResponseHandlerInterface
 {
-
-	/**
-	 * Parses a type of reply returned by Redis and reads more data from the
-	 * connection if needed.
-	 *
-	 * @param  ComposableConnectionInterface $connection Connection to Redis.
-	 * @param  string                        $payload    Initial payload of the reply.
-	 * @return mixed
-	 */
-	public function handle (ComposableConnectionInterface $connection, $payload);
+    /**
+     * Parses a type of reply returned by Redis and reads more data from the
+     * connection if needed.
+     *
+     * @param  ComposableConnectionInterface $connection Connection to Redis.
+     * @param  string                        $payload    Initial payload of the reply.
+     * @return mixed
+     */
+    public function handle(ComposableConnectionInterface $connection, $payload);
 }

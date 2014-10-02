@@ -22,36 +22,35 @@ use Predis\Command\CommandInterface;
  */
 interface ServerProfileInterface
 {
+    /**
+     * Gets a profile version corresponding to a Redis version.
+     *
+     * @return string
+     */
+    public function getVersion();
 
-	/**
-	 * Gets a profile version corresponding to a Redis version.
-	 *
-	 * @return string
-	 */
-	public function getVersion ();
+    /**
+     * Checks if the profile supports the specified command.
+     *
+     * @param  string $command Command ID.
+     * @return bool
+     */
+    public function supportsCommand($command);
 
-	/**
-	 * Checks if the profile supports the specified command.
-	 *
-	 * @param  string $command Command ID.
-	 * @return bool
-	 */
-	public function supportsCommand ($command);
+    /**
+     * Checks if the profile supports the specified list of commands.
+     *
+     * @param  array  $commands List of command IDs.
+     * @return string
+     */
+    public function supportsCommands(Array $commands);
 
-	/**
-	 * Checks if the profile supports the specified list of commands.
-	 *
-	 * @param  array  $commands List of command IDs.
-	 * @return string
-	 */
-	public function supportsCommands (Array $commands);
-
-	/**
-	 * Creates a new command instance.
-	 *
-	 * @param  string           $method    Command ID.
-	 * @param  array            $arguments Arguments for the command.
-	 * @return CommandInterface
-	 */
-	public function createCommand ($method, $arguments = array ());
+    /**
+     * Creates a new command instance.
+     *
+     * @param  string           $method    Command ID.
+     * @param  array            $arguments Arguments for the command.
+     * @return CommandInterface
+     */
+    public function createCommand($method, $arguments = array());
 }

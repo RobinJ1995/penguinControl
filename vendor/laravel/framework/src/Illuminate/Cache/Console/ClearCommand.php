@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Cache\Console;
+<?php namespace Illuminate\Cache\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Filesystem\Filesystem;
 
-class ClearCommand extends Command
-{
+class ClearCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -44,9 +41,9 @@ class ClearCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (CacheManager $cache, Filesystem $files)
+	public function __construct(CacheManager $cache, Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->cache = $cache;
 		$this->files = $files;
@@ -57,13 +54,13 @@ class ClearCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->cache->flush ();
+		$this->cache->flush();
 
-		$this->files->delete ($this->laravel['config']['app.manifest'] . '/services.json');
+		$this->files->delete($this->laravel['config']['app.manifest'].'/services.json');
 
-		$this->info ('Application cache cleared!');
+		$this->info('Application cache cleared!');
 	}
 
 }

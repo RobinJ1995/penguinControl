@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\View\Compilers;
 
-namespace Illuminate\View\Compilers;
-
-interface CompilerInterface
-{
+interface CompilerInterface {
 
 	/**
 	 * Get the path to the compiled version of a view.
@@ -11,7 +8,7 @@ interface CompilerInterface
 	 * @param  string  $path
 	 * @return string
 	 */
-	public function getCompiledPath ($path);
+	public function getCompiledPath($path);
 
 	/**
 	 * Determine if the given view is expired.
@@ -19,7 +16,7 @@ interface CompilerInterface
 	 * @param  string  $path
 	 * @return bool
 	 */
-	public function isExpired ($path);
+	public function isExpired($path);
 
 	/**
 	 * Compile the view at the given path.
@@ -27,5 +24,6 @@ interface CompilerInterface
 	 * @param  string  $path
 	 * @return void
 	 */
-	public function compile ($path);
+	public function compile($path);
+
 }

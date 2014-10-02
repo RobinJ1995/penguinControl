@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class HashLength extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HLEN';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HLEN';
+    }
 }

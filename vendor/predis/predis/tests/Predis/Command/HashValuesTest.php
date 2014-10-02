@@ -17,99 +17,97 @@ namespace Predis\Command;
  */
 class HashValuesTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\HashValues';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\HashValues';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'HVALS';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'HVALS';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key');
+        $expected = array('key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key');
-		$expected = array ('key');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $raw = array('foo', 'hoge', 'lol');
+        $expected = array('foo', 'hoge', 'lol');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$raw = array ('foo', 'hoge', 'lol');
-		$expected = array ('foo', 'hoge', 'lol');
+        $command = $this->getCommand();
 
-		$command = $this->getCommand ();
+        $this->assertSame($expected, $command->parseResponse($raw));
+    }
 
-		$this->assertSame ($expected, $command->parseResponse ($raw));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key');
+        $expected = array('prefix:key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key');
-		$expected = array ('prefix:key');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsValuesOfHash()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsValuesOfHash ()
-	{
-		$redis = $this->getClient ();
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 
-		$redis->hmset ('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+        $this->assertSame(array('bar', 'piyo', 'wut'), $redis->hvals('metavars'));
+        $this->assertSame(array(), $redis->hvals('unknown'));
+    }
 
-		$this->assertSame (array ('bar', 'piyo', 'wut'), $redis->hvals ('metavars'));
-		$this->assertSame (array (), $redis->hvals ('unknown'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongType()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongType ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->set ('foo', 'bar');
-		$redis->hvals ('foo');
-	}
-
+        $redis->set('foo', 'bar');
+        $redis->hvals('foo');
+    }
 }

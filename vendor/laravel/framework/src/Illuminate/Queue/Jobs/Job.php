@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Queue\Jobs;
+<?php namespace Illuminate\Queue\Jobs;
 
 use DateTime;
 
-abstract class Job
-{
+abstract class Job {
 
 	/**
 	 * The job handler instance.
@@ -40,14 +37,14 @@ abstract class Job
 	 *
 	 * @return void
 	 */
-	abstract public function fire ();
+	abstract public function fire();
 
 	/**
 	 * Delete the job from the queue.
 	 *
 	 * @return void
 	 */
-	public function delete ()
+	public function delete()
 	{
 		$this->deleted = true;
 	}
@@ -57,7 +54,7 @@ abstract class Job
 	 *
 	 * @return bool
 	 */
-	public function isDeleted ()
+	public function isDeleted()
 	{
 		return $this->deleted;
 	}
@@ -68,21 +65,21 @@ abstract class Job
 	 * @param  int   $delay
 	 * @return void
 	 */
-	abstract public function release ($delay = 0);
+	abstract public function release($delay = 0);
 
 	/**
 	 * Get the number of times the job has been attempted.
 	 *
 	 * @return int
 	 */
-	abstract public function attempts ();
+	abstract public function attempts();
 
 	/**
 	 * Get the raw body string for the job.
 	 *
 	 * @return string
 	 */
-	abstract public function getRawBody ();
+	abstract public function getRawBody();
 
 	/**
 	 * Resolve and fire the job handler method.
@@ -90,13 +87,13 @@ abstract class Job
 	 * @param  array  $payload
 	 * @return void
 	 */
-	protected function resolveAndFire (array $payload)
+	protected function resolveAndFire(array $payload)
 	{
-		list($class, $method) = $this->parseJob ($payload['job']);
+		list($class, $method) = $this->parseJob($payload['job']);
 
-		$this->instance = $this->resolve ($class);
+		$this->instance = $this->resolve($class);
 
-		$this->instance->{$method} ($this, $payload['data']);
+		$this->instance->{$method}($this, $payload['data']);
 	}
 
 	/**
@@ -105,9 +102,9 @@ abstract class Job
 	 * @param  string  $class
 	 * @return mixed
 	 */
-	protected function resolve ($class)
+	protected function resolve($class)
 	{
-		return $this->container->make ($class);
+		return $this->container->make($class);
 	}
 
 	/**
@@ -116,11 +113,11 @@ abstract class Job
 	 * @param  string  $job
 	 * @return array
 	 */
-	protected function parseJob ($job)
+	protected function parseJob($job)
 	{
-		$segments = explode ('@', $job);
+		$segments = explode('@', $job);
 
-		return count ($segments) > 1 ? $segments : array ($segments[0], 'fire');
+		return count($segments) > 1 ? $segments : array($segments[0], 'fire');
 	}
 
 	/**
@@ -128,9 +125,9 @@ abstract class Job
 	 *
 	 * @return bool
 	 */
-	public function autoDelete ()
+	public function autoDelete()
 	{
-		return isset ($this->instance->delete);
+		return isset($this->instance->delete);
 	}
 
 	/**
@@ -139,15 +136,15 @@ abstract class Job
 	 * @param  \DateTime|int  $delay
 	 * @return int
 	 */
-	protected function getSeconds ($delay)
+	protected function getSeconds($delay)
 	{
 		if ($delay instanceof DateTime)
 		{
-			return max (0, $delay->getTimestamp () - $this->getTime ());
+			return max(0, $delay->getTimestamp() - $this->getTime());
 		}
 		else
 		{
-			return intval ($delay);
+			return intval($delay);
 		}
 	}
 
@@ -156,7 +153,7 @@ abstract class Job
 	 *
 	 * @return string
 	 */
-	public function getQueue ()
+	public function getQueue()
 	{
 		return $this->queue;
 	}

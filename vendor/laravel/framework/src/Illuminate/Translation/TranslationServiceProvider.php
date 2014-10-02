@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Translation;
+<?php namespace Illuminate\Translation;
 
 use Illuminate\Support\ServiceProvider;
 
-class TranslationServiceProvider extends ServiceProvider
-{
+class TranslationServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -19,11 +16,11 @@ class TranslationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->registerLoader ();
+		$this->registerLoader();
 
-		$this->app->bindShared ('translator', function($app)
+		$this->app->bindShared('translator', function($app)
 		{
 			$loader = $app['translation.loader'];
 
@@ -32,9 +29,9 @@ class TranslationServiceProvider extends ServiceProvider
 			// configuration so we can easily get both of these values from there.
 			$locale = $app['config']['app.locale'];
 
-			$trans = new Translator ($loader, $locale);
+			$trans = new Translator($loader, $locale);
 
-			$trans->setFallback ($app['config']['app.fallback_locale']);
+			$trans->setFallback($app['config']['app.fallback_locale']);
 
 			return $trans;
 		});
@@ -45,11 +42,11 @@ class TranslationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerLoader ()
+	protected function registerLoader()
 	{
-		$this->app->bindShared ('translation.loader', function($app)
+		$this->app->bindShared('translation.loader', function($app)
 		{
-			return new FileLoader ($app['files'], $app['path'] . '/lang');
+			return new FileLoader($app['files'], $app['path'].'/lang');
 		});
 	}
 
@@ -58,9 +55,9 @@ class TranslationServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('translator', 'translation.loader');
+		return array('translator', 'translation.loader');
 	}
 
 }

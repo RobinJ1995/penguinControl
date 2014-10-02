@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class ServerBackgroundRewriteAOF extends AbstractCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'BGREWRITEAOF';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'BGREWRITEAOF';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return $data == 'Background append only file rewriting started';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data == 'Background append only file rewriting started';
+    }
 }

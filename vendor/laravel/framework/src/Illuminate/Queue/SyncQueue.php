@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Queue;
 
-namespace Illuminate\Queue;
-
-class SyncQueue extends Queue implements QueueInterface
-{
+class SyncQueue extends Queue implements QueueInterface {
 
 	/**
 	 * Push a new job onto the queue.
@@ -13,9 +10,9 @@ class SyncQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return mixed
 	 */
-	public function push ($job, $data = '', $queue = null)
+	public function push($job, $data = '', $queue = null)
 	{
-		$this->resolveJob ($job, json_encode ($data))->fire ();
+		$this->resolveJob($job, json_encode($data))->fire();
 
 		return 0;
 	}
@@ -28,7 +25,7 @@ class SyncQueue extends Queue implements QueueInterface
 	 * @param  array   $options
 	 * @return mixed
 	 */
-	public function pushRaw ($payload, $queue = null, array $options = array ())
+	public function pushRaw($payload, $queue = null, array $options = array())
 	{
 		//
 	}
@@ -42,9 +39,9 @@ class SyncQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return mixed
 	 */
-	public function later ($delay, $job, $data = '', $queue = null)
+	public function later($delay, $job, $data = '', $queue = null)
 	{
-		return $this->push ($job, $data, $queue);
+		return $this->push($job, $data, $queue);
 	}
 
 	/**
@@ -53,10 +50,7 @@ class SyncQueue extends Queue implements QueueInterface
 	 * @param  string  $queue
 	 * @return \Illuminate\Queue\Jobs\Job|null
 	 */
-	public function pop ($queue = null)
-	{
-		
-	}
+	public function pop($queue = null) {}
 
 	/**
 	 * Resolve a Sync job instance.
@@ -65,9 +59,9 @@ class SyncQueue extends Queue implements QueueInterface
 	 * @param  string  $data
 	 * @return \Illuminate\Queue\Jobs\SyncJob
 	 */
-	protected function resolveJob ($job, $data)
+	protected function resolveJob($job, $data)
 	{
-		return new Jobs\SyncJob ($this->container, $job, $data);
+		return new Jobs\SyncJob($this->container, $job, $data);
 	}
 
 }

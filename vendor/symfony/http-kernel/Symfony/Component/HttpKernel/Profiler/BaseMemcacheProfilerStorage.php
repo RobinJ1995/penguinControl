@@ -18,320 +18,288 @@ namespace Symfony\Component\HttpKernel\Profiler;
  */
 abstract class BaseMemcacheProfilerStorage implements ProfilerStorageInterface
 {
+    const TOKEN_PREFIX = 'sf_profiler_';
 
-	const TOKEN_PREFIX = 'sf_profiler_';
+    protected $dsn;
+    protected $lifetime;
 
-	protected $dsn;
-	protected $lifetime;
+    /**
+     * Constructor.
+     *
+     * @param string $dsn      A data source name
+     * @param string $username
+     * @param string $password
+     * @param int    $lifetime The lifetime to use for the purge
+     */
+    public function __construct($dsn, $username = '', $password = '', $lifetime = 86400)
+    {
+        $this->dsn = $dsn;
+        $this->lifetime = (int) $lifetime;
+    }
 
-	/**
-	 * Constructor.
-	 *
-	 * @param string $dsn      A data source name
-	 * @param string $username
-	 * @param string $password
-	 * @param int    $lifetime The lifetime to use for the purge
-	 */
-	public function __construct ($dsn, $username = '', $password = '', $lifetime = 86400)
-	{
-		$this->dsn = $dsn;
-		$this->lifetime = (int) $lifetime;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function find($ip, $url, $limit, $method, $start = null, $end = null)
+    {
+        $indexName = $this->getIndexName();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function find ($ip, $url, $limit, $method, $start = null, $end = null)
-	{
-		$indexName = $this->getIndexName ();
+        $indexContent = $this->getValue($indexName);
+        if (!$indexContent) {
+            return array();
+        }
 
-		$indexContent = $this->getValue ($indexName);
-		if (!$indexContent)
-		{
-			return array ();
-		}
+        $profileList = explode("\n", $indexContent);
+        $result = array();
 
-		$profileList = explode ("\n", $indexContent);
-		$result = array ();
+        foreach ($profileList as $item) {
+            if ($limit === 0) {
+                break;
+            }
 
-		foreach ($profileList as $item)
-		{
+            if ($item == '') {
+                continue;
+            }
 
-			if ($limit === 0)
-			{
-				break;
-			}
+            list($itemToken, $itemIp, $itemMethod, $itemUrl, $itemTime, $itemParent) = explode("\t", $item, 6);
 
-			if ($item == '')
-			{
-				continue;
-			}
+            $itemTime = (int) $itemTime;
 
-			list($itemToken, $itemIp, $itemMethod, $itemUrl, $itemTime, $itemParent) = explode ("\t", $item, 6);
+            if ($ip && false === strpos($itemIp, $ip) || $url && false === strpos($itemUrl, $url) || $method && false === strpos($itemMethod, $method)) {
+                continue;
+            }
 
-			$itemTime = (int) $itemTime;
+            if (!empty($start) && $itemTime < $start) {
+                continue;
+            }
 
-			if ($ip && false === strpos ($itemIp, $ip) || $url && false === strpos ($itemUrl, $url) || $method && false === strpos ($itemMethod, $method))
-			{
-				continue;
-			}
+            if (!empty($end) && $itemTime > $end) {
+                continue;
+            }
 
-			if (!empty ($start) && $itemTime < $start)
-			{
-				continue;
-			}
+            $result[$itemToken]  = array(
+                'token'  => $itemToken,
+                'ip'     => $itemIp,
+                'method' => $itemMethod,
+                'url'    => $itemUrl,
+                'time'   => $itemTime,
+                'parent' => $itemParent,
+            );
+            --$limit;
+        }
 
-			if (!empty ($end) && $itemTime > $end)
-			{
-				continue;
-			}
+        usort($result, function ($a, $b) {
+            if ($a['time'] === $b['time']) {
+                return 0;
+            }
 
-			$result[$itemToken] = array (
-			    'token' => $itemToken,
-			    'ip' => $itemIp,
-			    'method' => $itemMethod,
-			    'url' => $itemUrl,
-			    'time' => $itemTime,
-			    'parent' => $itemParent,
-			);
-			--$limit;
-		}
+            return $a['time'] > $b['time'] ? -1 : 1;
+        });
 
-		usort ($result, function ($a, $b)
-		{
-			if ($a['time'] === $b['time'])
-			{
-				return 0;
-			}
+        return $result;
+    }
 
-			return $a['time'] > $b['time'] ? -1 : 1;
-		});
+    /**
+     * {@inheritdoc}
+     */
+    public function purge()
+    {
+        // delete only items from index
+        $indexName = $this->getIndexName();
 
-		return $result;
-	}
+        $indexContent = $this->getValue($indexName);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function purge ()
-	{
-		// delete only items from index
-		$indexName = $this->getIndexName ();
+        if (!$indexContent) {
+            return false;
+        }
 
-		$indexContent = $this->getValue ($indexName);
+        $profileList = explode("\n", $indexContent);
 
-		if (!$indexContent)
-		{
-			return false;
-		}
+        foreach ($profileList as $item) {
+            if ($item == '') {
+                continue;
+            }
 
-		$profileList = explode ("\n", $indexContent);
+            if (false !== $pos = strpos($item, "\t")) {
+                $this->delete($this->getItemName(substr($item, 0, $pos)));
+            }
+        }
 
-		foreach ($profileList as $item)
-		{
-			if ($item == '')
-			{
-				continue;
-			}
+        return $this->delete($indexName);
+    }
 
-			if (false !== $pos = strpos ($item, "\t"))
-			{
-				$this->delete ($this->getItemName (substr ($item, 0, $pos)));
-			}
-		}
+    /**
+     * {@inheritdoc}
+     */
+    public function read($token)
+    {
+        if (empty($token)) {
+            return false;
+        }
 
-		return $this->delete ($indexName);
-	}
+        $profile = $this->getValue($this->getItemName($token));
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function read ($token)
-	{
-		if (empty ($token))
-		{
-			return false;
-		}
+        if (false !== $profile) {
+            $profile = $this->createProfileFromData($token, $profile);
+        }
 
-		$profile = $this->getValue ($this->getItemName ($token));
+        return $profile;
+    }
 
-		if (false !== $profile)
-		{
-			$profile = $this->createProfileFromData ($token, $profile);
-		}
+    /**
+     * {@inheritdoc}
+     */
+    public function write(Profile $profile)
+    {
+        $data = array(
+            'token'    => $profile->getToken(),
+            'parent'   => $profile->getParentToken(),
+            'children' => array_map(function ($p) { return $p->getToken(); }, $profile->getChildren()),
+            'data'     => $profile->getCollectors(),
+            'ip'       => $profile->getIp(),
+            'method'   => $profile->getMethod(),
+            'url'      => $profile->getUrl(),
+            'time'     => $profile->getTime(),
+        );
 
-		return $profile;
-	}
+        $profileIndexed = false !== $this->getValue($this->getItemName($profile->getToken()));
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function write (Profile $profile)
-	{
-		$data = array (
-		    'token' => $profile->getToken (),
-		    'parent' => $profile->getParentToken (),
-		    'children' => array_map (function ($p)
-		    {
-			    return $p->getToken ();
-		    }, $profile->getChildren ()),
-		    'data' => $profile->getCollectors (),
-		    'ip' => $profile->getIp (),
-		    'method' => $profile->getMethod (),
-		    'url' => $profile->getUrl (),
-		    'time' => $profile->getTime (),
-		);
+        if ($this->setValue($this->getItemName($profile->getToken()), $data, $this->lifetime)) {
+            if (!$profileIndexed) {
+                // Add to index
+                $indexName = $this->getIndexName();
 
-		$profileIndexed = false !== $this->getValue ($this->getItemName ($profile->getToken ()));
+                $indexRow = implode("\t", array(
+                    $profile->getToken(),
+                    $profile->getIp(),
+                    $profile->getMethod(),
+                    $profile->getUrl(),
+                    $profile->getTime(),
+                    $profile->getParentToken(),
+                ))."\n";
 
-		if ($this->setValue ($this->getItemName ($profile->getToken ()), $data, $this->lifetime))
-		{
+                return $this->appendValue($indexName, $indexRow, $this->lifetime);
+            }
 
-			if (!$profileIndexed)
-			{
-				// Add to index
-				$indexName = $this->getIndexName ();
+            return true;
+        }
 
-				$indexRow = implode ("\t", array (
-					    $profile->getToken (),
-					    $profile->getIp (),
-					    $profile->getMethod (),
-					    $profile->getUrl (),
-					    $profile->getTime (),
-					    $profile->getParentToken (),
-					)) . "\n";
+        return false;
+    }
 
-				return $this->appendValue ($indexName, $indexRow, $this->lifetime);
-			}
+    /**
+     * Retrieve item from the memcache server
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    abstract protected function getValue($key);
 
-			return true;
-		}
+    /**
+     * Store an item on the memcache server under the specified key
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @param int    $expiration
+     *
+     * @return bool
+     */
+    abstract protected function setValue($key, $value, $expiration = 0);
 
-		return false;
-	}
+    /**
+     * Delete item from the memcache server
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    abstract protected function delete($key);
 
-	/**
-	 * Retrieve item from the memcache server
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
-	abstract protected function getValue ($key);
+    /**
+     * Append data to an existing item on the memcache server
+     * @param string $key
+     * @param string $value
+     * @param int    $expiration
+     *
+     * @return bool
+     */
+    abstract protected function appendValue($key, $value, $expiration = 0);
 
-	/**
-	 * Store an item on the memcache server under the specified key
-	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 * @param int    $expiration
-	 *
-	 * @return bool
-	 */
-	abstract protected function setValue ($key, $value, $expiration = 0);
+    private function createProfileFromData($token, $data, $parent = null)
+    {
+        $profile = new Profile($token);
+        $profile->setIp($data['ip']);
+        $profile->setMethod($data['method']);
+        $profile->setUrl($data['url']);
+        $profile->setTime($data['time']);
+        $profile->setCollectors($data['data']);
 
-	/**
-	 * Delete item from the memcache server
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 */
-	abstract protected function delete ($key);
+        if (!$parent && $data['parent']) {
+            $parent = $this->read($data['parent']);
+        }
 
-	/**
-	 * Append data to an existing item on the memcache server
-	 * @param string $key
-	 * @param string $value
-	 * @param int    $expiration
-	 *
-	 * @return bool
-	 */
-	abstract protected function appendValue ($key, $value, $expiration = 0);
+        if ($parent) {
+            $profile->setParent($parent);
+        }
 
-	private function createProfileFromData ($token, $data, $parent = null)
-	{
-		$profile = new Profile ($token);
-		$profile->setIp ($data['ip']);
-		$profile->setMethod ($data['method']);
-		$profile->setUrl ($data['url']);
-		$profile->setTime ($data['time']);
-		$profile->setCollectors ($data['data']);
+        foreach ($data['children'] as $token) {
+            if (!$token) {
+                continue;
+            }
 
-		if (!$parent && $data['parent'])
-		{
-			$parent = $this->read ($data['parent']);
-		}
+            if (!$childProfileData = $this->getValue($this->getItemName($token))) {
+                continue;
+            }
 
-		if ($parent)
-		{
-			$profile->setParent ($parent);
-		}
+            $profile->addChild($this->createProfileFromData($token, $childProfileData, $profile));
+        }
 
-		foreach ($data['children'] as $token)
-		{
-			if (!$token)
-			{
-				continue;
-			}
+        return $profile;
+    }
 
-			if (!$childProfileData = $this->getValue ($this->getItemName ($token)))
-			{
-				continue;
-			}
+    /**
+     * Get item name
+     *
+     * @param string $token
+     *
+     * @return string
+     */
+    private function getItemName($token)
+    {
+        $name = self::TOKEN_PREFIX.$token;
 
-			$profile->addChild ($this->createProfileFromData ($token, $childProfileData, $profile));
-		}
+        if ($this->isItemNameValid($name)) {
+            return $name;
+        }
 
-		return $profile;
-	}
+        return false;
+    }
 
-	/**
-	 * Get item name
-	 *
-	 * @param string $token
-	 *
-	 * @return string
-	 */
-	private function getItemName ($token)
-	{
-		$name = self::TOKEN_PREFIX . $token;
+    /**
+     * Get name of index
+     *
+     * @return string
+     */
+    private function getIndexName()
+    {
+        $name = self::TOKEN_PREFIX.'index';
 
-		if ($this->isItemNameValid ($name))
-		{
-			return $name;
-		}
+        if ($this->isItemNameValid($name)) {
+            return $name;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Get name of index
-	 *
-	 * @return string
-	 */
-	private function getIndexName ()
-	{
-		$name = self::TOKEN_PREFIX . 'index';
+    private function isItemNameValid($name)
+    {
+        $length = strlen($name);
 
-		if ($this->isItemNameValid ($name))
-		{
-			return $name;
-		}
+        if ($length > 250) {
+            throw new \RuntimeException(sprintf('The memcache item key "%s" is too long (%s bytes). Allowed maximum size is 250 bytes.', $name, $length));
+        }
 
-		return false;
-	}
-
-	private function isItemNameValid ($name)
-	{
-		$length = strlen ($name);
-
-		if ($length > 250)
-		{
-			throw new \RuntimeException (sprintf ('The memcache item key "%s" is too long (%s bytes). Allowed maximum size is 250 bytes.', $name, $length));
-		}
-
-		return true;
-	}
-
+        return true;
+    }
 }

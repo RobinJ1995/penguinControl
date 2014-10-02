@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Console;
+<?php namespace Illuminate\Console;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -8,8 +6,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
-class Application extends \Symfony\Component\Console\Application
-{
+class Application extends \Symfony\Component\Console\Application {
 
 	/**
 	 * The exception handler instance.
@@ -31,9 +28,9 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return \Illuminate\Console\Application
 	 */
-	public static function start ($app)
+	public static function start($app)
 	{
-		return static::make ($app)->boot ();
+		return static::make($app)->boot();
 	}
 
 	/**
@@ -42,16 +39,16 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return \Illuminate\Console\Application
 	 */
-	public static function make ($app)
+	public static function make($app)
 	{
-		$app->boot ();
+		$app->boot();
 
-		$console = with ($console = new static ('Laravel Framework', $app::VERSION))
-			->setLaravel ($app)
-			->setExceptionHandler ($app['exception'])
-			->setAutoExit (false);
+		$console = with($console = new static('Laravel Framework', $app::VERSION))
+								->setLaravel($app)
+								->setExceptionHandler($app['exception'])
+								->setAutoExit(false);
 
-		$app->instance ('artisan', $console);
+		$app->instance('artisan', $console);
 
 		return $console;
 	}
@@ -61,17 +58,17 @@ class Application extends \Symfony\Component\Console\Application
 	 *
 	 * @return \Illuminate\Console\Application
 	 */
-	public function boot ()
+	public function boot()
 	{
-		require $this->laravel['path'] . '/start/artisan.php';
+		require $this->laravel['path'].'/start/artisan.php';
 
 		// If the event dispatcher is set on the application, we will fire an event
 		// with the Artisan instance to provide each listener the opportunity to
 		// register their commands on this application before it gets started.
-		if (isset ($this->laravel['events']))
+		if (isset($this->laravel['events']))
 		{
 			$this->laravel['events']
-				->fire ('artisan.start', array ($this));
+					->fire('artisan.start', array($this));
 		}
 
 		return $this;
@@ -85,18 +82,18 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Symfony\Component\Console\Output\OutputInterface  $output
 	 * @return void
 	 */
-	public function call ($command, array $parameters = array (), OutputInterface $output = null)
+	public function call($command, array $parameters = array(), OutputInterface $output = null)
 	{
 		$parameters['command'] = $command;
 
 		// Unless an output interface implementation was specifically passed to us we
 		// will use the "NullOutput" implementation by default to keep any writing
 		// suppressed so it doesn't leak out to the browser or any other source.
-		$output = $output ? : new NullOutput;
+		$output = $output ?: new NullOutput;
 
-		$input = new ArrayInput ($parameters);
+		$input = new ArrayInput($parameters);
 
-		return $this->find ($command)->run ($input, $output);
+		return $this->find($command)->run($input, $output);
 	}
 
 	/**
@@ -105,14 +102,14 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Symfony\Component\Console\Command\Command  $command
 	 * @return \Symfony\Component\Console\Command\Command
 	 */
-	public function add (SymfonyCommand $command)
+	public function add(SymfonyCommand $command)
 	{
 		if ($command instanceof Command)
 		{
-			$command->setLaravel ($this->laravel);
+			$command->setLaravel($this->laravel);
 		}
 
-		return $this->addToParent ($command);
+		return $this->addToParent($command);
 	}
 
 	/**
@@ -121,9 +118,9 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Symfony\Component\Console\Command\Command  $command
 	 * @return \Symfony\Component\Console\Command\Command
 	 */
-	protected function addToParent (SymfonyCommand $command)
+	protected function addToParent(SymfonyCommand $command)
 	{
-		return parent::add ($command);
+		return parent::add($command);
 	}
 
 	/**
@@ -132,9 +129,9 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  string  $command
 	 * @return \Symfony\Component\Console\Command\Command
 	 */
-	public function resolve ($command)
+	public function resolve($command)
 	{
-		return $this->add ($this->laravel[$command]);
+		return $this->add($this->laravel[$command]);
 	}
 
 	/**
@@ -143,13 +140,13 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  array|dynamic  $commands
 	 * @return void
 	 */
-	public function resolveCommands ($commands)
+	public function resolveCommands($commands)
 	{
-		$commands = is_array ($commands) ? $commands : func_get_args ();
+		$commands = is_array($commands) ? $commands : func_get_args();
 
 		foreach ($commands as $command)
 		{
-			$this->resolve ($command);
+			$this->resolve($command);
 		}
 	}
 
@@ -158,11 +155,11 @@ class Application extends \Symfony\Component\Console\Application
 	 *
 	 * @return \Symfony\Component\Console\Input\InputDefinition
 	 */
-	protected function getDefaultInputDefinition ()
+	protected function getDefaultInputDefinition()
 	{
-		$definition = parent::getDefaultInputDefinition ();
+		$definition = parent::getDefaultInputDefinition();
 
-		$definition->addOption ($this->getEnvironmentOption ());
+		$definition->addOption($this->getEnvironmentOption());
 
 		return $definition;
 	}
@@ -172,11 +169,11 @@ class Application extends \Symfony\Component\Console\Application
 	 *
 	 * @return \Symfony\Component\Console\Input\InputOption
 	 */
-	protected function getEnvironmentOption ()
+	protected function getEnvironmentOption()
 	{
 		$message = 'The environment the command should run under.';
 
-		return new InputOption ('--env', null, InputOption::VALUE_OPTIONAL, $message);
+		return new InputOption('--env', null, InputOption::VALUE_OPTIONAL, $message);
 	}
 
 	/**
@@ -186,17 +183,17 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Symfony\Component\Console\Output\OutputInterface  $output
 	 * @return void
 	 */
-	public function renderException ($e, $output)
+	public function renderException($e, $output)
 	{
 		// If we have an exception handler instance, we will call that first in case
 		// it has some handlers that need to be run first. We will pass "true" as
 		// the second parameter to indicate that it's handling a console error.
-		if (isset ($this->exceptionHandler))
+		if (isset($this->exceptionHandler))
 		{
-			$this->exceptionHandler->handleConsole ($e);
+			$this->exceptionHandler->handleConsole($e);
 		}
 
-		parent::renderException ($e, $output);
+		parent::renderException($e, $output);
 	}
 
 	/**
@@ -205,7 +202,7 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Illuminate\Exception\Handler  $handler
 	 * @return \Illuminate\Console\Application
 	 */
-	public function setExceptionHandler ($handler)
+	public function setExceptionHandler($handler)
 	{
 		$this->exceptionHandler = $handler;
 
@@ -218,7 +215,7 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  \Illuminate\Foundation\Application  $laravel
 	 * @return \Illuminate\Console\Application
 	 */
-	public function setLaravel ($laravel)
+	public function setLaravel($laravel)
 	{
 		$this->laravel = $laravel;
 
@@ -231,9 +228,9 @@ class Application extends \Symfony\Component\Console\Application
 	 * @param  bool  $boolean
 	 * @return \Illuminate\Console\Application
 	 */
-	public function setAutoExit ($boolean)
+	public function setAutoExit($boolean)
 	{
-		parent::setAutoExit ($boolean);
+		parent::setAutoExit($boolean);
 
 		return $this;
 	}

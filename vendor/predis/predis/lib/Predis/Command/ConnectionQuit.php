@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ConnectionQuit extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'QUIT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'QUIT';
+    }
 }

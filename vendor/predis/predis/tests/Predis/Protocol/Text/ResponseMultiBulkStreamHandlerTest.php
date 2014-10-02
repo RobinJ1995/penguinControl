@@ -18,37 +18,35 @@ use PredisTestCase;
  */
 class ResponseMultiBulkStreamHandlerTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testOk()
+    {
+        $handler = new ResponseMultiBulkStreamHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testOk ()
-	{
-		$handler = new ResponseMultiBulkStreamHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $handler->handle($connection, '1'));
+    }
 
-		$this->assertInstanceOf ('Predis\Iterator\MultiBulkResponseSimple', $handler->handle ($connection, '1'));
-	}
+    /**
+     * @group disconnected
+     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedExceptionMessage Cannot parse 'invalid' as multi-bulk length
+     */
+    public function testInvalid()
+    {
+        $handler = new ResponseMultiBulkStreamHandler();
 
-	/**
-	 * @group disconnected
-	 * @expectedException Predis\Protocol\ProtocolException
-	 * @expectedExceptionMessage Cannot parse 'invalid' as multi-bulk length
-	 */
-	public function testInvalid ()
-	{
-		$handler = new ResponseMultiBulkStreamHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
-
-		$handler->handle ($connection, 'invalid');
-	}
-
+        $handler->handle($connection, 'invalid');
+    }
 }

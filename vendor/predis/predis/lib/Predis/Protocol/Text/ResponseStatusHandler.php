@@ -24,23 +24,20 @@ use Predis\Protocol\ResponseHandlerInterface;
  */
 class ResponseStatusHandler implements ResponseHandlerInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(ComposableConnectionInterface $connection, $status)
+    {
+        switch ($status) {
+            case 'OK':
+                return true;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function handle (ComposableConnectionInterface $connection, $status)
-	{
-		switch ($status)
-		{
-			case 'OK':
-				return true;
+            case 'QUEUED':
+                return new ResponseQueued();
 
-			case 'QUEUED':
-				return new ResponseQueued();
-
-			default:
-				return $status;
-		}
-	}
-
+            default:
+                return $status;
+        }
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetIntersectionStore extends ZSetUnionStore
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZINTERSTORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZINTERSTORE';
+    }
 }

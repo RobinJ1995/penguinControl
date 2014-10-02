@@ -1,23 +1,20 @@
-<?php
-
-namespace Illuminate\Database\Connectors;
+<?php namespace Illuminate\Database\Connectors;
 
 use PDO;
 
-class Connector
-{
+class Connector {
 
 	/**
 	 * The default PDO connection options.
 	 *
 	 * @var array
 	 */
-	protected $options = array (
-	    PDO::ATTR_CASE => PDO::CASE_NATURAL,
-	    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-	    PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
-	    PDO::ATTR_STRINGIFY_FETCHES => false,
-	    PDO::ATTR_EMULATE_PREPARES => false,
+	protected $options = array(
+			PDO::ATTR_CASE => PDO::CASE_NATURAL,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
+			PDO::ATTR_STRINGIFY_FETCHES => false,
+			PDO::ATTR_EMULATE_PREPARES => false,
 	);
 
 	/**
@@ -26,11 +23,11 @@ class Connector
 	 * @param  array  $config
 	 * @return array
 	 */
-	public function getOptions (array $config)
+	public function getOptions(array $config)
 	{
-		$options = array_get ($config, 'options', array ());
+		$options = array_get($config, 'options', array());
 
-		return array_diff_key ($this->options, $options) + $options;
+		return array_diff_key($this->options, $options) + $options;
 	}
 
 	/**
@@ -41,13 +38,13 @@ class Connector
 	 * @param  array   $options
 	 * @return PDO
 	 */
-	public function createConnection ($dsn, array $config, array $options)
+	public function createConnection($dsn, array $config, array $options)
 	{
-		$username = array_get ($config, 'username');
+		$username = array_get($config, 'username');
 
-		$password = array_get ($config, 'password');
+		$password = array_get($config, 'password');
 
-		return new PDO ($dsn, $username, $password, $options);
+		return new PDO($dsn, $username, $password, $options);
 	}
 
 	/**
@@ -55,7 +52,7 @@ class Connector
 	 *
 	 * @return array
 	 */
-	public function getDefaultOptions ()
+	public function getDefaultOptions()
 	{
 		return $this->options;
 	}
@@ -66,7 +63,7 @@ class Connector
 	 * @param  array  $options
 	 * @return void
 	 */
-	public function setDefaultOptions (array $options)
+	public function setDefaultOptions(array $options)
 	{
 		$this->options = $options;
 	}

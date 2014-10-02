@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Database\Eloquent\Relations;
+<?php namespace Illuminate\Database\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-abstract class MorphOneOrMany extends HasOneOrMany
-{
+abstract class MorphOneOrMany extends HasOneOrMany {
 
 	/**
 	 * The foreign key type for the relationship.
@@ -30,15 +27,16 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 * @param  string  $type
 	 * @param  string  $id
 	 * @param  string  $localKey
+	 * @param  string  $morphClass
 	 * @return void
 	 */
-	public function __construct (Builder $query, Model $parent, $type, $id, $localKey)
+	public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
 	{
 		$this->morphType = $type;
 
-		$this->morphClass = get_class ($parent);
+		$this->morphClass = $parent->getMorphClass();
 
-		parent::__construct ($query, $parent, $id, $localKey);
+		parent::__construct($query, $parent, $id, $localKey);
 	}
 
 	/**
@@ -46,13 +44,13 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 *
 	 * @return void
 	 */
-	public function addConstraints ()
+	public function addConstraints()
 	{
 		if (static::$constraints)
 		{
-			parent::addConstraints ();
+			parent::addConstraints();
 
-			$this->query->where ($this->morphType, $this->morphClass);
+			$this->query->where($this->morphType, $this->morphClass);
 		}
 	}
 
@@ -63,11 +61,11 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 * @param  \Illuminate\Database\Eloquent\Builder  $parent
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function getRelationCountQuery (Builder $query, Builder $parent)
+	public function getRelationCountQuery(Builder $query, Builder $parent)
 	{
-		$query = parent::getRelationCountQuery ($query, $parent);
+		$query = parent::getRelationCountQuery($query, $parent);
 
-		return $query->where ($this->morphType, $this->morphClass);
+		return $query->where($this->morphType, $this->morphClass);
 	}
 
 	/**
@@ -76,11 +74,11 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 * @param  array  $models
 	 * @return void
 	 */
-	public function addEagerConstraints (array $models)
+	public function addEagerConstraints(array $models)
 	{
-		parent::addEagerConstraints ($models);
+		parent::addEagerConstraints($models);
 
-		$this->query->where ($this->morphType, $this->morphClass);
+		$this->query->where($this->morphType, $this->morphClass);
 	}
 
 	/**
@@ -89,11 +87,11 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 * @param  \Illuminate\Database\Eloquent\Model  $model
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function save (Model $model)
+	public function save(Model $model)
 	{
-		$model->setAttribute ($this->getPlainMorphType (), $this->morphClass);
+		$model->setAttribute($this->getPlainMorphType(), $this->morphClass);
 
-		return parent::save ($model);
+		return parent::save($model);
 	}
 
 	/**
@@ -102,18 +100,18 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 * @param  array  $attributes
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function create (array $attributes)
+	public function create(array $attributes)
 	{
-		$foreign = $this->getForeignAttributesForCreate ();
+		$foreign = $this->getForeignAttributesForCreate();
 
 		// When saving a polymorphic relationship, we need to set not only the foreign
 		// key, but also the foreign key type, which is typically the class name of
 		// the parent model. This makes the polymorphic item unique in the table.
-		$attributes = array_merge ($attributes, $foreign);
+		$attributes = array_merge($attributes, $foreign);
 
-		$instance = $this->related->newInstance ($attributes);
+		$instance = $this->related->newInstance($attributes);
 
-		$instance->save ();
+		$instance->save();
 
 		return $instance;
 	}
@@ -123,11 +121,11 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 *
 	 * @return array
 	 */
-	protected function getForeignAttributesForCreate ()
+	protected function getForeignAttributesForCreate()
 	{
-		$foreign = array ($this->getPlainForeignKey () => $this->getParentKey ());
+		$foreign = array($this->getPlainForeignKey() => $this->getParentKey());
 
-		$foreign[last (explode ('.', $this->morphType))] = $this->morphClass;
+		$foreign[last(explode('.', $this->morphType))] = $this->morphClass;
 
 		return $foreign;
 	}
@@ -137,7 +135,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 *
 	 * @return string
 	 */
-	public function getMorphType ()
+	public function getMorphType()
 	{
 		return $this->morphType;
 	}
@@ -147,9 +145,9 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 *
 	 * @return string
 	 */
-	public function getPlainMorphType ()
+	public function getPlainMorphType()
 	{
-		return last (explode ('.', $this->morphType));
+		return last(explode('.', $this->morphType));
 	}
 
 	/**
@@ -157,7 +155,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
 	 *
 	 * @return string
 	 */
-	public function getMorphClass ()
+	public function getMorphClass()
 	{
 		return $this->morphClass;
 	}

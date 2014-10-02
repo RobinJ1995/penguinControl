@@ -22,18 +22,17 @@ use Predis\Command\ScriptedCommand;
 
 class IncrementExistingKeysBy extends ScriptedCommand
 {
+    public function getKeysCount()
+    {
+        // Tell Predis to use all the arguments but the last one as arguments
+        // for KEYS. The last one will be used to populate ARGV.
+        return -1;
+    }
 
-	public function getKeysCount ()
-	{
-		// Tell Predis to use all the arguments but the last one as arguments
-		// for KEYS. The last one will be used to populate ARGV.
-		return -1;
-	}
-
-	public function getScript ()
-	{
-		return
-			<<<LUA
+    public function getScript()
+    {
+        return
+<<<LUA
 local cmd, insert = redis.call, table.insert
 local increment, results = ARGV[1], { }
 
@@ -47,17 +46,16 @@ end
 
 return results
 LUA;
-	}
-
+    }
 }
 
-$client = new Predis\Client ($single_server);
+$client = new Predis\Client($single_server);
 
-$client->getProfile ()->defineCommand ('increxby', 'IncrementExistingKeysBy');
+$client->getProfile()->defineCommand('increxby', 'IncrementExistingKeysBy');
 
-$client->mset ('foo', 10, 'foobar', 100);
+$client->mset('foo', 10, 'foobar', 100);
 
-var_export ($client->increxby ('foo', 'foofoo', 'foobar', 50));
+var_export($client->increxby('foo', 'foofoo', 'foobar', 50));
 
 /*
 array (

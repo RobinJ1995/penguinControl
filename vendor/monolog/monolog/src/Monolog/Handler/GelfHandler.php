@@ -25,51 +25,48 @@ use Monolog\Formatter\GelfMessageFormatter;
  */
 class GelfHandler extends AbstractProcessingHandler
 {
+    /**
+     * @var Publisher the publisher object that sends the message to the server
+     */
+    protected $publisher;
 
-	/**
-	 * @var Publisher the publisher object that sends the message to the server
-	 */
-	protected $publisher;
+    /**
+     * @param PublisherInterface|IMessagePublisher $publisher a publisher object
+     * @param integer                              $level     The minimum logging level at which this handler will be triggered
+     * @param boolean                              $bubble    Whether the messages that are handled can bubble up the stack or not
+     */
+    public function __construct($publisher, $level = Logger::DEBUG, $bubble = true)
+    {
+        parent::__construct($level, $bubble);
 
-	/**
-	 * @param PublisherInterface|IMessagePublisher $publisher a publisher object
-	 * @param integer                              $level     The minimum logging level at which this handler will be triggered
-	 * @param boolean                              $bubble    Whether the messages that are handled can bubble up the stack or not
-	 */
-	public function __construct ($publisher, $level = Logger::DEBUG, $bubble = true)
-	{
-		parent::__construct ($level, $bubble);
+        if (!$publisher instanceof IMessagePublisher && !$publisher instanceof PublisherInterface) {
+            throw new InvalidArgumentException("Invalid publisher, expected a Gelf\IMessagePublisher or Gelf\PublisherInterface instance");
+        }
 
-		if (!$publisher instanceof IMessagePublisher && !$publisher instanceof PublisherInterface)
-		{
-			throw new InvalidArgumentException ("Invalid publisher, expected a Gelf\IMessagePublisher or Gelf\PublisherInterface instance");
-		}
+        $this->publisher = $publisher;
+    }
 
-		$this->publisher = $publisher;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        $this->publisher = null;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function close ()
-	{
-		$this->publisher = null;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function write(array $record)
+    {
+        $this->publisher->publish($record['formatted']);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function write (array $record)
-	{
-		$this->publisher->publish ($record['formatted']);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function getDefaultFormatter ()
-	{
-		return new GelfMessageFormatter();
-	}
-
+    /**
+     * {@inheritDoc}
+     */
+    protected function getDefaultFormatter()
+    {
+        return new GelfMessageFormatter();
+    }
 }

@@ -1,11 +1,17 @@
-<?php
-
-namespace Illuminate\Database\Eloquent\Relations;
+<?php namespace Illuminate\Database\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
 
-class MorphPivot extends Pivot
-{
+class MorphPivot extends Pivot {
+
+	/**
+	 * The type of the polymorphic relation.
+	 *
+	 * Explicitly define this so it's not included in saved attributes.
+	 *
+	 * @var string
+	 */
+	protected $morphType;
 
 	/**
 	 * Set the keys for a save update query.
@@ -13,11 +19,11 @@ class MorphPivot extends Pivot
 	 * @param  \Illuminate\Database\Eloquent\Builder  $query
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	protected function setKeysForSaveQuery (Builder $query)
+	protected function setKeysForSaveQuery(Builder $query)
 	{
-		$query->where ($this->morphType, $this->getAttribute ($this->morphType));
+		$query->where($this->morphType, $this->getAttribute($this->morphType));
 
-		return parent::setKeysForSaveQuery ($query);
+		return parent::setKeysForSaveQuery($query);
 	}
 
 	/**
@@ -25,13 +31,13 @@ class MorphPivot extends Pivot
 	 *
 	 * @return int
 	 */
-	public function delete ()
+	public function delete()
 	{
-		$query = $this->getDeleteQuery ();
+		$query = $this->getDeleteQuery();
 
-		$query->where ($this->morphType, $this->getAttribute ($this->morphType));
+		$query->where($this->morphType, $this->getAttribute($this->morphType));
 
-		return $query->delete ();
+		return $query->delete();
 	}
 
 	/**
@@ -40,7 +46,7 @@ class MorphPivot extends Pivot
 	 * @param  string  $morphType
 	 * @return \Illuminate\Database\Eloquent\Relations\MorphPivot
 	 */
-	public function setMorphType ($morphType)
+	public function setMorphType($morphType)
 	{
 		$this->morphType = $morphType;
 

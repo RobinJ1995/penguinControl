@@ -17,66 +17,64 @@ namespace Predis\Command;
  */
 class TransactionDiscardTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\TransactionDiscard';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\TransactionDiscard';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'DISCARD';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'DISCARD';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
+    /**
+     * @group connected
+     */
+    public function testAbortsTransactionAndRestoresNormalFlow()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testAbortsTransactionAndRestoresNormalFlow ()
-	{
-		$redis = $this->getClient ();
+        $redis->multi();
 
-		$redis->multi ();
+        $this->assertInstanceOf('Predis\ResponseQueued', $redis->set('foo', 'bar'));
+        $this->assertTrue($redis->discard());
+        $this->assertFalse($redis->exists('foo'));
+    }
 
-		$this->assertInstanceOf ('Predis\ResponseQueued', $redis->set ('foo', 'bar'));
-		$this->assertTrue ($redis->discard ());
-		$this->assertFalse ($redis->exists ('foo'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage ERR DISCARD without MULTI
+     */
+    public function testThrowsExceptionWhenCallingOutsideTransaction()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage ERR DISCARD without MULTI
-	 */
-	public function testThrowsExceptionWhenCallingOutsideTransaction ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->discard ();
-	}
-
+        $redis->discard();
+    }
 }

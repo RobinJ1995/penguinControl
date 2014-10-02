@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class HashKeys extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HKEYS';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HKEYS';
+    }
 }

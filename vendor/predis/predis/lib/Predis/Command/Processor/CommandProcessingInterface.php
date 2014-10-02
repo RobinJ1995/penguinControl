@@ -18,18 +18,17 @@ namespace Predis\Command\Processor;
  */
 interface CommandProcessingInterface
 {
+    /**
+     * Associates a command processor.
+     *
+     * @param CommandProcessorInterface $processor The command processor.
+     */
+    public function setProcessor(CommandProcessorInterface $processor);
 
-	/**
-	 * Associates a command processor.
-	 *
-	 * @param CommandProcessorInterface $processor The command processor.
-	 */
-	public function setProcessor (CommandProcessorInterface $processor);
-
-	/**
-	 * Returns the associated command processor.
-	 *
-	 * @return CommandProcessorInterface
-	 */
-	public function getProcessor ();
+    /**
+     * Returns the associated command processor.
+     *
+     * @return CommandProcessorInterface
+     */
+    public function getProcessor();
 }

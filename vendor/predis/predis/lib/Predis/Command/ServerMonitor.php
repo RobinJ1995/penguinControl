@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerMonitor extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'MONITOR';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'MONITOR';
+    }
 }

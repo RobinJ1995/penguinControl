@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Routing;
+<?php namespace Illuminate\Routing;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Session\Store as SessionStore;
 
-class Redirector
-{
+class Redirector {
 
 	/**
 	 * The URL generator instance.
@@ -28,7 +25,7 @@ class Redirector
 	 * @param  \Illuminate\Routing\UrlGenerator  $generator
 	 * @return void
 	 */
-	public function __construct (UrlGenerator $generator)
+	public function __construct(UrlGenerator $generator)
 	{
 		$this->generator = $generator;
 	}
@@ -39,9 +36,9 @@ class Redirector
 	 * @param  int  $status
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function home ($status = 302)
+	public function home($status = 302)
 	{
-		return $this->to ($this->generator->route ('home'), $status);
+		return $this->to($this->generator->route('home'), $status);
 	}
 
 	/**
@@ -51,11 +48,11 @@ class Redirector
 	 * @param  array  $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function back ($status = 302, $headers = array ())
+	public function back($status = 302, $headers = array())
 	{
-		$back = $this->generator->getRequest ()->headers->get ('referer');
+		$back = $this->generator->getRequest()->headers->get('referer');
 
-		return $this->createRedirect ($back, $status, $headers);
+		return $this->createRedirect($back, $status, $headers);
 	}
 
 	/**
@@ -65,9 +62,9 @@ class Redirector
 	 * @param  array  $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function refresh ($status = 302, $headers = array ())
+	public function refresh($status = 302, $headers = array())
 	{
-		return $this->to ($this->generator->getRequest ()->path (), $status, $headers);
+		return $this->to($this->generator->getRequest()->path(), $status, $headers);
 	}
 
 	/**
@@ -79,11 +76,11 @@ class Redirector
 	 * @param  bool    $secure
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function guest ($path, $status = 302, $headers = array (), $secure = null)
+	public function guest($path, $status = 302, $headers = array(), $secure = null)
 	{
-		$this->session->put ('url.intended', $this->generator->full ());
+		$this->session->put('url.intended', $this->generator->full());
 
-		return $this->to ($path, $status, $headers, $secure);
+		return $this->to($path, $status, $headers, $secure);
 	}
 
 	/**
@@ -95,13 +92,13 @@ class Redirector
 	 * @param  bool    $secure
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function intended ($default = '/', $status = 302, $headers = array (), $secure = null)
+	public function intended($default = '/', $status = 302, $headers = array(), $secure = null)
 	{
-		$path = $this->session->get ('url.intended', $default);
+		$path = $this->session->get('url.intended', $default);
 
-		$this->session->forget ('url.intended');
+		$this->session->forget('url.intended');
 
-		return $this->to ($path, $status, $headers, $secure);
+		return $this->to($path, $status, $headers, $secure);
 	}
 
 	/**
@@ -113,11 +110,11 @@ class Redirector
 	 * @param  bool    $secure
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function to ($path, $status = 302, $headers = array (), $secure = null)
+	public function to($path, $status = 302, $headers = array(), $secure = null)
 	{
-		$path = $this->generator->to ($path, array (), $secure);
+		$path = $this->generator->to($path, array(), $secure);
 
-		return $this->createRedirect ($path, $status, $headers);
+		return $this->createRedirect($path, $status, $headers);
 	}
 
 	/**
@@ -128,9 +125,9 @@ class Redirector
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function away ($path, $status = 302, $headers = array ())
+	public function away($path, $status = 302, $headers = array())
 	{
-		return $this->createRedirect ($path, $status, $headers);
+		return $this->createRedirect($path, $status, $headers);
 	}
 
 	/**
@@ -141,9 +138,9 @@ class Redirector
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function secure ($path, $status = 302, $headers = array ())
+	public function secure($path, $status = 302, $headers = array())
 	{
-		return $this->to ($path, $status, $headers, true);
+		return $this->to($path, $status, $headers, true);
 	}
 
 	/**
@@ -155,11 +152,11 @@ class Redirector
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function route ($route, $parameters = array (), $status = 302, $headers = array ())
+	public function route($route, $parameters = array(), $status = 302, $headers = array())
 	{
-		$path = $this->generator->route ($route, $parameters);
+		$path = $this->generator->route($route, $parameters);
 
-		return $this->to ($path, $status, $headers);
+		return $this->to($path, $status, $headers);
 	}
 
 	/**
@@ -171,11 +168,11 @@ class Redirector
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function action ($action, $parameters = array (), $status = 302, $headers = array ())
+	public function action($action, $parameters = array(), $status = 302, $headers = array())
 	{
-		$path = $this->generator->action ($action, $parameters);
+		$path = $this->generator->action($action, $parameters);
 
-		return $this->to ($path, $status, $headers);
+		return $this->to($path, $status, $headers);
 	}
 
 	/**
@@ -186,16 +183,16 @@ class Redirector
 	 * @param  array   $headers
 	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	protected function createRedirect ($path, $status, $headers)
+	protected function createRedirect($path, $status, $headers)
 	{
-		$redirect = new RedirectResponse ($path, $status, $headers);
+		$redirect = new RedirectResponse($path, $status, $headers);
 
-		if (isset ($this->session))
+		if (isset($this->session))
 		{
-			$redirect->setSession ($this->session);
+			$redirect->setSession($this->session);
 		}
 
-		$redirect->setRequest ($this->generator->getRequest ());
+		$redirect->setRequest($this->generator->getRequest());
 
 		return $redirect;
 	}
@@ -205,7 +202,7 @@ class Redirector
 	 *
 	 * @return  \Illuminate\Routing\UrlGenerator
 	 */
-	public function getUrlGenerator ()
+	public function getUrlGenerator()
 	{
 		return $this->generator;
 	}
@@ -216,7 +213,7 @@ class Redirector
 	 * @param  \Illuminate\Session\Store  $session
 	 * @return void
 	 */
-	public function setSession (SessionStore $session)
+	public function setSession(SessionStore $session)
 	{
 		$this->session = $session;
 	}

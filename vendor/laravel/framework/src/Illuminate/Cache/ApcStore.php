@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class ApcStore extends TaggableStore implements StoreInterface
-{
+class ApcStore extends TaggableStore implements StoreInterface {
 
 	/**
 	 * The APC wrapper instance.
@@ -26,7 +23,7 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  string  $prefix
 	 * @return void
 	 */
-	public function __construct (ApcWrapper $apc, $prefix = '')
+	public function __construct(ApcWrapper $apc, $prefix = '')
 	{
 		$this->apc = $apc;
 		$this->prefix = $prefix;
@@ -38,9 +35,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		$value = $this->apc->get ($this->prefix . $key);
+		$value = $this->apc->get($this->prefix.$key);
 
 		if ($value !== false)
 		{
@@ -56,9 +53,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  int     $minutes
 	 * @return array|bool
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		$this->apc->put ($this->prefix . $key, $value, $minutes * 60);
+		$this->apc->put($this->prefix.$key, $value, $minutes * 60);
 	}
 
 	/**
@@ -68,9 +65,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return array|bool
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
-		return $this->apc->increment ($this->prefix . $key, $value);
+		return $this->apc->increment($this->prefix.$key, $value);
 	}
 
 	/**
@@ -80,9 +77,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return array|bool
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
-		return $this->apc->decrement ($this->prefix . $key, $value);
+		return $this->apc->decrement($this->prefix.$key, $value);
 	}
 
 	/**
@@ -92,9 +89,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return array|bool
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		return $this->put ($key, $value, 0);
+		return $this->put($key, $value, 0);
 	}
 
 	/**
@@ -103,9 +100,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return array|bool
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		$this->apc->delete ($this->prefix . $key);
+		$this->apc->delete($this->prefix.$key);
 	}
 
 	/**
@@ -113,9 +110,9 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->apc->flush ();
+		$this->apc->flush();
 	}
 
 	/**
@@ -123,7 +120,7 @@ class ApcStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return $this->prefix;
 	}

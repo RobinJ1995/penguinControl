@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Connectors;
+<?php namespace Illuminate\Queue\Connectors;
 
 use Illuminate\Queue\BeanstalkdQueue;
 use Pheanstalk_Pheanstalk as Pheanstalk;
 
-class BeanstalkdConnector implements ConnectorInterface
-{
+class BeanstalkdConnector implements ConnectorInterface {
 
 	/**
 	 * Establish a queue connection.
@@ -14,12 +11,12 @@ class BeanstalkdConnector implements ConnectorInterface
 	 * @param  array  $config
 	 * @return \Illuminate\Queue\QueueInterface
 	 */
-	public function connect (array $config)
+	public function connect(array $config)
 	{
-		$pheanstalk = new Pheanstalk ($config['host']);
+		$pheanstalk = new Pheanstalk($config['host']);
 
-		return new BeanstalkdQueue (
-			$pheanstalk, $config['queue'], array_get ($config, 'ttr', Pheanstalk::DEFAULT_TTR)
+		return new BeanstalkdQueue(
+			$pheanstalk, $config['queue'], array_get($config, 'ttr', Pheanstalk::DEFAULT_TTR)
 		);
 	}
 

@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Database\Eloquent;
+<?php namespace Illuminate\Database\Eloquent;
 
 use Illuminate\Support\Collection as BaseCollection;
 
-class Collection extends BaseCollection
-{
+class Collection extends BaseCollection {
 
 	/**
 	 * Find a model in the collection by key.
@@ -14,16 +11,17 @@ class Collection extends BaseCollection
 	 * @param  mixed  $default
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function find ($key, $default = null)
+	public function find($key, $default = null)
 	{
 		if ($key instanceof Model)
 		{
-			$key = $key->getKey ();
+			$key = $key->getKey();
 		}
 
-		return array_first ($this->items, function($itemKey, $model) use ($key)
+		return array_first($this->items, function($itemKey, $model) use ($key)
 		{
-			return $model->getKey () == $key;
+			return $model->getKey() == $key;
+
 		}, $default);
 	}
 
@@ -33,16 +31,15 @@ class Collection extends BaseCollection
 	 * @param  dynamic  $relations
 	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
-	public function load ($relations)
+	public function load($relations)
 	{
-		if (count ($this->items) > 0)
+		if (count($this->items) > 0)
 		{
-			if (is_string ($relations))
-				$relations = func_get_args ();
+			if (is_string($relations)) $relations = func_get_args();
 
-			$query = $this->first ()->newQuery ()->with ($relations);
+			$query = $this->first()->newQuery()->with($relations);
 
-			$this->items = $query->eagerLoadRelations ($this->items);
+			$this->items = $query->eagerLoadRelations($this->items);
 		}
 
 		return $this;
@@ -54,7 +51,7 @@ class Collection extends BaseCollection
 	 * @param  mixed  $item
 	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
-	public function add ($item)
+	public function add($item)
 	{
 		$this->items[] = $item;
 
@@ -67,9 +64,9 @@ class Collection extends BaseCollection
 	 * @param  mixed  $key
 	 * @return bool
 	 */
-	public function contains ($key)
+	public function contains($key)
 	{
-		return !is_null ($this->find ($key));
+		return ! is_null($this->find($key));
 	}
 
 	/**
@@ -78,9 +75,9 @@ class Collection extends BaseCollection
 	 * @param  string  $key
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function fetch ($key)
+	public function fetch($key)
 	{
-		return new static (array_fetch ($this->toArray (), $key));
+		return new static(array_fetch($this->toArray(), $key));
 	}
 
 	/**
@@ -89,12 +86,12 @@ class Collection extends BaseCollection
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function max ($key)
+	public function max($key)
 	{
-		return $this->reduce (function($result, $item) use ($key)
-			{
-				return (is_null ($result) || $item->{$key} > $result) ? $item->{$key} : $result;
-			});
+		return $this->reduce(function($result, $item) use ($key)
+		{
+			return (is_null($result) || $item->{$key} > $result) ? $item->{$key} : $result;
+		});
 	}
 
 	/**
@@ -103,12 +100,12 @@ class Collection extends BaseCollection
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function min ($key)
+	public function min($key)
 	{
-		return $this->reduce (function($result, $item) use ($key)
-			{
-				return (is_null ($result) || $item->{$key} < $result) ? $item->{$key} : $result;
-			});
+		return $this->reduce(function($result, $item) use ($key)
+		{
+			return (is_null($result) || $item->{$key} < $result) ? $item->{$key} : $result;
+		});
 	}
 
 	/**
@@ -116,12 +113,9 @@ class Collection extends BaseCollection
 	 *
 	 * @return array
 	 */
-	public function modelKeys ()
+	public function modelKeys()
 	{
-		return array_map (function($m)
-		{
-			return $m->getKey ();
-		}, $this->items);
+		return array_map(function($m) { return $m->getKey(); }, $this->items);
 	}
 
 	/**
@@ -130,16 +124,16 @@ class Collection extends BaseCollection
 	 * @param  \Illuminate\Support\Collection|\Illuminate\Support\Contracts\ArrayableInterface|array  $items
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function merge ($collection)
+	public function merge($collection)
 	{
-		$dictionary = $this->getDictionary ();
+		$dictionary = $this->getDictionary();
 
 		foreach ($collection as $item)
 		{
-			$dictionary[$item->getKey ()] = $item;
+			$dictionary[$item->getKey()] = $item;
 		}
 
-		return new static (array_values ($dictionary));
+		return new static(array_values($dictionary));
 	}
 
 	/**
@@ -148,17 +142,17 @@ class Collection extends BaseCollection
 	 * @param  \Illuminate\Support\Collection|\Illuminate\Support\Contracts\ArrayableInterface|array  $items
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function diff ($collection)
+	public function diff($collection)
 	{
 		$diff = new static;
 
-		$dictionary = $this->getDictionary ($collection);
+		$dictionary = $this->getDictionary($collection);
 
 		foreach ($this->items as $item)
 		{
-			if (!isset ($dictionary[$item->getKey ()]))
+			if ( ! isset($dictionary[$item->getKey()]))
 			{
-				$diff->add ($item);
+				$diff->add($item);
 			}
 		}
 
@@ -168,20 +162,20 @@ class Collection extends BaseCollection
 	/**
 	 * Intersect the collection with the given items.
 	 *
-	 * @param  \Illuminate\Support\Collection|\Illuminate\Support\Contracts\ArrayableInterface|array  $items
+ 	 * @param  \Illuminate\Support\Collection|\Illuminate\Support\Contracts\ArrayableInterface|array  $items
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function intersect ($collection)
+	public function intersect($collection)
 	{
 		$intersect = new static;
 
-		$dictionary = $this->getDictionary ($collection);
+		$dictionary = $this->getDictionary($collection);
 
 		foreach ($this->items as $item)
 		{
-			if (isset ($dictionary[$item->getKey ()]))
+			if (isset($dictionary[$item->getKey()]))
 			{
-				$intersect->add ($item);
+				$intersect->add($item);
 			}
 		}
 
@@ -193,11 +187,11 @@ class Collection extends BaseCollection
 	 *
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function unique ()
+	public function unique()
 	{
-		$dictionary = $this->getDictionary ();
+		$dictionary = $this->getDictionary();
 
-		return new static (array_values ($dictionary));
+		return new static(array_values($dictionary));
 	}
 
 	/**
@@ -206,11 +200,11 @@ class Collection extends BaseCollection
 	 * @param  mixed  $keys
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function only ($keys)
+	public function only($keys)
 	{
-		$dictionary = array_only ($this->getDictionary ($this), $keys);
+		$dictionary = array_only($this->getDictionary($this), $keys);
 
-		return new static (array_values ($dictionary));
+		return new static(array_values($dictionary));
 	}
 
 	/**
@@ -219,11 +213,11 @@ class Collection extends BaseCollection
 	 * @param  mixed  $keys
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function except ($keys)
+	public function except($keys)
 	{
-		$dictionary = array_except ($this->getDictionary ($this), $keys);
+	    $dictionary = array_except($this->getDictionary($this), $keys);
 
-		return new static (array_values ($dictionary));
+	    return new static(array_values($dictionary));
 	}
 
 	/**
@@ -232,15 +226,15 @@ class Collection extends BaseCollection
 	 * @param  \Illuminate\Support\Collection  $collection
 	 * @return array
 	 */
-	public function getDictionary ($collection = null)
+	public function getDictionary($collection = null)
 	{
-		$collection = $collection ? : $this;
+		$collection = $collection ?: $this;
 
-		$dictionary = array ();
+		$dictionary = array();
 
 		foreach ($collection as $value)
 		{
-			$dictionary[$value->getKey ()] = $value;
+			$dictionary[$value->getKey()] = $value;
 		}
 
 		return $dictionary;
@@ -251,9 +245,9 @@ class Collection extends BaseCollection
 	 *
 	 * @return \Illuminate\Support\Collection
 	 */
-	public function toBase ()
+	public function toBase()
 	{
-		return new BaseCollection ($this->items);
+		return new BaseCollection($this->items);
 	}
 
 }

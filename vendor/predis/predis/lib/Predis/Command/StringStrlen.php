@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringStrlen extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'STRLEN';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'STRLEN';
+    }
 }

@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Composer;
 use Symfony\Component\Finder\Finder;
 
-class AutoloadCommand extends Command
-{
+class AutoloadCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -36,9 +33,9 @@ class AutoloadCommand extends Command
 	 * @param  \Illuminate\Foundation\Composer  $composer
 	 * @return void
 	 */
-	public function __construct (Composer $composer)
+	public function __construct(Composer $composer)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->composer = $composer;
 	}
@@ -48,15 +45,15 @@ class AutoloadCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->call ('optimize');
+		$this->call('optimize');
 
-		foreach ($this->findWorkbenches () as $workbench)
+		foreach ($this->findWorkbenches() as $workbench)
 		{
-			$this->comment ("Running for workbench [{$workbench['name']}]...");
+			$this->comment("Running for workbench [{$workbench['name']}]...");
 
-			$this->composer->setWorkingPath ($workbench['path'])->dumpOptimized ();
+			$this->composer->setWorkingPath($workbench['path'])->dumpOptimized();
 		}
 	}
 
@@ -65,13 +62,13 @@ class AutoloadCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function findWorkbenches ()
+	protected function findWorkbenches()
 	{
-		$results = array ();
+		$results = array();
 
-		foreach ($this->getWorkbenchComposers () as $file)
+		foreach ($this->getWorkbenchComposers() as $file)
 		{
-			$results[] = array ('name' => $file->getRelativePath (), 'path' => $file->getPath ());
+			$results[] = array('name' => $file->getRelativePath(), 'path' => $file->getPath());
 		}
 
 		return $results;
@@ -82,14 +79,13 @@ class AutoloadCommand extends Command
 	 *
 	 * @return \Symfony\Component\Finder\Finder
 	 */
-	protected function getWorkbenchComposers ()
+	protected function getWorkbenchComposers()
 	{
-		$workbench = $this->laravel['path.base'] . '/workbench';
+		$workbench = $this->laravel['path.base'].'/workbench';
 
-		if (!is_dir ($workbench))
-			return array ();
+		if ( ! is_dir($workbench)) return array();
 
-		return Finder::create ()->files ()->in ($workbench)->name ('composer.json')->depth ('< 3');
+		return Finder::create()->files()->in($workbench)->name('composer.json')->depth('< 3');
 	}
 
 }

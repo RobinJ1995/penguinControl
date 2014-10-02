@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Console\SeedCommand;
 
-class SeedServiceProvider extends ServiceProvider
-{
+class SeedServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -20,16 +17,16 @@ class SeedServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->registerSeedCommand ();
+		$this->registerSeedCommand();
 
-		$this->app->bindShared ('seeder', function($app)
+		$this->app->bindShared('seeder', function($app)
 		{
 			return new Seeder;
 		});
 
-		$this->commands ('command.seed');
+		$this->commands('command.seed');
 	}
 
 	/**
@@ -37,11 +34,11 @@ class SeedServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerSeedCommand ()
+	protected function registerSeedCommand()
 	{
-		$this->app->bindShared ('command.seed', function($app)
+		$this->app->bindShared('command.seed', function($app)
 		{
-			return new SeedCommand ($app['db']);
+			return new SeedCommand($app['db']);
 		});
 	}
 
@@ -50,9 +47,9 @@ class SeedServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('seeder', 'command.seed');
+		return array('seeder', 'command.seed');
 	}
 
 }

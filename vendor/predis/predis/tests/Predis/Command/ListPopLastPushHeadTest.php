@@ -17,139 +17,137 @@ namespace Predis\Command;
  */
 class ListPopLastPushHeadTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ListPopLastPushHead';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ListPopLastPushHead';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'RPOPLPUSH';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'RPOPLPUSH';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key:source', 'key:destination');
+        $expected = array('key:source', 'key:destination');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key:source', 'key:destination');
-		$expected = array ('key:source', 'key:destination');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame('element', $this->getCommand()->parseResponse('element'));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame ('element', $this->getCommand ()->parseResponse ('element'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key:source', 'key:destination');
+        $expected = array('prefix:key:source', 'prefix:key:destination');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key:source', 'key:destination');
-		$expected = array ('prefix:key:source', 'prefix:key:destination');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsElementPoppedFromSourceAndPushesToDestination()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsElementPoppedFromSourceAndPushesToDestination ()
-	{
-		$redis = $this->getClient ();
+        $redis->rpush('letters:source', 'a', 'b', 'c');
 
-		$redis->rpush ('letters:source', 'a', 'b', 'c');
+        $this->assertSame('c', $redis->rpoplpush('letters:source', 'letters:destination'));
+        $this->assertSame('b', $redis->rpoplpush('letters:source', 'letters:destination'));
+        $this->assertSame('a', $redis->rpoplpush('letters:source', 'letters:destination'));
 
-		$this->assertSame ('c', $redis->rpoplpush ('letters:source', 'letters:destination'));
-		$this->assertSame ('b', $redis->rpoplpush ('letters:source', 'letters:destination'));
-		$this->assertSame ('a', $redis->rpoplpush ('letters:source', 'letters:destination'));
+        $this->assertSame(array(), $redis->lrange('letters:source', 0, -1));
+        $this->assertSame(array('a', 'b', 'c'), $redis->lrange('letters:destination', 0, -1));
+    }
 
-		$this->assertSame (array (), $redis->lrange ('letters:source', 0, -1));
-		$this->assertSame (array ('a', 'b', 'c'), $redis->lrange ('letters:destination', 0, -1));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsElementPoppedFromSourceAndPushesToSelf()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsElementPoppedFromSourceAndPushesToSelf ()
-	{
-		$redis = $this->getClient ();
+        $redis->rpush('letters:source', 'a', 'b', 'c');
 
-		$redis->rpush ('letters:source', 'a', 'b', 'c');
+        $this->assertSame('c', $redis->rpoplpush('letters:source', 'letters:source'));
+        $this->assertSame('b', $redis->rpoplpush('letters:source', 'letters:source'));
+        $this->assertSame('a', $redis->rpoplpush('letters:source', 'letters:source'));
 
-		$this->assertSame ('c', $redis->rpoplpush ('letters:source', 'letters:source'));
-		$this->assertSame ('b', $redis->rpoplpush ('letters:source', 'letters:source'));
-		$this->assertSame ('a', $redis->rpoplpush ('letters:source', 'letters:source'));
+        $this->assertSame(array('a', 'b', 'c'), $redis->lrange('letters:source', 0, -1));
+    }
 
-		$this->assertSame (array ('a', 'b', 'c'), $redis->lrange ('letters:source', 0, -1));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsNullOnEmptySource()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsNullOnEmptySource ()
-	{
-		$redis = $this->getClient ();
+        $this->assertNull($redis->rpoplpush('key:source', 'key:destination'));
+    }
 
-		$this->assertNull ($redis->rpoplpush ('key:source', 'key:destination'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongTypeOfSourceKey()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongTypeOfSourceKey ()
-	{
-		$redis = $this->getClient ();
+        $redis->set('key:source', 'foo');
+        $redis->rpoplpush('key:source', 'key:destination');
+    }
 
-		$redis->set ('key:source', 'foo');
-		$redis->rpoplpush ('key:source', 'key:destination');
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongTypeOfDestinationKey()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongTypeOfDestinationKey ()
-	{
-		$redis = $this->getClient ();
+        $redis->rpush('key:source', 'foo');
+        $redis->set('key:destination', 'bar');
 
-		$redis->rpush ('key:source', 'foo');
-		$redis->set ('key:destination', 'bar');
-
-		$redis->rpoplpush ('key:source', 'key:destination');
-	}
-
+        $redis->rpoplpush('key:source', 'key:destination');
+    }
 }

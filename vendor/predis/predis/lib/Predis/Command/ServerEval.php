@@ -17,39 +17,35 @@ namespace Predis\Command;
  */
 class ServerEval extends AbstractCommand implements PrefixableCommandInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'EVAL';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'EVAL';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            for ($i = 2; $i < $arguments[1] + 2; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function prefixKeys ($prefix)
-	{
-		if ($arguments = $this->getArguments ())
-		{
-			for ($i = 2; $i < $arguments[1] + 2; $i++)
-			{
-				$arguments[$i] = "$prefix{$arguments[$i]}";
-			}
+            $this->setRawArguments($arguments);
+        }
+    }
 
-			$this->setRawArguments ($arguments);
-		}
-	}
-
-	/**
-	 * Calculates the SHA1 hash of the body of the script.
-	 *
-	 * @return string SHA1 hash.
-	 */
-	public function getScriptHash ()
-	{
-		return sha1 ($this->getArgument (0));
-	}
-
+    /**
+     * Calculates the SHA1 hash of the body of the script.
+     *
+     * @return string SHA1 hash.
+     */
+    public function getScriptHash()
+    {
+        return sha1($this->getArgument(0));
+    }
 }

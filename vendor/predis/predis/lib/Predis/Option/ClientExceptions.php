@@ -18,21 +18,19 @@ namespace Predis\Option;
  */
 class ClientExceptions extends AbstractOption
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function filter(ClientOptionsInterface $options, $value)
+    {
+        return (bool) $value;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function filter (ClientOptionsInterface $options, $value)
-	{
-		return (bool) $value;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDefault (ClientOptionsInterface $options)
-	{
-		return true;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault(ClientOptionsInterface $options)
+    {
+        return true;
+    }
 }

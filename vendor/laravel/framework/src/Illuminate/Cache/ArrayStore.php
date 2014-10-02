@@ -1,16 +1,13 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class ArrayStore extends TaggableStore implements StoreInterface
-{
+class ArrayStore extends TaggableStore implements StoreInterface {
 
 	/**
 	 * The array of stored values.
 	 *
 	 * @var array
 	 */
-	protected $storage = array ();
+	protected $storage = array();
 
 	/**
 	 * Retrieve an item from the cache by key.
@@ -18,9 +15,9 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		if (array_key_exists ($key, $this->storage))
+		if (array_key_exists($key, $this->storage))
 		{
 			return $this->storage[$key];
 		}
@@ -34,7 +31,7 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 * @param  int     $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
 		$this->storage[$key] = $value;
 	}
@@ -46,7 +43,7 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
 		$this->storage[$key] = $this->storage[$key] + $value;
 
@@ -60,7 +57,7 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
 		$this->storage[$key] = $this->storage[$key] - $value;
 
@@ -74,9 +71,9 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		return $this->put ($key, $value, 0);
+		return $this->put($key, $value, 0);
 	}
 
 	/**
@@ -85,9 +82,9 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		unset ($this->storage[$key]);
+		unset($this->storage[$key]);
 	}
 
 	/**
@@ -95,9 +92,9 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->storage = array ();
+		$this->storage = array();
 	}
 
 	/**
@@ -105,7 +102,7 @@ class ArrayStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return '';
 	}

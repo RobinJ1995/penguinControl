@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetMembers extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SMEMBERS';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SMEMBERS';
+    }
 }

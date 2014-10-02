@@ -22,5 +22,4 @@ use Symfony\Component\Debug\Exception\FatalErrorException as DebugFatalErrorExce
  */
 class FatalErrorException extends DebugFatalErrorException
 {
-	
 }

@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use Closure;
 use Doctrine\DBAL\Driver\PDOSqlsrv\Driver as DoctrineDriver;
@@ -8,8 +6,7 @@ use Illuminate\Database\Query\Processors\SqlServerProcessor;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
 
-class SqlServerConnection extends Connection
-{
+class SqlServerConnection extends Connection {
 
 	/**
 	 * Execute a Closure within a transaction.
@@ -19,23 +16,23 @@ class SqlServerConnection extends Connection
 	 *
 	 * @throws \Exception
 	 */
-	public function transaction (Closure $callback)
+	public function transaction(Closure $callback)
 	{
-		if ($this->getDriverName () == 'sqlsrv')
+		if ($this->getDriverName() == 'sqlsrv')
 		{
-			return parent::transaction ($callback);
+			return parent::transaction($callback);
 		}
 
-		$this->pdo->exec ('BEGIN TRAN');
+		$this->pdo->exec('BEGIN TRAN');
 
 		// We'll simply execute the given callback within a try / catch block
 		// and if we catch any exception we can rollback the transaction
 		// so that none of the changes are persisted to the database.
 		try
 		{
-			$result = $callback ($this);
+			$result = $callback($this);
 
-			$this->pdo->exec ('COMMIT TRAN');
+			$this->pdo->exec('COMMIT TRAN');
 		}
 
 		// If we catch an exception, we will roll back so nothing gets messed
@@ -43,7 +40,7 @@ class SqlServerConnection extends Connection
 		// be handled how the developer sees fit for their applications.
 		catch (\Exception $e)
 		{
-			$this->pdo->exec ('ROLLBACK TRAN');
+			$this->pdo->exec('ROLLBACK TRAN');
 
 			throw $e;
 		}
@@ -56,9 +53,9 @@ class SqlServerConnection extends Connection
 	 *
 	 * @return \Illuminate\Database\Query\Grammars\SqlServerGrammar
 	 */
-	protected function getDefaultQueryGrammar ()
+	protected function getDefaultQueryGrammar()
 	{
-		return $this->withTablePrefix (new QueryGrammar);
+		return $this->withTablePrefix(new QueryGrammar);
 	}
 
 	/**
@@ -66,9 +63,9 @@ class SqlServerConnection extends Connection
 	 *
 	 * @return \Illuminate\Database\Schema\Grammars\SqlServerGrammar
 	 */
-	protected function getDefaultSchemaGrammar ()
+	protected function getDefaultSchemaGrammar()
 	{
-		return $this->withTablePrefix (new SchemaGrammar);
+		return $this->withTablePrefix(new SchemaGrammar);
 	}
 
 	/**
@@ -76,7 +73,7 @@ class SqlServerConnection extends Connection
 	 *
 	 * @return \Illuminate\Database\Query\Processors\Processor
 	 */
-	protected function getDefaultPostProcessor ()
+	protected function getDefaultPostProcessor()
 	{
 		return new SqlServerProcessor;
 	}
@@ -86,7 +83,7 @@ class SqlServerConnection extends Connection
 	 *
 	 * @return \Doctrine\DBAL\Driver\PDOSqlsrv\Driver
 	 */
-	protected function getDoctrineDriver ()
+	protected function getDoctrineDriver()
 	{
 		return new DoctrineDriver;
 	}

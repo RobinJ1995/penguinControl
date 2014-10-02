@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetRemoveRangeByScore extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZREMRANGEBYSCORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZREMRANGEBYSCORE';
+    }
 }

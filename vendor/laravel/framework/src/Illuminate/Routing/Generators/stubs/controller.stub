@@ -1,6 +1,4 @@
-<?php
-
-{{namespace}}
+<?php{{namespace}}
 
 class {{class}} extends \BaseController {
 

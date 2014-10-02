@@ -23,88 +23,85 @@ use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcherInterface;
  */
 class EventDataCollector extends DataCollector implements LateDataCollectorInterface
 {
+    protected $dispatcher;
 
-	protected $dispatcher;
+    public function __construct(EventDispatcherInterface $dispatcher = null)
+    {
+        $this->dispatcher = $dispatcher;
+    }
 
-	public function __construct (EventDispatcherInterface $dispatcher = null)
-	{
-		$this->dispatcher = $dispatcher;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function collect(Request $request, Response $response, \Exception $exception = null)
+    {
+        $this->data = array(
+            'called_listeners'     => array(),
+            'not_called_listeners' => array(),
+        );
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function collect (Request $request, Response $response, \Exception $exception = null)
-	{
-		$this->data = array (
-		    'called_listeners' => array (),
-		    'not_called_listeners' => array (),
-		);
-	}
+    public function lateCollect()
+    {
+        if ($this->dispatcher instanceof TraceableEventDispatcherInterface) {
+            $this->setCalledListeners($this->dispatcher->getCalledListeners());
+            $this->setNotCalledListeners($this->dispatcher->getNotCalledListeners());
+        }
+    }
 
-	public function lateCollect ()
-	{
-		if ($this->dispatcher instanceof TraceableEventDispatcherInterface)
-		{
-			$this->setCalledListeners ($this->dispatcher->getCalledListeners ());
-			$this->setNotCalledListeners ($this->dispatcher->getNotCalledListeners ());
-		}
-	}
+    /**
+     * Sets the called listeners.
+     *
+     * @param array $listeners An array of called listeners
+     *
+     * @see TraceableEventDispatcherInterface
+     */
+    public function setCalledListeners(array $listeners)
+    {
+        $this->data['called_listeners'] = $listeners;
+    }
 
-	/**
-	 * Sets the called listeners.
-	 *
-	 * @param array $listeners An array of called listeners
-	 *
-	 * @see TraceableEventDispatcherInterface
-	 */
-	public function setCalledListeners (array $listeners)
-	{
-		$this->data['called_listeners'] = $listeners;
-	}
+    /**
+     * Gets the called listeners.
+     *
+     * @return array An array of called listeners
+     *
+     * @see TraceableEventDispatcherInterface
+     */
+    public function getCalledListeners()
+    {
+        return $this->data['called_listeners'];
+    }
 
-	/**
-	 * Gets the called listeners.
-	 *
-	 * @return array An array of called listeners
-	 *
-	 * @see TraceableEventDispatcherInterface
-	 */
-	public function getCalledListeners ()
-	{
-		return $this->data['called_listeners'];
-	}
+    /**
+     * Sets the not called listeners.
+     *
+     * @param array $listeners An array of not called listeners
+     *
+     * @see TraceableEventDispatcherInterface
+     */
+    public function setNotCalledListeners(array $listeners)
+    {
+        $this->data['not_called_listeners'] = $listeners;
+    }
 
-	/**
-	 * Sets the not called listeners.
-	 *
-	 * @param array $listeners An array of not called listeners
-	 *
-	 * @see TraceableEventDispatcherInterface
-	 */
-	public function setNotCalledListeners (array $listeners)
-	{
-		$this->data['not_called_listeners'] = $listeners;
-	}
+    /**
+     * Gets the not called listeners.
+     *
+     * @return array An array of not called listeners
+     *
+     * @see TraceableEventDispatcherInterface
+     */
+    public function getNotCalledListeners()
+    {
+        return $this->data['not_called_listeners'];
+    }
 
-	/**
-	 * Gets the not called listeners.
-	 *
-	 * @return array An array of not called listeners
-	 *
-	 * @see TraceableEventDispatcherInterface
-	 */
-	public function getNotCalledListeners ()
-	{
-		return $this->data['not_called_listeners'];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getName ()
-	{
-		return 'events';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'events';
+    }
 }

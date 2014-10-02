@@ -26,36 +26,33 @@ use Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerPatterns;
  */
 class NumberHandler implements HandlerInterface
 {
+    /**
+     * @var TokenizerPatterns
+     */
+    private $patterns;
 
-	/**
-	 * @var TokenizerPatterns
-	 */
-	private $patterns;
+    /**
+     * @param TokenizerPatterns $patterns
+     */
+    public function __construct(TokenizerPatterns $patterns)
+    {
+        $this->patterns = $patterns;
+    }
 
-	/**
-	 * @param TokenizerPatterns $patterns
-	 */
-	public function __construct (TokenizerPatterns $patterns)
-	{
-		$this->patterns = $patterns;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(Reader $reader, TokenStream $stream)
+    {
+        $match = $reader->findPattern($this->patterns->getNumberPattern());
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function handle (Reader $reader, TokenStream $stream)
-	{
-		$match = $reader->findPattern ($this->patterns->getNumberPattern ());
+        if (!$match) {
+            return false;
+        }
 
-		if (!$match)
-		{
-			return false;
-		}
+        $stream->push(new Token(Token::TYPE_NUMBER, $match[0], $reader->getPosition()));
+        $reader->moveForward(strlen($match[0]));
 
-		$stream->push (new Token (Token::TYPE_NUMBER, $match[0], $reader->getPosition ()));
-		$reader->moveForward (strlen ($match[0]));
-
-		return true;
-	}
-
+        return true;
+    }
 }

@@ -21,57 +21,55 @@ namespace Symfony\Component\CssSelector\Node;
  */
 class ClassNode extends AbstractNode
 {
+    /**
+     * @var NodeInterface
+     */
+    private $selector;
 
-	/**
-	 * @var NodeInterface
-	 */
-	private $selector;
+    /**
+     * @var string
+     */
+    private $name;
 
-	/**
-	 * @var string
-	 */
-	private $name;
+    /**
+     * @param NodeInterface $selector
+     * @param string        $name
+     */
+    public function __construct(NodeInterface $selector, $name)
+    {
+        $this->selector = $selector;
+        $this->name = $name;
+    }
 
-	/**
-	 * @param NodeInterface $selector
-	 * @param string        $name
-	 */
-	public function __construct (NodeInterface $selector, $name)
-	{
-		$this->selector = $selector;
-		$this->name = $name;
-	}
+    /**
+     * @return NodeInterface
+     */
+    public function getSelector()
+    {
+        return $this->selector;
+    }
 
-	/**
-	 * @return NodeInterface
-	 */
-	public function getSelector ()
-	{
-		return $this->selector;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName ()
-	{
-		return $this->name;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecificity()
+    {
+        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSpecificity ()
-	{
-		return $this->selector->getSpecificity ()->plus (new Specificity (0, 1, 0));
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __toString ()
-	{
-		return sprintf ('%s[%s.%s]', $this->getNodeName (), $this->selector, $this->name);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return sprintf('%s[%s.%s]', $this->getNodeName(), $this->selector, $this->name);
+    }
 }

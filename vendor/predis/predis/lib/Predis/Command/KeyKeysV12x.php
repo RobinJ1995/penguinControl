@@ -18,13 +18,11 @@ namespace Predis\Command;
  */
 class KeyKeysV12x extends KeyKeys
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return explode (' ', $data);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return explode(' ', $data);
+    }
 }

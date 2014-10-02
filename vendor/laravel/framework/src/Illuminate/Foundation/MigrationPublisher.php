@@ -1,19 +1,16 @@
-<?php
-
-namespace Illuminate\Foundation;
+<?php namespace Illuminate\Foundation;
 
 use Carbon\Carbon;
 use Illuminate\Filesystem\Filesystem;
 
-class MigrationPublisher
-{
+class MigrationPublisher {
 
 	/**
 	 * A cache of migrations at a given destination.
 	 *
 	 * @var array
 	 */
-	protected $existing = array ();
+	protected $existing = array();
 
 	/**
 	 * Create a new migration publisher instance.
@@ -21,7 +18,7 @@ class MigrationPublisher
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
 		$this->files = $files;
 	}
@@ -33,20 +30,20 @@ class MigrationPublisher
 	 * @param  string  $destination
 	 * @return array
 	 */
-	public function publish ($source, $destination)
+	public function publish($source, $destination)
 	{
 		$add = 0;
 
-		$published = array ();
+		$published = array();
 
-		foreach ($this->getFreshMigrations ($source, $destination) as $file)
+		foreach ($this->getFreshMigrations($source, $destination) as $file)
 		{
 			$add++;
 
-			$newName = $this->getNewMigrationName ($file, $add);
+			$newName = $this->getNewMigrationName($file, $add);
 
-			$this->files->copy (
-				$file, $newName = $destination . '/' . $newName
+			$this->files->copy(
+				$file, $newName = $destination.'/'.$newName
 			);
 
 			$published[] = $newName;
@@ -62,13 +59,13 @@ class MigrationPublisher
 	 * @param  string  $destination
 	 * @return array
 	 */
-	protected function getFreshMigrations ($source, $destination)
+	protected function getFreshMigrations($source, $destination)
 	{
 		$me = $this;
 
-		return array_filter ($this->getPackageMigrations ($source), function($file) use ($me, $destination)
+		return array_filter($this->getPackageMigrations($source), function($file) use ($me, $destination)
 		{
-			return !$me->migrationExists ($file, $destination);
+			return ! $me->migrationExists($file, $destination);
 		});
 	}
 
@@ -78,11 +75,11 @@ class MigrationPublisher
 	 * @param  string  $migration
 	 * @return bool
 	 */
-	public function migrationExists ($migration, $destination)
+	public function migrationExists($migration, $destination)
 	{
-		$existing = $this->getExistingMigrationNames ($destination);
+		$existing = $this->getExistingMigrationNames($destination);
 
-		return in_array (substr (basename ($migration), 18), $existing);
+		return in_array(substr(basename($migration), 18), $existing);
 	}
 
 	/**
@@ -91,15 +88,15 @@ class MigrationPublisher
 	 * @param  string  $destination
 	 * @return array
 	 */
-	public function getExistingMigrationNames ($destination)
+	public function getExistingMigrationNames($destination)
 	{
-		if (isset ($this->existing[$destination]))
-			return $this->existing[$destination];
+		if (isset($this->existing[$destination])) return $this->existing[$destination];
 
-		return $this->existing[$destination] = array_map (function($file)
+		return $this->existing[$destination] = array_map(function($file)
 		{
-			return substr (basename ($file), 18);
-		}, $this->files->files ($destination));
+			return substr(basename($file), 18);
+
+		}, $this->files->files($destination));
 	}
 
 	/**
@@ -108,14 +105,14 @@ class MigrationPublisher
 	 * @param  string  $source
 	 * @return array
 	 */
-	protected function getPackageMigrations ($source)
+	protected function getPackageMigrations($source)
 	{
-		$files = array_filter ($this->files->files ($source), function($file)
+		$files = array_filter($this->files->files($source), function($file)
 		{
-			return !starts_with ($file, '.');
+			return ! starts_with($file, '.');
 		});
 
-		sort ($files);
+		sort($files);
 
 		return $files;
 	}
@@ -127,9 +124,9 @@ class MigrationPublisher
 	 * @param  int  $add
 	 * @return string
 	 */
-	protected function getNewMigrationName ($file, $add)
+	protected function getNewMigrationName($file, $add)
 	{
-		return Carbon::now ()->addSeconds ($add)->format ('Y_m_d_His') . substr (basename ($file), 17);
+		return Carbon::now()->addSeconds($add)->format('Y_m_d_His').substr(basename($file), 17);
 	}
 
 }

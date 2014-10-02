@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\ViewPublisher;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class ViewPublishCommand extends Command
-{
+class ViewPublishCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -37,9 +34,9 @@ class ViewPublishCommand extends Command
 	 * @param  \Illuminate\Foundation\ViewPublisher  $view
 	 * @return void
 	 */
-	public function __construct (ViewPublisher $view)
+	public function __construct(ViewPublisher $view)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->view = $view;
 	}
@@ -49,20 +46,20 @@ class ViewPublishCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$package = $this->input->getArgument ('package');
+		$package = $this->input->getArgument('package');
 
-		if (!is_null ($path = $this->getPath ()))
+		if ( ! is_null($path = $this->getPath()))
 		{
-			$this->view->publish ($package, $path);
+			$this->view->publish($package, $path);
 		}
 		else
 		{
-			$this->view->publishPackage ($package);
+			$this->view->publishPackage($package);
 		}
 
-		$this->output->writeln ('<info>Views published for package:</info> ' . $package);
+		$this->output->writeln('<info>Views published for package:</info> '.$package);
 	}
 
 	/**
@@ -70,13 +67,13 @@ class ViewPublishCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getPath ()
+	protected function getPath()
 	{
-		$path = $this->input->getOption ('path');
+		$path = $this->input->getOption('path');
 
-		if (!is_null ($path))
+		if ( ! is_null($path))
 		{
-			return $this->laravel['path.base'] . '/' . $path;
+			return $this->laravel['path.base'].'/'.$path;
 		}
 	}
 
@@ -85,10 +82,10 @@ class ViewPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('package', InputArgument::REQUIRED, 'The name of the package being published.'),
+		return array(
+			array('package', InputArgument::REQUIRED, 'The name of the package being published.'),
 		);
 	}
 
@@ -97,10 +94,10 @@ class ViewPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'The path to the source view files.', null),
+		return array(
+			array('path', null, InputOption::VALUE_OPTIONAL, 'The path to the source view files.', null),
 		);
 	}
 

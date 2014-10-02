@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Queue;
+<?php namespace Illuminate\Queue;
 
 use Closure;
 use DateTime;
 use Illuminate\Container\Container;
 use Illuminate\Support\SerializableClosure;
 
-abstract class Queue
-{
+abstract class Queue {
 
 	/**
 	 * The IoC container instance.
@@ -22,9 +19,9 @@ abstract class Queue
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function marshal ()
+	public function marshal()
 	{
-		throw new \RuntimeException ("Push queues only supported by Iron.");
+		throw new \RuntimeException("Push queues only supported by Iron.");
 	}
 
 	/**
@@ -35,11 +32,11 @@ abstract class Queue
 	 * @param  string  $queue
 	 * @return mixed
 	 */
-	public function bulk ($jobs, $data = '', $queue = null)
+	public function bulk($jobs, $data = '', $queue = null)
 	{
 		foreach ((array) $jobs as $job)
 		{
-			$this->push ($job, $data, $queue);
+			$this->push($job, $data, $queue);
 		}
 	}
 
@@ -51,15 +48,15 @@ abstract class Queue
 	 * @param  string  $queue
 	 * @return string
 	 */
-	protected function createPayload ($job, $data = '', $queue = null)
+	protected function createPayload($job, $data = '', $queue = null)
 	{
 		if ($job instanceof Closure)
 		{
-			return json_encode ($this->createClosurePayload ($job, $data));
+			return json_encode($this->createClosurePayload($job, $data));
 		}
 		else
 		{
-			return json_encode (array ('job' => $job, 'data' => $data));
+			return json_encode(array('job' => $job, 'data' => $data));
 		}
 	}
 
@@ -70,11 +67,11 @@ abstract class Queue
 	 * @param  mixed     $data
 	 * @return string
 	 */
-	protected function createClosurePayload ($job, $data)
+	protected function createClosurePayload($job, $data)
 	{
-		$closure = serialize (new SerializableClosure ($job));
+		$closure = serialize(new SerializableClosure($job));
 
-		return array ('job' => 'IlluminateQueueClosure', 'data' => compact ('closure'));
+		return array('job' => 'IlluminateQueueClosure', 'data' => compact('closure'));
 	}
 
 	/**
@@ -85,11 +82,11 @@ abstract class Queue
 	 * @param  string  $value
 	 * @return string
 	 */
-	protected function setMeta ($payload, $key, $value)
+	protected function setMeta($payload, $key, $value)
 	{
-		$payload = json_decode ($payload, true);
+		$payload = json_decode($payload, true);
 
-		return json_encode (array_set ($payload, $key, $value));
+		return json_encode(array_set($payload, $key, $value));
 	}
 
 	/**
@@ -98,15 +95,15 @@ abstract class Queue
 	 * @param  \DateTime|int  $delay
 	 * @return int
 	 */
-	protected function getSeconds ($delay)
+	protected function getSeconds($delay)
 	{
 		if ($delay instanceof DateTime)
 		{
-			return max (0, $delay->getTimestamp () - $this->getTime ());
+			return max(0, $delay->getTimestamp() - $this->getTime());
 		}
 		else
 		{
-			return intval ($delay);
+			return intval($delay);
 		}
 	}
 
@@ -115,9 +112,9 @@ abstract class Queue
 	 *
 	 * @return int
 	 */
-	public function getTime ()
+	public function getTime()
 	{
-		return time ();
+		return time();
 	}
 
 	/**
@@ -126,7 +123,7 @@ abstract class Queue
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function setContainer (Container $container)
+	public function setContainer(Container $container)
 	{
 		$this->container = $container;
 	}

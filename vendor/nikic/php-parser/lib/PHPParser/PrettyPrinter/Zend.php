@@ -7,5 +7,4 @@
  */
 class PHPParser_PrettyPrinter_Zend extends PHPParser_PrettyPrinter_Default
 {
-	
 }

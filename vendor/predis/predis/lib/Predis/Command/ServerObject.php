@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerObject extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'OBJECT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'OBJECT';
+    }
 }

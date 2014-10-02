@@ -49,160 +49,194 @@ use Predis\Command\CommandInterface;
  */
 class PhpiredisStreamConnection extends StreamConnection
 {
+    private $reader;
 
-	private $reader;
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(ConnectionParametersInterface $parameters)
+    {
+        $this->checkExtensions();
+        $this->initializeReader();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct (ConnectionParametersInterface $parameters)
-	{
-		$this->checkExtensions ();
-		$this->initializeReader ();
+        parent::__construct($parameters);
+    }
 
-		parent::__construct ($parameters);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function __destruct()
+    {
+        phpiredis_reader_destroy($this->reader);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __destruct ()
-	{
-		phpiredis_reader_destroy ($this->reader);
+        parent::__destruct();
+    }
 
-		parent::__destruct ();
-	}
+    /**
+     * Checks if the phpiredis extension is loaded in PHP.
+     */
+    protected function checkExtensions()
+    {
+        if (!function_exists('phpiredis_reader_create')) {
+            throw new NotSupportedException(
+                'The phpiredis extension must be loaded in order to be able to use this connection class'
+            );
+        }
+    }
 
-	/**
-	 * Checks if the phpiredis extension is loaded in PHP.
-	 */
-	protected function checkExtensions ()
-	{
-		if (!function_exists ('phpiredis_reader_create'))
-		{
-			throw new NotSupportedException (
-			'The phpiredis extension must be loaded in order to be able to use this connection class'
-			);
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function checkParameters(ConnectionParametersInterface $parameters)
+    {
+        if (isset($parameters->iterable_multibulk)) {
+            $this->onInvalidOption('iterable_multibulk', $parameters);
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function checkParameters (ConnectionParametersInterface $parameters)
-	{
-		if (isset ($parameters->iterable_multibulk))
-		{
-			$this->onInvalidOption ('iterable_multibulk', $parameters);
-		}
+        return parent::checkParameters($parameters);
+    }
 
-		return parent::checkParameters ($parameters);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
+    {
+        $uri = "tcp://{$parameters->host}:{$parameters->port}";
+        $flags = STREAM_CLIENT_CONNECT;
+        $socket = null;
 
-	/**
-	 * Initializes the protocol reader resource.
-	 */
-	protected function initializeReader ()
-	{
-		$reader = phpiredis_reader_create ();
+        if (isset($parameters->async_connect) && $parameters->async_connect) {
+            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
 
-		phpiredis_reader_set_status_handler ($reader, $this->getStatusHandler ());
-		phpiredis_reader_set_error_handler ($reader, $this->getErrorHandler ());
+        if (isset($parameters->persistent) && $parameters->persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+        }
 
-		$this->reader = $reader;
-	}
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
 
-	/**
-	 * Gets the handler used by the protocol reader to handle status replies.
-	 *
-	 * @return \Closure
-	 */
-	protected function getStatusHandler ()
-	{
-		return function ($payload)
-		{
-			switch ($payload)
-			{
-				case 'OK':
-					return true;
+        if (!$resource) {
+            $this->onConnectionError(trim($errstr), $errno);
+        }
 
-				case 'QUEUED':
-					return new ResponseQueued();
+        if (isset($parameters->read_write_timeout) && function_exists('socket_import_stream')) {
+            $rwtimeout = (float) $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
 
-				default:
-					return $payload;
-			}
-		};
-	}
+            $timeout = array(
+                'sec'  => $timeoutSeconds = floor($rwtimeout),
+                'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
+            );
 
-	/**
-	 * Gets the handler used by the protocol reader to handle Redis errors.
-	 *
-	 * @return \Closure
-	 */
-	protected function getErrorHandler ()
-	{
-		return function ($errorMessage)
-		{
-			return new ResponseError ($errorMessage);
-		};
-	}
+            $socket = $socket ?: socket_import_stream($resource);
+            @socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);
+            @socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function read ()
-	{
-		$socket = $this->getResource ();
-		$reader = $this->reader;
+        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
+            $socket = $socket ?: socket_import_stream($resource);
+            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
+        }
 
-		while (PHPIREDIS_READER_STATE_INCOMPLETE === $state = phpiredis_reader_get_state ($reader))
-		{
-			$buffer = fread ($socket, 4096);
+        return $resource;
+    }
 
-			if ($buffer === false || $buffer === '')
-			{
-				$this->onConnectionError ('Error while reading bytes from the server');
-			}
+    /**
+     * Initializes the protocol reader resource.
+     */
+    protected function initializeReader()
+    {
+        $reader = phpiredis_reader_create();
 
-			phpiredis_reader_feed ($reader, $buffer);
-		}
+        phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
 
-		if ($state === PHPIREDIS_READER_STATE_COMPLETE)
-		{
-			return phpiredis_reader_get_reply ($reader);
-		}
-		else
-		{
-			$this->onProtocolError (phpiredis_reader_get_error ($reader));
-		}
-	}
+        $this->reader = $reader;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function writeCommand (CommandInterface $command)
-	{
-		$cmdargs = $command->getArguments ();
-		array_unshift ($cmdargs, $command->getId ());
-		$this->writeBytes (phpiredis_format_command ($cmdargs));
-	}
+    /**
+     * Gets the handler used by the protocol reader to handle status replies.
+     *
+     * @return \Closure
+     */
+    protected function getStatusHandler()
+    {
+        return function ($payload) {
+            switch ($payload) {
+                case 'OK':
+                    return true;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __sleep ()
-	{
-		return array_diff (parent::__sleep (), array ('mbiterable'));
-	}
+                case 'QUEUED':
+                    return new ResponseQueued();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __wakeup ()
-	{
-		$this->checkExtensions ();
-		$this->initializeReader ();
-	}
+                default:
+                    return $payload;
+            }
+        };
+    }
 
+    /**
+     * Gets the handler used by the protocol reader to handle Redis errors.
+     *
+     * @return \Closure
+     */
+    protected function getErrorHandler()
+    {
+        return function ($errorMessage) {
+            return new ResponseError($errorMessage);
+        };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function read()
+    {
+        $socket = $this->getResource();
+        $reader = $this->reader;
+
+        while (PHPIREDIS_READER_STATE_INCOMPLETE === $state = phpiredis_reader_get_state($reader)) {
+            $buffer = stream_socket_recvfrom($socket, 4096);
+
+            if ($buffer === false || $buffer === '') {
+                $this->onConnectionError('Error while reading bytes from the server');
+            }
+
+            phpiredis_reader_feed($reader, $buffer);
+        }
+
+        if ($state === PHPIREDIS_READER_STATE_COMPLETE) {
+            return phpiredis_reader_get_reply($reader);
+        } else {
+            $this->onProtocolError(phpiredis_reader_get_error($reader));
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeCommand(CommandInterface $command)
+    {
+        $cmdargs = $command->getArguments();
+        array_unshift($cmdargs, $command->getId());
+        $this->writeBytes(phpiredis_format_command($cmdargs));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array_diff(parent::__sleep(), array('mbiterable'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __wakeup()
+    {
+        $this->checkExtensions();
+        $this->initializeReader();
+    }
 }

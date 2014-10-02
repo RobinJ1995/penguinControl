@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ConnectionAuth extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'AUTH';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'AUTH';
+    }
 }

@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class ApcWrapper
-{
+class ApcWrapper {
 
 	/**
 	 * Indicates if APCu is supported.
@@ -17,9 +14,9 @@ class ApcWrapper
 	 *
 	 * @return void
 	 */
-	public function __construct ()
+	public function __construct()
 	{
-		$this->apcu = function_exists ('apcu_fetch');
+		$this->apcu = function_exists('apcu_fetch');
 	}
 
 	/**
@@ -28,9 +25,9 @@ class ApcWrapper
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		return $this->apcu ? apcu_fetch ($key) : apc_fetch ($key);
+		return $this->apcu ? apcu_fetch($key) : apc_fetch($key);
 	}
 
 	/**
@@ -41,9 +38,9 @@ class ApcWrapper
 	 * @param  int     $seconds
 	 * @return array|bool
 	 */
-	public function put ($key, $value, $seconds)
+	public function put($key, $value, $seconds)
 	{
-		return $this->apcu ? apcu_store ($key, $value, $seconds) : apc_store ($key, $value, $seconds);
+		return $this->apcu ? apcu_store($key, $value, $seconds) : apc_store($key, $value, $seconds);
 	}
 
 	/**
@@ -53,9 +50,9 @@ class ApcWrapper
 	 * @param  mixed   $value
 	 * @return array|bool
 	 */
-	public function increment ($key, $value)
+	public function increment($key, $value)
 	{
-		return $this->apcu ? apcu_inc ($key, $value) : apc_inc ($key, $value);
+		return $this->apcu ? apcu_inc($key, $value) : apc_inc($key, $value);
 	}
 
 	/**
@@ -65,9 +62,9 @@ class ApcWrapper
 	 * @param  mixed   $value
 	 * @return array|bool
 	 */
-	public function decrement ($key, $value)
+	public function decrement($key, $value)
 	{
-		return $this->apcu ? apcu_dec ($key, $value) : apc_dec ($key, $value);
+		return $this->apcu ? apcu_dec($key, $value) : apc_dec($key, $value);
 	}
 
 	/**
@@ -76,9 +73,9 @@ class ApcWrapper
 	 * @param  string  $key
 	 * @return array|bool
 	 */
-	public function delete ($key)
+	public function delete($key)
 	{
-		return $this->apcu ? apcu_delete ($key) : apc_delete ($key);
+		return $this->apcu ? apcu_delete($key) : apc_delete($key);
 	}
 
 	/**
@@ -86,9 +83,9 @@ class ApcWrapper
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->apcu ? apcu_clear_cache () : apc_clear_cache ('user');
+		$this->apcu ? apcu_clear_cache() : apc_clear_cache('user');
 	}
 
 }

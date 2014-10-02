@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Closure;
 use DateTime;
 use ArrayAccess;
 use Carbon\Carbon;
 
-class Repository implements ArrayAccess
-{
+class Repository implements ArrayAccess {
 
 	/**
 	 * The cache store implementation.
@@ -29,14 +26,14 @@ class Repository implements ArrayAccess
 	 *
 	 * @var array
 	 */
-	protected $macros = array ();
+	protected $macros = array();
 
 	/**
 	 * Create a new cache repository instance.
 	 *
 	 * @param  \Illuminate\Cache\StoreInterface  $store
 	 */
-	public function __construct (StoreInterface $store)
+	public function __construct(StoreInterface $store)
 	{
 		$this->store = $store;
 	}
@@ -47,9 +44,9 @@ class Repository implements ArrayAccess
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function has ($key)
+	public function has($key)
 	{
-		return !is_null ($this->get ($key));
+		return ! is_null($this->get($key));
 	}
 
 	/**
@@ -59,11 +56,11 @@ class Repository implements ArrayAccess
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function get ($key, $default = null)
+	public function get($key, $default = null)
 	{
-		$value = $this->store->get ($key);
+		$value = $this->store->get($key);
 
-		return !is_null ($value) ? $value : value ($default);
+		return ! is_null($value) ? $value : value($default);
 	}
 
 	/**
@@ -74,11 +71,11 @@ class Repository implements ArrayAccess
 	 * @param  \DateTime|int  $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		$minutes = $this->getMinutes ($minutes);
+		$minutes = $this->getMinutes($minutes);
 
-		$this->store->put ($key, $value, $minutes);
+		$this->store->put($key, $value, $minutes);
 	}
 
 	/**
@@ -89,12 +86,11 @@ class Repository implements ArrayAccess
 	 * @param  \DateTime|int  $minutes
 	 * @return bool
 	 */
-	public function add ($key, $value, $minutes)
+	public function add($key, $value, $minutes)
 	{
-		if (is_null ($this->get ($key)))
+		if (is_null($this->get($key)))
 		{
-			$this->put ($key, $value, $minutes);
-			return true;
+			$this->put($key, $value, $minutes); return true;
 		}
 
 		return false;
@@ -108,17 +104,17 @@ class Repository implements ArrayAccess
 	 * @param  Closure  $callback
 	 * @return mixed
 	 */
-	public function remember ($key, $minutes, Closure $callback)
+	public function remember($key, $minutes, Closure $callback)
 	{
 		// If the item exists in the cache we will just return this immediately
 		// otherwise we will execute the given Closure and cache the result
 		// of that execution for the given number of minutes in storage.
-		if (!is_null ($value = $this->get ($key)))
+		if ( ! is_null($value = $this->get($key)))
 		{
 			return $value;
 		}
 
-		$this->put ($key, $value = $callback (), $minutes);
+		$this->put($key, $value = $callback(), $minutes);
 
 		return $value;
 	}
@@ -130,9 +126,9 @@ class Repository implements ArrayAccess
 	 * @param  Closure  $callback
 	 * @return mixed
 	 */
-	public function sear ($key, Closure $callback)
+	public function sear($key, Closure $callback)
 	{
-		return $this->rememberForever ($key, $callback);
+		return $this->rememberForever($key, $callback);
 	}
 
 	/**
@@ -142,17 +138,17 @@ class Repository implements ArrayAccess
 	 * @param  Closure  $callback
 	 * @return mixed
 	 */
-	public function rememberForever ($key, Closure $callback)
+	public function rememberForever($key, Closure $callback)
 	{
 		// If the item exists in the cache we will just return this immediately
 		// otherwise we will execute the given Closure and cache the result
 		// of that execution for the given number of minutes. It's easy.
-		if (!is_null ($value = $this->get ($key)))
+		if ( ! is_null($value = $this->get($key)))
 		{
 			return $value;
 		}
 
-		$this->forever ($key, $value = $callback ());
+		$this->forever($key, $value = $callback());
 
 		return $value;
 	}
@@ -162,7 +158,7 @@ class Repository implements ArrayAccess
 	 *
 	 * @return int
 	 */
-	public function getDefaultCacheTime ()
+	public function getDefaultCacheTime()
 	{
 		return $this->default;
 	}
@@ -173,7 +169,7 @@ class Repository implements ArrayAccess
 	 * @param  int   $minutes
 	 * @return void
 	 */
-	public function setDefaultCacheTime ($minutes)
+	public function setDefaultCacheTime($minutes)
 	{
 		$this->default = $minutes;
 	}
@@ -183,7 +179,7 @@ class Repository implements ArrayAccess
 	 *
 	 * @return \Illuminate\Cache\StoreInterface
 	 */
-	public function getStore ()
+	public function getStore()
 	{
 		return $this->store;
 	}
@@ -194,9 +190,9 @@ class Repository implements ArrayAccess
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function offsetExists ($key)
+	public function offsetExists($key)
 	{
-		return $this->has ($key);
+		return $this->has($key);
 	}
 
 	/**
@@ -205,9 +201,9 @@ class Repository implements ArrayAccess
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function offsetGet ($key)
+	public function offsetGet($key)
 	{
-		return $this->get ($key);
+		return $this->get($key);
 	}
 
 	/**
@@ -217,9 +213,9 @@ class Repository implements ArrayAccess
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function offsetSet ($key, $value)
+	public function offsetSet($key, $value)
 	{
-		$this->put ($key, $value, $this->default);
+		$this->put($key, $value, $this->default);
 	}
 
 	/**
@@ -228,9 +224,9 @@ class Repository implements ArrayAccess
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function offsetUnset ($key)
+	public function offsetUnset($key)
 	{
-		return $this->forget ($key);
+		return $this->forget($key);
 	}
 
 	/**
@@ -239,17 +235,17 @@ class Repository implements ArrayAccess
 	 * @param  \DateTime|int  $duration
 	 * @return int
 	 */
-	protected function getMinutes ($duration)
+	protected function getMinutes($duration)
 	{
 		if ($duration instanceof DateTime)
 		{
-			$duration = Carbon::instance ($duration);
+			$duration = Carbon::instance($duration);
 
-			return max (0, Carbon::now ()->diffInMinutes ($duration, false));
+			return max(0, Carbon::now()->diffInMinutes($duration, false));
 		}
 		else
 		{
-			return is_string ($duration) ? intval ($duration) : $duration;
+			return is_string($duration) ? intval($duration) : $duration;
 		}
 	}
 
@@ -260,7 +256,7 @@ class Repository implements ArrayAccess
 	 * @param  callable  $callback
 	 * @return void
 	 */
-	public function macro ($name, $callback)
+	public function macro($name, $callback)
 	{
 		$this->macros[$name] = $callback;
 	}
@@ -272,15 +268,15 @@ class Repository implements ArrayAccess
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		if (isset ($this->macros[$method]))
+		if (isset($this->macros[$method]))
 		{
-			return call_user_func_array ($this->macros[$method], $parameters);
+			return call_user_func_array($this->macros[$method], $parameters);
 		}
 		else
 		{
-			return call_user_func_array (array ($this->store, $method), $parameters);
+			return call_user_func_array(array($this->store, $method), $parameters);
 		}
 	}
 

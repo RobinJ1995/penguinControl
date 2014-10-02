@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListPopLastBlocking extends ListPopFirstBlocking
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'BRPOP';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'BRPOP';
+    }
 }

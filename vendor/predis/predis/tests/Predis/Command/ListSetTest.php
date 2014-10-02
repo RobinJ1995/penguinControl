@@ -17,107 +17,105 @@ namespace Predis\Command;
  */
 class ListSetTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ListSet';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ListSet';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'LSET';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'LSET';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key', 0, 'value');
+        $expected = array('key', 0, 'value');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key', 0, 'value');
-		$expected = array ('key', 0, 'value');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key', 0, 'value');
+        $expected = array('prefix:key', 0, 'value');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key', 0, 'value');
-		$expected = array ('prefix:key', 0, 'value');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group connected
+     */
+    public function testSetsElementAtSpecifiedIndex()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testSetsElementAtSpecifiedIndex ()
-	{
-		$redis = $this->getClient ();
+        $redis->rpush('letters', 'a', 'b', 'c');
 
-		$redis->rpush ('letters', 'a', 'b', 'c');
+        $this->assertTrue($redis->lset('letters', 1, 'B'));
+        $this->assertSame(array('a', 'B', 'c'), $redis->lrange('letters', 0, -1));
+    }
 
-		$this->assertTrue ($redis->lset ('letters', 1, 'B'));
-		$this->assertSame (array ('a', 'B', 'c'), $redis->lrange ('letters', 0, -1));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage ERR index out of range
+     */
+    public function testThrowsExceptionOnIndexOutOfRange()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage ERR index out of range
-	 */
-	public function testThrowsExceptionOnIndexOutOfRange ()
-	{
-		$redis = $this->getClient ();
+        $redis->rpush('letters', 'a', 'b', 'c');
+        $redis->lset('letters', 21, 'z');
+    }
 
-		$redis->rpush ('letters', 'a', 'b', 'c');
-		$redis->lset ('letters', 21, 'z');
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongType()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongType ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->set ('metavars', 'foo');
-		$redis->lset ('metavars', 0, 'hoge');
-	}
-
+        $redis->set('metavars', 'foo');
+        $redis->lset('metavars', 0, 'hoge');
+    }
 }

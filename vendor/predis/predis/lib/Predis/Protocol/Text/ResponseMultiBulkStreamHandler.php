@@ -26,26 +26,23 @@ use Predis\Protocol\ResponseHandlerInterface;
  */
 class ResponseMultiBulkStreamHandler implements ResponseHandlerInterface
 {
+    /**
+     * Handles a multi-bulk reply returned by Redis in a streamable fashion.
+     *
+     * @param  ComposableConnectionInterface $connection   Connection to Redis.
+     * @param  string                        $lengthString Number of items in the multi-bulk reply.
+     * @return MultiBulkResponseSimple
+     */
+    public function handle(ComposableConnectionInterface $connection, $lengthString)
+    {
+        $length = (int) $lengthString;
 
-	/**
-	 * Handles a multi-bulk reply returned by Redis in a streamable fashion.
-	 *
-	 * @param  ComposableConnectionInterface $connection   Connection to Redis.
-	 * @param  string                        $lengthString Number of items in the multi-bulk reply.
-	 * @return MultiBulkResponseSimple
-	 */
-	public function handle (ComposableConnectionInterface $connection, $lengthString)
-	{
-		$length = (int) $lengthString;
+        if ("$length" != $lengthString) {
+            CommunicationException::handle(new ProtocolException(
+                $connection, "Cannot parse '$lengthString' as multi-bulk length"
+            ));
+        }
 
-		if ("$length" != $lengthString)
-		{
-			CommunicationException::handle (new ProtocolException (
-				$connection, "Cannot parse '$lengthString' as multi-bulk length"
-			));
-		}
-
-		return new MultiBulkResponseSimple ($connection, $length);
-	}
-
+        return new MultiBulkResponseSimple($connection, $length);
+    }
 }

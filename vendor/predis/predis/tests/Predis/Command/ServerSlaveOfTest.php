@@ -17,71 +17,69 @@ namespace Predis\Command;
  */
 class ServerSlaveOfTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerSlaveOf';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerSlaveOf';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'SLAVEOF';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'SLAVEOF';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArgumentsHostPortArray()
+    {
+        $arguments = array('127.0.0.1', '80');
+        $expected = array('127.0.0.1', '80');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArgumentsHostPortArray ()
-	{
-		$arguments = array ('127.0.0.1', '80');
-		$expected = array ('127.0.0.1', '80');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArgumentsNoOneArray()
+    {
+        $arguments = array('NO', 'ONE');
+        $expected = array('NO', 'ONE');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArgumentsNoOneArray ()
-	{
-		$arguments = array ('NO', 'ONE');
-		$expected = array ('NO', 'ONE');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArgumentsNoOneString()
+    {
+        $arguments = array('NO ONE');
+        $expected = array('NO', 'ONE');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArgumentsNoOneString ()
-	{
-		$arguments = array ('NO ONE');
-		$expected = array ('NO', 'ONE');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
-
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
-
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 }

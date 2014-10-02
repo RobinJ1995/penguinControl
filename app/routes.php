@@ -11,15 +11,6 @@
   |
  */
 
-$banned = array
-(
-);
-
-if (in_array ($_SERVER['REMOTE_ADDR'], $banned))
-{
-	die ('Er is isbruik vastgesteld vanaf dit IP-adres. Indien u denkt dat dit een vergissing is, contacteer ons op sin@sinners.be.');
-}
-
 // View Composer // http://laravel.com/docs/responses#view-composers //
 //TODO// Hoort dit eigenlijk wel in routes.php? //
 View::composer ('controlMenu',

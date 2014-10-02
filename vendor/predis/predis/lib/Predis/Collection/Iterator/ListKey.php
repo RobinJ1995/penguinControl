@@ -31,152 +31,144 @@ use Predis\NotSupportedException;
  */
 class ListKey implements Iterator
 {
+    protected $client;
+    protected $count;
+    protected $key;
 
-	protected $client;
-	protected $count;
-	protected $key;
-	protected $valid;
-	protected $fetchmore;
-	protected $elements;
-	protected $position;
-	protected $current;
+    protected $valid;
+    protected $fetchmore;
+    protected $elements;
+    protected $position;
+    protected $current;
 
-	/**
-	 * @param ClientInterface $client Client connected to Redis.
-	 * @param string          $key    Redis list key.
-	 * @param int             $count  Number of items retrieved on each fetch operation.
-	 */
-	public function __construct (ClientInterface $client, $key, $count = 10)
-	{
-		$this->requiredCommand ($client, 'LRANGE');
+    /**
+     * @param ClientInterface $client Client connected to Redis.
+     * @param string          $key    Redis list key.
+     * @param int             $count  Number of items retrieved on each fetch operation.
+     */
+    public function __construct(ClientInterface $client, $key, $count = 10)
+    {
+        $this->requiredCommand($client, 'LRANGE');
 
-		if ((false === $count = filter_var ($count, FILTER_VALIDATE_INT)) || $count < 0)
-		{
-			throw new InvalidArgumentException ('The $count argument must be a positive integer.');
-		}
+        if ((false === $count = filter_var($count, FILTER_VALIDATE_INT)) || $count < 0) {
+            throw new InvalidArgumentException('The $count argument must be a positive integer.');
+        }
 
-		$this->client = $client;
-		$this->key = $key;
-		$this->count = $count;
+        $this->client = $client;
+        $this->key = $key;
+        $this->count = $count;
 
-		$this->reset ();
-	}
+        $this->reset();
+    }
 
-	/**
-	 * Ensures that the client instance supports the specified Redis
-	 * command required to fetch elements from the server to perform
-	 * the iteration.
-	 *
-	 * @param ClientInterface $client    Client connected to Redis.
-	 * @param string          $commandID Command ID.
-	 */
-	protected function requiredCommand (ClientInterface $client, $commandID)
-	{
-		if (!$client->getProfile ()->supportsCommand ($commandID))
-		{
-			throw new NotSupportedException ("The specified server profile does not support the `$commandID` command.");
-		}
-	}
+    /**
+     * Ensures that the client instance supports the specified Redis
+     * command required to fetch elements from the server to perform
+     * the iteration.
+     *
+     * @param ClientInterface $client    Client connected to Redis.
+     * @param string          $commandID Command ID.
+     */
+    protected function requiredCommand(ClientInterface $client, $commandID)
+    {
+        if (!$client->getProfile()->supportsCommand($commandID)) {
+            throw new NotSupportedException("The specified server profile does not support the `$commandID` command.");
+        }
+    }
 
-	/**
-	 * Resets the inner state of the iterator.
-	 */
-	protected function reset ()
-	{
-		$this->valid = true;
-		$this->fetchmore = true;
-		$this->elements = array ();
-		$this->position = -1;
-		$this->current = null;
-	}
+    /**
+     * Resets the inner state of the iterator.
+     */
+    protected function reset()
+    {
+        $this->valid = true;
+        $this->fetchmore = true;
+        $this->elements = array();
+        $this->position = -1;
+        $this->current = null;
+    }
 
-	/**
-	 * Fetches a new set of elements from the remote collection,
-	 * effectively advancing the iteration process.
-	 *
-	 * @return array
-	 */
-	protected function executeCommand ()
-	{
-		return $this->client->lrange ($this->key, $this->position + 1, $this->position + $this->count);
-	}
+    /**
+     * Fetches a new set of elements from the remote collection,
+     * effectively advancing the iteration process.
+     *
+     * @return array
+     */
+    protected function executeCommand()
+    {
+        return $this->client->lrange($this->key, $this->position + 1, $this->position + $this->count);
+    }
 
-	/**
-	 * Populates the local buffer of elements fetched from the
-	 * server during the iteration.
-	 */
-	protected function fetch ()
-	{
-		$elements = $this->executeCommand ();
+    /**
+     * Populates the local buffer of elements fetched from the
+     * server during the iteration.
+     */
+    protected function fetch()
+    {
+        $elements = $this->executeCommand();
 
-		if (count ($elements) < $this->count)
-		{
-			$this->fetchmore = false;
-		}
+        if (count($elements) < $this->count) {
+            $this->fetchmore = false;
+        }
 
-		$this->elements = $elements;
-	}
+        $this->elements = $elements;
+    }
 
-	/**
-	 * Extracts next values for key() and current().
-	 */
-	protected function extractNext ()
-	{
-		$this->position++;
-		$this->current = array_shift ($this->elements);
-	}
+    /**
+     * Extracts next values for key() and current().
+     */
+    protected function extractNext()
+    {
+        $this->position++;
+        $this->current = array_shift($this->elements);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function rewind ()
-	{
-		$this->reset ();
-		$this->next ();
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function rewind()
+    {
+        $this->reset();
+        $this->next();
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function current ()
-	{
-		return $this->current;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function current()
+    {
+        return $this->current;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function key ()
-	{
-		return $this->position;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function key()
+    {
+        return $this->position;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function next ()
-	{
-		if (!$this->elements && $this->fetchmore)
-		{
-			$this->fetch ();
-		}
+    /**
+     * {@inheritdoc}
+     */
+    public function next()
+    {
+        if (!$this->elements && $this->fetchmore) {
+            $this->fetch();
+        }
 
-		if ($this->elements)
-		{
-			$this->extractNext ();
-		}
-		else
-		{
-			$this->valid = false;
-		}
-	}
+        if ($this->elements) {
+            $this->extractNext();
+        } else {
+            $this->valid = false;
+        }
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function valid ()
-	{
-		return $this->valid;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function valid()
+    {
+        return $this->valid;
+    }
 }

@@ -18,36 +18,34 @@ use PredisTestCase;
  */
 class ResponseQueuedTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testResponseQueuedClass()
+    {
+        $queued = new ResponseQueued();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testResponseQueuedClass ()
-	{
-		$queued = new ResponseQueued();
+        $this->assertInstanceOf('Predis\ResponseObjectInterface', $queued);
+    }
 
-		$this->assertInstanceOf ('Predis\ResponseObjectInterface', $queued);
-	}
+    /**
+     * @group disconnected
+     */
+    public function testToString()
+    {
+        $queued = new ResponseQueued();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testToString ()
-	{
-		$queued = new ResponseQueued();
+        $this->assertEquals('QUEUED', (string) $queued);
+    }
 
-		$this->assertEquals ('QUEUED', (string) $queued);
-	}
+    /**
+     * @group disconnected
+     */
+    public function testQueuedProperty()
+    {
+        $queued = new ResponseQueued();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testQueuedProperty ()
-	{
-		$queued = new ResponseQueued();
-
-		$this->assertTrue (isset ($queued->queued));
-		$this->assertTrue ($queued->queued);
-	}
-
+        $this->assertTrue(isset($queued->queued));
+        $this->assertTrue($queued->queued);
+    }
 }

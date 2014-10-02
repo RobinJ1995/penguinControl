@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Pagination;
 
-namespace Illuminate\Pagination;
-
-class BootstrapPresenter extends Presenter
-{
+class BootstrapPresenter extends Presenter {
 
 	/**
 	 * Get HTML wrapper for a page link.
@@ -12,9 +9,9 @@ class BootstrapPresenter extends Presenter
 	 * @param  int  $page
 	 * @return string
 	 */
-	public function getPageLinkWrapper ($url, $page)
+	public function getPageLinkWrapper($url, $page)
 	{
-		return '<li><a href="' . $url . '">' . $page . '</a></li>';
+		return '<li><a href="'.$url.'">'.$page.'</a></li>';
 	}
 
 	/**
@@ -23,9 +20,9 @@ class BootstrapPresenter extends Presenter
 	 * @param  string  $text
 	 * @return string
 	 */
-	public function getDisabledTextWrapper ($text)
+	public function getDisabledTextWrapper($text)
 	{
-		return '<li class="disabled"><span>' . $text . '</span></li>';
+		return '<li class="disabled"><span>'.$text.'</span></li>';
 	}
 
 	/**
@@ -34,9 +31,9 @@ class BootstrapPresenter extends Presenter
 	 * @param  string  $text
 	 * @return string
 	 */
-	public function getActivePageWrapper ($text)
+	public function getActivePageWrapper($text)
 	{
-		return '<li class="active"><span>' . $text . '</span></li>';
+		return '<li class="active"><span>'.$text.'</span></li>';
 	}
 
 }

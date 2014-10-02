@@ -26,148 +26,129 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class InlineFragmentRenderer extends RoutableFragmentRenderer
 {
+    private $kernel;
+    private $dispatcher;
 
-	private $kernel;
-	private $dispatcher;
+    /**
+     * Constructor.
+     *
+     * @param HttpKernelInterface      $kernel     A HttpKernelInterface instance
+     * @param EventDispatcherInterface $dispatcher A EventDispatcherInterface instance
+     */
+    public function __construct(HttpKernelInterface $kernel, EventDispatcherInterface $dispatcher = null)
+    {
+        $this->kernel = $kernel;
+        $this->dispatcher = $dispatcher;
+    }
 
-	/**
-	 * Constructor.
-	 *
-	 * @param HttpKernelInterface      $kernel     A HttpKernelInterface instance
-	 * @param EventDispatcherInterface $dispatcher A EventDispatcherInterface instance
-	 */
-	public function __construct (HttpKernelInterface $kernel, EventDispatcherInterface $dispatcher = null)
-	{
-		$this->kernel = $kernel;
-		$this->dispatcher = $dispatcher;
-	}
+    /**
+     * {@inheritdoc}
+     *
+     * Additional available options:
+     *
+     *  * alt: an alternative URI to render in case of an error
+     */
+    public function render($uri, Request $request, array $options = array())
+    {
+        $reference = null;
+        if ($uri instanceof ControllerReference) {
+            $reference = $uri;
 
-	/**
-	 * {@inheritdoc}
-	 *
-	 * Additional available options:
-	 *
-	 *  * alt: an alternative URI to render in case of an error
-	 */
-	public function render ($uri, Request $request, array $options = array ())
-	{
-		$reference = null;
-		if ($uri instanceof ControllerReference)
-		{
-			$reference = $uri;
+            // Remove attributes from the generated URI because if not, the Symfony
+            // routing system will use them to populate the Request attributes. We don't
+            // want that as we want to preserve objects (so we manually set Request attributes
+            // below instead)
+            $attributes = $reference->attributes;
+            $reference->attributes = array();
 
-			// Remove attributes from the generated URI because if not, the Symfony
-			// routing system will use them to populate the Request attributes. We don't
-			// want that as we want to preserve objects (so we manually set Request attributes
-			// below instead)
-			$attributes = $reference->attributes;
-			$reference->attributes = array ();
+            // The request format and locale might have been overridden by the user
+            foreach (array('_format', '_locale') as $key) {
+                if (isset($attributes[$key])) {
+                    $reference->attributes[$key] = $attributes[$key];
+                }
+            }
 
-			// The request format and locale might have been overridden by the user
-			foreach (array ('_format', '_locale') as $key)
-			{
-				if (isset ($attributes[$key]))
-				{
-					$reference->attributes[$key] = $attributes[$key];
-				}
-			}
+            $uri = $this->generateFragmentUri($uri, $request, false, false);
 
-			$uri = $this->generateFragmentUri ($uri, $request, false, false);
+            $reference->attributes = array_merge($attributes, $reference->attributes);
+        }
 
-			$reference->attributes = array_merge ($attributes, $reference->attributes);
-		}
+        $subRequest = $this->createSubRequest($uri, $request);
 
-		$subRequest = $this->createSubRequest ($uri, $request);
+        // override Request attributes as they can be objects (which are not supported by the generated URI)
+        if (null !== $reference) {
+            $subRequest->attributes->add($reference->attributes);
+        }
 
-		// override Request attributes as they can be objects (which are not supported by the generated URI)
-		if (null !== $reference)
-		{
-			$subRequest->attributes->add ($reference->attributes);
-		}
+        $level = ob_get_level();
+        try {
+            return $this->kernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
+        } catch (\Exception $e) {
+            // we dispatch the exception event to trigger the logging
+            // the response that comes back is simply ignored
+            if (isset($options['ignore_errors']) && $options['ignore_errors'] && $this->dispatcher) {
+                $event = new GetResponseForExceptionEvent($this->kernel, $request, HttpKernelInterface::SUB_REQUEST, $e);
 
-		$level = ob_get_level ();
-		try
-		{
-			return $this->kernel->handle ($subRequest, HttpKernelInterface::SUB_REQUEST, false);
-		}
-		catch (\Exception $e)
-		{
-			// we dispatch the exception event to trigger the logging
-			// the response that comes back is simply ignored
-			if (isset ($options['ignore_errors']) && $options['ignore_errors'] && $this->dispatcher)
-			{
-				$event = new GetResponseForExceptionEvent ($this->kernel, $request, HttpKernelInterface::SUB_REQUEST, $e);
+                $this->dispatcher->dispatch(KernelEvents::EXCEPTION, $event);
+            }
 
-				$this->dispatcher->dispatch (KernelEvents::EXCEPTION, $event);
-			}
+            // let's clean up the output buffers that were created by the sub-request
+            while (ob_get_level() > $level) {
+                ob_get_clean();
+            }
 
-			// let's clean up the output buffers that were created by the sub-request
-			while (ob_get_level () > $level)
-			{
-				ob_get_clean ();
-			}
+            if (isset($options['alt'])) {
+                $alt = $options['alt'];
+                unset($options['alt']);
 
-			if (isset ($options['alt']))
-			{
-				$alt = $options['alt'];
-				unset ($options['alt']);
+                return $this->render($alt, $request, $options);
+            }
 
-				return $this->render ($alt, $request, $options);
-			}
+            if (!isset($options['ignore_errors']) || !$options['ignore_errors']) {
+                throw $e;
+            }
 
-			if (!isset ($options['ignore_errors']) || !$options['ignore_errors'])
-			{
-				throw $e;
-			}
+            return new Response();
+        }
+    }
 
-			return new Response();
-		}
-	}
+    protected function createSubRequest($uri, Request $request)
+    {
+        $cookies = $request->cookies->all();
+        $server = $request->server->all();
 
-	protected function createSubRequest ($uri, Request $request)
-	{
-		$cookies = $request->cookies->all ();
-		$server = $request->server->all ();
+        // Override the arguments to emulate a sub-request.
+        // Sub-request object will point to localhost as client ip and real client ip
+        // will be included into trusted header for client ip
+        try {
+            if ($trustedHeaderName = Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP)) {
+                $currentXForwardedFor = $request->headers->get($trustedHeaderName, '');
 
-		// Override the arguments to emulate a sub-request.
-		// Sub-request object will point to localhost as client ip and real client ip
-		// will be included into trusted header for client ip
-		try
-		{
-			if ($trustedHeaderName = Request::getTrustedHeaderName (Request::HEADER_CLIENT_IP))
-			{
-				$currentXForwardedFor = $request->headers->get ($trustedHeaderName, '');
+                $server['HTTP_'.$trustedHeaderName] = ($currentXForwardedFor ? $currentXForwardedFor.', ' : '').$request->getClientIp();
+            }
+        } catch (\InvalidArgumentException $e) {
+            // Do nothing
+        }
 
-				$server['HTTP_' . $trustedHeaderName] = ($currentXForwardedFor ? $currentXForwardedFor . ', ' : '') . $request->getClientIp ();
-			}
-		}
-		catch (\InvalidArgumentException $e)
-		{
-			// Do nothing
-		}
+        $server['REMOTE_ADDR'] = '127.0.0.1';
 
-		$server['REMOTE_ADDR'] = '127.0.0.1';
+        $subRequest = Request::create($uri, 'get', array(), $cookies, array(), $server);
+        if ($request->headers->has('Surrogate-Capability')) {
+            $subRequest->headers->set('Surrogate-Capability', $request->headers->get('Surrogate-Capability'));
+        }
 
-		$subRequest = Request::create ($uri, 'get', array (), $cookies, array (), $server);
-		if ($request->headers->has ('Surrogate-Capability'))
-		{
-			$subRequest->headers->set ('Surrogate-Capability', $request->headers->get ('Surrogate-Capability'));
-		}
+        if ($session = $request->getSession()) {
+            $subRequest->setSession($session);
+        }
 
-		if ($session = $request->getSession ())
-		{
-			$subRequest->setSession ($session);
-		}
+        return $subRequest;
+    }
 
-		return $subRequest;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getName ()
-	{
-		return 'inline';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'inline';
+    }
 }

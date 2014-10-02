@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerShutdown extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SHUTDOWN';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SHUTDOWN';
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringGet extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'GET';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'GET';
+    }
 }

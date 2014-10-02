@@ -18,16 +18,14 @@ use PredisTestCase;
  */
 class EmptyRingExceptionTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testExceptionMessage()
+    {
+        $message = 'Empty Ring';
+        $this->setExpectedException('Predis\Cluster\Distribution\EmptyRingException', $message);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testExceptionMessage ()
-	{
-		$message = 'Empty Ring';
-		$this->setExpectedException ('Predis\Cluster\Distribution\EmptyRingException', $message);
-
-		throw new EmptyRingException ($message);
-	}
-
+        throw new EmptyRingException($message);
+    }
 }
