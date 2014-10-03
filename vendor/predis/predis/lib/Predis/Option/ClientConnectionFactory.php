@@ -21,62 +21,53 @@ use Predis\Connection\ConnectionFactoryInterface;
  */
 class ClientConnectionFactory extends AbstractOption
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function filter(ClientOptionsInterface $options, $value)
+    {
+        if ($value instanceof ConnectionFactoryInterface) {
+            return $value;
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function filter (ClientOptionsInterface $options, $value)
-	{
-		if ($value instanceof ConnectionFactoryInterface)
-		{
-			return $value;
-		}
+        if (is_array($value)) {
+            $factory = $this->getDefault($options);
 
-		if (is_array ($value))
-		{
-			$factory = $this->getDefault ($options);
+            foreach ($value as $scheme => $initializer) {
+                $factory->define($scheme, $initializer);
+            }
 
-			foreach ($value as $scheme => $initializer)
-			{
-				$factory->define ($scheme, $initializer);
-			}
+            return $factory;
+        }
 
-			return $factory;
-		}
+        if (is_callable($value)) {
+            $factory = call_user_func($value, $options, $this);
 
-		if (is_callable ($value))
-		{
-			$factory = call_user_func ($value, $options, $this);
+            if (!$factory instanceof ConnectionFactoryInterface) {
+                throw new \InvalidArgumentException('Instance of Predis\Connection\ConnectionFactoryInterface expected');
+            }
 
-			if (!$factory instanceof ConnectionFactoryInterface)
-			{
-				throw new \InvalidArgumentException ('Instance of Predis\Connection\ConnectionFactoryInterface expected');
-			}
+            return $factory;
+        }
 
-			return $factory;
-		}
+        if (is_string($value) && @class_exists($value)) {
+            $factory = new $value();
 
-		if (@class_exists ($value))
-		{
-			$factory = new $value();
+            if (!$factory instanceof ConnectionFactoryInterface) {
+                throw new \InvalidArgumentException("Class $value must be an instance of Predis\Connection\ConnectionFactoryInterface");
+            }
 
-			if (!$factory instanceof ConnectionFactoryInterface)
-			{
-				throw new \InvalidArgumentException ("Class $value must be an instance of Predis\Connection\ConnectionFactoryInterface");
-			}
+            return $factory;
+        }
 
-			return $factory;
-		}
+        throw new \InvalidArgumentException('Invalid value for the connections option');
+    }
 
-		throw new \InvalidArgumentException ('Invalid value for the connections option');
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDefault (ClientOptionsInterface $options)
-	{
-		return new ConnectionFactory ($options->profile);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault(ClientOptionsInterface $options)
+    {
+        return new ConnectionFactory($options->profile);
+    }
 }

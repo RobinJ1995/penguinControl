@@ -22,20 +22,19 @@ use Predis\Connection\ComposableConnectionInterface;
  */
 interface ProtocolInterface extends ResponseReaderInterface
 {
+    /**
+     * Writes a Redis command on the specified connection.
+     *
+     * @param ComposableConnectionInterface $connection Connection to Redis.
+     * @param CommandInterface              $command    Redis command.
+     */
+    public function write(ComposableConnectionInterface $connection, CommandInterface $command);
 
-	/**
-	 * Writes a Redis command on the specified connection.
-	 *
-	 * @param ComposableConnectionInterface $connection Connection to Redis.
-	 * @param CommandInterface              $command    Redis command.
-	 */
-	public function write (ComposableConnectionInterface $connection, CommandInterface $command);
-
-	/**
-	 * Sets the options for the protocol processor.
-	 *
-	 * @param string $option Name of the option.
-	 * @param mixed  $value  Value of the option.
-	 */
-	public function setOption ($option, $value);
+    /**
+     * Sets the options for the protocol processor.
+     *
+     * @param string $option Name of the option.
+     * @param mixed  $value  Value of the option.
+     */
+    public function setOption($option, $value);
 }

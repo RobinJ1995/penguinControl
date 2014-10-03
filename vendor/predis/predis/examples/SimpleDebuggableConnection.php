@@ -16,64 +16,62 @@ use Predis\Connection\StreamConnection;
 
 class SimpleDebuggableConnection extends StreamConnection
 {
+    private $tstart = 0;
+    private $debugBuffer = array();
 
-	private $tstart = 0;
-	private $debugBuffer = array ();
+    public function connect()
+    {
+        $this->tstart = microtime(true);
 
-	public function connect ()
-	{
-		$this->tstart = microtime (true);
+        parent::connect();
+    }
 
-		parent::connect ();
-	}
+    private function storeDebug(CommandInterface $command, $direction)
+    {
+        $firtsArg  = $command->getArgument(0);
+        $timestamp = round(microtime(true) - $this->tstart, 4);
 
-	private function storeDebug (CommandInterface $command, $direction)
-	{
-		$firtsArg = $command->getArgument (0);
-		$timestamp = round (microtime (true) - $this->tstart, 4);
+        $debug  = $command->getId();
+        $debug .= isset($firtsArg) ? " $firtsArg " : ' ';
+        $debug .= "$direction $this";
+        $debug .= " [{$timestamp}s]";
 
-		$debug = $command->getId ();
-		$debug .= isset ($firtsArg) ? " $firtsArg " : ' ';
-		$debug .= "$direction $this";
-		$debug .= " [{$timestamp}s]";
+        $this->debugBuffer[] = $debug;
+    }
 
-		$this->debugBuffer[] = $debug;
-	}
+    public function writeCommand(CommandInterface $command)
+    {
+        parent::writeCommand($command);
 
-	public function writeCommand (CommandInterface $command)
-	{
-		parent::writeCommand ($command);
+        $this->storeDebug($command, '->');
+    }
 
-		$this->storeDebug ($command, '->');
-	}
+    public function readResponse(CommandInterface $command)
+    {
+        $reply = parent::readResponse($command);
+        $this->storeDebug($command, '<-');
 
-	public function readResponse (CommandInterface $command)
-	{
-		$reply = parent::readResponse ($command);
-		$this->storeDebug ($command, '<-');
+        return $reply;
+    }
 
-		return $reply;
-	}
-
-	public function getDebugBuffer ()
-	{
-		return $this->debugBuffer;
-	}
-
+    public function getDebugBuffer()
+    {
+        return $this->debugBuffer;
+    }
 }
 
-$options = array (
-    'connections' => array (
-	'tcp' => 'SimpleDebuggableConnection',
+$options = array(
+    'connections' => array(
+        'tcp' => 'SimpleDebuggableConnection',
     ),
 );
 
-$client = new Predis\Client ($single_server, $options);
-$client->set ('foo', 'bar');
-$client->get ('foo');
-$client->info ();
+$client = new Predis\Client($single_server, $options);
+$client->set('foo', 'bar');
+$client->get('foo');
+$client->info();
 
-print_r ($client->getConnection ()->getDebugBuffer ());
+print_r($client->getConnection()->getDebugBuffer());
 
 /* OUTPUT:
 Array

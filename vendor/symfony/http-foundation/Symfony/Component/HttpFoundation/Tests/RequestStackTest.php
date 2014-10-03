@@ -16,56 +16,54 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class RequestStackTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetCurrentRequest()
+    {
+        $requestStack = new RequestStack();
+        $this->assertNull($requestStack->getCurrentRequest());
 
-	public function testGetCurrentRequest ()
-	{
-		$requestStack = new RequestStack();
-		$this->assertNull ($requestStack->getCurrentRequest ());
+        $request = Request::create('/foo');
 
-		$request = Request::create ('/foo');
+        $requestStack->push($request);
+        $this->assertSame($request, $requestStack->getCurrentRequest());
 
-		$requestStack->push ($request);
-		$this->assertSame ($request, $requestStack->getCurrentRequest ());
+        $this->assertSame($request, $requestStack->pop());
+        $this->assertNull($requestStack->getCurrentRequest());
 
-		$this->assertSame ($request, $requestStack->pop ());
-		$this->assertNull ($requestStack->getCurrentRequest ());
+        $this->assertNull($requestStack->pop());
+    }
 
-		$this->assertNull ($requestStack->pop ());
-	}
+    public function testGetMasterRequest()
+    {
+        $requestStack = new RequestStack();
+        $this->assertNull($requestStack->getMasterRequest());
 
-	public function testGetMasterRequest ()
-	{
-		$requestStack = new RequestStack();
-		$this->assertNull ($requestStack->getMasterRequest ());
+        $masterRequest = Request::create('/foo');
+        $subRequest = Request::create('/bar');
 
-		$masterRequest = Request::create ('/foo');
-		$subRequest = Request::create ('/bar');
+        $requestStack->push($masterRequest);
+        $requestStack->push($subRequest);
 
-		$requestStack->push ($masterRequest);
-		$requestStack->push ($subRequest);
+        $this->assertSame($masterRequest, $requestStack->getMasterRequest());
+    }
 
-		$this->assertSame ($masterRequest, $requestStack->getMasterRequest ());
-	}
+    public function testGetParentRequest()
+    {
+        $requestStack = new RequestStack();
+        $this->assertNull($requestStack->getParentRequest());
 
-	public function testGetParentRequest ()
-	{
-		$requestStack = new RequestStack();
-		$this->assertNull ($requestStack->getParentRequest ());
+        $masterRequest = Request::create('/foo');
 
-		$masterRequest = Request::create ('/foo');
+        $requestStack->push($masterRequest);
+        $this->assertNull($requestStack->getParentRequest());
 
-		$requestStack->push ($masterRequest);
-		$this->assertNull ($requestStack->getParentRequest ());
+        $firstSubRequest = Request::create('/bar');
 
-		$firstSubRequest = Request::create ('/bar');
+        $requestStack->push($firstSubRequest);
+        $this->assertSame($masterRequest, $requestStack->getParentRequest());
 
-		$requestStack->push ($firstSubRequest);
-		$this->assertSame ($masterRequest, $requestStack->getParentRequest ());
+        $secondSubRequest = Request::create('/baz');
 
-		$secondSubRequest = Request::create ('/baz');
-
-		$requestStack->push ($secondSubRequest);
-		$this->assertSame ($firstSubRequest, $requestStack->getParentRequest ());
-	}
-
+        $requestStack->push($secondSubRequest);
+        $this->assertSame($firstSubRequest, $requestStack->getParentRequest());
+    }
 }

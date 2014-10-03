@@ -20,40 +20,39 @@ use Predis\Command\CommandInterface;
  */
 interface SingleConnectionInterface extends ConnectionInterface
 {
+    /**
+     * Returns a string representation of the connection.
+     *
+     * @return string
+     */
+    public function __toString();
 
-	/**
-	 * Returns a string representation of the connection.
-	 *
-	 * @return string
-	 */
-	public function __toString ();
+    /**
+     * Returns the underlying resource used to communicate with a Redis server.
+     *
+     * @return mixed
+     */
+    public function getResource();
 
-	/**
-	 * Returns the underlying resource used to communicate with a Redis server.
-	 *
-	 * @return mixed
-	 */
-	public function getResource ();
+    /**
+     * Gets the parameters used to initialize the connection object.
+     *
+     * @return ConnectionParametersInterface
+     */
+    public function getParameters();
 
-	/**
-	 * Gets the parameters used to initialize the connection object.
-	 *
-	 * @return ConnectionParametersInterface
-	 */
-	public function getParameters ();
+    /**
+     * Pushes the instance of a Redis command to the queue of commands executed
+     * when the actual connection to a server is estabilished.
+     *
+     * @param CommandInterface $command Instance of a Redis command.
+     */
+    public function pushInitCommand(CommandInterface $command);
 
-	/**
-	 * Pushes the instance of a Redis command to the queue of commands executed
-	 * when the actual connection to a server is estabilished.
-	 *
-	 * @param CommandInterface $command Instance of a Redis command.
-	 */
-	public function pushInitCommand (CommandInterface $command);
-
-	/**
-	 * Reads a reply from the server.
-	 *
-	 * @return mixed
-	 */
-	public function read ();
+    /**
+     * Reads a reply from the server.
+     *
+     * @return mixed
+     */
+    public function read();
 }

@@ -17,42 +17,39 @@ namespace Predis\Command;
  */
 class TransactionWatch extends AbstractCommand implements PrefixableCommandInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'WATCH';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'WATCH';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        if (isset($arguments[0]) && is_array($arguments[0])) {
+            return $arguments[0];
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		if (isset ($arguments[0]) && is_array ($arguments[0]))
-		{
-			return $arguments[0];
-		}
+        return $arguments;
+    }
 
-		return $arguments;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        PrefixHelpers::all($this, $prefix);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function prefixKeys ($prefix)
-	{
-		PrefixHelpers::all ($this, $prefix);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return (bool) $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

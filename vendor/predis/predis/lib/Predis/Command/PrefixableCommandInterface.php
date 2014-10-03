@@ -18,11 +18,10 @@ namespace Predis\Command;
  */
 interface PrefixableCommandInterface
 {
-
-	/**
-	 * Prefixes all the keys found in the arguments of the command.
-	 *
-	 * @param string $prefix String used to prefix the keys.
-	 */
-	public function prefixKeys ($prefix);
+    /**
+     * Prefixes all the keys found in the arguments of the command.
+     *
+     * @param string $prefix String used to prefix the keys.
+     */
+    public function prefixKeys($prefix);
 }

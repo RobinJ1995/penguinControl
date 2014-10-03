@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class TransactionDiscard extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'DISCARD';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'DISCARD';
+    }
 }

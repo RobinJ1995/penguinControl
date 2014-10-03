@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Database\Capsule;
+<?php namespace Illuminate\Database\Capsule;
 
 use PDO;
 use Illuminate\Support\Fluent;
@@ -11,8 +9,7 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Connectors\ConnectionFactory;
 
-class Manager
-{
+class Manager {
 
 	/**
 	 * The current globally used instance.
@@ -30,7 +27,7 @@ class Manager
 
 	/**
 	 * The container instance.
-	 * 
+	 *
 	 * @var \Illuminate\Container\Container
 	 */
 	protected $container;
@@ -41,16 +38,16 @@ class Manager
 	 * @param  \Illuminate\Container\Container|null  $container
 	 * @return void
 	 */
-	public function __construct (Container $container = null)
+	public function __construct(Container $container = null)
 	{
-		$this->setupContainer ($container);
+		$this->setupContainer($container);
 
 		// Once we have the container setup, we will setup the default configuration
 		// options in the container "config" binding. This will make the database
 		// manager behave correctly since all the correct binding are in place.
-		$this->setupDefaultConfiguration ();
+		$this->setupDefaultConfiguration();
 
-		$this->setupManager ();
+		$this->setupManager();
 	}
 
 	/**
@@ -59,11 +56,14 @@ class Manager
 	 * @param  \Illuminate\Container\Container|null  $container
 	 * @return void
 	 */
-	protected function setupContainer ($container)
+	protected function setupContainer($container)
 	{
-		$this->container = $container ? : new Container;
+		$this->container = $container ?: new Container;
 
-		$this->container->instance ('config', new Fluent);
+		if ( ! $this->container->bound('config'))
+		{
+			$this->container->instance('config', new Fluent);
+		}
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Manager
 	 *
 	 * @return void
 	 */
-	protected function setupDefaultConfiguration ()
+	protected function setupDefaultConfiguration()
 	{
 		$this->container['config']['database.fetch'] = PDO::FETCH_ASSOC;
 
@@ -83,11 +83,11 @@ class Manager
 	 *
 	 * @return void
 	 */
-	protected function setupManager ()
+	protected function setupManager()
 	{
-		$factory = new ConnectionFactory ($this->container);
+		$factory = new ConnectionFactory($this->container);
 
-		$this->manager = new DatabaseManager ($this->container, $factory);
+		$this->manager = new DatabaseManager($this->container, $factory);
 	}
 
 	/**
@@ -96,9 +96,9 @@ class Manager
 	 * @param  string  $connection
 	 * @return \Illuminate\Database\Connection
 	 */
-	public static function connection ($connection = null)
+	public static function connection($connection = null)
 	{
-		return static::$instance->getConnection ($connection);
+		return static::$instance->getConnection($connection);
 	}
 
 	/**
@@ -108,9 +108,9 @@ class Manager
 	 * @param  string  $connection
 	 * @return \Illuminate\Database\Query\Builder
 	 */
-	public static function table ($table, $connection = null)
+	public static function table($table, $connection = null)
 	{
-		return static::$instance->connection ($connection)->table ($table);
+		return static::$instance->connection($connection)->table($table);
 	}
 
 	/**
@@ -119,9 +119,9 @@ class Manager
 	 * @param  string  $connection
 	 * @return \Illuminate\Database\Schema\Builder
 	 */
-	public static function schema ($connection = null)
+	public static function schema($connection = null)
 	{
-		return static::$instance->connection ($connection)->getSchemaBuilder ();
+		return static::$instance->connection($connection)->getSchemaBuilder();
 	}
 
 	/**
@@ -130,9 +130,9 @@ class Manager
 	 * @param  string  $name
 	 * @return \Illuminate\Database\Connection
 	 */
-	public function getConnection ($name = null)
+	public function getConnection($name = null)
 	{
-		return $this->manager->connection ($name);
+		return $this->manager->connection($name);
 	}
 
 	/**
@@ -142,7 +142,7 @@ class Manager
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function addConnection (array $config, $name = 'default')
+	public function addConnection(array $config, $name = 'default')
 	{
 		$connections = $this->container['config']['database.connections'];
 
@@ -156,16 +156,16 @@ class Manager
 	 *
 	 * @return void
 	 */
-	public function bootEloquent ()
+	public function bootEloquent()
 	{
-		Eloquent::setConnectionResolver ($this->manager);
+		Eloquent::setConnectionResolver($this->manager);
 
 		// If we have an event dispatcher instance, we will go ahead and register it
 		// with the Eloquent ORM, allowing for model callbacks while creating and
 		// updating "model" instances; however, if it not necessary to operate.
-		if ($dispatcher = $this->getEventDispatcher ())
+		if ($dispatcher = $this->getEventDispatcher())
 		{
-			Eloquent::setEventDispatcher ($dispatcher);
+			Eloquent::setEventDispatcher($dispatcher);
 		}
 	}
 
@@ -175,7 +175,7 @@ class Manager
 	 * @param  int  $fetchMode
 	 * @return \Illuminate\Database\Capsule\Manager
 	 */
-	public function setFetchMode ($fetchMode)
+	public function setFetchMode($fetchMode)
 	{
 		$this->container['config']['database.fetch'] = $fetchMode;
 
@@ -187,7 +187,7 @@ class Manager
 	 *
 	 * @return void
 	 */
-	public function setAsGlobal ()
+	public function setAsGlobal()
 	{
 		static::$instance = $this;
 	}
@@ -197,7 +197,7 @@ class Manager
 	 *
 	 * @return \Illuminate\Database\Manager
 	 */
-	public function getDatabaseManager ()
+	public function getDatabaseManager()
 	{
 		return $this->manager;
 	}
@@ -207,9 +207,9 @@ class Manager
 	 *
 	 * @return \Illuminate\Events\Dispatcher
 	 */
-	public function getEventDispatcher ()
+	public function getEventDispatcher()
 	{
-		if ($this->container->bound ('events'))
+		if ($this->container->bound('events'))
 		{
 			return $this->container['events'];
 		}
@@ -221,9 +221,9 @@ class Manager
 	 * @param  \Illuminate\Events\Dispatcher  $dispatcher
 	 * @return void
 	 */
-	public function setEventDispatcher (Dispatcher $dispatcher)
+	public function setEventDispatcher(Dispatcher $dispatcher)
 	{
-		$this->container->instance ('events', $dispatcher);
+		$this->container->instance('events', $dispatcher);
 	}
 
 	/**
@@ -231,9 +231,9 @@ class Manager
 	 *
 	 * @return \Illuminate\Cache\Manager
 	 */
-	public function getCacheManager ()
+	public function getCacheManager()
 	{
-		if ($this->container->bound ('cache'))
+		if ($this->container->bound('cache'))
 		{
 			return $this->container['cache'];
 		}
@@ -245,9 +245,9 @@ class Manager
 	 * @param  \Illuminate\Cache\CacheManager  $cache
 	 * @return void
 	 */
-	public function setCacheManager (CacheManager $cache)
+	public function setCacheManager(CacheManager $cache)
 	{
-		$this->container->instance ('cache', $cache);
+		$this->container->instance('cache', $cache);
 	}
 
 	/**
@@ -255,7 +255,7 @@ class Manager
 	 *
 	 * @return \Illuminate\Container\Container
 	 */
-	public function getContainer ()
+	public function getContainer()
 	{
 		return $this->container;
 	}
@@ -266,7 +266,7 @@ class Manager
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function setContainer (Container $container)
+	public function setContainer(Container $container)
 	{
 		$this->container = $container;
 	}
@@ -278,9 +278,9 @@ class Manager
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public static function __callStatic ($method, $parameters)
+	public static function __callStatic($method, $parameters)
 	{
-		return call_user_func_array (array (static::connection (), $method), $parameters);
+		return call_user_func_array(array(static::connection(), $method), $parameters);
 	}
 
 }

@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 
-class DownCommand extends Command
-{
+class DownCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -26,11 +23,11 @@ class DownCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		touch ($this->laravel['path.storage'] . '/meta/down');
+		touch($this->laravel['path.storage'].'/meta/down');
 
-		$this->comment ('Application is now in maintenance mode.');
+		$this->comment('Application is now in maintenance mode.');
 	}
 
 }

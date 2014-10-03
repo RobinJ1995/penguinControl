@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerTime extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'TIME';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'TIME';
+    }
 }

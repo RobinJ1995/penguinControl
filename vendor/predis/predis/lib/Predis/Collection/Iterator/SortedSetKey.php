@@ -23,38 +23,36 @@ use Predis\ClientInterface;
  */
 class SortedSetKey extends CursorBasedIterator
 {
+    protected $key;
 
-	protected $key;
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(ClientInterface $client, $key, $match = null, $count = null)
+    {
+        $this->requiredCommand($client, 'ZSCAN');
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct (ClientInterface $client, $key, $match = null, $count = null)
-	{
-		$this->requiredCommand ($client, 'ZSCAN');
+        parent::__construct($client, $match, $count);
 
-		parent::__construct ($client, $match, $count);
+        $this->key = $key;
+    }
 
-		$this->key = $key;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function executeCommand()
+    {
+        return $this->client->zscan($this->key, $this->cursor, $this->getScanOptions());
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function executeCommand ()
-	{
-		return $this->client->zscan ($this->key, $this->cursor, $this->getScanOptions ());
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function extractNext()
+    {
+        $element = array_shift($this->elements);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function extractNext ()
-	{
-		$element = array_shift ($this->elements);
-
-		$this->position = $element[0];
-		$this->current = $element[1];
-	}
-
+        $this->position = $element[0];
+        $this->current = $element[1];
+    }
 }

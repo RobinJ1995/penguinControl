@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Session;
+<?php namespace Illuminate\Session;
 
 use Symfony\Component\Finder\Finder;
 use Illuminate\Filesystem\Filesystem;
 
-class FileSessionHandler implements \SessionHandlerInterface
-{
+class FileSessionHandler implements \SessionHandlerInterface {
 
 	/**
 	 * The filesystem instance.
@@ -29,7 +26,7 @@ class FileSessionHandler implements \SessionHandlerInterface
 	 * @param  string  $path
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $path)
+	public function __construct(Filesystem $files, $path)
 	{
 		$this->path = $path;
 		$this->files = $files;
@@ -38,7 +35,7 @@ class FileSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function open ($savePath, $sessionName)
+	public function open($savePath, $sessionName)
 	{
 		return true;
 	}
@@ -46,7 +43,7 @@ class FileSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function close ()
+	public function close()
 	{
 		return true;
 	}
@@ -54,11 +51,11 @@ class FileSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function read ($sessionId)
+	public function read($sessionId)
 	{
-		if ($this->files->exists ($path = $this->path . '/' . $sessionId))
+		if ($this->files->exists($path = $this->path.'/'.$sessionId))
 		{
-			return $this->files->get ($path);
+			return $this->files->get($path);
 		}
 		else
 		{
@@ -69,33 +66,33 @@ class FileSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function write ($sessionId, $data)
+	public function write($sessionId, $data)
 	{
-		$this->files->put ($this->path . '/' . $sessionId, $data);
+		$this->files->put($this->path.'/'.$sessionId, $data);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function destroy ($sessionId)
+	public function destroy($sessionId)
 	{
-		$this->files->delete ($this->path . '/' . $sessionId);
+		$this->files->delete($this->path.'/'.$sessionId);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function gc ($lifetime)
+	public function gc($lifetime)
 	{
-		$files = Finder::create ()
-			->in ($this->path)
-			->files ()
-			->ignoreDotFiles (true)
-			->date ('<= now - ' . $lifetime . ' seconds');
+		$files = Finder::create()
+					->in($this->path)
+					->files()
+					->ignoreDotFiles(true)
+					->date('<= now - '.$lifetime.' seconds');
 
 		foreach ($files as $file)
 		{
-			$this->files->delete ($file->getRealPath ());
+			$this->files->delete($file->getRealPath());
 		}
 	}
 

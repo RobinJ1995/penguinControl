@@ -19,19 +19,17 @@ use Symfony\Component\CssSelector\Parser\Shortcut\EmptyStringParser;
  */
 class EmptyStringParserTest extends \PHPUnit_Framework_TestCase
 {
+    public function testParse()
+    {
+        $parser = new EmptyStringParser();
+        $selectors = $parser->parse('');
+        $this->assertCount(1, $selectors);
 
-	public function testParse ()
-	{
-		$parser = new EmptyStringParser();
-		$selectors = $parser->parse ('');
-		$this->assertCount (1, $selectors);
+        /** @var SelectorNode $selector */
+        $selector = $selectors[0];
+        $this->assertEquals('Element[*]', (string) $selector->getTree());
 
-		/** @var SelectorNode $selector */
-		$selector = $selectors[0];
-		$this->assertEquals ('Element[*]', (string) $selector->getTree ());
-
-		$selectors = $parser->parse ('this will produce an empty array');
-		$this->assertCount (0, $selectors);
-	}
-
+        $selectors = $parser->parse('this will produce an empty array');
+        $this->assertCount(0, $selectors);
+    }
 }

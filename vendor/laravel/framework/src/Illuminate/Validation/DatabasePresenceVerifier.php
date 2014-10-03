@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Validation;
+<?php namespace Illuminate\Validation;
 
 use Illuminate\Database\ConnectionResolverInterface;
 
-class DatabasePresenceVerifier implements PresenceVerifierInterface
-{
+class DatabasePresenceVerifier implements PresenceVerifierInterface {
 
 	/**
 	 * The database connection instance.
@@ -27,7 +24,7 @@ class DatabasePresenceVerifier implements PresenceVerifierInterface
 	 * @param  \Illuminate\Database\ConnectionResolverInterface  $db
 	 * @return void
 	 */
-	public function __construct (ConnectionResolverInterface $db)
+	public function __construct(ConnectionResolverInterface $db)
 	{
 		$this->db = $db;
 	}
@@ -43,21 +40,21 @@ class DatabasePresenceVerifier implements PresenceVerifierInterface
 	 * @param  array   $extra
 	 * @return int
 	 */
-	public function getCount ($collection, $column, $value, $excludeId = null, $idColumn = null, array $extra = array ())
+	public function getCount($collection, $column, $value, $excludeId = null, $idColumn = null, array $extra = array())
 	{
-		$query = $this->table ($collection)->where ($column, '=', $value);
+		$query = $this->table($collection)->where($column, '=', $value);
 
-		if (!is_null ($excludeId) && $excludeId != 'NULL')
+		if ( ! is_null($excludeId) && $excludeId != 'NULL')
 		{
-			$query->where ($idColumn ? : 'id', '<>', $excludeId);
+			$query->where($idColumn ?: 'id', '<>', $excludeId);
 		}
 
 		foreach ($extra as $key => $extraValue)
 		{
-			$this->addWhere ($query, $key, $extraValue);
+			$this->addWhere($query, $key, $extraValue);
 		}
 
-		return $query->count ();
+		return $query->count();
 	}
 
 	/**
@@ -69,16 +66,16 @@ class DatabasePresenceVerifier implements PresenceVerifierInterface
 	 * @param  array   $extra
 	 * @return int
 	 */
-	public function getMultiCount ($collection, $column, array $values, array $extra = array ())
+	public function getMultiCount($collection, $column, array $values, array $extra = array())
 	{
-		$query = $this->table ($collection)->whereIn ($column, $values);
+		$query = $this->table($collection)->whereIn($column, $values);
 
 		foreach ($extra as $key => $extraValue)
 		{
-			$this->addWhere ($query, $key, $extraValue);
+			$this->addWhere($query, $key, $extraValue);
 		}
 
-		return $query->count ();
+		return $query->count();
 	}
 
 	/**
@@ -89,19 +86,19 @@ class DatabasePresenceVerifier implements PresenceVerifierInterface
 	 * @param  string  $extraValue
 	 * @return void
 	 */
-	protected function addWhere ($query, $key, $extraValue)
+	protected function addWhere($query, $key, $extraValue)
 	{
 		if ($extraValue === 'NULL')
 		{
-			$query->whereNull ($key);
+			$query->whereNull($key);
 		}
 		elseif ($extraValue === 'NOT_NULL')
 		{
-			$query->whereNotNull ($key);
+			$query->whereNotNull($key);
 		}
 		else
 		{
-			$query->where ($key, $extraValue);
+			$query->where($key, $extraValue);
 		}
 	}
 
@@ -111,9 +108,9 @@ class DatabasePresenceVerifier implements PresenceVerifierInterface
 	 * @param  string  $table
 	 * @return \Illuminate\Database\Query\Builder
 	 */
-	protected function table ($table)
+	protected function table($table)
 	{
-		return $this->db->connection ($this->connection)->table ($table);
+		return $this->db->connection($this->connection)->table($table);
 	}
 
 	/**
@@ -122,7 +119,7 @@ class DatabasePresenceVerifier implements PresenceVerifierInterface
 	 * @param  string  $connection
 	 * @return void
 	 */
-	public function setConnection ($connection)
+	public function setConnection($connection)
 	{
 		$this->connection = $connection;
 	}

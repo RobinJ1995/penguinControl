@@ -1,67 +1,56 @@
 <?php
 
-require_once 'Swift/Mime/ContentEncoder/Base64ContentEncoder.php';
-require_once 'Swift/ByteStream/ArrayByteStream.php';
-
-class Swift_Mime_ContentEncoder_Base64ContentEncoderAcceptanceTest extends UnitTestCase
+class Swift_Mime_ContentEncoder_Base64ContentEncoderAcceptanceTest extends \PHPUnit_Framework_TestCase
 {
+    private $_samplesDir;
+    private $_encoder;
 
-	private $_samplesDir;
-	private $_encoder;
+    public function setUp()
+    {
+        $this->_samplesDir = realpath(__DIR__.'/../../../../_samples/charsets');
+        $this->_encoder = new Swift_Mime_ContentEncoder_Base64ContentEncoder();
+    }
 
-	public function setUp ()
-	{
-		$this->_samplesDir = realpath (dirname (__FILE__) . '/../../../../_samples/charsets');
-		$this->_encoder = new Swift_Mime_ContentEncoder_Base64ContentEncoder();
-	}
+    public function testEncodingAndDecodingSamples()
+    {
+        $sampleFp = opendir($this->_samplesDir);
+        while (false !== $encodingDir = readdir($sampleFp)) {
+            if (substr($encodingDir, 0, 1) == '.') {
+                continue;
+            }
 
-	public function testEncodingAndDecodingSamples ()
-	{
-		$sampleFp = opendir ($this->_samplesDir);
-		while (false !== $encodingDir = readdir ($sampleFp))
-		{
-			if (substr ($encodingDir, 0, 1) == '.')
-			{
-				continue;
-			}
+            $sampleDir = $this->_samplesDir.'/'.$encodingDir;
 
-			$sampleDir = $this->_samplesDir . '/' . $encodingDir;
+            if (is_dir($sampleDir)) {
+                $fileFp = opendir($sampleDir);
+                while (false !== $sampleFile = readdir($fileFp)) {
+                    if (substr($sampleFile, 0, 1) == '.') {
+                        continue;
+                    }
 
-			if (is_dir ($sampleDir))
-			{
+                    $text = file_get_contents($sampleDir.'/'.$sampleFile);
 
-				$fileFp = opendir ($sampleDir);
-				while (false !== $sampleFile = readdir ($fileFp))
-				{
-					if (substr ($sampleFile, 0, 1) == '.')
-					{
-						continue;
-					}
+                    $os = new Swift_ByteStream_ArrayByteStream();
+                    $os->write($text);
 
-					$text = file_get_contents ($sampleDir . '/' . $sampleFile);
+                    $is = new Swift_ByteStream_ArrayByteStream();
 
-					$os = new Swift_ByteStream_ArrayByteStream();
-					$os->write ($text);
+                    $this->_encoder->encodeByteStream($os, $is);
 
-					$is = new Swift_ByteStream_ArrayByteStream();
+                    $encoded = '';
+                    while (false !== $bytes = $is->read(8192)) {
+                        $encoded .= $bytes;
+                    }
 
-					$this->_encoder->encodeByteStream ($os, $is);
-
-					$encoded = '';
-					while (false !== $bytes = $is->read (8192))
-					{
-						$encoded .= $bytes;
-					}
-
-					$this->assertEqual (
-						base64_decode ($encoded), $text, '%s: Encoded string should decode back to original string for sample ' .
-						$sampleDir . '/' . $sampleFile
-					);
-				}
-				closedir ($fileFp);
-			}
-		}
-		closedir ($sampleFp);
-	}
-
+                    $this->assertEquals(
+                        base64_decode($encoded), $text,
+                        '%s: Encoded string should decode back to original string for sample '.
+                        $sampleDir.'/'.$sampleFile
+                        );
+                }
+                closedir($fileFp);
+            }
+        }
+        closedir($sampleFp);
+    }
 }

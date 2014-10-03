@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Database\Console\Migrations;
+<?php namespace Illuminate\Database\Console\Migrations;
 
 use Illuminate\Database\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateCommand extends BaseCommand
-{
+class MigrateCommand extends BaseCommand {
 
 	/**
 	 * The console command name.
@@ -41,9 +38,9 @@ class MigrateCommand extends BaseCommand
 	 * @param  string  $packagePath
 	 * @return void
 	 */
-	public function __construct (Migrator $migrator, $packagePath)
+	public function __construct(Migrator $migrator, $packagePath)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->migrator = $migrator;
 		$this->packagePath = $packagePath;
@@ -54,33 +51,33 @@ class MigrateCommand extends BaseCommand
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->prepareDatabase ();
+		$this->prepareDatabase();
 
 		// The pretend option can be used for "simulating" the migration and grabbing
 		// the SQL queries that would fire if the migration were to be run against
 		// a database for real, which is helpful for double checking migrations.
-		$pretend = $this->input->getOption ('pretend');
+		$pretend = $this->input->getOption('pretend');
 
-		$path = $this->getMigrationPath ();
+		$path = $this->getMigrationPath();
 
-		$this->migrator->run ($path, $pretend);
+		$this->migrator->run($path, $pretend);
 
 		// Once the migrator has run we will grab the note output and send it out to
 		// the console screen, since the migrator itself functions without having
 		// any instances of the OutputInterface contract passed into the class.
-		foreach ($this->migrator->getNotes () as $note)
+		foreach ($this->migrator->getNotes() as $note)
 		{
-			$this->output->writeln ($note);
+			$this->output->writeln($note);
 		}
 
 		// Finally, if the "seed" option has been given, we will re-run the database
 		// seed task to re-populate the database, which is convenient when adding
 		// a migration and a seed at the same time, as it is only this command.
-		if ($this->input->getOption ('seed'))
+		if ($this->input->getOption('seed'))
 		{
-			$this->call ('db:seed');
+			$this->call('db:seed');
 		}
 	}
 
@@ -89,15 +86,15 @@ class MigrateCommand extends BaseCommand
 	 *
 	 * @return void
 	 */
-	protected function prepareDatabase ()
+	protected function prepareDatabase()
 	{
-		$this->migrator->setConnection ($this->input->getOption ('database'));
+		$this->migrator->setConnection($this->input->getOption('database'));
 
-		if (!$this->migrator->repositoryExists ())
+		if ( ! $this->migrator->repositoryExists())
 		{
-			$options = array ('--database' => $this->input->getOption ('database'));
+			$options = array('--database' => $this->input->getOption('database'));
 
-			$this->call ('migrate:install', $options);
+			$this->call('migrate:install', $options);
 		}
 	}
 
@@ -106,15 +103,20 @@ class MigrateCommand extends BaseCommand
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('bench', null, InputOption::VALUE_OPTIONAL, 'The name of the workbench to migrate.', null),
-		    array ('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'The path to migration files.', null),
-		    array ('package', null, InputOption::VALUE_OPTIONAL, 'The package to migrate.', null),
-		    array ('pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'),
-		    array ('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
+		return array(
+			array('bench', null, InputOption::VALUE_OPTIONAL, 'The name of the workbench to migrate.', null),
+
+			array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
+
+			array('path', null, InputOption::VALUE_OPTIONAL, 'The path to migration files.', null),
+
+			array('package', null, InputOption::VALUE_OPTIONAL, 'The package to migrate.', null),
+
+			array('pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'),
+
+			array('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
 		);
 	}
 

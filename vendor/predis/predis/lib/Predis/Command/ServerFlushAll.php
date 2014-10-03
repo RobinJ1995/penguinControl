@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ServerFlushAll extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'FLUSHALL';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'FLUSHALL';
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringIncrement extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'INCR';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'INCR';
+    }
 }

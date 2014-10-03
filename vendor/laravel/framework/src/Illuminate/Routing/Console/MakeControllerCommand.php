@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Routing\Console;
+<?php namespace Illuminate\Routing\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Routing\Generators\ControllerGenerator;
 
-class MakeControllerCommand extends Command
-{
+class MakeControllerCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -45,9 +42,9 @@ class MakeControllerCommand extends Command
 	 * @param  string  $path
 	 * @return void
 	 */
-	public function __construct (ControllerGenerator $generator, $path)
+	public function __construct(ControllerGenerator $generator, $path)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->path = $path;
 		$this->generator = $generator;
@@ -58,9 +55,9 @@ class MakeControllerCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->generateController ();
+		$this->generateController();
 	}
 
 	/**
@@ -68,23 +65,23 @@ class MakeControllerCommand extends Command
 	 *
 	 * @return void
 	 */
-	protected function generateController ()
+	protected function generateController()
 	{
 		// Once we have the controller and resource that we are going to be generating
 		// we will grab the path and options. We allow the developers to include or
 		// exclude given methods from the resourceful controllers we're building.
-		$controller = $this->input->getArgument ('name');
+		$controller = $this->input->getArgument('name');
 
-		$path = $this->getPath ();
+		$path = $this->getPath();
 
-		$options = $this->getBuildOptions ();
+		$options = $this->getBuildOptions();
 
 		// Finally, we're ready to generate the actual controller file on disk and let
 		// the developer start using it. The controller will be stored in the right
-		// place based on the naemspace of this controller specified by commands.
-		$this->generator->make ($controller, $path, $options);
+		// place based on the namespace of this controller specified by commands.
+		$this->generator->make($controller, $path, $options);
 
-		$this->info ('Controller created successfully!');
+		$this->info('Controller created successfully!');
 	}
 
 	/**
@@ -92,15 +89,15 @@ class MakeControllerCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getPath ()
+	protected function getPath()
 	{
-		if (!is_null ($this->input->getOption ('path')))
+		if ( ! is_null($this->input->getOption('path')))
 		{
-			return $this->laravel['path.base'] . '/' . $this->input->getOption ('path');
+			return $this->laravel['path.base'].'/'.$this->input->getOption('path');
 		}
-		elseif ($bench = $this->input->getOption ('bench'))
+		elseif ($bench = $this->input->getOption('bench'))
 		{
-			return $this->getWorkbenchPath ($bench);
+			return $this->getWorkbenchPath($bench);
 		}
 
 		return $this->path;
@@ -112,13 +109,13 @@ class MakeControllerCommand extends Command
 	 * @param  string  $bench
 	 * @return string
 	 */
-	protected function getWorkbenchPath ($bench)
+	protected function getWorkbenchPath($bench)
 	{
-		$path = $this->laravel['path.base'] . '/workbench/' . $bench . '/src/controllers';
+		$path = $this->laravel['path.base'].'/workbench/'.$bench.'/src/controllers';
 
-		if (!$this->laravel['files']->isDirectory ($path))
+		if ( ! $this->laravel['files']->isDirectory($path))
 		{
-			$this->laravel['files']->makeDirectory ($path);
+			$this->laravel['files']->makeDirectory($path);
 		}
 
 		return $path;
@@ -129,13 +126,13 @@ class MakeControllerCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getBuildOptions ()
+	protected function getBuildOptions()
 	{
-		$only = $this->explodeOption ('only');
+		$only = $this->explodeOption('only');
 
-		$except = $this->explodeOption ('except');
+		$except = $this->explodeOption('except');
 
-		return compact ('only', 'except');
+		return compact('only', 'except');
 	}
 
 	/**
@@ -144,11 +141,11 @@ class MakeControllerCommand extends Command
 	 * @param  string  $name
 	 * @return array
 	 */
-	protected function explodeOption ($name)
+	protected function explodeOption($name)
 	{
-		$option = $this->input->getOption ($name);
+		$option = $this->input->getOption($name);
 
-		return is_null ($option) ? array () : explode (',', $option);
+		return is_null($option) ? array() : explode(',', $option);
 	}
 
 	/**
@@ -156,25 +153,29 @@ class MakeControllerCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('name', InputArgument::REQUIRED, 'The name of the controller class'),
+		return array(
+			array('name', InputArgument::REQUIRED, 'The name of the controller class'),
 		);
 	}
+
 
 	/**
 	 * Get the console command options.
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('bench', null, InputOption::VALUE_OPTIONAL, 'The workbench the controller belongs to'),
-		    array ('only', null, InputOption::VALUE_OPTIONAL, 'The methods that should be included'),
-		    array ('except', null, InputOption::VALUE_OPTIONAL, 'The methods that should be excluded'),
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'Where to place the controller'),
+		return array(
+			array('bench', null, InputOption::VALUE_OPTIONAL, 'The workbench the controller belongs to'),
+
+			array('only', null, InputOption::VALUE_OPTIONAL, 'The methods that should be included'),
+
+			array('except', null, InputOption::VALUE_OPTIONAL, 'The methods that should be excluded'),
+
+			array('path', null, InputOption::VALUE_OPTIONAL, 'Where to place the controller'),
 		);
 	}
 

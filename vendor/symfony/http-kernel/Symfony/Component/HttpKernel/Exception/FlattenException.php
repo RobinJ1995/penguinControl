@@ -24,5 +24,4 @@ use Symfony\Component\Debug\Exception\FlattenException as DebugFlattenException;
  */
 class FlattenException extends DebugFlattenException
 {
-	
 }

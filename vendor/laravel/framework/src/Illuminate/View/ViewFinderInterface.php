@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\View;
 
-namespace Illuminate\View;
-
-interface ViewFinderInterface
-{
+interface ViewFinderInterface {
 
 	/**
 	 * Get the fully qualified location of the view.
@@ -11,7 +8,7 @@ interface ViewFinderInterface
 	 * @param  string  $view
 	 * @return string
 	 */
-	public function find ($view);
+	public function find($view);
 
 	/**
 	 * Add a location to the finder.
@@ -19,7 +16,7 @@ interface ViewFinderInterface
 	 * @param  string  $location
 	 * @return void
 	 */
-	public function addLocation ($location);
+	public function addLocation($location);
 
 	/**
 	 * Add a namespace hint to the finder.
@@ -28,7 +25,7 @@ interface ViewFinderInterface
 	 * @param  string  $hint
 	 * @return void
 	 */
-	public function addNamespace ($namespace, $hint);
+	public function addNamespace($namespace, $hint);
 
 	/**
 	 * Add a valid view extension to the finder.
@@ -36,5 +33,6 @@ interface ViewFinderInterface
 	 * @param  string  $extension
 	 * @return void
 	 */
-	public function addExtension ($extension);
+	public function addExtension($extension);
+
 }

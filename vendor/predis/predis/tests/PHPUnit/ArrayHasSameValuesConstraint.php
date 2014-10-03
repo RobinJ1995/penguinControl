@@ -14,49 +14,45 @@
  */
 class ArrayHasSameValuesConstraint extends PHPUnit_Framework_Constraint
 {
+    protected $array;
 
-	protected $array;
+    /**
+     * @param array $array
+     */
+    public function __construct($array)
+    {
+        $this->array = $array;
+    }
 
-	/**
-	 * @param array $array
-	 */
-	public function __construct ($array)
-	{
-		$this->array = $array;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function matches($other)
+    {
+        if (count($this->array) !== count($other)) {
+            return false;
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function matches ($other)
-	{
-		if (count ($this->array) !== count ($other))
-		{
-			return false;
-		}
+        if (array_diff($this->array, $other)) {
+            return false;
+        }
 
-		if (array_diff ($this->array, $other))
-		{
-			return false;
-		}
+        return true;
+    }
 
-		return true;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function toString()
+    {
+        return 'two arrays contain the same elements.';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function toString ()
-	{
-		return 'two arrays contain the same elements.';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function failureDescription ($other)
-	{
-		return $this->toString ();
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    protected function failureDescription($other)
+    {
+        return $this->toString();
+    }
 }

@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Memcached;
 
-class MemcachedStore extends TaggableStore implements StoreInterface
-{
+class MemcachedStore extends TaggableStore implements StoreInterface {
 
 	/**
 	 * The Memcached instance.
@@ -28,10 +25,10 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 * @param  string     $prefix
 	 * @return void
 	 */
-	public function __construct (Memcached $memcached, $prefix = '')
+	public function __construct(Memcached $memcached, $prefix = '')
 	{
 		$this->memcached = $memcached;
-		$this->prefix = strlen ($prefix) > 0 ? $prefix . ':' : '';
+		$this->prefix = strlen($prefix) > 0 ? $prefix.':' : '';
 	}
 
 	/**
@@ -40,11 +37,11 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		$value = $this->memcached->get ($this->prefix . $key);
+		$value = $this->memcached->get($this->prefix.$key);
 
-		if ($this->memcached->getResultCode () == 0)
+		if ($this->memcached->getResultCode() == 0)
 		{
 			return $value;
 		}
@@ -58,9 +55,9 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 * @param  int     $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		$this->memcached->set ($this->prefix . $key, $value, $minutes * 60);
+		$this->memcached->set($this->prefix.$key, $value, $minutes * 60);
 	}
 
 	/**
@@ -70,21 +67,21 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
-		return $this->memcached->increment ($this->prefix . $key, $value);
+		return $this->memcached->increment($this->prefix.$key, $value);
 	}
 
 	/**
-	 * Increment the value of an item in the cache.
+	 * Decrement the value of an item in the cache.
 	 *
 	 * @param  string  $key
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
-		return $this->memcached->decrement ($this->prefix . $key, $value);
+		return $this->memcached->decrement($this->prefix.$key, $value);
 	}
 
 	/**
@@ -94,9 +91,9 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		return $this->put ($key, $value, 0);
+		return $this->put($key, $value, 0);
 	}
 
 	/**
@@ -105,9 +102,9 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		$this->memcached->delete ($this->prefix . $key);
+		$this->memcached->delete($this->prefix.$key);
 	}
 
 	/**
@@ -115,9 +112,9 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->memcached->flush ();
+		$this->memcached->flush();
 	}
 
 	/**
@@ -125,7 +122,7 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return \Memcached
 	 */
-	public function getMemcached ()
+	public function getMemcached()
 	{
 		return $this->memcached;
 	}
@@ -135,7 +132,7 @@ class MemcachedStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return $this->prefix;
 	}

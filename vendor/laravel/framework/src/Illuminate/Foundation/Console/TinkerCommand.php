@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 
-class TinkerCommand extends Command
-{
+class TinkerCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -26,17 +23,17 @@ class TinkerCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		if ($this->supportsBoris ())
+		if ($this->supportsBoris())
 		{
-			$this->runBorisShell ();
+			$this->runBorisShell();
 		}
 		else
 		{
-			$this->comment ('Full REPL not supported. Falling back to simple shell.');
+			$this->comment('Full REPL not supported. Falling back to simple shell.');
 
-			$this->runPlainShell ();
+			$this->runPlainShell();
 		}
 	}
 
@@ -45,11 +42,11 @@ class TinkerCommand extends Command
 	 *
 	 * @return void
 	 */
-	protected function runBorisShell ()
+	protected function runBorisShell()
 	{
-		$this->setupBorisErrorHandling ();
+		$this->setupBorisErrorHandling();
 
-		with (new \Boris\Boris ('> '))->start ();
+		with(new \Boris\Boris('> '))->start();
 	}
 
 	/**
@@ -57,17 +54,13 @@ class TinkerCommand extends Command
 	 *
 	 * @return void
 	 */
-	protected function setupBorisErrorHandling ()
+	protected function setupBorisErrorHandling()
 	{
-		restore_error_handler ();
-		restore_exception_handler ();
+		restore_error_handler(); restore_exception_handler();
 
-		$this->laravel->make ('artisan')->setCatchExceptions (false);
+		$this->laravel->make('artisan')->setCatchExceptions(false);
 
-		$this->laravel->error (function()
-		{
-			return '';
-		});
+		$this->laravel->error(function() { return ''; });
 	}
 
 	/**
@@ -75,9 +68,9 @@ class TinkerCommand extends Command
 	 *
 	 * @return void
 	 */
-	protected function runPlainShell ()
+	protected function runPlainShell()
 	{
-		$input = $this->prompt ();
+		$input = $this->prompt();
 
 		while ($input != 'quit')
 		{
@@ -86,12 +79,12 @@ class TinkerCommand extends Command
 			// them bubble back out to the CLI and stop the entire command loop.
 			try
 			{
-				if (starts_with ($input, 'dump '))
+				if (starts_with($input, 'dump '))
 				{
-					$input = 'var_dump(' . substr ($input, 5) . ');';
+					$input = 'var_dump('.substr($input, 5).');';
 				}
 
-				eval ($input);
+				eval($input);
 			}
 
 			// If an exception occurs, we will just display the message and keep this
@@ -99,10 +92,10 @@ class TinkerCommand extends Command
 			// error occurs, we have no choice but to bail out of this routines.
 			catch (\Exception $e)
 			{
-				$this->error ($e->getMessage ());
+				$this->error($e->getMessage());
 			}
 
-			$input = $this->prompt ();
+			$input = $this->prompt();
 		}
 	}
 
@@ -111,11 +104,11 @@ class TinkerCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function prompt ()
+	protected function prompt()
 	{
-		$dialog = $this->getHelperSet ()->get ('dialog');
+		$dialog = $this->getHelperSet()->get('dialog');
 
-		return $dialog->ask ($this->output, "<info>></info>", null);
+		return $dialog->ask($this->output, "<info>></info>", null);
 	}
 
 	/**
@@ -123,9 +116,9 @@ class TinkerCommand extends Command
 	 *
 	 * @return bool
 	 */
-	protected function supportsBoris ()
+	protected function supportsBoris()
 	{
-		return extension_loaded ('readline') && extension_loaded ('posix') && extension_loaded ('pcntl');
+		return extension_loaded('readline') && extension_loaded('posix') && extension_loaded('pcntl');
 	}
 
 }

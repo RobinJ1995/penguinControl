@@ -17,53 +17,51 @@ namespace Predis\Command;
  */
 class ServerFlushDatabaseTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerFlushDatabase';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerFlushDatabase';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'FLUSHDB';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'FLUSHDB';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
+    /**
+     * @group connected
+     */
+    public function testFlushesTheEntireLogicalDatabase()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testFlushesTheEntireLogicalDatabase ()
-	{
-		$redis = $this->getClient ();
+        $redis->set('foo', 'bar');
 
-		$redis->set ('foo', 'bar');
-
-		$this->assertTrue ($redis->flushdb ());
-		$this->assertFalse ($redis->exists ('foo'));
-	}
-
+        $this->assertTrue($redis->flushdb());
+        $this->assertFalse($redis->exists('foo'));
+    }
 }

@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Foundation\Providers;
+<?php namespace Illuminate\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Console\TinkerCommand;
 
-class TinkerServiceProvider extends ServiceProvider
-{
+class TinkerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -20,14 +17,14 @@ class TinkerServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('command.tinker', function()
+		$this->app->bindShared('command.tinker', function()
 		{
 			return new TinkerCommand;
 		});
 
-		$this->commands ('command.tinker');
+		$this->commands('command.tinker');
 	}
 
 	/**
@@ -35,9 +32,9 @@ class TinkerServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('command.tinker');
+		return array('command.tinker');
 	}
 
 }

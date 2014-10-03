@@ -19,19 +19,17 @@ use Predis\Client;
  */
 class AbortedMultiExecExceptionTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testExceptionClass()
+    {
+        $client = new Client();
+        $transaction = new MultiExecContext($client);
+        $exception = new AbortedMultiExecException($transaction, 'ABORTED');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testExceptionClass ()
-	{
-		$client = new Client();
-		$transaction = new MultiExecContext ($client);
-		$exception = new AbortedMultiExecException ($transaction, 'ABORTED');
-
-		$this->assertInstanceOf ('Predis\PredisException', $exception);
-		$this->assertSame ('ABORTED', $exception->getMessage ());
-		$this->assertSame ($transaction, $exception->getTransaction ());
-	}
-
+        $this->assertInstanceOf('Predis\PredisException', $exception);
+        $this->assertSame('ABORTED', $exception->getMessage());
+        $this->assertSame($transaction, $exception->getTransaction());
+    }
 }

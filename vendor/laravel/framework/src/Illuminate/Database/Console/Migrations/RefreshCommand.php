@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Database\Console\Migrations;
+<?php namespace Illuminate\Database\Console\Migrations;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
-class RefreshCommand extends Command
-{
+class RefreshCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -27,20 +24,20 @@ class RefreshCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$database = $this->input->getOption ('database');
+		$database = $this->input->getOption('database');
 
-		$this->call ('migrate:reset', array ('--database' => $database));
+		$this->call('migrate:reset', array('--database' => $database));
 
 		// The refresh command is essentially just a brief aggregate of a few other of
 		// the migration commands and just provides a convenient wrapper to execute
-		// them in succession. We'll also see if we need to res-eed the database.
-		$this->call ('migrate', array ('--database' => $database));
+		// them in succession. We'll also see if we need to re-seed the database.
+		$this->call('migrate', array('--database' => $database));
 
-		if ($this->needsSeeding ())
+		if ($this->needsSeeding())
 		{
-			$this->runSeeder ($database);
+			$this->runSeeder($database);
 		}
 	}
 
@@ -49,9 +46,9 @@ class RefreshCommand extends Command
 	 *
 	 * @return bool
 	 */
-	protected function needsSeeding ()
+	protected function needsSeeding()
 	{
-		return $this->option ('seed') || $this->option ('seeder');
+		return $this->option('seed') || $this->option('seeder');
 	}
 
 	/**
@@ -60,11 +57,11 @@ class RefreshCommand extends Command
 	 * @param  string  $database
 	 * @return void
 	 */
-	protected function runSeeder ($database)
+	protected function runSeeder($database)
 	{
-		$class = $this->option ('seeder') ? : 'DatabaseSeeder';
+		$class = $this->option('seeder') ?: 'DatabaseSeeder';
 
-		$this->call ('db:seed', array ('--database' => $database, '--class' => $class));
+		$this->call('db:seed', array('--database' => $database, '--class' => $class));
 	}
 
 	/**
@@ -72,12 +69,14 @@ class RefreshCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
-		    array ('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
-		    array ('seeder', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'),
+		return array(
+			array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
+
+			array('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
+
+			array('seeder', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'),
 		);
 	}
 

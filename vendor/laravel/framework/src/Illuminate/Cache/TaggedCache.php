@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Closure;
 
-class TaggedCache implements StoreInterface
-{
+class TaggedCache implements StoreInterface {
 
 	/**
 	 * The cache store implementation.
@@ -28,7 +25,7 @@ class TaggedCache implements StoreInterface
 	 * @param  \Illuminate\Cache\TagSet  $tags
 	 * @return void
 	 */
-	public function __construct (StoreInterface $store, TagSet $tags)
+	public function __construct(StoreInterface $store, TagSet $tags)
 	{
 		$this->tags = $tags;
 		$this->store = $store;
@@ -40,9 +37,9 @@ class TaggedCache implements StoreInterface
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function has ($key)
+	public function has($key)
 	{
-		return !is_null ($this->get ($key));
+		return ! is_null($this->get($key));
 	}
 
 	/**
@@ -52,11 +49,11 @@ class TaggedCache implements StoreInterface
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function get ($key, $default = null)
+	public function get($key, $default = null)
 	{
-		$value = $this->store->get ($this->taggedItemKey ($key));
+		$value = $this->store->get($this->taggedItemKey($key));
 
-		return !is_null ($value) ? $value : value ($default);
+		return ! is_null($value) ? $value : value($default);
 	}
 
 	/**
@@ -67,9 +64,9 @@ class TaggedCache implements StoreInterface
 	 * @param  int     $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		return $this->store->put ($this->taggedItemKey ($key), $value, $minutes);
+		return $this->store->put($this->taggedItemKey($key), $value, $minutes);
 	}
 
 	/**
@@ -80,12 +77,11 @@ class TaggedCache implements StoreInterface
 	 * @param  \DateTime|int  $minutes
 	 * @return bool
 	 */
-	public function add ($key, $value, $minutes)
+	public function add($key, $value, $minutes)
 	{
-		if (is_null ($this->get ($key)))
+		if (is_null($this->get($key)))
 		{
-			$this->put ($key, $value, $minutes);
-			return true;
+			$this->put($key, $value, $minutes); return true;
 		}
 
 		return false;
@@ -98,9 +94,9 @@ class TaggedCache implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
-		$this->store->increment ($this->taggedItemKey ($key), $value);
+		$this->store->increment($this->taggedItemKey($key), $value);
 	}
 
 	/**
@@ -110,9 +106,9 @@ class TaggedCache implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
-		$this->store->decrement ($this->taggedItemKey ($key), $value);
+		$this->store->decrement($this->taggedItemKey($key), $value);
 	}
 
 	/**
@@ -122,9 +118,9 @@ class TaggedCache implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		$this->store->forever ($this->taggedItemKey ($key), $value);
+		$this->store->forever($this->taggedItemKey($key), $value);
 	}
 
 	/**
@@ -133,9 +129,9 @@ class TaggedCache implements StoreInterface
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		$this->store->forget ($this->taggedItemKey ($key));
+		$this->store->forget($this->taggedItemKey($key));
 	}
 
 	/**
@@ -143,9 +139,9 @@ class TaggedCache implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->tags->reset ();
+		$this->tags->reset();
 	}
 
 	/**
@@ -156,15 +152,14 @@ class TaggedCache implements StoreInterface
 	 * @param  Closure  $callback
 	 * @return mixed
 	 */
-	public function remember ($key, $minutes, Closure $callback)
+	public function remember($key, $minutes, Closure $callback)
 	{
 		// If the item exists in the cache we will just return this immediately
 		// otherwise we will execute the given Closure and cache the result
 		// of that execution for the given number of minutes in storage.
-		if ($this->has ($key))
-			return $this->get ($key);
+		if ($this->has($key)) return $this->get($key);
 
-		$this->put ($key, $value = $callback (), $minutes);
+		$this->put($key, $value = $callback(), $minutes);
 
 		return $value;
 	}
@@ -176,9 +171,9 @@ class TaggedCache implements StoreInterface
 	 * @param  Closure  $callback
 	 * @return mixed
 	 */
-	public function sear ($key, Closure $callback)
+	public function sear($key, Closure $callback)
 	{
-		return $this->rememberForever ($key, $callback);
+		return $this->rememberForever($key, $callback);
 	}
 
 	/**
@@ -188,15 +183,14 @@ class TaggedCache implements StoreInterface
 	 * @param  Closure  $callback
 	 * @return mixed
 	 */
-	public function rememberForever ($key, Closure $callback)
+	public function rememberForever($key, Closure $callback)
 	{
 		// If the item exists in the cache we will just return this immediately
 		// otherwise we will execute the given Closure and cache the result
 		// of that execution for the given number of minutes. It's easy.
-		if ($this->has ($key))
-			return $this->get ($key);
+		if ($this->has($key)) return $this->get($key);
 
-		$this->forever ($key, $value = $callback ());
+		$this->forever($key, $value = $callback());
 
 		return $value;
 	}
@@ -207,9 +201,9 @@ class TaggedCache implements StoreInterface
 	 * @param  string  $key
 	 * @return string
 	 */
-	public function taggedItemKey ($key)
+	public function taggedItemKey($key)
 	{
-		return $this->getPrefix () . sha1 ($this->tags->getNamespace ()) . ':' . $key;
+		return $this->getPrefix().sha1($this->tags->getNamespace()).':'.$key;
 	}
 
 	/**
@@ -217,9 +211,9 @@ class TaggedCache implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
-		return $this->store->getPrefix ();
+		return $this->store->getPrefix();
 	}
 
 }

@@ -18,39 +18,37 @@ use PredisTestCase;
  */
 class PrefixableCommandTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testImplementsCorrectInterface()
+    {
+        $command = $this->getMockForAbstractClass('Predis\Command\PrefixableCommand');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testImplementsCorrectInterface ()
-	{
-		$command = $this->getMockForAbstractClass ('Predis\Command\PrefixableCommand');
+        $this->assertInstanceOf('Predis\Command\PrefixableCommandInterface', $command);
+        $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
+    }
 
-		$this->assertInstanceOf ('Predis\Command\PrefixableCommandInterface', $command);
-		$this->assertInstanceOf ('Predis\Command\CommandInterface', $command);
-	}
+    /**
+     * @group disconnected
+     */
+    public function testAddPrefixToFirstArgument()
+    {
+        $command = $this->getMockForAbstractClass('Predis\Command\PrefixableCommand');
+        $command->setRawArguments(array('key', 'value'));
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testAddPrefixToFirstArgument ()
-	{
-		$command = $this->getMockForAbstractClass ('Predis\Command\PrefixableCommand');
-		$command->setRawArguments (array ('key', 'value'));
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array('prefix:key', 'value'), $command->getArguments());
+    }
 
-		$this->assertSame (array ('prefix:key', 'value'), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testDoesNotBreakOnEmptyArguments()
+    {
+        $command = $this->getMockForAbstractClass('Predis\Command\PrefixableCommand');
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testDoesNotBreakOnEmptyArguments ()
-	{
-		$command = $this->getMockForAbstractClass ('Predis\Command\PrefixableCommand');
-		$command->prefixKeys ('prefix:');
-
-		$this->assertEmpty ($command->getArguments ());
-	}
-
+        $this->assertEmpty($command->getArguments());
+    }
 }

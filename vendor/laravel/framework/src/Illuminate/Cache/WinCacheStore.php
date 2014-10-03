@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class WinCacheStore extends TaggableStore implements StoreInterface
-{
+class WinCacheStore extends TaggableStore implements StoreInterface {
 
 	/**
 	 * A string that should be prepended to keys.
@@ -18,7 +15,7 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  string     $prefix
 	 * @return void
 	 */
-	public function __construct ($prefix = '')
+	public function __construct($prefix = '')
 	{
 		$this->prefix = $prefix;
 	}
@@ -29,9 +26,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		$value = wincache_ucache_get ($this->prefix . $key);
+		$value = wincache_ucache_get($this->prefix.$key);
 
 		if ($value !== false)
 		{
@@ -47,9 +44,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  int     $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		wincache_ucache_set ($this->prefix . $key, $value, $minutes * 60);
+		wincache_ucache_set($this->prefix.$key, $value, $minutes * 60);
 	}
 
 	/**
@@ -59,9 +56,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
-		return wincache_ucache_inc ($this->prefix . $key, $value);
+		return wincache_ucache_inc($this->prefix.$key, $value);
 	}
 
 	/**
@@ -71,9 +68,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
-		return wincache_ucache_dec ($this->prefix . $key, $value);
+		return wincache_ucache_dec($this->prefix.$key, $value);
 	}
 
 	/**
@@ -83,9 +80,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		return $this->put ($key, $value, 0);
+		return $this->put($key, $value, 0);
 	}
 
 	/**
@@ -94,9 +91,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		wincache_ucache_delete ($this->prefix . $key);
+		wincache_ucache_delete($this->prefix.$key);
 	}
 
 	/**
@@ -104,9 +101,9 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		wincache_ucache_clear ();
+		wincache_ucache_clear();
 	}
 
 	/**
@@ -114,7 +111,7 @@ class WinCacheStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return $this->prefix;
 	}

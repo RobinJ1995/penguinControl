@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Mail;
+<?php namespace Illuminate\Mail;
 
 use Closure;
 use Swift_Mailer;
@@ -11,8 +9,7 @@ use Illuminate\Queue\QueueManager;
 use Illuminate\Container\Container;
 use Illuminate\Support\SerializableClosure;
 
-class Mailer
-{
+class Mailer {
 
 	/**
 	 * The view environment instance.
@@ -61,7 +58,7 @@ class Mailer
 	 *
 	 * @var array
 	 */
-	protected $failedRecipients = array ();
+	protected $failedRecipients = array();
 
 	/**
 	 * The QueueManager instance.
@@ -77,7 +74,7 @@ class Mailer
 	 * @param  \Swift_Mailer  $swift
 	 * @return void
 	 */
-	public function __construct (Environment $views, Swift_Mailer $swift)
+	public function __construct(Environment $views, Swift_Mailer $swift)
 	{
 		$this->views = $views;
 		$this->swift = $swift;
@@ -90,9 +87,9 @@ class Mailer
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function alwaysFrom ($address, $name = null)
+	public function alwaysFrom($address, $name = null)
 	{
-		$this->from = compact ('address', 'name');
+		$this->from = compact('address', 'name');
 	}
 
 	/**
@@ -103,9 +100,9 @@ class Mailer
 	 * @param  mixed   $callback
 	 * @return int
 	 */
-	public function plain ($view, array $data, $callback)
+	public function plain($view, array $data, $callback)
 	{
-		return $this->send (array ('text' => $view), $data, $callback);
+		return $this->send(array('text' => $view), $data, $callback);
 	}
 
 	/**
@@ -116,25 +113,25 @@ class Mailer
 	 * @param  Closure|string  $callback
 	 * @return int
 	 */
-	public function send ($view, array $data, $callback)
+	public function send($view, array $data, $callback)
 	{
 		// First we need to parse the view, which could either be a string or an array
 		// containing both an HTML and plain text versions of the view which should
 		// be used when sending an e-mail. We will extract both of them out here.
-		list($view, $plain) = $this->parseView ($view);
+		list($view, $plain) = $this->parseView($view);
 
-		$data['message'] = $message = $this->createMessage ();
+		$data['message'] = $message = $this->createMessage();
 
-		$this->callMessageBuilder ($callback, $message);
+		$this->callMessageBuilder($callback, $message);
 
 		// Once we have retrieved the view content for the e-mail we will set the body
 		// of this message using the HTML type, which will provide a simple wrapper
 		// to creating view based emails that are able to receive arrays of data.
-		$this->addContent ($message, $view, $plain, $data);
+		$this->addContent($message, $view, $plain, $data);
 
-		$message = $message->getSwiftMessage ();
+		$message = $message->getSwiftMessage();
 
-		return $this->sendSwiftMessage ($message);
+		return $this->sendSwiftMessage($message);
 	}
 
 	/**
@@ -146,11 +143,11 @@ class Mailer
 	 * @param  string  $queue
 	 * @return void
 	 */
-	public function queue ($view, array $data, $callback, $queue = null)
+	public function queue($view, array $data, $callback, $queue = null)
 	{
-		$callback = $this->buildQueueCallable ($callback);
+		$callback = $this->buildQueueCallable($callback);
 
-		$this->queue->push ('mailer@handleQueuedMessage', compact ('view', 'data', 'callback'), $queue);
+		$this->queue->push('mailer@handleQueuedMessage', compact('view', 'data', 'callback'), $queue);
 	}
 
 	/**
@@ -162,9 +159,9 @@ class Mailer
 	 * @param  Closure|string  $callback
 	 * @return void
 	 */
-	public function queueOn ($queue, $view, array $data, $callback)
+	public function queueOn($queue, $view, array $data, $callback)
 	{
-		$this->queue ($view, $data, $callback, $queue);
+		$this->queue($view, $data, $callback, $queue);
 	}
 
 	/**
@@ -177,11 +174,11 @@ class Mailer
 	 * @param  string  $queue
 	 * @return void
 	 */
-	public function later ($delay, $view, array $data, $callback, $queue = null)
+	public function later($delay, $view, array $data, $callback, $queue = null)
 	{
-		$callback = $this->buildQueueCallable ($callback);
+		$callback = $this->buildQueueCallable($callback);
 
-		$this->queue->later ($delay, 'mailer@handleQueuedMessage', compact ('view', 'data', 'callback'), $queue);
+		$this->queue->later($delay, 'mailer@handleQueuedMessage', compact('view', 'data', 'callback'), $queue);
 	}
 
 	/**
@@ -194,9 +191,9 @@ class Mailer
 	 * @param  Closure|string  $callback
 	 * @return void
 	 */
-	public function laterOn ($queue, $delay, $view, array $data, $callback)
+	public function laterOn($queue, $delay, $view, array $data, $callback)
 	{
-		$this->later ($delay, $view, $data, $callback, $queue);
+		$this->later($delay, $view, $data, $callback, $queue);
 	}
 
 	/**
@@ -205,12 +202,11 @@ class Mailer
 	 * @param  mixed  $callback
 	 * @return mixed
 	 */
-	protected function buildQueueCallable ($callback)
+	protected function buildQueueCallable($callback)
 	{
-		if (!$callback instanceof Closure)
-			return $callback;
+		if ( ! $callback instanceof Closure) return $callback;
 
-		return serialize (new SerializableClosure ($callback));
+		return serialize(new SerializableClosure($callback));
 	}
 
 	/**
@@ -220,11 +216,11 @@ class Mailer
 	 * @param  array  $data
 	 * @return void
 	 */
-	public function handleQueuedMessage ($job, $data)
+	public function handleQueuedMessage($job, $data)
 	{
-		$this->send ($data['view'], $data['data'], $this->getQueuedCallable ($data));
+		$this->send($data['view'], $data['data'], $this->getQueuedCallable($data));
 
-		$job->delete ();
+		$job->delete();
 	}
 
 	/**
@@ -233,11 +229,11 @@ class Mailer
 	 * @param  array  $data
 	 * @return mixed
 	 */
-	protected function getQueuedCallable (array $data)
+	protected function getQueuedCallable(array $data)
 	{
-		if (str_contains ($data['callback'], 'SerializableClosure'))
+		if (str_contains($data['callback'], 'SerializableClosure'))
 		{
-			return with (unserialize ($data['callback']))->getClosure ();
+			return with(unserialize($data['callback']))->getClosure();
 		}
 
 		return $data['callback'];
@@ -252,16 +248,16 @@ class Mailer
 	 * @param  array   $data
 	 * @return void
 	 */
-	protected function addContent ($message, $view, $plain, $data)
+	protected function addContent($message, $view, $plain, $data)
 	{
-		if (isset ($view))
+		if (isset($view))
 		{
-			$message->setBody ($this->getView ($view, $data), 'text/html');
+			$message->setBody($this->getView($view, $data), 'text/html');
 		}
 
-		if (isset ($plain))
+		if (isset($plain))
 		{
-			$message->addPart ($this->getView ($plain, $data), 'text/plain');
+			$message->addPart($this->getView($plain, $data), 'text/plain');
 		}
 	}
 
@@ -273,15 +269,14 @@ class Mailer
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function parseView ($view)
+	protected function parseView($view)
 	{
-		if (is_string ($view))
-			return array ($view, null);
+		if (is_string($view)) return array($view, null);
 
 		// If the given view is an array with numeric keys, we will just assume that
 		// both a "pretty" and "plain" view were provided, so we will return this
 		// array as is, since must should contain both views with numeric keys.
-		if (is_array ($view) && isset ($view[0]))
+		if (is_array($view) && isset($view[0]))
 		{
 			return $view;
 		}
@@ -289,14 +284,14 @@ class Mailer
 		// If the view is an array, but doesn't contain numeric keys, we will assume
 		// the the views are being explicitly specified and will extract them via
 		// named keys instead, allowing the developers to use one or the other.
-		elseif (is_array ($view))
+		elseif (is_array($view))
 		{
-			return array (
-			    array_get ($view, 'html'), array_get ($view, 'text')
+			return array(
+				array_get($view, 'html'), array_get($view, 'text')
 			);
 		}
 
-		throw new \InvalidArgumentException ("Invalid view.");
+		throw new \InvalidArgumentException("Invalid view.");
 	}
 
 	/**
@@ -305,15 +300,15 @@ class Mailer
 	 * @param  \Swift_Message  $message
 	 * @return int
 	 */
-	protected function sendSwiftMessage ($message)
+	protected function sendSwiftMessage($message)
 	{
-		if (!$this->pretending)
+		if ( ! $this->pretending)
 		{
-			return $this->swift->send ($message, $this->failedRecipients);
+			return $this->swift->send($message, $this->failedRecipients);
 		}
-		elseif (isset ($this->logger))
+		elseif (isset($this->logger))
 		{
-			$this->logMessage ($message);
+			$this->logMessage($message);
 
 			return 1;
 		}
@@ -325,11 +320,11 @@ class Mailer
 	 * @param  \Swift_Message  $message
 	 * @return void
 	 */
-	protected function logMessage ($message)
+	protected function logMessage($message)
 	{
-		$emails = implode (', ', array_keys ((array) $message->getTo ()));
+		$emails = implode(', ', array_keys((array) $message->getTo()));
 
-		$this->logger->info ("Pretending to mail message to: {$emails}");
+		$this->logger->info("Pretending to mail message to: {$emails}");
 	}
 
 	/**
@@ -341,18 +336,18 @@ class Mailer
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function callMessageBuilder ($callback, $message)
+	protected function callMessageBuilder($callback, $message)
 	{
 		if ($callback instanceof Closure)
 		{
-			return call_user_func ($callback, $message);
+			return call_user_func($callback, $message);
 		}
-		elseif (is_string ($callback))
+		elseif (is_string($callback))
 		{
-			return $this->container[$callback]->mail ($message);
+			return $this->container[$callback]->mail($message);
 		}
 
-		throw new \InvalidArgumentException ("Callback is not valid.");
+		throw new \InvalidArgumentException("Callback is not valid.");
 	}
 
 	/**
@@ -360,16 +355,16 @@ class Mailer
 	 *
 	 * @return \Illuminate\Mail\Message
 	 */
-	protected function createMessage ()
+	protected function createMessage()
 	{
-		$message = new Message (new Swift_Message);
+		$message = new Message(new Swift_Message);
 
 		// If a global from address has been specified we will set it on every message
 		// instances so the developer does not have to repeat themselves every time
 		// they create a new message. We will just go ahead and push the address.
-		if (isset ($this->from['address']))
+		if (isset($this->from['address']))
 		{
-			$message->from ($this->from['address'], $this->from['name']);
+			$message->from($this->from['address'], $this->from['name']);
 		}
 
 		return $message;
@@ -382,9 +377,9 @@ class Mailer
 	 * @param  array   $data
 	 * @return \Illuminate\View\View
 	 */
-	protected function getView ($view, $data)
+	protected function getView($view, $data)
 	{
-		return $this->views->make ($view, $data)->render ();
+		return $this->views->make($view, $data)->render();
 	}
 
 	/**
@@ -393,7 +388,7 @@ class Mailer
 	 * @param  bool  $value
 	 * @return void
 	 */
-	public function pretend ($value = true)
+	public function pretend($value = true)
 	{
 		$this->pretending = $value;
 	}
@@ -403,7 +398,7 @@ class Mailer
 	 *
 	 * @return \Illuminate\View\Environment
 	 */
-	public function getViewEnvironment ()
+	public function getViewEnvironment()
 	{
 		return $this->views;
 	}
@@ -413,7 +408,7 @@ class Mailer
 	 *
 	 * @return \Swift_Mailer
 	 */
-	public function getSwiftMailer ()
+	public function getSwiftMailer()
 	{
 		return $this->swift;
 	}
@@ -423,7 +418,7 @@ class Mailer
 	 *
 	 * @return array
 	 */
-	public function failures ()
+	public function failures()
 	{
 		return $this->failedRecipients;
 	}
@@ -434,7 +429,7 @@ class Mailer
 	 * @param  \Swift_Mailer  $swift
 	 * @return void
 	 */
-	public function setSwiftMailer ($swift)
+	public function setSwiftMailer($swift)
 	{
 		$this->swift = $swift;
 	}
@@ -445,7 +440,7 @@ class Mailer
 	 * @param  \Illuminate\Log\Writer  $logger
 	 * @return \Illuminate\Mail\Mailer
 	 */
-	public function setLogger (Writer $logger)
+	public function setLogger(Writer $logger)
 	{
 		$this->logger = $logger;
 
@@ -458,7 +453,7 @@ class Mailer
 	 * @param  \Illuminate\Queue\QueueManager  $queue
 	 * @return \Illuminate\Mail\Mailer
 	 */
-	public function setQueue (QueueManager $queue)
+	public function setQueue(QueueManager $queue)
 	{
 		$this->queue = $queue;
 
@@ -471,7 +466,7 @@ class Mailer
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function setContainer (Container $container)
+	public function setContainer(Container $container)
 	{
 		$this->container = $container;
 	}

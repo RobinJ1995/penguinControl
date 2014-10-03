@@ -17,66 +17,60 @@ namespace Predis\Command;
  */
 class SetScan extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SSCAN';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SSCAN';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        if (count($arguments) === 3 && is_array($arguments[2])) {
+            $options = $this->prepareOptions(array_pop($arguments));
+            $arguments = array_merge($arguments, $options);
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function filterArguments (Array $arguments)
-	{
-		if (count ($arguments) === 3 && is_array ($arguments[2]))
-		{
-			$options = $this->prepareOptions (array_pop ($arguments));
-			$arguments = array_merge ($arguments, $options);
-		}
+        return $arguments;
+    }
 
-		return $arguments;
-	}
+    /**
+     * Returns a list of options and modifiers compatible with Redis.
+     *
+     * @param  array $options List of options.
+     * @return array
+     */
+    protected function prepareOptions($options)
+    {
+        $options = array_change_key_case($options, CASE_UPPER);
+        $normalized = array();
 
-	/**
-	 * Returns a list of options and modifiers compatible with Redis.
-	 *
-	 * @param  array $options List of options.
-	 * @return array
-	 */
-	protected function prepareOptions ($options)
-	{
-		$options = array_change_key_case ($options, CASE_UPPER);
-		$normalized = array ();
+        if (!empty($options['MATCH'])) {
+            $normalized[] = 'MATCH';
+            $normalized[] = $options['MATCH'];
+        }
 
-		if (!empty ($options['MATCH']))
-		{
-			$normalized[] = 'MATCH';
-			$normalized[] = $options['MATCH'];
-		}
+        if (!empty($options['COUNT'])) {
+            $normalized[] = 'COUNT';
+            $normalized[] = $options['COUNT'];
+        }
 
-		if (!empty ($options['COUNT']))
-		{
-			$normalized[] = 'COUNT';
-			$normalized[] = $options['COUNT'];
-		}
+        return $normalized;
+    }
 
-		return $normalized;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (is_array($data)) {
+            $data[0] = (int) $data[0];
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		if (is_array ($data))
-		{
-			$data[0] = (int) $data[0];
-		}
-
-		return $data;
-	}
-
+        return $data;
+    }
 }

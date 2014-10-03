@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringSubstr extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SUBSTR';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SUBSTR';
+    }
 }

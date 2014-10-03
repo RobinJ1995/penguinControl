@@ -21,48 +21,41 @@ use Predis\Profile\ServerProfileInterface;
  */
 class ClientProfile extends AbstractOption
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function filter(ClientOptionsInterface $options, $value)
+    {
+        if (is_string($value)) {
+            $value = ServerProfile::get($value);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function filter (ClientOptionsInterface $options, $value)
-	{
-		if (is_string ($value))
-		{
-			$value = ServerProfile::get ($value);
+            if (isset($options->prefix)) {
+                $value->setProcessor($options->prefix);
+            }
+        }
 
-			if (isset ($options->prefix))
-			{
-				$value->setProcessor ($options->prefix);
-			}
-		}
+        if (is_callable($value)) {
+            $value = call_user_func($value, $options, $this);
+        }
 
-		if (is_callable ($value))
-		{
-			$value = call_user_func ($value, $options, $this);
-		}
+        if (!$value instanceof ServerProfileInterface) {
+            throw new \InvalidArgumentException('Invalid value for the profile option');
+        }
 
-		if (!$value instanceof ServerProfileInterface)
-		{
-			throw new \InvalidArgumentException ('Invalid value for the profile option');
-		}
+        return $value;
+    }
 
-		return $value;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault(ClientOptionsInterface $options)
+    {
+        $profile = ServerProfile::getDefault();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDefault (ClientOptionsInterface $options)
-	{
-		$profile = ServerProfile::getDefault ();
+        if (isset($options->prefix)) {
+            $profile->setProcessor($options->prefix);
+        }
 
-		if (isset ($options->prefix))
-		{
-			$profile->setProcessor ($options->prefix);
-		}
-
-		return $profile;
-	}
-
+        return $profile;
+    }
 }

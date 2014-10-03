@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use PDO;
 use Closure;
@@ -8,8 +6,7 @@ use DateTime;
 use Illuminate\Database\Query\Processors\Processor;
 use Doctrine\DBAL\Connection as DoctrineConnection;
 
-class Connection implements ConnectionInterface
-{
+class Connection implements ConnectionInterface {
 
 	/**
 	 * The active PDO connection.
@@ -75,7 +72,7 @@ class Connection implements ConnectionInterface
 	protected $fetchMode = PDO::FETCH_ASSOC;
 
 	/**
-	 * The number of active transasctions.
+	 * The number of active transactions.
 	 *
 	 * @var int
 	 */
@@ -86,7 +83,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @var array
 	 */
-	protected $queryLog = array ();
+	protected $queryLog = array();
 
 	/**
 	 * Indicates whether queries are being logged.
@@ -121,7 +118,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @var array
 	 */
-	protected $config = array ();
+	protected $config = array();
 
 	/**
 	 * Create a new database connection instance.
@@ -132,7 +129,7 @@ class Connection implements ConnectionInterface
 	 * @param  array   $config
 	 * @return void
 	 */
-	public function __construct (PDO $pdo, $database = '', $tablePrefix = '', array $config = array ())
+	public function __construct(PDO $pdo, $database = '', $tablePrefix = '', array $config = array())
 	{
 		$this->pdo = $pdo;
 
@@ -148,9 +145,9 @@ class Connection implements ConnectionInterface
 		// We need to initialize a query grammar and the query post processors
 		// which are both very important parts of the database abstractions
 		// so we initialize these to their default values while starting.
-		$this->useDefaultQueryGrammar ();
+		$this->useDefaultQueryGrammar();
 
-		$this->useDefaultPostProcessor ();
+		$this->useDefaultPostProcessor();
 	}
 
 	/**
@@ -158,9 +155,9 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function useDefaultQueryGrammar ()
+	public function useDefaultQueryGrammar()
 	{
-		$this->queryGrammar = $this->getDefaultQueryGrammar ();
+		$this->queryGrammar = $this->getDefaultQueryGrammar();
 	}
 
 	/**
@@ -168,7 +165,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Query\Grammars\Grammar
 	 */
-	protected function getDefaultQueryGrammar ()
+	protected function getDefaultQueryGrammar()
 	{
 		return new Query\Grammars\Grammar;
 	}
@@ -178,9 +175,9 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function useDefaultSchemaGrammar ()
+	public function useDefaultSchemaGrammar()
 	{
-		$this->schemaGrammar = $this->getDefaultSchemaGrammar ();
+		$this->schemaGrammar = $this->getDefaultSchemaGrammar();
 	}
 
 	/**
@@ -188,19 +185,16 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Schema\Grammars\Grammar
 	 */
-	protected function getDefaultSchemaGrammar ()
-	{
-		
-	}
+	protected function getDefaultSchemaGrammar() {}
 
 	/**
 	 * Set the query post processor to the default implementation.
 	 *
 	 * @return void
 	 */
-	public function useDefaultPostProcessor ()
+	public function useDefaultPostProcessor()
 	{
-		$this->postProcessor = $this->getDefaultPostProcessor ();
+		$this->postProcessor = $this->getDefaultPostProcessor();
 	}
 
 	/**
@@ -208,7 +202,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Query\Processors\Processor
 	 */
-	protected function getDefaultPostProcessor ()
+	protected function getDefaultPostProcessor()
 	{
 		return new Query\Processors\Processor;
 	}
@@ -218,14 +212,11 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Schema\Builder
 	 */
-	public function getSchemaBuilder ()
+	public function getSchemaBuilder()
 	{
-		if (is_null ($this->schemaGrammar))
-		{
-			$this->useDefaultSchemaGrammar ();
-		}
+		if (is_null($this->schemaGrammar)) { $this->useDefaultSchemaGrammar(); }
 
-		return new Schema\Builder ($this);
+		return new Schema\Builder($this);
 	}
 
 	/**
@@ -234,13 +225,13 @@ class Connection implements ConnectionInterface
 	 * @param  string  $table
 	 * @return \Illuminate\Database\Query\Builder
 	 */
-	public function table ($table)
+	public function table($table)
 	{
-		$processor = $this->getPostProcessor ();
+		$processor = $this->getPostProcessor();
 
-		$query = new Query\Builder ($this, $this->getQueryGrammar (), $processor);
+		$query = new Query\Builder($this, $this->getQueryGrammar(), $processor);
 
-		return $query->from ($table);
+		return $query->from($table);
 	}
 
 	/**
@@ -249,9 +240,9 @@ class Connection implements ConnectionInterface
 	 * @param  mixed  $value
 	 * @return \Illuminate\Database\Query\Expression
 	 */
-	public function raw ($value)
+	public function raw($value)
 	{
-		return new Query\Expression ($value);
+		return new Query\Expression($value);
 	}
 
 	/**
@@ -261,11 +252,11 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return mixed
 	 */
-	public function selectOne ($query, $bindings = array ())
+	public function selectOne($query, $bindings = array())
 	{
-		$records = $this->select ($query, $bindings);
+		$records = $this->select($query, $bindings);
 
-		return count ($records) > 0 ? reset ($records) : null;
+		return count($records) > 0 ? reset($records) : null;
 	}
 
 	/**
@@ -275,22 +266,21 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return array
 	 */
-	public function select ($query, $bindings = array ())
+	public function select($query, $bindings = array())
 	{
-		return $this->run ($query, $bindings, function($me, $query, $bindings)
-			{
-				if ($me->pretending ())
-					return array ();
+		return $this->run($query, $bindings, function($me, $query, $bindings)
+		{
+			if ($me->pretending()) return array();
 
-				// For select statements, we'll simply execute the query and return an array
-				// of the database result set. Each element in the array will be a single
-				// row from the database table, and will either be an array or objects.
-				$statement = $me->getReadPdo ()->prepare ($query);
+			// For select statements, we'll simply execute the query and return an array
+			// of the database result set. Each element in the array will be a single
+			// row from the database table, and will either be an array or objects.
+			$statement = $me->getReadPdo()->prepare($query);
 
-				$statement->execute ($me->prepareBindings ($bindings));
+			$statement->execute($me->prepareBindings($bindings));
 
-				return $statement->fetchAll ($me->getFetchMode ());
-			});
+			return $statement->fetchAll($me->getFetchMode());
+		});
 	}
 
 	/**
@@ -300,9 +290,9 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return bool
 	 */
-	public function insert ($query, $bindings = array ())
+	public function insert($query, $bindings = array())
 	{
-		return $this->statement ($query, $bindings);
+		return $this->statement($query, $bindings);
 	}
 
 	/**
@@ -312,9 +302,9 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return int
 	 */
-	public function update ($query, $bindings = array ())
+	public function update($query, $bindings = array())
 	{
-		return $this->affectingStatement ($query, $bindings);
+		return $this->affectingStatement($query, $bindings);
 	}
 
 	/**
@@ -324,9 +314,9 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return int
 	 */
-	public function delete ($query, $bindings = array ())
+	public function delete($query, $bindings = array())
 	{
-		return $this->affectingStatement ($query, $bindings);
+		return $this->affectingStatement($query, $bindings);
 	}
 
 	/**
@@ -336,17 +326,16 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return bool
 	 */
-	public function statement ($query, $bindings = array ())
+	public function statement($query, $bindings = array())
 	{
-		return $this->run ($query, $bindings, function($me, $query, $bindings)
-			{
-				if ($me->pretending ())
-					return true;
+		return $this->run($query, $bindings, function($me, $query, $bindings)
+		{
+			if ($me->pretending()) return true;
 
-				$bindings = $me->prepareBindings ($bindings);
+			$bindings = $me->prepareBindings($bindings);
 
-				return $me->getPdo ()->prepare ($query)->execute ($bindings);
-			});
+			return $me->getPdo()->prepare($query)->execute($bindings);
+		});
 	}
 
 	/**
@@ -356,22 +345,21 @@ class Connection implements ConnectionInterface
 	 * @param  array   $bindings
 	 * @return int
 	 */
-	public function affectingStatement ($query, $bindings = array ())
+	public function affectingStatement($query, $bindings = array())
 	{
-		return $this->run ($query, $bindings, function($me, $query, $bindings)
-			{
-				if ($me->pretending ())
-					return 0;
+		return $this->run($query, $bindings, function($me, $query, $bindings)
+		{
+			if ($me->pretending()) return 0;
 
-				// For update or delete statements, we want to get the number of rows affected
-				// by the statement and return that back to the developer. We'll first need
-				// to execute the statement and then we'll use PDO to fetch the affected.
-				$statement = $me->getPdo ()->prepare ($query);
+			// For update or delete statements, we want to get the number of rows affected
+			// by the statement and return that back to the developer. We'll first need
+			// to execute the statement and then we'll use PDO to fetch the affected.
+			$statement = $me->getPdo()->prepare($query);
 
-				$statement->execute ($me->prepareBindings ($bindings));
+			$statement->execute($me->prepareBindings($bindings));
 
-				return $statement->rowCount ();
-			});
+			return $statement->rowCount();
+		});
 	}
 
 	/**
@@ -380,15 +368,14 @@ class Connection implements ConnectionInterface
 	 * @param  string  $query
 	 * @return bool
 	 */
-	public function unprepared ($query)
+	public function unprepared($query)
 	{
-		return $this->run ($query, array (), function($me, $query)
-			{
-				if ($me->pretending ())
-					return true;
+		return $this->run($query, array(), function($me, $query)
+		{
+			if ($me->pretending()) return true;
 
-				return (bool) $me->getPdo ()->exec ($query);
-			});
+			return (bool) $me->getPdo()->exec($query);
+		});
 	}
 
 	/**
@@ -397,9 +384,9 @@ class Connection implements ConnectionInterface
 	 * @param  array  $bindings
 	 * @return array
 	 */
-	public function prepareBindings (array $bindings)
+	public function prepareBindings(array $bindings)
 	{
-		$grammar = $this->getQueryGrammar ();
+		$grammar = $this->getQueryGrammar();
 
 		foreach ($bindings as $key => $value)
 		{
@@ -408,7 +395,7 @@ class Connection implements ConnectionInterface
 			// so we'll just ask the grammar for the format to get from the date.
 			if ($value instanceof DateTime)
 			{
-				$bindings[$key] = $value->format ($grammar->getDateFormat ());
+				$bindings[$key] = $value->format($grammar->getDateFormat());
 			}
 			elseif ($value === false)
 			{
@@ -427,18 +414,18 @@ class Connection implements ConnectionInterface
 	 *
 	 * @throws \Exception
 	 */
-	public function transaction (Closure $callback)
+	public function transaction(Closure $callback)
 	{
-		$this->beginTransaction ();
+		$this->beginTransaction();
 
 		// We'll simply execute the given callback within a try / catch block
 		// and if we catch any exception we can rollback the transaction
 		// so that none of the changes are persisted to the database.
 		try
 		{
-			$result = $callback ($this);
+			$result = $callback($this);
 
-			$this->commit ();
+			$this->commit();
 		}
 
 		// If we catch an exception, we will roll back so nothing gets messed
@@ -446,7 +433,7 @@ class Connection implements ConnectionInterface
 		// be handled how the developer sees fit for their applications.
 		catch (\Exception $e)
 		{
-			$this->rollBack ();
+			$this->rollBack();
 
 			throw $e;
 		}
@@ -459,16 +446,16 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function beginTransaction ()
+	public function beginTransaction()
 	{
 		++$this->transactions;
 
 		if ($this->transactions == 1)
 		{
-			$this->pdo->beginTransaction ();
+			$this->pdo->beginTransaction();
 		}
 
-		$this->fireConnectionEvent ('beganTransaction');
+		$this->fireConnectionEvent('beganTransaction');
 	}
 
 	/**
@@ -476,14 +463,13 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function commit ()
+	public function commit()
 	{
-		if ($this->transactions == 1)
-			$this->pdo->commit ();
+		if ($this->transactions == 1) $this->pdo->commit();
 
 		--$this->transactions;
 
-		$this->fireConnectionEvent ('committed');
+		$this->fireConnectionEvent('committed');
 	}
 
 	/**
@@ -491,20 +477,20 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function rollBack ()
+	public function rollBack()
 	{
 		if ($this->transactions == 1)
 		{
 			$this->transactions = 0;
 
-			$this->pdo->rollBack ();
+			$this->pdo->rollBack();
 		}
 		else
 		{
 			--$this->transactions;
 		}
 
-		$this->fireConnectionEvent ('rollingBack');
+		$this->fireConnectionEvent('rollingBack');
 	}
 
 	/**
@@ -512,7 +498,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return int
 	 */
-	public function transactionLevel ()
+	public function transactionLevel()
 	{
 		return $this->transactions;
 	}
@@ -523,16 +509,16 @@ class Connection implements ConnectionInterface
 	 * @param  Closure  $callback
 	 * @return array
 	 */
-	public function pretend (Closure $callback)
+	public function pretend(Closure $callback)
 	{
 		$this->pretending = true;
 
-		$this->queryLog = array ();
+		$this->queryLog = array();
 
 		// Basically to make the database connection "pretend", we will just return
 		// the default values for all the query methods, then we will return an
 		// array of queries that were "executed" within the Closure callback.
-		$callback ($this);
+		$callback($this);
 
 		$this->pretending = false;
 
@@ -549,16 +535,16 @@ class Connection implements ConnectionInterface
 	 *
 	 * @throws QueryException
 	 */
-	protected function run ($query, $bindings, Closure $callback)
+	protected function run($query, $bindings, Closure $callback)
 	{
-		$start = microtime (true);
+		$start = microtime(true);
 
 		// To execute the statement, we'll simply call the callback, which will actually
 		// run the SQL against the PDO connection. Then we can calculate the time it
 		// took to execute and log the query SQL, bindings and time in our memory.
 		try
 		{
-			$result = $callback ($this, $query, $bindings);
+			$result = $callback($this, $query, $bindings);
 		}
 
 		// If an exception occurs when attempting to run a query, we'll format the error
@@ -566,15 +552,15 @@ class Connection implements ConnectionInterface
 		// lot more helpful to the developer instead of just the database's errors.
 		catch (\Exception $e)
 		{
-			throw new QueryException ($query, $bindings, $e);
+			throw new QueryException($query, $this->prepareBindings($bindings), $e);
 		}
 
 		// Once we have run the query we will calculate the time that it took to run and
 		// then log the query, bindings, and execution time so we will report them on
 		// the event that the developer needs them. We'll log time in milliseconds.
-		$time = $this->getElapsedTime ($start);
+		$time = $this->getElapsedTime($start);
 
-		$this->logQuery ($query, $bindings, $time);
+		$this->logQuery($query, $bindings, $time);
 
 		return $result;
 	}
@@ -587,17 +573,16 @@ class Connection implements ConnectionInterface
 	 * @param  $time
 	 * @return void
 	 */
-	public function logQuery ($query, $bindings, $time = null)
+	public function logQuery($query, $bindings, $time = null)
 	{
-		if (isset ($this->events))
+		if (isset($this->events))
 		{
-			$this->events->fire ('illuminate.query', array ($query, $bindings, $time, $this->getName ()));
+			$this->events->fire('illuminate.query', array($query, $bindings, $time, $this->getName()));
 		}
 
-		if (!$this->loggingQueries)
-			return;
+		if ( ! $this->loggingQueries) return;
 
-		$this->queryLog[] = compact ('query', 'bindings', 'time');
+		$this->queryLog[] = compact('query', 'bindings', 'time');
 	}
 
 	/**
@@ -606,11 +591,11 @@ class Connection implements ConnectionInterface
 	 * @param  Closure  $callback
 	 * @return void
 	 */
-	public function listen (Closure $callback)
+	public function listen(Closure $callback)
 	{
-		if (isset ($this->events))
+		if (isset($this->events))
 		{
-			$this->events->listen ('illuminate.query', $callback);
+			$this->events->listen('illuminate.query', $callback);
 		}
 	}
 
@@ -620,11 +605,11 @@ class Connection implements ConnectionInterface
 	 * @param  string  $event
 	 * @return void
 	 */
-	protected function fireConnectionEvent ($event)
+	protected function fireConnectionEvent($event)
 	{
-		if (isset ($this->events))
+		if (isset($this->events))
 		{
-			$this->events->fire ('connection.' . $this->getName () . '.' . $event, $this);
+			$this->events->fire('connection.'.$this->getName().'.'.$event, $this);
 		}
 	}
 
@@ -634,9 +619,9 @@ class Connection implements ConnectionInterface
 	 * @param  int    $start
 	 * @return float
 	 */
-	protected function getElapsedTime ($start)
+	protected function getElapsedTime($start)
 	{
-		return round ((microtime (true) - $start) * 1000, 2);
+		return round((microtime(true) - $start) * 1000, 2);
 	}
 
 	/**
@@ -646,11 +631,11 @@ class Connection implements ConnectionInterface
 	 * @param  string  $column
 	 * @return \Doctrine\DBAL\Schema\Column
 	 */
-	public function getDoctrineColumn ($table, $column)
+	public function getDoctrineColumn($table, $column)
 	{
-		$schema = $this->getDoctrineSchemaManager ();
+		$schema = $this->getDoctrineSchemaManager();
 
-		return $schema->listTableDetails ($table)->getColumn ($column);
+		return $schema->listTableDetails($table)->getColumn($column);
 	}
 
 	/**
@@ -658,9 +643,9 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
 	 */
-	public function getDoctrineSchemaManager ()
+	public function getDoctrineSchemaManager()
 	{
-		return $this->getDoctrineDriver ()->getSchemaManager ($this->getDoctrineConnection ());
+		return $this->getDoctrineDriver()->getSchemaManager($this->getDoctrineConnection());
 	}
 
 	/**
@@ -668,13 +653,13 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Doctrine\DBAL\Connection
 	 */
-	public function getDoctrineConnection ()
+	public function getDoctrineConnection()
 	{
-		$driver = $this->getDoctrineDriver ();
+		$driver = $this->getDoctrineDriver();
 
-		$data = array ('pdo' => $this->pdo, 'dbname' => $this->getConfig ('database'));
+		$data = array('pdo' => $this->pdo, 'dbname' => $this->getConfig('database'));
 
-		return new DoctrineConnection ($data, $driver);
+		return new DoctrineConnection($data, $driver);
 	}
 
 	/**
@@ -682,7 +667,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return PDO
 	 */
-	public function getPdo ()
+	public function getPdo()
 	{
 		return $this->pdo;
 	}
@@ -692,12 +677,11 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return PDO
 	 */
-	public function getReadPdo ()
+	public function getReadPdo()
 	{
-		if ($this->transactions >= 1)
-			return $this->getPdo ();
+		if ($this->transactions >= 1) return $this->getPdo();
 
-		return $this->readPdo ? : $this->pdo;
+		return $this->readPdo ?: $this->pdo;
 	}
 
 	/**
@@ -706,7 +690,7 @@ class Connection implements ConnectionInterface
 	 * @param  PDO  $pdo
 	 * @return \Illuminate\Database\Connection
 	 */
-	public function setPdo (PDO $pdo)
+	public function setPdo(PDO $pdo)
 	{
 		$this->pdo = $pdo;
 
@@ -719,7 +703,7 @@ class Connection implements ConnectionInterface
 	 * @param  PDO  $pdo
 	 * @return \Illuminate\Database\Connection
 	 */
-	public function setReadPdo (PDO $pdo)
+	public function setReadPdo(PDO $pdo)
 	{
 		$this->readPdo = $pdo;
 
@@ -731,9 +715,9 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return string|null
 	 */
-	public function getName ()
+	public function getName()
 	{
-		return $this->getConfig ('name');
+		return $this->getConfig('name');
 	}
 
 	/**
@@ -742,9 +726,9 @@ class Connection implements ConnectionInterface
 	 * @param  string  $option
 	 * @return mixed
 	 */
-	public function getConfig ($option)
+	public function getConfig($option)
 	{
-		return array_get ($this->config, $option);
+		return array_get($this->config, $option);
 	}
 
 	/**
@@ -752,9 +736,9 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return string
 	 */
-	public function getDriverName ()
+	public function getDriverName()
 	{
-		return $this->pdo->getAttribute (\PDO::ATTR_DRIVER_NAME);
+		return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 	}
 
 	/**
@@ -762,7 +746,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Query\Grammars\Grammar
 	 */
-	public function getQueryGrammar ()
+	public function getQueryGrammar()
 	{
 		return $this->queryGrammar;
 	}
@@ -773,7 +757,7 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Database\Query\Grammars\Grammar
 	 * @return void
 	 */
-	public function setQueryGrammar (Query\Grammars\Grammar $grammar)
+	public function setQueryGrammar(Query\Grammars\Grammar $grammar)
 	{
 		$this->queryGrammar = $grammar;
 	}
@@ -783,7 +767,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Query\Grammars\Grammar
 	 */
-	public function getSchemaGrammar ()
+	public function getSchemaGrammar()
 	{
 		return $this->schemaGrammar;
 	}
@@ -794,7 +778,7 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Database\Schema\Grammars\Grammar
 	 * @return void
 	 */
-	public function setSchemaGrammar (Schema\Grammars\Grammar $grammar)
+	public function setSchemaGrammar(Schema\Grammars\Grammar $grammar)
 	{
 		$this->schemaGrammar = $grammar;
 	}
@@ -804,7 +788,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Database\Query\Processors\Processor
 	 */
-	public function getPostProcessor ()
+	public function getPostProcessor()
 	{
 		return $this->postProcessor;
 	}
@@ -815,7 +799,7 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Database\Query\Processors\Processor
 	 * @return void
 	 */
-	public function setPostProcessor (Processor $processor)
+	public function setPostProcessor(Processor $processor)
 	{
 		$this->postProcessor = $processor;
 	}
@@ -825,7 +809,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Events\Dispatcher
 	 */
-	public function getEventDispatcher ()
+	public function getEventDispatcher()
 	{
 		return $this->events;
 	}
@@ -836,7 +820,7 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Events\Dispatcher
 	 * @return void
 	 */
-	public function setEventDispatcher (\Illuminate\Events\Dispatcher $events)
+	public function setEventDispatcher(\Illuminate\Events\Dispatcher $events)
 	{
 		$this->events = $events;
 	}
@@ -846,11 +830,11 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Pagination\Environment
 	 */
-	public function getPaginator ()
+	public function getPaginator()
 	{
 		if ($this->paginator instanceof Closure)
 		{
-			$this->paginator = call_user_func ($this->paginator);
+			$this->paginator = call_user_func($this->paginator);
 		}
 
 		return $this->paginator;
@@ -862,7 +846,7 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Pagination\Environment|\Closure  $paginator
 	 * @return void
 	 */
-	public function setPaginator ($paginator)
+	public function setPaginator($paginator)
 	{
 		$this->paginator = $paginator;
 	}
@@ -872,11 +856,11 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return \Illuminate\Cache\CacheManager
 	 */
-	public function getCacheManager ()
+	public function getCacheManager()
 	{
 		if ($this->cache instanceof Closure)
 		{
-			$this->cache = call_user_func ($this->cache);
+			$this->cache = call_user_func($this->cache);
 		}
 
 		return $this->cache;
@@ -888,7 +872,7 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Cache\CacheManager|\Closure  $cache
 	 * @return void
 	 */
-	public function setCacheManager ($cache)
+	public function setCacheManager($cache)
 	{
 		$this->cache = $cache;
 	}
@@ -898,7 +882,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return bool
 	 */
-	public function pretending ()
+	public function pretending()
 	{
 		return $this->pretending === true;
 	}
@@ -908,7 +892,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return int
 	 */
-	public function getFetchMode ()
+	public function getFetchMode()
 	{
 		return $this->fetchMode;
 	}
@@ -919,7 +903,7 @@ class Connection implements ConnectionInterface
 	 * @param  int  $fetchMode
 	 * @return int
 	 */
-	public function setFetchMode ($fetchMode)
+	public function setFetchMode($fetchMode)
 	{
 		$this->fetchMode = $fetchMode;
 	}
@@ -929,7 +913,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return array
 	 */
-	public function getQueryLog ()
+	public function getQueryLog()
 	{
 		return $this->queryLog;
 	}
@@ -939,9 +923,9 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function flushQueryLog ()
+	public function flushQueryLog()
 	{
-		$this->queryLog = array ();
+		$this->queryLog = array();
 	}
 
 	/**
@@ -949,7 +933,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function enableQueryLog ()
+	public function enableQueryLog()
 	{
 		$this->loggingQueries = true;
 	}
@@ -959,7 +943,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return void
 	 */
-	public function disableQueryLog ()
+	public function disableQueryLog()
 	{
 		$this->loggingQueries = false;
 	}
@@ -969,7 +953,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return bool
 	 */
-	public function logging ()
+	public function logging()
 	{
 		return $this->loggingQueries;
 	}
@@ -979,7 +963,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return string
 	 */
-	public function getDatabaseName ()
+	public function getDatabaseName()
 	{
 		return $this->database;
 	}
@@ -990,7 +974,7 @@ class Connection implements ConnectionInterface
 	 * @param  string  $database
 	 * @return string
 	 */
-	public function setDatabaseName ($database)
+	public function setDatabaseName($database)
 	{
 		$this->database = $database;
 	}
@@ -1000,7 +984,7 @@ class Connection implements ConnectionInterface
 	 *
 	 * @return string
 	 */
-	public function getTablePrefix ()
+	public function getTablePrefix()
 	{
 		return $this->tablePrefix;
 	}
@@ -1011,11 +995,11 @@ class Connection implements ConnectionInterface
 	 * @param  string  $prefix
 	 * @return void
 	 */
-	public function setTablePrefix ($prefix)
+	public function setTablePrefix($prefix)
 	{
 		$this->tablePrefix = $prefix;
 
-		$this->getQueryGrammar ()->setTablePrefix ($prefix);
+		$this->getQueryGrammar()->setTablePrefix($prefix);
 	}
 
 	/**
@@ -1024,9 +1008,9 @@ class Connection implements ConnectionInterface
 	 * @param  \Illuminate\Database\Grammar  $grammar
 	 * @return \Illuminate\Database\Grammar
 	 */
-	public function withTablePrefix (Grammar $grammar)
+	public function withTablePrefix(Grammar $grammar)
 	{
-		$grammar->setTablePrefix ($this->tablePrefix);
+		$grammar->setTablePrefix($this->tablePrefix);
 
 		return $grammar;
 	}

@@ -19,100 +19,95 @@ use Predis\Connection\SingleConnectionInterface;
  */
 class CommunicationExceptionTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testExceptionMessage()
+    {
+        $message = 'Connection error message.';
+        $connection = $this->getMockedConnectionBase();
+        $exception = $this->getException($connection, $message);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testExceptionMessage ()
-	{
-		$message = 'Connection error message.';
-		$connection = $this->getMockedConnectionBase ();
-		$exception = $this->getException ($connection, $message);
+        $this->setExpectedException('Predis\CommunicationException', $message);
 
-		$this->setExpectedException ('Predis\CommunicationException', $message);
+        throw $exception;
+    }
 
-		throw $exception;
-	}
+    /**
+     * @group disconnected
+     */
+    public function testExceptionConnection()
+    {
+        $connection = $this->getMockedConnectionBase();
+        $exception = $this->getException($connection, 'ERROR MESSAGE');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testExceptionConnection ()
-	{
-		$connection = $this->getMockedConnectionBase ();
-		$exception = $this->getException ($connection, 'ERROR MESSAGE');
+        $this->assertSame($connection, $exception->getConnection());
+    }
 
-		$this->assertSame ($connection, $exception->getConnection ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testShouldResetConnection()
+    {
+        $connection = $this->getMockedConnectionBase();
+        $exception = $this->getException($connection, 'ERROR MESSAGE');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testShouldResetConnection ()
-	{
-		$connection = $this->getMockedConnectionBase ();
-		$exception = $this->getException ($connection, 'ERROR MESSAGE');
+        $this->assertTrue($exception->shouldResetConnection());
+    }
 
-		$this->assertTrue ($exception->shouldResetConnection ());
-	}
+    /**
+     * @group disconnected
+     * @expectedException Predis\CommunicationException
+     * @expectedExceptionMessage Communication error
+     */
+    public function testCommunicationExceptionHandling()
+    {
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->once())->method('isConnected')->will($this->returnValue(true));
+        $connection->expects($this->once())->method('disconnect');
 
-	/**
-	 * @group disconnected
-	 * @expectedException Predis\CommunicationException
-	 * @expectedExceptionMessage Communication error
-	 */
-	public function testCommunicationExceptionHandling ()
-	{
-		$connection = $this->getMock ('Predis\Connection\SingleConnectionInterface');
-		$connection->expects ($this->once ())->method ('isConnected')->will ($this->returnValue (true));
-		$connection->expects ($this->once ())->method ('disconnect');
+        $exception = $this->getException($connection, 'Communication error');
 
-		$exception = $this->getException ($connection, 'Communication error');
+        CommunicationException::handle($exception);
+    }
 
-		CommunicationException::handle ($exception);
-	}
+    // ******************************************************************** //
+    // ---- HELPER METHODS ------------------------------------------------ //
+    // ******************************************************************** //
 
-	// ******************************************************************** //
-	// ---- HELPER METHODS ------------------------------------------------ //
-	// ******************************************************************** //
+    /**
+     * Returns a mocked connection instance.
+     *
+     * @param  mixed                     $parameters Connection parameters.
+     * @return SingleConnectionInterface
+     */
+    protected function getMockedConnectionBase($parameters = null)
+    {
+        $builder = $this->getMockBuilder('Predis\Connection\AbstractConnection');
 
-	/**
-	 * Returns a mocked connection instance.
-	 *
-	 * @param  mixed                     $parameters Connection parameters.
-	 * @return SingleConnectionInterface
-	 */
-	protected function getMockedConnectionBase ($parameters = null)
-	{
-		$builder = $this->getMockBuilder ('Predis\Connection\AbstractConnection');
+        if ($parameters === null) {
+            $builder->disableOriginalConstructor();
+        } elseif (!$parameters instanceof ConnectionParametersInterface) {
+            $parameters = new ConnectionParameters($parameters);
+        }
 
-		if ($parameters === null)
-		{
-			$builder->disableOriginalConstructor ();
-		}
-		elseif (!$parameters instanceof ConnectionParametersInterface)
-		{
-			$parameters = new ConnectionParameters ($parameters);
-		}
+        return $builder->getMockForAbstractClass(array($parameters));
+    }
 
-		return $builder->getMockForAbstractClass (array ($parameters));
-	}
+    /**
+     * Returns a connection exception instance.
+     *
+     * @param  Connection\SingleConnectionInterface $connection Connection instance.
+     * @param  string                               $message    Exception message.
+     * @param  int                                  $code       Exception code.
+     * @param  \Exception                           $inner      Inner exception.
+     * @return \Exception
+     */
+    protected function getException(SingleConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
+    {
+        $arguments = array($connection, $message, $code, $inner);
+        $mock = $this->getMockForAbstractClass('Predis\CommunicationException', $arguments);
 
-	/**
-	 * Returns a connection exception instance.
-	 *
-	 * @param  Connection\SingleConnectionInterface $connection Connection instance.
-	 * @param  string                               $message    Exception message.
-	 * @param  int                                  $code       Exception code.
-	 * @param  \Exception                           $inner      Inner exception.
-	 * @return \Exception
-	 */
-	protected function getException (SingleConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
-	{
-		$arguments = array ($connection, $message, $code, $inner);
-		$mock = $this->getMockForAbstractClass ('Predis\CommunicationException', $arguments);
-
-		return $mock;
-	}
-
+        return $mock;
+    }
 }

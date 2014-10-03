@@ -18,58 +18,55 @@ namespace Predis\Command;
  */
 class ServerMonitorTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerMonitor';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerMonitor';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'MONITOR';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'MONITOR';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsTrueAndReadsEventsFromTheConnection()
+    {
+        $connection = $this->getClient()->getConnection();
+        $command = $this->getCommand();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsTrueAndReadsEventsFromTheConnection ()
-	{
-		$connection = $this->getClient ()->getConnection ();
-		$command = $this->getCommand ();
+        $this->assertTrue($connection->executeCommand($command));
 
-		$this->assertTrue ($connection->executeCommand ($command));
-
-		// NOTE: Starting with 2.6 Redis does not return the "MONITOR" message after
-		// +OK to the client that issued the MONITOR command.
-		if (version_compare ($this->getProfile ()->getVersion (), '2.4', '<='))
-		{
-			$this->assertRegExp ('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read ());
-		}
-	}
-
+        // NOTE: Starting with 2.6 Redis does not return the "MONITOR" message after
+        // +OK to the client that issued the MONITOR command.
+        if (version_compare($this->getProfile()->getVersion(), '2.4', '<=')) {
+            $this->assertRegExp('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read());
+        }
+    }
 }

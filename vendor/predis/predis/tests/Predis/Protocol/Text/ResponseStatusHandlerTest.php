@@ -19,50 +19,48 @@ use Predis\ResponseQueued;
  */
 class ResponseStatusHandlerTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testOk()
+    {
+        $handler = new ResponseStatusHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testOk ()
-	{
-		$handler = new ResponseStatusHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $this->assertTrue($handler->handle($connection, 'OK'));
+    }
 
-		$this->assertTrue ($handler->handle ($connection, 'OK'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testQueued()
+    {
+        $handler = new ResponseStatusHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testQueued ()
-	{
-		$handler = new ResponseStatusHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $this->assertInstanceOf('Predis\ResponseQueued', $handler->handle($connection, 'QUEUED'));
+    }
 
-		$this->assertInstanceOf ('Predis\ResponseQueued', $handler->handle ($connection, 'QUEUED'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPlainString()
+    {
+        $handler = new ResponseStatusHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPlainString ()
-	{
-		$handler = new ResponseStatusHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
-
-		$this->assertSame ('Background saving started', $handler->handle ($connection, 'Background saving started'));
-	}
-
+        $this->assertSame('Background saving started', $handler->handle($connection, 'Background saving started'));
+    }
 }

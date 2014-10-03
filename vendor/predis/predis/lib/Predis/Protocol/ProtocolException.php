@@ -21,5 +21,4 @@ use Predis\CommunicationException;
  */
 class ProtocolException extends CommunicationException
 {
-	
 }

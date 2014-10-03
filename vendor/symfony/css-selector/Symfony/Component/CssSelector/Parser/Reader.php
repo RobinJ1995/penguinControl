@@ -21,108 +21,105 @@ namespace Symfony\Component\CssSelector\Parser;
  */
 class Reader
 {
+    /**
+     * @var string
+     */
+    private $source;
 
-	/**
-	 * @var string
-	 */
-	private $source;
+    /**
+     * @var int
+     */
+    private $length;
 
-	/**
-	 * @var int
-	 */
-	private $length;
+    /**
+     * @var int
+     */
+    private $position = 0;
 
-	/**
-	 * @var int
-	 */
-	private $position = 0;
+    /**
+     * @param string $source
+     */
+    public function __construct($source)
+    {
+        $this->source = $source;
+        $this->length = strlen($source);
+    }
 
-	/**
-	 * @param string $source
-	 */
-	public function __construct ($source)
-	{
-		$this->source = $source;
-		$this->length = strlen ($source);
-	}
+    /**
+     * @return bool
+     */
+    public function isEOF()
+    {
+        return $this->position >= $this->length;
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function isEOF ()
-	{
-		return $this->position >= $this->length;
-	}
+    /**
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getPosition ()
-	{
-		return $this->position;
-	}
+    /**
+     * @return int
+     */
+    public function getRemainingLength()
+    {
+        return $this->length - $this->position;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getRemainingLength ()
-	{
-		return $this->length - $this->position;
-	}
+    /**
+     * @param int $length
+     * @param int $offset
+     *
+     * @return string
+     */
+    public function getSubstring($length, $offset = 0)
+    {
+        return substr($this->source, $this->position + $offset, $length);
+    }
 
-	/**
-	 * @param int $length
-	 * @param int $offset
-	 *
-	 * @return string
-	 */
-	public function getSubstring ($length, $offset = 0)
-	{
-		return substr ($this->source, $this->position + $offset, $length);
-	}
+    /**
+     * @param string $string
+     *
+     * @return int
+     */
+    public function getOffset($string)
+    {
+        $position = strpos($this->source, $string, $this->position);
 
-	/**
-	 * @param string $string
-	 *
-	 * @return int
-	 */
-	public function getOffset ($string)
-	{
-		$position = strpos ($this->source, $string, $this->position);
+        return false === $position ? false : $position - $this->position;
+    }
 
-		return false === $position ? false : $position - $this->position;
-	}
+    /**
+     * @param string $pattern
+     *
+     * @return bool
+     */
+    public function findPattern($pattern)
+    {
+        $source = substr($this->source, $this->position);
 
-	/**
-	 * @param string $pattern
-	 *
-	 * @return bool
-	 */
-	public function findPattern ($pattern)
-	{
-		$source = substr ($this->source, $this->position);
+        if (preg_match($pattern, $source, $matches)) {
+            return $matches;
+        }
 
-		if (preg_match ($pattern, $source, $matches))
-		{
-			return $matches;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * @param int $length
+     */
+    public function moveForward($length)
+    {
+        $this->position += $length;
+    }
 
-	/**
-	 * @param int $length
-	 */
-	public function moveForward ($length)
-	{
-		$this->position += $length;
-	}
-
-	/**
-	 */
-	public function moveToEnd ()
-	{
-		$this->position = $this->length;
-	}
-
+    /**
+     */
+    public function moveToEnd()
+    {
+        $this->position = $this->length;
+    }
 }

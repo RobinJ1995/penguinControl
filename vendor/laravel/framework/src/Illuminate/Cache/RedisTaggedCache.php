@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class RedisTaggedCache extends TaggedCache
-{
+class RedisTaggedCache extends TaggedCache {
 
 	/**
 	 * Store an item in the cache indefinitely.
@@ -12,11 +9,11 @@ class RedisTaggedCache extends TaggedCache
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		$this->pushForeverKeys ($namespace = $this->tags->getNamespace (), $key);
+		$this->pushForeverKeys($namespace = $this->tags->getNamespace(), $key);
 
-		$this->store->forever ($this->getPrefix () . sha1 ($namespace) . ':' . $key, $value);
+		$this->store->forever($this->getPrefix().sha1($namespace).':'.$key, $value);
 	}
 
 	/**
@@ -24,11 +21,11 @@ class RedisTaggedCache extends TaggedCache
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->deleteForeverKeys ();
+		$this->deleteForeverKeys();
 
-		parent::flush ();
+		parent::flush();
 	}
 
 	/**
@@ -38,13 +35,13 @@ class RedisTaggedCache extends TaggedCache
 	 * @param  string  $key
 	 * @return void
 	 */
-	protected function pushForeverKeys ($namespace, $key)
+	protected function pushForeverKeys($namespace, $key)
 	{
-		$fullKey = $this->getPrefix () . sha1 ($namespace) . ':' . $key;
+		$fullKey = $this->getPrefix().sha1($namespace).':'.$key;
 
-		foreach (explode ('|', $namespace) as $segment)
+		foreach (explode('|', $namespace) as $segment)
 		{
-			$this->store->connection ()->lpush ($this->foreverKey ($segment), $fullKey);
+			$this->store->connection()->lpush($this->foreverKey($segment), $fullKey);
 		}
 	}
 
@@ -53,13 +50,13 @@ class RedisTaggedCache extends TaggedCache
 	 *
 	 * @return void
 	 */
-	protected function deleteForeverKeys ()
+	protected function deleteForeverKeys()
 	{
-		foreach (explode ('|', $this->tags->getNamespace ()) as $segment)
+		foreach (explode('|', $this->tags->getNamespace()) as $segment)
 		{
-			$this->deleteForeverValues ($segment = $this->foreverKey ($segment));
+			$this->deleteForeverValues($segment = $this->foreverKey($segment));
 
-			$this->store->connection ()->del ($segment);
+			$this->store->connection()->del($segment);
 		}
 	}
 
@@ -69,25 +66,25 @@ class RedisTaggedCache extends TaggedCache
 	 * @param  string  $foreverKey
 	 * @return void
 	 */
-	protected function deleteForeverValues ($foreverKey)
+	protected function deleteForeverValues($foreverKey)
 	{
-		$forever = array_unique ($this->store->connection ()->lrange ($foreverKey, 0, -1));
+		$forever = array_unique($this->store->connection()->lrange($foreverKey, 0, -1));
 
-		if (count ($forever) > 0)
+		if (count($forever) > 0)
 		{
-			call_user_func_array (array ($this->store->connection (), 'del'), $forever);
+			call_user_func_array(array($this->store->connection(), 'del'), $forever);
 		}
 	}
 
 	/**
-	 * Get the forever reference key for hte segment.
+	 * Get the forever reference key for the segment.
 	 *
 	 * @param  string  $segment
 	 * @return string
 	 */
-	protected function foreverKey ($segment)
+	protected function foreverKey($segment)
 	{
-		return $this->getPrefix () . $segment . ':forever';
+		return $this->getPrefix().$segment.':forever';
 	}
 
 }

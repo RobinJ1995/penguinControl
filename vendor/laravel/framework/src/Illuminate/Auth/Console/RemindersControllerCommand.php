@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Auth\Console;
+<?php namespace Illuminate\Auth\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class RemindersControllerCommand extends Command
-{
+class RemindersControllerCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -35,9 +32,9 @@ class RemindersControllerCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->files = $files;
 	}
@@ -47,21 +44,21 @@ class RemindersControllerCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$destination = $this->laravel['path'] . '/controllers/RemindersController.php';
+		$destination = $this->laravel['path'].'/controllers/RemindersController.php';
 
-		if (!$this->files->exists ($destination))
+		if ( ! $this->files->exists($destination))
 		{
-			$this->files->copy (__DIR__ . '/stubs/controller.stub', $destination);
+			$this->files->copy(__DIR__.'/stubs/controller.stub', $destination);
 
-			$this->info ('Password reminders controller created successfully!');
+			$this->info('Password reminders controller created successfully!');
 
-			$this->comment ("Route: Route::controller('password', 'RemindersController');");
+			$this->comment("Route: Route::controller('password', 'RemindersController');");
 		}
 		else
 		{
-			$this->error ('Password reminders controller already exists!');
+			$this->error('Password reminders controller already exists!');
 		}
 	}
 

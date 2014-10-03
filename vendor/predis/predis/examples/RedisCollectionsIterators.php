@@ -25,69 +25,65 @@ use Predis\Collection\Iterator;
 //
 // See http://redis.io/commands/scan for more details.
 //
+
 // Create a client using `2.8` as a server profile (needs Redis 2.8!)
-$client = new Predis\Client ($single_server, array ('profile' => '2.8'));
+$client = new Predis\Client($single_server, array('profile' => '2.8'));
 
 // Prepare some keys for our example
-$client->del ('predis:set', 'predis:zset', 'predis:hash');
-for ($i = 0; $i < 5; $i++)
-{
-	$client->sadd ('predis:set', "member:$i");
-	$client->zadd ('predis:zset', -$i, "member:$i");
-	$client->hset ('predis:hash', "field:$i", "value:$i");
+$client->del('predis:set', 'predis:zset', 'predis:hash');
+for ($i = 0; $i < 5; $i++) {
+    $client->sadd('predis:set', "member:$i");
+    $client->zadd('predis:zset', -$i, "member:$i");
+    $client->hset('predis:hash', "field:$i", "value:$i");
 }
 
 // === Keyspace iterator based on SCAN ===
 echo 'Scan the keyspace matching only our prefixed keys:', PHP_EOL;
-foreach (new Iterator\Keyspace ($client, 'predis:*') as $key)
-{
-	echo " - $key", PHP_EOL;
+foreach (new Iterator\Keyspace($client, 'predis:*') as $key) {
+    echo " - $key", PHP_EOL;
 }
 
 /* OUTPUT
-  Scan the keyspace matching only our prefixed keys:
-  - predis:zset
-  - predis:set
-  - predis:hash
- */
+Scan the keyspace matching only our prefixed keys:
+ - predis:zset
+ - predis:set
+ - predis:hash
+*/
 
 // === Set iterator based on SSCAN ===
 echo 'Scan members of `predis:set`:', PHP_EOL;
-foreach (new Iterator\SetKey ($client, 'predis:set') as $member)
-{
-	echo " - $member", PHP_EOL;
+foreach (new Iterator\SetKey($client, 'predis:set') as $member) {
+    echo " - $member", PHP_EOL;
 }
 
 /* OUTPUT
-  Scan members of `predis:set`:
-  - member:1
-  - member:4
-  - member:0
-  - member:3
-  - member:2
- */
+Scan members of `predis:set`:
+ - member:1
+ - member:4
+ - member:0
+ - member:3
+ - member:2
+*/
 
 // === Sorted set iterator based on ZSCAN ===
 echo 'Scan members and ranks of `predis:zset`:', PHP_EOL;
-foreach (new Iterator\SortedSetKey ($client, 'predis:zset') as $member => $rank)
-{
-	echo " - $member [rank: $rank]", PHP_EOL;
+foreach (new Iterator\SortedSetKey($client, 'predis:zset') as $member => $rank) {
+    echo " - $member [rank: $rank]", PHP_EOL;
 }
 
 /* OUTPUT
-  Scan members and ranks of `predis:zset`:
-  - member:4 [rank: -4]
-  - member:3 [rank: -3]
-  - member:2 [rank: -2]
-  - member:1 [rank: -1]
-  - member:0 [rank: 0]
- */
+Scan members and ranks of `predis:zset`:
+ - member:4 [rank: -4]
+ - member:3 [rank: -3]
+ - member:2 [rank: -2]
+ - member:1 [rank: -1]
+ - member:0 [rank: 0]
+*/
 
 // === Hash iterator based on HSCAN ===
 echo 'Scan fields and values of `predis:hash`:', PHP_EOL;
-foreach (new Iterator\HashKey ($client, 'predis:hash') as $field => $value)
-{
-	echo " - $field => $value", PHP_EOL;
+foreach (new Iterator\HashKey($client, 'predis:hash') as $field => $value) {
+    echo " - $field => $value", PHP_EOL;
 }
 
 /* OUTPUT

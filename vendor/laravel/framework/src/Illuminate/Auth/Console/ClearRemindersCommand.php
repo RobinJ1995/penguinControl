@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Auth\Console;
+<?php namespace Illuminate\Auth\Console;
 
 use Illuminate\Console\Command;
 
-class ClearRemindersCommand extends Command
-{
+class ClearRemindersCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -26,11 +23,11 @@ class ClearRemindersCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->laravel['auth.reminder.repository']->deleteExpired ();
+		$this->laravel['auth.reminder.repository']->deleteExpired();
 
-		$this->info ('Expired reminders cleared!');
+		$this->info('Expired reminders cleared!');
 	}
 
 }

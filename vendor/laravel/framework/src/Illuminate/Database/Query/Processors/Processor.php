@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Database\Query\Processors;
+<?php namespace Illuminate\Database\Query\Processors;
 
 use Illuminate\Database\Query\Builder;
 
-class Processor
-{
+class Processor {
 
 	/**
 	 * Process the results of a "select" query.
@@ -14,7 +11,7 @@ class Processor
 	 * @param  array  $results
 	 * @return array
 	 */
-	public function processSelect (Builder $query, $results)
+	public function processSelect(Builder $query, $results)
 	{
 		return $results;
 	}
@@ -28,13 +25,13 @@ class Processor
 	 * @param  string  $sequence
 	 * @return int
 	 */
-	public function processInsertGetId (Builder $query, $sql, $values, $sequence = null)
+	public function processInsertGetId(Builder $query, $sql, $values, $sequence = null)
 	{
-		$query->getConnection ()->insert ($sql, $values);
+		$query->getConnection()->insert($sql, $values);
 
-		$id = $query->getConnection ()->getPdo ()->lastInsertId ($sequence);
+		$id = $query->getConnection()->getPdo()->lastInsertId($sequence);
 
-		return is_numeric ($id) ? (int) $id : $id;
+		return is_numeric($id) ? (int) $id : $id;
 	}
 
 	/**
@@ -43,7 +40,7 @@ class Processor
 	 * @param  array  $results
 	 * @return array
 	 */
-	public function processColumnListing ($results)
+	public function processColumnListing($results)
 	{
 		return $results;
 	}

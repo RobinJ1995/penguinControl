@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Database\Migrations;
+<?php namespace Illuminate\Database\Migrations;
 
 use Closure;
 use Illuminate\Filesystem\Filesystem;
 
-class MigrationCreator
-{
+class MigrationCreator {
 
 	/**
 	 * The filesystem instance.
@@ -20,7 +17,7 @@ class MigrationCreator
 	 *
 	 * @var array
 	 */
-	protected $postCreate = array ();
+	protected $postCreate = array();
 
 	/**
 	 * Create a new migration creator instance.
@@ -28,7 +25,7 @@ class MigrationCreator
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
 		$this->files = $files;
 	}
@@ -42,18 +39,18 @@ class MigrationCreator
 	 * @param  bool    $create
 	 * @return string
 	 */
-	public function create ($name, $path, $table = null, $create = false)
+	public function create($name, $path, $table = null, $create = false)
 	{
-		$path = $this->getPath ($name, $path);
+		$path = $this->getPath($name, $path);
 
 		// First we will get the stub file for the migration, which serves as a type
 		// of template for the migration. Once we have those we will populate the
 		// various place-holders, save the file, and run the post create event.
-		$stub = $this->getStub ($table, $create);
+		$stub = $this->getStub($table, $create);
 
-		$this->files->put ($path, $this->populateStub ($name, $stub, $table));
+		$this->files->put($path, $this->populateStub($name, $stub, $table));
 
-		$this->firePostCreateHooks ();
+		$this->firePostCreateHooks();
 
 		return $path;
 	}
@@ -62,13 +59,13 @@ class MigrationCreator
 	 * Get the migration stub file.
 	 *
 	 * @param  string  $table
-	 * @return void
+	 * @return string
 	 */
-	protected function getStub ($table, $create)
+	protected function getStub($table, $create)
 	{
-		if (is_null ($table))
+		if (is_null($table))
 		{
-			return $this->files->get ($this->getStubPath () . '/blank.stub');
+			return $this->files->get($this->getStubPath().'/blank.stub');
 		}
 
 		// We also have stubs for creating new tables and modifying existing tables
@@ -78,7 +75,7 @@ class MigrationCreator
 		{
 			$stub = $create ? 'create.stub' : 'update.stub';
 
-			return $this->files->get ($this->getStubPath () . "/{$stub}");
+			return $this->files->get($this->getStubPath()."/{$stub}");
 		}
 	}
 
@@ -90,16 +87,16 @@ class MigrationCreator
 	 * @param  string  $table
 	 * @return string
 	 */
-	protected function populateStub ($name, $stub, $table)
+	protected function populateStub($name, $stub, $table)
 	{
-		$stub = str_replace ('{{class}}', studly_case ($name), $stub);
+		$stub = str_replace('{{class}}', studly_case($name), $stub);
 
 		// Here we will replace the table place-holders with the table specified by
 		// the developer, which is useful for quickly creating a tables creation
 		// or update migration from the console instead of typing it manually.
-		if (!is_null ($table))
+		if ( ! is_null($table))
 		{
-			$stub = str_replace ('{{table}}', $table, $stub);
+			$stub = str_replace('{{table}}', $table, $stub);
 		}
 
 		return $stub;
@@ -110,11 +107,11 @@ class MigrationCreator
 	 *
 	 * @return void
 	 */
-	protected function firePostCreateHooks ()
+	protected function firePostCreateHooks()
 	{
 		foreach ($this->postCreate as $callback)
 		{
-			call_user_func ($callback);
+			call_user_func($callback);
 		}
 	}
 
@@ -124,7 +121,7 @@ class MigrationCreator
 	 * @param  Closure  $callback
 	 * @return void
 	 */
-	public function afterCreate (Closure $callback)
+	public function afterCreate(Closure $callback)
 	{
 		$this->postCreate[] = $callback;
 	}
@@ -136,9 +133,9 @@ class MigrationCreator
 	 * @param  string  $path
 	 * @return string
 	 */
-	protected function getPath ($name, $path)
+	protected function getPath($name, $path)
 	{
-		return $path . '/' . $this->getDatePrefix () . '_' . $name . '.php';
+		return $path.'/'.$this->getDatePrefix().'_'.$name.'.php';
 	}
 
 	/**
@@ -146,9 +143,9 @@ class MigrationCreator
 	 *
 	 * @return string
 	 */
-	protected function getDatePrefix ()
+	protected function getDatePrefix()
 	{
-		return date ('Y_m_d_His');
+		return date('Y_m_d_His');
 	}
 
 	/**
@@ -156,9 +153,9 @@ class MigrationCreator
 	 *
 	 * @return string
 	 */
-	public function getStubPath ()
+	public function getStubPath()
 	{
-		return __DIR__ . '/stubs';
+		return __DIR__.'/stubs';
 	}
 
 	/**
@@ -166,7 +163,7 @@ class MigrationCreator
 	 *
 	 * @return \Illuminate\Filesystem\Filesystem
 	 */
-	public function getFilesystem ()
+	public function getFilesystem()
 	{
 		return $this->files;
 	}

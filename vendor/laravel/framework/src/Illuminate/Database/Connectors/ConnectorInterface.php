@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Database\Connectors;
 
-namespace Illuminate\Database\Connectors;
-
-interface ConnectorInterface
-{
+interface ConnectorInterface {
 
 	/**
 	 * Establish a database connection.
@@ -11,5 +8,6 @@ interface ConnectorInterface
 	 * @param  array  $config
 	 * @return \PDO
 	 */
-	public function connect (array $config);
+	public function connect(array $config);
+
 }

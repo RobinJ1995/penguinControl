@@ -23,28 +23,25 @@ use Predis\Protocol\CommandSerializerInterface;
  */
 class TextCommandSerializer implements CommandSerializerInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize(CommandInterface $command)
+    {
+        $commandId = $command->getId();
+        $arguments = $command->getArguments();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function serialize (CommandInterface $command)
-	{
-		$commandId = $command->getId ();
-		$arguments = $command->getArguments ();
+        $cmdlen = strlen($commandId);
+        $reqlen = count($arguments) + 1;
 
-		$cmdlen = strlen ($commandId);
-		$reqlen = count ($arguments) + 1;
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
 
-		$buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
+        for ($i = 0, $reqlen--; $i < $reqlen; $i++) {
+            $argument = $arguments[$i];
+            $arglen = strlen($argument);
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
+        }
 
-		for ($i = 0, $reqlen--; $i < $reqlen; $i++)
-		{
-			$argument = $arguments[$i];
-			$arglen = strlen ($argument);
-			$buffer .= "\${$arglen}\r\n{$argument}\r\n";
-		}
-
-		return $buffer;
-	}
-
+        return $buffer;
+    }
 }

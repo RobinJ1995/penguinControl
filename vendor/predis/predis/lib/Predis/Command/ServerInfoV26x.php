@@ -17,54 +17,34 @@ namespace Predis\Command;
  */
 class ServerInfoV26x extends ServerInfo
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        $info = array();
+        $current = null;
+        $infoLines = preg_split('/\r?\n/', $data);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		$info = array ();
-		$current = null;
-		$infoLines = preg_split ('/\r?\n/', $data);
+        if (isset($infoLines[0]) && $infoLines[0][0] !== '#') {
+            return parent::parseResponse($data);
+        }
 
-		if (isset ($infoLines[0]) && $infoLines[0][0] !== '#')
-		{
-			return parent::parseResponse ($data);
-		}
+        foreach ($infoLines as $row) {
+            if ($row === '') {
+                continue;
+            }
 
-		foreach ($infoLines as $row)
-		{
-			if ($row === '')
-			{
-				continue;
-			}
+            if (preg_match('/^# (\w+)$/', $row, $matches)) {
+                $info[$matches[1]] = array();
+                $current = &$info[$matches[1]];
+                continue;
+            }
 
-			if (preg_match ('/^# (\w+)$/', $row, $matches))
-			{
-				$info[$matches[1]] = array ();
-				$current = &$info[$matches[1]];
-				continue;
-			}
+            list($k, $v) = $this->parseRow($row);
+            $current[$k] = $v;
+        }
 
-			list($k, $v) = explode (':', $row);
-
-			if (!preg_match ('/^db\d+$/', $k))
-			{
-				if ($k === 'allocation_stats')
-				{
-					$current[$k] = $this->parseAllocationStats ($v);
-					continue;
-				}
-
-				$current[$k] = $v;
-			}
-			else
-			{
-				$current[$k] = $this->parseDatabaseStats ($v);
-			}
-		}
-
-		return $info;
-	}
-
+        return $info;
+    }
 }

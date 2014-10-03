@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Support;
+<?php namespace Illuminate\Support;
 
 use Jeremeamia\SuperClosure\SerializableClosure as SuperClosure;
 
 /**
  * Extends SuperClosure for backwards compatibility.
  */
-class SerializableClosure extends SuperClosure
-{
+class SerializableClosure extends SuperClosure {
 
 	/**
 	 * The code for the closure
@@ -29,9 +26,9 @@ class SerializableClosure extends SuperClosure
 	 *
 	 * @return string
 	 */
-	public function getCode ()
+	public function getCode()
 	{
-		$this->determineCodeAndVariables ();
+		$this->determineCodeAndVariables();
 
 		return $this->code;
 	}
@@ -41,9 +38,9 @@ class SerializableClosure extends SuperClosure
 	 *
 	 * @return array
 	 */
-	public function getVariables ()
+	public function getVariables()
 	{
-		$this->determineCodeAndVariables ();
+		$this->determineCodeAndVariables();
 
 		return $this->variables;
 	}
@@ -51,11 +48,11 @@ class SerializableClosure extends SuperClosure
 	/**
 	 * Uses the serialize method directly to lazily fetch the code and variables if needed
 	 */
-	protected function determineCodeAndVariables ()
+	protected function determineCodeAndVariables()
 	{
 		if (!$this->code)
 		{
-			list($this->code, $this->variables) = unserialize ($this->serialize ());
+			list($this->code, $this->variables) = unserialize($this->serialize());
 		}
 	}
 

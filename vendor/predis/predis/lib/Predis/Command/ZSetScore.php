@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetScore extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZSCORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZSCORE';
+    }
 }

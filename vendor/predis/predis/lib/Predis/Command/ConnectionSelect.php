@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ConnectionSelect extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SELECT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SELECT';
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class KeyPreciseExpire extends KeyExpire
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'PEXPIRE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'PEXPIRE';
+    }
 }

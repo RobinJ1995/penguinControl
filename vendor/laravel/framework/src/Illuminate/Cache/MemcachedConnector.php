@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Memcached;
 
-class MemcachedConnector
-{
+class MemcachedConnector {
 
 	/**
 	 * Create a new Memcached connection.
@@ -15,23 +12,23 @@ class MemcachedConnector
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function connect (array $servers)
+	public function connect(array $servers)
 	{
-		$memcached = $this->getMemcached ();
+		$memcached = $this->getMemcached();
 
 		// For each server in the array, we'll just extract the configuration and add
 		// the server to the Memcached connection. Once we have added all of these
 		// servers we'll verify the connection is successful and return it back.
 		foreach ($servers as $server)
 		{
-			$memcached->addServer (
+			$memcached->addServer(
 				$server['host'], $server['port'], $server['weight']
 			);
 		}
 
-		if ($memcached->getVersion () === false)
+		if ($memcached->getVersion() === false)
 		{
-			throw new \RuntimeException ("Could not establish Memcached connection.");
+			throw new \RuntimeException("Could not establish Memcached connection.");
 		}
 
 		return $memcached;
@@ -42,7 +39,7 @@ class MemcachedConnector
 	 *
 	 * @return \Memcached
 	 */
-	protected function getMemcached ()
+	protected function getMemcached()
 	{
 		return new Memcached;
 	}

@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Finder\Finder;
@@ -8,8 +6,7 @@ use Illuminate\Foundation\AssetPublisher;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class AssetPublishCommand extends Command
-{
+class AssetPublishCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -38,9 +35,9 @@ class AssetPublishCommand extends Command
 	 * @param  \Illuminate\Foundation\AssetPublisher  $assets
 	 * @return void
 	 */
-	public function __construct (AssetPublisher $assets)
+	public function __construct(AssetPublisher $assets)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->assets = $assets;
 	}
@@ -50,11 +47,11 @@ class AssetPublishCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		foreach ($this->getPackages () as $package)
+		foreach ($this->getPackages() as $package)
 		{
-			$this->publishAssets ($package);
+			$this->publishAssets($package);
 		}
 	}
 
@@ -64,18 +61,18 @@ class AssetPublishCommand extends Command
 	 * @param  string  $package
 	 * @return void
 	 */
-	protected function publishAssets ($package)
+	protected function publishAssets($package)
 	{
-		if (!is_null ($path = $this->getPath ()))
+		if ( ! is_null($path = $this->getPath()))
 		{
-			$this->assets->publish ($package, $path);
+			$this->assets->publish($package, $path);
 		}
 		else
 		{
-			$this->assets->publishPackage ($package);
+			$this->assets->publishPackage($package);
 		}
 
-		$this->output->writeln ('<info>Assets published for package:</info> ' . $package);
+		$this->output->writeln('<info>Assets published for package:</info> '.$package);
 	}
 
 	/**
@@ -83,18 +80,18 @@ class AssetPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getPackages ()
+	protected function getPackages()
 	{
-		if (!is_null ($package = $this->input->getArgument ('package')))
+		if ( ! is_null($package = $this->input->getArgument('package')))
 		{
-			return array ($package);
+			return array($package);
 		}
-		elseif (!is_null ($bench = $this->input->getOption ('bench')))
+		elseif ( ! is_null($bench = $this->input->getOption('bench')))
 		{
-			return array ($bench);
+			return array($bench);
 		}
 
-		return $this->findAllAssetPackages ();
+		return $this->findAllAssetPackages();
 	}
 
 	/**
@@ -102,15 +99,15 @@ class AssetPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function findAllAssetPackages ()
+	protected function findAllAssetPackages()
 	{
-		$vendor = $this->laravel['path.base'] . '/vendor';
+		$vendor = $this->laravel['path.base'].'/vendor';
 
-		$packages = array ();
+		$packages = array();
 
-		foreach (Finder::create ()->directories ()->in ($vendor)->name ('public')->depth ('< 3') as $package)
+		foreach (Finder::create()->directories()->in($vendor)->name('public')->depth('< 3') as $package)
 		{
-			$packages[] = $package->getRelativePath ();
+			$packages[] = $package->getRelativePath();
 		}
 
 		return $packages;
@@ -121,26 +118,26 @@ class AssetPublishCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getPath ()
+	protected function getPath()
 	{
-		$path = $this->input->getOption ('path');
+		$path = $this->input->getOption('path');
 
 		// First we will check for an explicitly specified path from the user. If one
 		// exists we will use that as the path to the assets. This allows the free
 		// storage of assets wherever is best for this developer's web projects.
-		if (!is_null ($path))
+		if ( ! is_null($path))
 		{
-			return $this->laravel['path.base'] . '/' . $path;
+			return $this->laravel['path.base'].'/'.$path;
 		}
 
 		// If a "bench" option was specified, we will publish from a workbench as the
 		// source location. This is mainly just a short-cut for having to manually
 		// specify the full workbench path using the --path command line option.
-		$bench = $this->input->getOption ('bench');
+		$bench = $this->input->getOption('bench');
 
-		if (!is_null ($bench))
+		if ( ! is_null($bench))
 		{
-			return $this->laravel['path.base'] . "/workbench/{$bench}/public";
+			return $this->laravel['path.base']."/workbench/{$bench}/public";
 		}
 	}
 
@@ -149,10 +146,10 @@ class AssetPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('package', InputArgument::OPTIONAL, 'The name of package being published.'),
+		return array(
+			array('package', InputArgument::OPTIONAL, 'The name of package being published.'),
 		);
 	}
 
@@ -161,11 +158,12 @@ class AssetPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('bench', null, InputOption::VALUE_OPTIONAL, 'The name of the workbench to publish.', null),
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'The path to the asset files.', null),
+		return array(
+			array('bench', null, InputOption::VALUE_OPTIONAL, 'The name of the workbench to publish.', null),
+
+			array('path', null, InputOption::VALUE_OPTIONAL, 'The path to the asset files.', null),
 		);
 	}
 

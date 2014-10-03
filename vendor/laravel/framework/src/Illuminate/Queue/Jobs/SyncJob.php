@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Jobs;
+<?php namespace Illuminate\Queue\Jobs;
 
 use Closure;
 use Illuminate\Container\Container;
 
-class SyncJob extends Job
-{
+class SyncJob extends Job {
 
 	/**
 	 * The class name of the job.
@@ -30,7 +27,7 @@ class SyncJob extends Job
 	 * @param  string  $data
 	 * @return void
 	 */
-	public function __construct (Container $container, $job, $data = '')
+	public function __construct(Container $container, $job, $data = '')
 	{
 		$this->job = $job;
 		$this->data = $data;
@@ -42,17 +39,17 @@ class SyncJob extends Job
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$data = json_decode ($this->data, true);
+		$data = json_decode($this->data, true);
 
 		if ($this->job instanceof Closure)
 		{
-			call_user_func ($this->job, $this, $data);
+			call_user_func($this->job, $this, $data);
 		}
 		else
 		{
-			$this->resolveAndFire (array ('job' => $this->job, 'data' => $data));
+			$this->resolveAndFire(array('job' => $this->job, 'data' => $data));
 		}
 	}
 
@@ -61,7 +58,7 @@ class SyncJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getRawBody ()
+	public function getRawBody()
 	{
 		//
 	}
@@ -71,9 +68,9 @@ class SyncJob extends Job
 	 *
 	 * @return void
 	 */
-	public function delete ()
+	public function delete()
 	{
-		parent::delete ();
+		parent::delete();
 	}
 
 	/**
@@ -82,7 +79,7 @@ class SyncJob extends Job
 	 * @param  int   $delay
 	 * @return void
 	 */
-	public function release ($delay = 0)
+	public function release($delay = 0)
 	{
 		//
 	}
@@ -92,7 +89,7 @@ class SyncJob extends Job
 	 *
 	 * @return int
 	 */
-	public function attempts ()
+	public function attempts()
 	{
 		return 1;
 	}
@@ -102,7 +99,7 @@ class SyncJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getJobId ()
+	public function getJobId()
 	{
 		return '';
 	}

@@ -17,99 +17,97 @@ namespace Predis\Command;
  */
 class ServerObjectTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerObject';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerObject';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'OBJECT';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'OBJECT';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('REFCOUNT', 'key');
+        $expected = array('REFCOUNT', 'key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('REFCOUNT', 'key');
-		$expected = array ('REFCOUNT', 'key');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame('ziplist', $this->getCommand()->parseResponse('ziplist'));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame ('ziplist', $this->getCommand ()->parseResponse ('ziplist'));
-	}
+    /**
+     * @group connected
+     */
+    public function testObjectRefcount()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testObjectRefcount ()
-	{
-		$redis = $this->getClient ();
+        $redis->set('foo', 'bar');
+        $this->assertInternalType('integer', $redis->object('REFCOUNT', 'foo'));
+    }
 
-		$redis->set ('foo', 'bar');
-		$this->assertInternalType ('integer', $redis->object ('REFCOUNT', 'foo'));
-	}
+    /**
+     * @group connected
+     */
+    public function testObjectIdletime()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testObjectIdletime ()
-	{
-		$redis = $this->getClient ();
+        $redis->set('foo', 'bar');
+        $this->assertInternalType('integer', $redis->object('IDLETIME', 'foo'));
+    }
 
-		$redis->set ('foo', 'bar');
-		$this->assertInternalType ('integer', $redis->object ('IDLETIME', 'foo'));
-	}
+    /**
+     * @group connected
+     */
+    public function testObjectEncoding()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testObjectEncoding ()
-	{
-		$redis = $this->getClient ();
+        $redis->lpush('list:metavars', 'foo', 'bar');
+        $this->assertSame('ziplist', $redis->object('ENCODING', 'list:metavars'));
+    }
 
-		$redis->lpush ('list:metavars', 'foo', 'bar');
-		$this->assertSame ('ziplist', $redis->object ('ENCODING', 'list:metavars'));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsNullOnNonExistingKey()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsNullOnNonExistingKey ()
-	{
-		$redis = $this->getClient ();
+        $this->assertNull($redis->object('REFCOUNT', 'foo'));
+        $this->assertNull($redis->object('IDLETIME', 'foo'));
+        $this->assertNull($redis->object('ENCODING', 'foo'));
+    }
 
-		$this->assertNull ($redis->object ('REFCOUNT', 'foo'));
-		$this->assertNull ($redis->object ('IDLETIME', 'foo'));
-		$this->assertNull ($redis->object ('ENCODING', 'foo'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     */
+    public function testThrowsExceptionOnInvalidSubcommand()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 */
-	public function testThrowsExceptionOnInvalidSubcommand ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->object ('INVALID', 'foo');
-	}
-
+        $redis->object('INVALID', 'foo');
+    }
 }

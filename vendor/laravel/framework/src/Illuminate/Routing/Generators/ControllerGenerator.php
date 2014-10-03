@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Routing\Generators;
+<?php namespace Illuminate\Routing\Generators;
 
 use Illuminate\Filesystem\Filesystem;
 
-class ControllerGenerator
-{
+class ControllerGenerator {
 
 	/**
 	 * The filesystem instance.
@@ -19,14 +16,14 @@ class ControllerGenerator
 	 *
 	 * @var array
 	 */
-	protected $defaults = array (
-	    'index',
-	    'create',
-	    'store',
-	    'show',
-	    'edit',
-	    'update',
-	    'destroy'
+	protected $defaults = array(
+		'index',
+		'create',
+		'store',
+		'show',
+		'edit',
+		'update',
+		'destroy'
 	);
 
 	/**
@@ -35,7 +32,7 @@ class ControllerGenerator
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
 		$this->files = $files;
 	}
@@ -48,11 +45,11 @@ class ControllerGenerator
 	 * @param  array   $options
 	 * @return void
 	 */
-	public function make ($controller, $path, array $options = array ())
+	public function make($controller, $path, array $options = array())
 	{
-		$stub = $this->addMethods ($this->getController ($controller), $options);
+		$stub = $this->addMethods($this->getController($controller), $options);
 
-		$this->writeFile ($stub, $controller, $path);
+		$this->writeFile($stub, $controller, $path);
 
 		return false;
 	}
@@ -65,18 +62,18 @@ class ControllerGenerator
 	 * @param  string  $path
 	 * @return void
 	 */
-	protected function writeFile ($stub, $controller, $path)
+	protected function writeFile($stub, $controller, $path)
 	{
-		if (str_contains ($controller, '\\'))
+		if (str_contains($controller, '\\'))
 		{
-			$this->makeDirectory ($controller, $path);
+			$this->makeDirectory($controller, $path);
 		}
 
-		$controller = str_replace ('\\', DIRECTORY_SEPARATOR, $controller);
+		$controller = str_replace('\\', DIRECTORY_SEPARATOR, $controller);
 
-		if (!$this->files->exists ($fullPath = $path . "/{$controller}.php"))
+		if ( ! $this->files->exists($fullPath = $path."/{$controller}.php"))
 		{
-			return $this->files->put ($fullPath, $stub);
+			return $this->files->put($fullPath, $stub);
 		}
 	}
 
@@ -87,13 +84,13 @@ class ControllerGenerator
 	 * @param  string  $path
 	 * @return void
 	 */
-	protected function makeDirectory ($controller, $path)
+	protected function makeDirectory($controller, $path)
 	{
-		$directory = $this->getDirectory ($controller);
+		$directory = $this->getDirectory($controller);
 
-		if (!$this->files->isDirectory ($full = $path . '/' . $directory))
+		if ( ! $this->files->isDirectory($full = $path.'/'.$directory))
 		{
-			$this->files->makeDirectory ($full, 0777, true);
+			$this->files->makeDirectory($full, 0777, true);
 		}
 	}
 
@@ -103,9 +100,9 @@ class ControllerGenerator
 	 * @param  string  $controller
 	 * @return string
 	 */
-	protected function getDirectory ($controller)
+	protected function getDirectory($controller)
 	{
-		return implode ('/', array_slice (explode ('\\', $controller), 0, -1));
+		return implode('/', array_slice(explode('\\', $controller), 0, -1));
 	}
 
 	/**
@@ -114,18 +111,18 @@ class ControllerGenerator
 	 * @param  string  $controller
 	 * @return string
 	 */
-	protected function getController ($controller)
+	protected function getController($controller)
 	{
-		$stub = $this->files->get (__DIR__ . '/stubs/controller.stub');
+		$stub = $this->files->get(__DIR__.'/stubs/controller.stub');
 
-		// We will explode out the controller name on the naemspace delimiter so we
+		// We will explode out the controller name on the namespace delimiter so we
 		// are able to replace a namespace in this stub file. If no namespace is
 		// provided we'll just clear out the namespace place-holder locations.
-		$segments = explode ('\\', $controller);
+		$segments = explode('\\', $controller);
 
-		$stub = $this->replaceNamespace ($segments, $stub);
+		$stub = $this->replaceNamespace($segments, $stub);
 
-		return str_replace ('{{class}}', last ($segments), $stub);
+		return str_replace('{{class}}', last($segments), $stub);
 	}
 
 	/**
@@ -135,17 +132,17 @@ class ControllerGenerator
 	 * @param  string  $stub
 	 * @return string
 	 */
-	protected function replaceNamespace (array $segments, $stub)
+	protected function replaceNamespace(array $segments, $stub)
 	{
-		if (count ($segments) > 1)
+		if (count($segments) > 1)
 		{
-			$namespace = implode ('\\', array_slice ($segments, 0, -1));
+			$namespace = implode('\\', array_slice($segments, 0, -1));
 
-			return str_replace ('{{namespace}}', ' namespace ' . $namespace . ';', $stub);
+			return str_replace('{{namespace}}', ' namespace '.$namespace.';', $stub);
 		}
 		else
 		{
-			return str_replace ('{{namespace}}', '', $stub);
+			return str_replace('{{namespace}}', '', $stub);
 		}
 	}
 
@@ -156,16 +153,16 @@ class ControllerGenerator
 	 * @param  array   $options
 	 * @return string
 	 */
-	protected function addMethods ($stub, array $options)
+	protected function addMethods($stub, array $options)
 	{
 		// Once we have the applicable methods, we can just spin through those methods
 		// and add each one to our array of method stubs. Then we will implode them
 		// them all with end-of-line characters and return the final joined list.
-		$stubs = $this->getMethodStubs ($options);
+		$stubs = $this->getMethodStubs($options);
 
-		$methods = implode (PHP_EOL . PHP_EOL, $stubs);
+		$methods = implode(PHP_EOL.PHP_EOL, $stubs);
 
-		return str_replace ('{{methods}}', $methods, $stub);
+		return str_replace('{{methods}}', $methods, $stub);
 	}
 
 	/**
@@ -174,16 +171,16 @@ class ControllerGenerator
 	 * @param  array  $options
 	 * @return array
 	 */
-	protected function getMethodStubs ($options)
+	protected function getMethodStubs($options)
 	{
-		$stubs = array ();
+		$stubs = array();
 
 		// Each stub is conveniently kept in its own file so we can just grab the ones
 		// we need from disk to build the controller file. Once we have them all in
 		// an array we will return this list of methods so they can be joined up.
-		foreach ($this->getMethods ($options) as $method)
+		foreach ($this->getMethods($options) as $method)
 		{
-			$stubs[] = $this->files->get (__DIR__ . "/stubs/{$method}.stub");
+			$stubs[] = $this->files->get(__DIR__."/stubs/{$method}.stub");
 		}
 
 		return $stubs;
@@ -195,15 +192,15 @@ class ControllerGenerator
 	 * @param  array  $options
 	 * @return array
 	 */
-	protected function getMethods ($options)
+	protected function getMethods($options)
 	{
-		if (isset ($options['only']) && count ($options['only']) > 0)
+		if (isset($options['only']) && count($options['only']) > 0)
 		{
 			return $options['only'];
 		}
-		elseif (isset ($options['except']) && count ($options['except']) > 0)
+		elseif (isset($options['except']) && count($options['except']) > 0)
 		{
-			return array_diff ($this->defaults, $options['except']);
+			return array_diff($this->defaults, $options['except']);
 		}
 
 		return $this->defaults;

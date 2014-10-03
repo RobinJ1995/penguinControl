@@ -20,45 +20,44 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
  */
 interface OperationInterface
 {
+    /**
+     * Returns domains affected by operation.
+     *
+     * @return array
+     */
+    public function getDomains();
 
-	/**
-	 * Returns domains affected by operation.
-	 *
-	 * @return array
-	 */
-	public function getDomains ();
+    /**
+     * Returns all valid messages after operation.
+     *
+     * @param string $domain
+     *
+     * @return array
+     */
+    public function getMessages($domain);
 
-	/**
-	 * Returns all valid messages after operation.
-	 *
-	 * @param string $domain
-	 *
-	 * @return array
-	 */
-	public function getMessages ($domain);
+    /**
+     * Returns new messages after operation.
+     *
+     * @param string $domain
+     *
+     * @return array
+     */
+    public function getNewMessages($domain);
 
-	/**
-	 * Returns new messages after operation.
-	 *
-	 * @param string $domain
-	 *
-	 * @return array
-	 */
-	public function getNewMessages ($domain);
+    /**
+     * Returns obsolete messages after operation.
+     *
+     * @param string $domain
+     *
+     * @return array
+     */
+    public function getObsoleteMessages($domain);
 
-	/**
-	 * Returns obsolete messages after operation.
-	 *
-	 * @param string $domain
-	 *
-	 * @return array
-	 */
-	public function getObsoleteMessages ($domain);
-
-	/**
-	 * Returns resulting catalogue.
-	 *
-	 * @return MessageCatalogueInterface
-	 */
-	public function getResult ();
+    /**
+     * Returns resulting catalogue.
+     *
+     * @return MessageCatalogueInterface
+     */
+    public function getResult();
 }

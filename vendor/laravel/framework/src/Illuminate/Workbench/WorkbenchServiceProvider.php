@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Workbench;
+<?php namespace Illuminate\Workbench;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Workbench\Console\WorkbenchMakeCommand;
 
-class WorkbenchServiceProvider extends ServiceProvider
-{
+class WorkbenchServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -20,19 +17,19 @@ class WorkbenchServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('package.creator', function($app)
+		$this->app->bindShared('package.creator', function($app)
 		{
-			return new PackageCreator ($app['files']);
+			return new PackageCreator($app['files']);
 		});
 
-		$this->app->bindShared ('command.workbench', function($app)
+		$this->app->bindShared('command.workbench', function($app)
 		{
-			return new WorkbenchMakeCommand ($app['package.creator']);
+			return new WorkbenchMakeCommand($app['package.creator']);
 		});
 
-		$this->commands ('command.workbench');
+		$this->commands('command.workbench');
 	}
 
 	/**
@@ -40,9 +37,9 @@ class WorkbenchServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('package.creator', 'command.workbench');
+		return array('package.creator', 'command.workbench');
 	}
 
 }

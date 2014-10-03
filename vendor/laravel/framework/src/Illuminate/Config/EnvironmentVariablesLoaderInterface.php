@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Config;
 
-namespace Illuminate\Config;
-
-interface EnvironmentVariablesLoaderInterface
-{
+interface EnvironmentVariablesLoaderInterface {
 
 	/**
 	 * Load the environment variables for the given environment.
@@ -11,5 +8,6 @@ interface EnvironmentVariablesLoaderInterface
 	 * @param  string  $environment
 	 * @return array
 	 */
-	public function load ($environment = null);
+	public function load($environment = null);
+
 }

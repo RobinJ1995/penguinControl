@@ -31,6 +31,9 @@ vHosts &bull; Staff
 				@if ($vhost->locked)
 					<img src="/img/icons/locked.png" alt="[Locked]" />
 				@endif
+				@if ($vhost->getUser ()->hasExpired ())
+					<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+				@endif
 				{{ $vhost->servername }}
 			</td>
 			<td>{{ $vhost->serveradmin }}</td>

@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Exception;
+<?php namespace Illuminate\Exception;
 
 use Exception;
 use Whoops\Run;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class WhoopsDisplayer implements ExceptionDisplayerInterface
-{
+class WhoopsDisplayer implements ExceptionDisplayerInterface {
 
 	/**
 	 * The Whoops run instance.
@@ -31,7 +28,7 @@ class WhoopsDisplayer implements ExceptionDisplayerInterface
 	 * @param  bool  $runningInConsole
 	 * @return void
 	 */
-	public function __construct (Run $whoops, $runningInConsole)
+	public function __construct(Run $whoops, $runningInConsole)
 	{
 		$this->whoops = $whoops;
 		$this->runningInConsole = $runningInConsole;
@@ -43,13 +40,13 @@ class WhoopsDisplayer implements ExceptionDisplayerInterface
 	 * @param  \Exception  $exception
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function display (Exception $exception)
+	public function display(Exception $exception)
 	{
-		$status = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode () : 500;
+		$status = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 500;
 
-		$headers = $exception instanceof HttpExceptionInterface ? $exception->getHeaders () : array ();
+		$headers = $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : array();
 
-		return new Response ($this->whoops->handleException ($exception), $status, $headers);
+		return new Response($this->whoops->handleException($exception), $status, $headers);
 	}
 
 }

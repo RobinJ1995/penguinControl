@@ -19,13 +19,8 @@ use Symfony\Component\Config\Util\XmlUtils;
  */
 class CustomXmlFileLoader extends XmlFileLoader
 {
-
-	protected function loadFile ($file)
-	{
-		return XmlUtils::loadFile ($file, function ()
-			{
-				return true;
-			});
-	}
-
+    protected function loadFile($file)
+    {
+        return XmlUtils::loadFile($file, function () { return true; });
+    }
 }

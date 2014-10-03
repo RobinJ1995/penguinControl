@@ -18,9 +18,8 @@ namespace Symfony\Component\HttpKernel\DataCollector;
  */
 interface LateDataCollectorInterface
 {
-
-	/**
-	 * Collects data as late as possible.
-	 */
-	public function lateCollect ();
+    /**
+     * Collects data as late as possible.
+     */
+    public function lateCollect();
 }

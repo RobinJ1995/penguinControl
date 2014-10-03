@@ -20,17 +20,16 @@ require 'SharedConfigurations.php';
 
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\MasterSlaveReplication;
-use Predis\Profile\ServerProfile;
 use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //
+
 // Define a new scripted command that returns all the fields
 // of a variable number of hashes with a single roundtrip.
 
 class HashMultipleGetAll extends ScriptedCommand
 {
-
-	const BODY = <<<EOS
+    const BODY = <<<EOS
 local hashes = {}
 for _, key in pairs(KEYS) do
     table.insert(hashes, key)
@@ -39,51 +38,48 @@ end
 return hashes
 EOS;
 
-	public function getScript ()
-	{
-		return self::BODY;
-	}
-
+    public function getScript()
+    {
+        return self::BODY;
+    }
 }
 
 // ------------------------------------------------------------------------- //
 
-$parameters = array (
+$parameters = array(
     'tcp://127.0.0.1:6379/?alias=master',
     'tcp://127.0.0.1:6380/?alias=slave',
 );
 
-$options = array (
-    'profile' => function ($options, $option)
-{
-    $profile = $options->getDefault ($option);
-    $profile->defineCommand ('hmgetall', 'HashMultipleGetAll');
+$options = array(
+    'profile' => function ($options, $option) {
+        $profile = $options->getDefault($option);
+        $profile->defineCommand('hmgetall', 'HashMultipleGetAll');
 
-    return $profile;
-},
-    'replication' => function ($options)
-{
-    $strategy = new ReplicationStrategy();
-    $strategy->setScriptReadOnly (HashMultipleGetAll::BODY);
+        return $profile;
+    },
+    'replication' => function ($options) {
+        $strategy = new ReplicationStrategy();
+        $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
 
-    $replication = new MasterSlaveReplication ($strategy);
+        $replication = new MasterSlaveReplication($strategy);
 
-    return $replication;
-},
+        return $replication;
+    },
 );
 
 // ------------------------------------------------------------------------- //
 
-$client = new Predis\Client ($parameters, $options);
+$client = new Predis\Client($parameters, $options);
 
 // Execute the following commands on the master server using redis-cli:
 // $ ./redis-cli HMSET metavars foo bar hoge piyo
 // $ ./redis-cli HMSET servers master host1 slave host2
 
-$hashes = $client->hmgetall ('metavars', 'servers');
+$hashes = $client->hmgetall('metavars', 'servers');
 
-$replication = $client->getConnection ();
-$stillOnSlave = $replication->getCurrent () === $replication->getConnectionById ('slave');
+$replication = $client->getConnection();
+$stillOnSlave = $replication->getCurrent() === $replication->getConnectionById('slave');
 
 echo "Is still on slave? ", $stillOnSlave ? 'YES' : 'NO', "!\n";
-var_export ($hashes);
+var_export($hashes);

@@ -18,80 +18,72 @@ namespace Predis\Option;
  */
 class CustomOption implements OptionInterface
 {
+    private $filter;
+    private $default;
 
-	private $filter;
-	private $default;
+    /**
+     * @param array $options List of options
+     */
+    public function __construct(Array $options = array())
+    {
+        $this->filter = $this->ensureCallable($options, 'filter');
+        $this->default = $this->ensureCallable($options, 'default');
+    }
 
-	/**
-	 * @param array $options List of options
-	 */
-	public function __construct (Array $options = array ())
-	{
-		$this->filter = $this->ensureCallable ($options, 'filter');
-		$this->default = $this->ensureCallable ($options, 'default');
-	}
+    /**
+     * Checks if the specified value in the options array is a callable object.
+     *
+     * @param array  $options Array of options
+     * @param string $key     Target option.
+     */
+    private function ensureCallable($options, $key)
+    {
+        if (!isset($options[$key])) {
+            return;
+        }
 
-	/**
-	 * Checks if the specified value in the options array is a callable object.
-	 *
-	 * @param array  $options Array of options
-	 * @param string $key     Target option.
-	 */
-	private function ensureCallable ($options, $key)
-	{
-		if (!isset ($options[$key]))
-		{
-			return;
-		}
+        if (is_callable($callable = $options[$key])) {
+            return $callable;
+        }
 
-		if (is_callable ($callable = $options[$key]))
-		{
-			return $callable;
-		}
+        throw new \InvalidArgumentException("The parameter $key must be callable");
+    }
 
-		throw new \InvalidArgumentException ("The parameter $key must be callable");
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function filter(ClientOptionsInterface $options, $value)
+    {
+        if (isset($value)) {
+            if ($this->filter === null) {
+                return $value;
+            }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function filter (ClientOptionsInterface $options, $value)
-	{
-		if (isset ($value))
-		{
-			if ($this->filter === null)
-			{
-				return $value;
-			}
+            return call_user_func($this->filter, $options, $value);
+        }
+    }
 
-			return call_user_func ($this->filter, $options, $value);
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault(ClientOptionsInterface $options)
+    {
+        if (!isset($this->default)) {
+            return;
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDefault (ClientOptionsInterface $options)
-	{
-		if (!isset ($this->default))
-		{
-			return;
-		}
+        return call_user_func($this->default, $options);
+    }
 
-		return call_user_func ($this->default, $options);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function __invoke(ClientOptionsInterface $options, $value)
+    {
+        if (isset($value)) {
+            return $this->filter($options, $value);
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __invoke (ClientOptionsInterface $options, $value)
-	{
-		if (isset ($value))
-		{
-			return $this->filter ($options, $value);
-		}
-
-		return $this->getDefault ($options);
-	}
-
+        return $this->getDefault($options);
+    }
 }

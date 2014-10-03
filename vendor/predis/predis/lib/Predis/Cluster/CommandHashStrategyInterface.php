@@ -23,21 +23,20 @@ use Predis\Command\CommandInterface;
  */
 interface CommandHashStrategyInterface
 {
+    /**
+     * Returns the hash for the given command using the specified algorithm, or null
+     * if the command cannot be hashed.
+     *
+     * @param  CommandInterface $command Command to be hashed.
+     * @return int
+     */
+    public function getHash(CommandInterface $command);
 
-	/**
-	 * Returns the hash for the given command using the specified algorithm, or null
-	 * if the command cannot be hashed.
-	 *
-	 * @param  CommandInterface $command Command to be hashed.
-	 * @return int
-	 */
-	public function getHash (CommandInterface $command);
-
-	/**
-	 * Returns the hash for the given key using the specified algorithm.
-	 *
-	 * @param  string $key Key to be hashed.
-	 * @return string
-	 */
-	public function getKeyHash ($key);
+    /**
+     * Returns the hash for the given key using the specified algorithm.
+     *
+     * @param  string $key Key to be hashed.
+     * @return string
+     */
+    public function getKeyHash($key);
 }

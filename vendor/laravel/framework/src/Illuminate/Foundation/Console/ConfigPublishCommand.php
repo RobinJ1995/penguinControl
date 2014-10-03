@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\ConfigPublisher;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class ConfigPublishCommand extends Command
-{
+class ConfigPublishCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -37,9 +34,9 @@ class ConfigPublishCommand extends Command
 	 * @param  \Illuminate\Foundation\ConfigPublisher  $config
 	 * @return void
 	 */
-	public function __construct (ConfigPublisher $config)
+	public function __construct(ConfigPublisher $config)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->config = $config;
 	}
@@ -49,20 +46,20 @@ class ConfigPublishCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$package = $this->input->getArgument ('package');
+		$package = $this->input->getArgument('package');
 
-		if (!is_null ($path = $this->getPath ()))
+		if ( ! is_null($path = $this->getPath()))
 		{
-			$this->config->publish ($package, $path);
+			$this->config->publish($package, $path);
 		}
 		else
 		{
-			$this->config->publishPackage ($package);
+			$this->config->publishPackage($package);
 		}
 
-		$this->output->writeln ('<info>Configuration published for package:</info> ' . $package);
+		$this->output->writeln('<info>Configuration published for package:</info> '.$package);
 	}
 
 	/**
@@ -70,13 +67,13 @@ class ConfigPublishCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getPath ()
+	protected function getPath()
 	{
-		$path = $this->input->getOption ('path');
+		$path = $this->input->getOption('path');
 
-		if (!is_null ($path))
+		if ( ! is_null($path))
 		{
-			return $this->laravel['path.base'] . '/' . $path;
+			return $this->laravel['path.base'].'/'.$path;
 		}
 	}
 
@@ -85,10 +82,10 @@ class ConfigPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('package', InputArgument::REQUIRED, 'The name of the package being published.'),
+		return array(
+			array('package', InputArgument::REQUIRED, 'The name of the package being published.'),
 		);
 	}
 
@@ -97,10 +94,10 @@ class ConfigPublishCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'The path to the configuration files.', null),
+		return array(
+			array('path', null, InputOption::VALUE_OPTIONAL, 'The path to the configuration files.', null),
 		);
 	}
 

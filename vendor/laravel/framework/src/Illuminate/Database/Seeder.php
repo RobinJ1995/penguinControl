@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
 
-class Seeder
-{
+class Seeder {
 
 	/**
 	 * The container instance.
@@ -27,10 +24,7 @@ class Seeder
 	 *
 	 * @return void
 	 */
-	public function run ()
-	{
-		
-	}
+	public function run() {}
 
 	/**
 	 * Seed the given connection from the given path.
@@ -38,13 +32,13 @@ class Seeder
 	 * @param  string  $class
 	 * @return void
 	 */
-	public function call ($class)
+	public function call($class)
 	{
-		$this->resolve ($class)->run ();
+		$this->resolve($class)->run();
 
-		if (isset ($this->command))
+		if (isset($this->command))
 		{
-			$this->command->getOutput ()->writeln ("<info>Seeded:</info> $class");
+			$this->command->getOutput()->writeln("<info>Seeded:</info> $class");
 		}
 	}
 
@@ -54,22 +48,22 @@ class Seeder
 	 * @param  string  $class
 	 * @return \Illuminate\Database\Seeder
 	 */
-	protected function resolve ($class)
+	protected function resolve($class)
 	{
-		if (isset ($this->container))
+		if (isset($this->container))
 		{
-			$instance = $this->container->make ($class);
+			$instance = $this->container->make($class);
 
-			$instance->setContainer ($this->container);
+			$instance->setContainer($this->container);
 		}
 		else
 		{
 			$instance = new $class;
 		}
 
-		if (isset ($this->command))
+		if (isset($this->command))
 		{
-			$instance->setCommand ($this->command);
+			$instance->setCommand($this->command);
 		}
 
 		return $instance;
@@ -79,9 +73,9 @@ class Seeder
 	 * Set the IoC container instance.
 	 *
 	 * @param  \Illuminate\Container\Container  $container
-	 * @return void
+	 * @return \Illuminate\Database\Seeder
 	 */
-	public function setContainer (Container $container)
+	public function setContainer(Container $container)
 	{
 		$this->container = $container;
 
@@ -92,9 +86,9 @@ class Seeder
 	 * Set the console command instance.
 	 *
 	 * @param  \Illuminate\Console\Command  $command
-	 * @return void
+	 * @return \Illuminate\Database\Seeder
 	 */
-	public function setCommand (Command $command)
+	public function setCommand(Command $command)
 	{
 		$this->command = $command;
 

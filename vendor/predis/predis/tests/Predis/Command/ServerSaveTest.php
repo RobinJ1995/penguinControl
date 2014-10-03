@@ -17,40 +17,38 @@ namespace Predis\Command;
  */
 class ServerSaveTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerSave';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerSave';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'SAVE';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'SAVE';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
-
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertTrue ($this->getCommand ()->parseResponse (true));
-	}
-
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertTrue($this->getCommand()->parseResponse(true));
+    }
 }

@@ -17,98 +17,96 @@ namespace Predis\Command;
  */
 class HashExistsTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\HashExists';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\HashExists';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'HEXISTS';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'HEXISTS';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key', 'field');
+        $expected = array('key', 'field');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key', 'field');
-		$expected = array ('key', 'field');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $command = $this->getCommand();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$command = $this->getCommand ();
+        $this->assertFalse($command->parseResponse(0));
+        $this->assertTrue($command->parseResponse(1));
+    }
 
-		$this->assertFalse ($command->parseResponse (0));
-		$this->assertTrue ($command->parseResponse (1));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key', 'field');
+        $expected = array('prefix:key', 'field');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key', 'field');
-		$expected = array ('prefix:key', 'field');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsExistenceOfSpecifiedField()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsExistenceOfSpecifiedField ()
-	{
-		$redis = $this->getClient ();
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo');
 
-		$redis->hmset ('metavars', 'foo', 'bar', 'hoge', 'piyo');
+        $this->assertTrue($redis->hexists('metavars', 'foo'));
+        $this->assertFalse($redis->hexists('metavars', 'lol'));
+        $this->assertFalse($redis->hexists('unknown', 'foo'));
+    }
 
-		$this->assertTrue ($redis->hexists ('metavars', 'foo'));
-		$this->assertFalse ($redis->hexists ('metavars', 'lol'));
-		$this->assertFalse ($redis->hexists ('unknown', 'foo'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongType()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongType ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->set ('foo', 'bar');
-		$redis->hexists ('foo', 'bar');
-	}
-
+        $redis->set('foo', 'bar');
+        $redis->hexists('foo', 'bar');
+    }
 }

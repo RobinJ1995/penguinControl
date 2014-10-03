@@ -1,26 +1,23 @@
-<?php
-
-namespace Illuminate\Routing;
+<?php namespace Illuminate\Routing;
 
 use Closure;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-abstract class Controller
-{
+abstract class Controller {
 
 	/**
 	 * The "before" filters registered on the controller.
 	 *
 	 * @var array
 	 */
-	protected $beforeFilters = array ();
+	protected $beforeFilters = array();
 
 	/**
 	 * The "after" filters registered on the controller.
 	 *
 	 * @var array
 	 */
-	protected $afterFilters = array ();
+	protected $afterFilters = array();
 
 	/**
 	 * The route filterer implementation.
@@ -43,9 +40,9 @@ abstract class Controller
 	 * @param  array  $options
 	 * @return void
 	 */
-	public function beforeFilter ($filter, array $options = array ())
+	public function beforeFilter($filter, array $options = array())
 	{
-		$this->beforeFilters[] = $this->parseFilter ($filter, $options);
+		$this->beforeFilters[] = $this->parseFilter($filter, $options);
 	}
 
 	/**
@@ -55,9 +52,9 @@ abstract class Controller
 	 * @param  array  $options
 	 * @return void
 	 */
-	public function afterFilter ($filter, array $options = array ())
+	public function afterFilter($filter, array $options = array())
 	{
-		$this->afterFilters[] = $this->parseFilter ($filter, $options);
+		$this->afterFilters[] = $this->parseFilter($filter, $options);
 	}
 
 	/**
@@ -67,26 +64,26 @@ abstract class Controller
 	 * @param  array  $options
 	 * @return array
 	 */
-	protected function parseFilter ($filter, array $options)
+	protected function parseFilter($filter, array $options)
 	{
-		$parameters = array ();
+		$parameters = array();
 
 		$original = $filter;
 
 		if ($filter instanceof Closure)
 		{
-			$filter = $this->registerClosureFilter ($filter);
+			$filter = $this->registerClosureFilter($filter);
 		}
-		elseif ($this->isInstanceFilter ($filter))
+		elseif ($this->isInstanceFilter($filter))
 		{
-			$filter = $this->registerInstanceFilter ($filter);
+			$filter = $this->registerInstanceFilter($filter);
 		}
 		else
 		{
-			list($filter, $parameters) = Route::parseFilter ($filter);
+			list($filter, $parameters) = Route::parseFilter($filter);
 		}
 
-		return compact ('original', 'filter', 'parameters', 'options');
+		return compact('original', 'filter', 'parameters', 'options');
 	}
 
 	/**
@@ -95,9 +92,9 @@ abstract class Controller
 	 * @param  \Closure  $filter
 	 * @return string
 	 */
-	protected function registerClosureFilter (Closure $filter)
+	protected function registerClosureFilter(Closure $filter)
 	{
-		$this->getFilterer ()->filter ($name = spl_object_hash ($filter), $filter);
+		$this->getFilterer()->filter($name = spl_object_hash($filter), $filter);
 
 		return $name;
 	}
@@ -108,9 +105,9 @@ abstract class Controller
 	 * @param  string  $filter
 	 * @return string
 	 */
-	protected function registerInstanceFilter ($filter)
+	protected function registerInstanceFilter($filter)
 	{
-		$this->getFilterer ()->filter ($filter, array ($this, substr ($filter, 1)));
+		$this->getFilterer()->filter($filter, array($this, substr($filter, 1)));
 
 		return $filter;
 	}
@@ -123,14 +120,13 @@ abstract class Controller
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function isInstanceFilter ($filter)
+	protected function isInstanceFilter($filter)
 	{
-		if (is_string ($filter) && starts_with ($filter, '@'))
+		if (is_string($filter) && starts_with($filter, '@'))
 		{
-			if (method_exists ($this, substr ($filter, 1)))
-				return true;
+			if (method_exists($this, substr($filter, 1))) return true;
 
-			throw new \InvalidArgumentException ("Filter method [$filter] does not exist.");
+			throw new \InvalidArgumentException("Filter method [$filter] does not exist.");
 		}
 
 		return false;
@@ -142,9 +138,9 @@ abstract class Controller
 	 * @param  string  $filter
 	 * @return void
 	 */
-	public function forgetBeforeFilter ($filter)
+	public function forgetBeforeFilter($filter)
 	{
-		$this->beforeFilters = $this->removeFilter ($filter, $this->getBeforeFilters ());
+		$this->beforeFilters = $this->removeFilter($filter, $this->getBeforeFilters());
 	}
 
 	/**
@@ -153,9 +149,9 @@ abstract class Controller
 	 * @param  string  $filter
 	 * @return void
 	 */
-	public function forgetAfterFilter ($filter)
+	public function forgetAfterFilter($filter)
 	{
-		$this->afterFilters = $this->removeFilter ($filter, $this->getAfterFilters ());
+		$this->afterFilters = $this->removeFilter($filter, $this->getAfterFilters());
 	}
 
 	/**
@@ -165,9 +161,9 @@ abstract class Controller
 	 * @param  array  $current
 	 * @return array
 	 */
-	protected function removeFilter ($removing, $current)
+	protected function removeFilter($removing, $current)
 	{
-		return array_filter ($current, function($filter) use ($removing)
+		return array_filter($current, function($filter) use ($removing)
 		{
 			return $filter['original'] != $removing;
 		});
@@ -178,7 +174,7 @@ abstract class Controller
 	 *
 	 * @return array
 	 */
-	public function getBeforeFilters ()
+	public function getBeforeFilters()
 	{
 		return $this->beforeFilters;
 	}
@@ -188,7 +184,7 @@ abstract class Controller
 	 *
 	 * @return array
 	 */
-	public function getAfterFilters ()
+	public function getAfterFilters()
 	{
 		return $this->afterFilters;
 	}
@@ -198,7 +194,7 @@ abstract class Controller
 	 *
 	 * @return \Illuminate\Routing\RouteFiltererInterface
 	 */
-	public static function getFilterer ()
+	public static function getFilterer()
 	{
 		return static::$filterer;
 	}
@@ -209,7 +205,7 @@ abstract class Controller
 	 * @param  \Illuminate\Routing\RouteFiltererInterface  $filterer
 	 * @return void
 	 */
-	public static function setFilterer (RouteFiltererInterface $filterer)
+	public static function setFilterer(RouteFiltererInterface $filterer)
 	{
 		static::$filterer = $filterer;
 	}
@@ -219,10 +215,7 @@ abstract class Controller
 	 *
 	 * @return void
 	 */
-	protected function setupLayout ()
-	{
-		
-	}
+	protected function setupLayout() {}
 
 	/**
 	 * Execute an action on the controller.
@@ -231,16 +224,16 @@ abstract class Controller
 	 * @param array   $parameters
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function callAction ($method, $parameters)
+	public function callAction($method, $parameters)
 	{
-		$this->setupLayout ();
+		$this->setupLayout();
 
-		$response = call_user_func_array (array ($this, $method), $parameters);
+		$response = call_user_func_array(array($this, $method), $parameters);
 
 		// If no response is returned from the controller action and a layout is being
 		// used we will assume we want to just return the layout view as any nested
 		// views were probably bound on this view during this controller actions.
-		if (is_null ($response) && !is_null ($this->layout))
+		if (is_null($response) && ! is_null($this->layout))
 		{
 			$response = $this->layout;
 		}
@@ -256,9 +249,9 @@ abstract class Controller
 	 *
 	 * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 	 */
-	public function missingMethod ($parameters = array ())
+	public function missingMethod($parameters = array())
 	{
-		throw new NotFoundHttpException ("Controller method not found.");
+		throw new NotFoundHttpException("Controller method not found.");
 	}
 
 	/**
@@ -270,9 +263,9 @@ abstract class Controller
 	 *
 	 * @throws \BadMethodCallException
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		throw new \BadMethodCallException ("Method [$method] does not exist.");
+		throw new \BadMethodCallException("Method [$method] does not exist.");
 	}
 
 }

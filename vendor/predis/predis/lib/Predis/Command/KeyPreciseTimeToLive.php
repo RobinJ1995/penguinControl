@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class KeyPreciseTimeToLive extends KeyTimeToLive
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'PTTL';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'PTTL';
+    }
 }

@@ -17,96 +17,94 @@ namespace Predis\Command;
  */
 class SetPopTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\SetPop';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\SetPop';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'SPOP';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'SPOP';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key');
+        $expected = array('key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key');
-		$expected = array ('key');
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame('member', $this->getCommand()->parseResponse('member'));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame ('member', $this->getCommand ()->parseResponse ('member'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key');
+        $expected = array('prefix:key');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key');
-		$expected = array ('prefix:key');
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
+        $this->assertSame(array(), $command->getArguments());
+    }
 
-		$this->assertSame (array (), $command->getArguments ());
-	}
+    /**
+     * @group connected
+     */
+    public function testPopsRandomMemberFromSet()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testPopsRandomMemberFromSet ()
-	{
-		$redis = $this->getClient ();
+        $redis->sadd('letters', 'a', 'b');
 
-		$redis->sadd ('letters', 'a', 'b');
+        $this->assertContains($redis->spop('letters'), array('a', 'b'));
+        $this->assertContains($redis->spop('letters'), array('a', 'b'));
 
-		$this->assertContains ($redis->spop ('letters'), array ('a', 'b'));
-		$this->assertContains ($redis->spop ('letters'), array ('a', 'b'));
+        $this->assertNull($redis->spop('letters'));
+    }
 
-		$this->assertNull ($redis->spop ('letters'));
-	}
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
+     */
+    public function testThrowsExceptionOnWrongType()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 * @expectedException Predis\ServerException
-	 * @expectedExceptionMessage Operation against a key holding the wrong kind of value
-	 */
-	public function testThrowsExceptionOnWrongType ()
-	{
-		$redis = $this->getClient ();
-
-		$redis->set ('foo', 'bar');
-		$redis->spop ('foo');
-	}
-
+        $redis->set('foo', 'bar');
+        $redis->spop('foo');
+    }
 }

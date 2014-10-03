@@ -16,130 +16,129 @@ namespace Symfony\Component\Finder\Adapter;
  */
 interface AdapterInterface
 {
+    /**
+     * @param bool    $followLinks
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setFollowLinks($followLinks);
 
-	/**
-	 * @param bool    $followLinks
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setFollowLinks ($followLinks);
+    /**
+     * @param int     $mode
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setMode($mode);
 
-	/**
-	 * @param int     $mode
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setMode ($mode);
+    /**
+     * @param array $exclude
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setExclude(array $exclude);
 
-	/**
-	 * @param array $exclude
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setExclude (array $exclude);
+    /**
+     * @param array $depths
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setDepths(array $depths);
 
-	/**
-	 * @param array $depths
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setDepths (array $depths);
+    /**
+     * @param array $names
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setNames(array $names);
 
-	/**
-	 * @param array $names
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setNames (array $names);
+    /**
+     * @param array $notNames
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setNotNames(array $notNames);
 
-	/**
-	 * @param array $notNames
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setNotNames (array $notNames);
+    /**
+     * @param array $contains
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setContains(array $contains);
 
-	/**
-	 * @param array $contains
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setContains (array $contains);
+    /**
+     * @param array $notContains
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setNotContains(array $notContains);
 
-	/**
-	 * @param array $notContains
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setNotContains (array $notContains);
+    /**
+     * @param array $sizes
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setSizes(array $sizes);
 
-	/**
-	 * @param array $sizes
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setSizes (array $sizes);
+    /**
+     * @param array $dates
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setDates(array $dates);
 
-	/**
-	 * @param array $dates
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setDates (array $dates);
+    /**
+     * @param array $filters
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setFilters(array $filters);
 
-	/**
-	 * @param array $filters
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setFilters (array $filters);
+    /**
+     * @param \Closure|int     $sort
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setSort($sort);
 
-	/**
-	 * @param \Closure|int     $sort
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setSort ($sort);
+    /**
+     * @param array $paths
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setPath(array $paths);
 
-	/**
-	 * @param array $paths
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setPath (array $paths);
+    /**
+     * @param array $notPaths
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function setNotPath(array $notPaths);
 
-	/**
-	 * @param array $notPaths
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function setNotPath (array $notPaths);
+    /**
+     * @param bool    $ignore
+     *
+     * @return AdapterInterface Current instance
+     */
+    public function ignoreUnreadableDirs($ignore = true);
 
-	/**
-	 * @param bool    $ignore
-	 *
-	 * @return AdapterInterface Current instance
-	 */
-	public function ignoreUnreadableDirs ($ignore = true);
+    /**
+     * @param string $dir
+     *
+     * @return \Iterator Result iterator
+     */
+    public function searchInDirectory($dir);
 
-	/**
-	 * @param string $dir
-	 *
-	 * @return \Iterator Result iterator
-	 */
-	public function searchInDirectory ($dir);
+    /**
+     * Tests adapter support for current platform.
+     *
+     * @return bool
+     */
+    public function isSupported();
 
-	/**
-	 * Tests adapter support for current platform.
-	 *
-	 * @return bool
-	 */
-	public function isSupported ();
-
-	/**
-	 * Returns adapter name.
-	 *
-	 * @return string
-	 */
-	public function getName ();
+    /**
+     * Returns adapter name.
+     *
+     * @return string
+     */
+    public function getName();
 }

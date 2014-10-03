@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Log;
+<?php namespace Illuminate\Log;
 
 use Monolog\Logger;
 use Illuminate\Support\ServiceProvider;
 
-class LogServiceProvider extends ServiceProvider
-{
+class LogServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -20,20 +17,20 @@ class LogServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$logger = new Writer (
-			new Logger ($this->app['env']), $this->app['events']
+		$logger = new Writer(
+			new Logger($this->app['env']), $this->app['events']
 		);
 
-		$this->app->instance ('log', $logger);
+		$this->app->instance('log', $logger);
 
 		// If the setup Closure has been bound in the container, we will resolve it
 		// and pass in the logger instance. This allows this to defer all of the
 		// logger class setup until the last possible second, improving speed.
-		if (isset ($this->app['log.setup']))
+		if (isset($this->app['log.setup']))
 		{
-			call_user_func ($this->app['log.setup'], $logger);
+			call_user_func($this->app['log.setup'], $logger);
 		}
 	}
 
@@ -42,9 +39,9 @@ class LogServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('log');
+		return array('log');
 	}
 
 }

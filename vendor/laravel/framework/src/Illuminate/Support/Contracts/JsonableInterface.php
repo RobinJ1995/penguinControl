@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Support\Contracts;
 
-namespace Illuminate\Support\Contracts;
-
-interface JsonableInterface
-{
+interface JsonableInterface {
 
 	/**
 	 * Convert the object to its JSON representation.
@@ -11,5 +8,6 @@ interface JsonableInterface
 	 * @param  int  $options
 	 * @return string
 	 */
-	public function toJson ($options = 0);
+	public function toJson($options = 0);
+
 }

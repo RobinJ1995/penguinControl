@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class ServerBackgroundSave extends AbstractCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'BGSAVE';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'BGSAVE';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return $data === 'Background saving started' ? true : $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data === 'Background saving started' ? true : $data;
+    }
 }

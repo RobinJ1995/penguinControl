@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Cache;
 
-namespace Illuminate\Cache;
-
-class XCacheStore extends TaggableStore implements StoreInterface
-{
+class XCacheStore extends TaggableStore implements StoreInterface {
 
 	/**
 	 * A string that should be prepended to keys.
@@ -18,7 +15,7 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  string     $prefix
 	 * @return void
 	 */
-	public function __construct ($prefix = '')
+	public function __construct($prefix = '')
 	{
 		$this->prefix = $prefix;
 	}
@@ -29,11 +26,11 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return mixed
 	 */
-	public function get ($key)
+	public function get($key)
 	{
-		$value = xcache_get ($this->prefix . $key);
+		$value = xcache_get($this->prefix.$key);
 
-		if (isset ($value))
+		if (isset($value))
 		{
 			return $value;
 		}
@@ -47,9 +44,9 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  int     $minutes
 	 * @return void
 	 */
-	public function put ($key, $value, $minutes)
+	public function put($key, $value, $minutes)
 	{
-		xcache_set ($this->prefix . $key, $value, $minutes * 60);
+		xcache_set($this->prefix.$key, $value, $minutes * 60);
 	}
 
 	/**
@@ -59,9 +56,9 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function increment ($key, $value = 1)
+	public function increment($key, $value = 1)
 	{
-		return xcache_inc ($this->prefix . $key, $value);
+		return xcache_inc($this->prefix.$key, $value);
 	}
 
 	/**
@@ -71,9 +68,9 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function decrement ($key, $value = 1)
+	public function decrement($key, $value = 1)
 	{
-		return xcache_dec ($this->prefix . $key, $value);
+		return xcache_dec($this->prefix.$key, $value);
 	}
 
 	/**
@@ -83,9 +80,9 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function forever ($key, $value)
+	public function forever($key, $value)
 	{
-		return $this->put ($key, $value, 0);
+		return $this->put($key, $value, 0);
 	}
 
 	/**
@@ -94,9 +91,9 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function forget ($key)
+	public function forget($key)
 	{
-		xcache_unset ($this->prefix . $key);
+		xcache_unset($this->prefix.$key);
 	}
 
 	/**
@@ -104,9 +101,9 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		xcache_clear_cache (XC_TYPE_VAR);
+		xcache_clear_cache(XC_TYPE_VAR);
 	}
 
 	/**
@@ -114,7 +111,7 @@ class XCacheStore extends TaggableStore implements StoreInterface
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return $this->prefix;
 	}

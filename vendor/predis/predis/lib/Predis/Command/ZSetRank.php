@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ZSetRank extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'ZRANK';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZRANK';
+    }
 }

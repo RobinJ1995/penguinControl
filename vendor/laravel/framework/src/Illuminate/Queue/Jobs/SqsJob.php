@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Jobs;
+<?php namespace Illuminate\Queue\Jobs;
 
 use Aws\Sqs\SqsClient;
 use Illuminate\Container\Container;
 
-class SqsJob extends Job
-{
+class SqsJob extends Job {
 
 	/**
 	 * The Amazon SQS client instance.
@@ -31,7 +28,10 @@ class SqsJob extends Job
 	 * @param  array   $job
 	 * @return void
 	 */
-	public function __construct (Container $container, SqsClient $sqs, $queue, array $job)
+	public function __construct(Container $container,
+                                SqsClient $sqs,
+                                $queue,
+                                array $job)
 	{
 		$this->sqs = $sqs;
 		$this->job = $job;
@@ -44,9 +44,9 @@ class SqsJob extends Job
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->resolveAndFire (json_decode ($this->getRawBody (), true));
+		$this->resolveAndFire(json_decode($this->getRawBody(), true));
 	}
 
 	/**
@@ -54,7 +54,7 @@ class SqsJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getRawBody ()
+	public function getRawBody()
 	{
 		return $this->job['Body'];
 	}
@@ -64,12 +64,14 @@ class SqsJob extends Job
 	 *
 	 * @return void
 	 */
-	public function delete ()
+	public function delete()
 	{
-		parent::delete ();
+		parent::delete();
 
-		$this->sqs->deleteMessage (array (
-		    'QueueUrl' => $this->queue, 'ReceiptHandle' => $this->job['ReceiptHandle'],
+		$this->sqs->deleteMessage(array(
+
+			'QueueUrl' => $this->queue, 'ReceiptHandle' => $this->job['ReceiptHandle'],
+
 		));
 	}
 
@@ -79,7 +81,7 @@ class SqsJob extends Job
 	 * @param  int   $delay
 	 * @return void
 	 */
-	public function release ($delay = 0)
+	public function release($delay = 0)
 	{
 		// SQS job releases are handled by the server configuration...
 	}
@@ -89,7 +91,7 @@ class SqsJob extends Job
 	 *
 	 * @return int
 	 */
-	public function attempts ()
+	public function attempts()
 	{
 		return (int) $this->job['Attributes']['ApproximateReceiveCount'];
 	}
@@ -99,7 +101,7 @@ class SqsJob extends Job
 	 *
 	 * @return string
 	 */
-	public function getJobId ()
+	public function getJobId()
 	{
 		return $this->job['MessageId'];
 	}
@@ -109,7 +111,7 @@ class SqsJob extends Job
 	 *
 	 * @return \Illuminate\Container\Container
 	 */
-	public function getContainer ()
+	public function getContainer()
 	{
 		return $this->container;
 	}
@@ -119,7 +121,7 @@ class SqsJob extends Job
 	 *
 	 * @return \Aws\Sqs\SqsClient
 	 */
-	public function getSqs ()
+	public function getSqs()
 	{
 		return $this->sqs;
 	}
@@ -129,7 +131,7 @@ class SqsJob extends Job
 	 *
 	 * @return array
 	 */
-	public function getSqsJob ()
+	public function getSqsJob()
 	{
 		return $this->job;
 	}

@@ -18,166 +18,163 @@ use PredisTestCase;
  */
 class CommandTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testImplementsCorrectInterface()
+    {
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testImplementsCorrectInterface ()
-	{
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
+        $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
+    }
 
-		$this->assertInstanceOf ('Predis\Command\CommandInterface', $command);
-	}
+    /**
+     * @group disconnected
+     */
+    public function testGetEmptyArguments()
+    {
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testGetEmptyArguments ()
-	{
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
+        $this->assertEmpty($command->getArguments());
+    }
 
-		$this->assertEmpty ($command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testSetRawArguments()
+    {
+        $arguments = array('1st', '2nd', '3rd');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testSetRawArguments ()
-	{
-		$arguments = array ('1st', '2nd', '3rd');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setRawArguments ($arguments);
+        $this->assertEquals($arguments, $command->getArguments());
+    }
 
-		$this->assertEquals ($arguments, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     *
+     * @todo Since AbstractCommand::filterArguments is protected we cannot set an expectation
+     *       for it when AbstractCommand::setArguments() is invoked. I wonder how we can do that.
+     */
+    public function testSetArguments()
+    {
+        $arguments = array('1st', '2nd', '3rd');
 
-	/**
-	 * @group disconnected
-	 *
-	 * @todo Since AbstractCommand::filterArguments is protected we cannot set an expectation
-	 *       for it when AbstractCommand::setArguments() is invoked. I wonder how we can do that.
-	 */
-	public function testSetArguments ()
-	{
-		$arguments = array ('1st', '2nd', '3rd');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setArguments ($arguments);
+        $this->assertEquals($arguments, $command->getArguments());
+    }
 
-		$this->assertEquals ($arguments, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testGetArgumentAtIndex()
+    {
+        $arguments = array('1st', '2nd', '3rd');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testGetArgumentAtIndex ()
-	{
-		$arguments = array ('1st', '2nd', '3rd');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setArguments ($arguments);
+        $this->assertEquals($arguments[0], $command->getArgument(0));
+        $this->assertEquals($arguments[2], $command->getArgument(2));
+        $this->assertNull($command->getArgument(10));
+    }
 
-		$this->assertEquals ($arguments[0], $command->getArgument (0));
-		$this->assertEquals ($arguments[2], $command->getArgument (2));
-		$this->assertNull ($command->getArgument (10));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $response = 'response-buffer';
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$response = 'response-buffer';
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
+        $this->assertEquals($response, $command->parseResponse($response));
+    }
 
-		$this->assertEquals ($response, $command->parseResponse ($response));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testSetAndGetHash()
+    {
+        $hash = "key-hash";
 
-	/**
-	 * @group disconnected
-	 */
-	public function testSetAndGetHash ()
-	{
-		$hash = "key-hash";
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setRawArguments(array('key'));
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setRawArguments (array ('key'));
+        $this->assertNull($command->getHash());
 
-		$this->assertNull ($command->getHash ());
+        $command->setHash($hash);
+        $this->assertSame($hash, $command->getHash());
 
-		$command->setHash ($hash);
-		$this->assertSame ($hash, $command->getHash ());
+        $command->setArguments(array('key'));
+        $this->assertNull($command->getHash());
 
-		$command->setArguments (array ('key'));
-		$this->assertNull ($command->getHash ());
+        $command->setHash($hash);
+        $command->setRawArguments(array('key'));
+        $this->assertNull($command->getHash());
+    }
+    /**
+     * @group disconnected
+     */
+    public function testToString()
+    {
+        $expected = 'SET key value';
+        $arguments = array('key', 'value');
 
-		$command->setHash ($hash);
-		$command->setRawArguments (array ('key'));
-		$this->assertNull ($command->getHash ());
-	}
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->expects($this->once())->method('getId')->will($this->returnValue('SET'));
 
-	/**
-	 * @group disconnected
-	 */
-	public function testToString ()
-	{
-		$expected = 'SET key value';
-		$arguments = array ('key', 'value');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->expects ($this->once ())->method ('getId')->will ($this->returnValue ('SET'));
+        $this->assertEquals($expected, (string) $command);
+    }
 
-		$command->setRawArguments ($arguments);
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithLongArguments()
+    {
+        $expected = 'SET key abcdefghijklmnopqrstuvwxyz012345[...]';
+        $arguments = array('key', 'abcdefghijklmnopqrstuvwxyz0123456789');
 
-		$this->assertEquals ($expected, (string) $command);
-	}
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->expects($this->once())->method('getId')->will($this->returnValue('SET'));
 
-	/**
-	 * @group disconnected
-	 */
-	public function testToStringWithLongArguments ()
-	{
-		$expected = 'SET key abcdefghijklmnopqrstuvwxyz012345[...]';
-		$arguments = array ('key', 'abcdefghijklmnopqrstuvwxyz0123456789');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->expects ($this->once ())->method ('getId')->will ($this->returnValue ('SET'));
+        $this->assertEquals($expected, (string) $command);
+    }
 
-		$command->setRawArguments ($arguments);
+    /**
+     * @group disconnected
+     */
+    public function testNormalizeArguments()
+    {
+        $arguments = array('arg1', 'arg2', 'arg3', 'arg4');
 
-		$this->assertEquals ($expected, (string) $command);
-	}
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments($arguments));
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments(array($arguments)));
 
-	/**
-	 * @group disconnected
-	 */
-	public function testNormalizeArguments ()
-	{
-		$arguments = array ('arg1', 'arg2', 'arg3', 'arg4');
+        $arguments = array(array(), array());
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments($arguments));
 
-		$this->assertSame ($arguments, AbstractCommand::normalizeArguments ($arguments));
-		$this->assertSame ($arguments, AbstractCommand::normalizeArguments (array ($arguments)));
+        $arguments = array(new \stdClass());
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments($arguments));
+    }
 
-		$arguments = array (array (), array ());
-		$this->assertSame ($arguments, AbstractCommand::normalizeArguments ($arguments));
+    /**
+     * @group disconnected
+     */
+    public function testNormalizeVariadic()
+    {
+        $arguments = array('key', 'value1', 'value2', 'value3');
 
-		$arguments = array (new \stdClass());
-		$this->assertSame ($arguments, AbstractCommand::normalizeArguments ($arguments));
-	}
+        $this->assertSame($arguments, AbstractCommand::normalizeVariadic($arguments));
+        $this->assertSame($arguments, AbstractCommand::normalizeVariadic(array('key', array('value1', 'value2', 'value3'))));
 
-	/**
-	 * @group disconnected
-	 */
-	public function testNormalizeVariadic ()
-	{
-		$arguments = array ('key', 'value1', 'value2', 'value3');
-
-		$this->assertSame ($arguments, AbstractCommand::normalizeVariadic ($arguments));
-		$this->assertSame ($arguments, AbstractCommand::normalizeVariadic (array ('key', array ('value1', 'value2', 'value3'))));
-
-		$arguments = array (new \stdClass());
-		$this->assertSame ($arguments, AbstractCommand::normalizeVariadic ($arguments));
-	}
-
+        $arguments = array(new \stdClass());
+        $this->assertSame($arguments, AbstractCommand::normalizeVariadic($arguments));
+    }
 }

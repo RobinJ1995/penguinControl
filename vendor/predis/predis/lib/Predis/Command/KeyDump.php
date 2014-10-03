@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class KeyDump extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'DUMP';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'DUMP';
+    }
 }

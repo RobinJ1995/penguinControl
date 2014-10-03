@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Support\Facades;
+<?php namespace Illuminate\Support\Facades;
 
 /**
  * @see \Illuminate\Routing\Router
  */
-class Route extends Facade
-{
+class Route extends Facade {
 
 	/**
 	 * Determine if the current route matches a given name.
@@ -14,9 +11,9 @@ class Route extends Facade
 	 * @param  string  $name
 	 * @return bool
 	 */
-	public static function is ($name)
+	public static function is($name)
 	{
-		return static::$app['router']->currentRouteNamed ($name);
+		return static::$app['router']->currentRouteNamed($name);
 	}
 
 	/**
@@ -25,9 +22,9 @@ class Route extends Facade
 	 * @param  string  $action
 	 * @return bool
 	 */
-	public static function uses ($action)
+	public static function uses($action)
 	{
-		return static::$app['router']->currentRouteUses ($action);
+		return static::$app['router']->currentRouteUses($action);
 	}
 
 	/**
@@ -35,9 +32,6 @@ class Route extends Facade
 	 *
 	 * @return string
 	 */
-	protected static function getFacadeAccessor ()
-	{
-		return 'router';
-	}
+	protected static function getFacadeAccessor() { return 'router'; }
 
 }

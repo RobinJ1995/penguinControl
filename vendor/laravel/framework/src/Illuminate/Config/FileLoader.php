@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Config;
+<?php namespace Illuminate\Config;
 
 use Illuminate\Filesystem\Filesystem;
 
-class FileLoader implements LoaderInterface
-{
+class FileLoader implements LoaderInterface {
 
 	/**
 	 * The filesystem instance.
@@ -26,14 +23,14 @@ class FileLoader implements LoaderInterface
 	 *
 	 * @var array
 	 */
-	protected $hints = array ();
+	protected $hints = array();
 
 	/**
 	 * A cache of whether namespaces and groups exists.
 	 *
 	 * @var array
 	 */
-	protected $exists = array ();
+	protected $exists = array();
 
 	/**
 	 * Create a new file configuration loader.
@@ -42,7 +39,7 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $defaultPath
 	 * @return void
 	 */
-	public function __construct (Filesystem $files, $defaultPath)
+	public function __construct(Filesystem $files, $defaultPath)
 	{
 		$this->files = $files;
 		$this->defaultPath = $defaultPath;
@@ -56,16 +53,16 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $namespace
 	 * @return array
 	 */
-	public function load ($environment, $group, $namespace = null)
+	public function load($environment, $group, $namespace = null)
 	{
-		$items = array ();
+		$items = array();
 
 		// First we'll get the root configuration path for the environment which is
 		// where all of the configuration files live for that namespace, as well
 		// as any environment folders with their specific configuration items.
-		$path = $this->getPath ($namespace);
+		$path = $this->getPath($namespace);
 
-		if (is_null ($path))
+		if (is_null($path))
 		{
 			return $items;
 		}
@@ -75,9 +72,9 @@ class FileLoader implements LoaderInterface
 		// merged on top of the main arrays to make the environments cascade.
 		$file = "{$path}/{$group}.php";
 
-		if ($this->files->exists ($file))
+		if ($this->files->exists($file))
 		{
-			$items = $this->files->getRequire ($file);
+			$items = $this->files->getRequire($file);
 		}
 
 		// Finally we're ready to check for the environment specific configuration
@@ -85,9 +82,9 @@ class FileLoader implements LoaderInterface
 		// precedence over them if we are currently in an environments setup.
 		$file = "{$path}/{$environment}/{$group}.php";
 
-		if ($this->files->exists ($file))
+		if ($this->files->exists($file))
 		{
-			$items = $this->mergeEnvironment ($items, $file);
+			$items = $this->mergeEnvironment($items, $file);
 		}
 
 		return $items;
@@ -100,9 +97,9 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $file
 	 * @return array
 	 */
-	protected function mergeEnvironment (array $items, $file)
+	protected function mergeEnvironment(array $items, $file)
 	{
-		return array_replace_recursive ($items, $this->files->getRequire ($file));
+		return array_replace_recursive($items, $this->files->getRequire($file));
 	}
 
 	/**
@@ -112,24 +109,24 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $namespace
 	 * @return bool
 	 */
-	public function exists ($group, $namespace = null)
+	public function exists($group, $namespace = null)
 	{
-		$key = $group . $namespace;
+		$key = $group.$namespace;
 
 		// We'll first check to see if we have determined if this namespace and
 		// group combination have been checked before. If they have, we will
 		// just return the cached result so we don't have to hit the disk.
-		if (isset ($this->exists[$key]))
+		if (isset($this->exists[$key]))
 		{
 			return $this->exists[$key];
 		}
 
-		$path = $this->getPath ($namespace);
+		$path = $this->getPath($namespace);
 
 		// To check if a group exists, we will simply get the path based on the
 		// namespace, and then check to see if this files exists within that
 		// namespace. False is returned if no path exists for a namespace.
-		if (is_null ($path))
+		if (is_null($path))
 		{
 			return $this->exists[$key] = false;
 		}
@@ -139,7 +136,7 @@ class FileLoader implements LoaderInterface
 		// Finally, we can simply check if this file exists. We will also cache
 		// the value in an array so we don't have to go through this process
 		// again on subsequent checks for the existing of the config file.
-		$exists = $this->files->exists ($file);
+		$exists = $this->files->exists($file);
 
 		return $this->exists[$key] = $exists;
 	}
@@ -153,26 +150,26 @@ class FileLoader implements LoaderInterface
 	 * @param  array   $items
 	 * @return array
 	 */
-	public function cascadePackage ($env, $package, $group, $items)
+	public function cascadePackage($env, $package, $group, $items)
 	{
 		// First we will look for a configuration file in the packages configuration
 		// folder. If it exists, we will load it and merge it with these original
 		// options so that we will easily "cascade" a package's configurations.
 		$file = "packages/{$package}/{$group}.php";
 
-		if ($this->files->exists ($path = $this->defaultPath . '/' . $file))
+		if ($this->files->exists($path = $this->defaultPath.'/'.$file))
 		{
-			$items = array_merge ($items, $this->getRequire ($path));
+			$items = array_merge($items, $this->getRequire($path));
 		}
 
 		// Once we have merged the regular package configuration we need to look for
 		// an environment specific configuration file. If one exists, we will get
 		// the contents and merge them on top of this array of options we have.
-		$path = $this->getPackagePath ($env, $package, $group);
+		$path = $this->getPackagePath($env, $package, $group);
 
-		if ($this->files->exists ($path))
+		if ($this->files->exists($path))
 		{
-			$items = array_merge ($items, $this->getRequire ($path));
+			$items = array_merge($items, $this->getRequire($path));
 		}
 
 		return $items;
@@ -186,11 +183,11 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $group
 	 * @return string
 	 */
-	protected function getPackagePath ($env, $package, $group)
+	protected function getPackagePath($env, $package, $group)
 	{
 		$file = "packages/{$package}/{$env}/{$group}.php";
 
-		return $this->defaultPath . '/' . $file;
+		return $this->defaultPath.'/'.$file;
 	}
 
 	/**
@@ -199,13 +196,13 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $namespace
 	 * @return string
 	 */
-	protected function getPath ($namespace)
+	protected function getPath($namespace)
 	{
-		if (is_null ($namespace))
+		if (is_null($namespace))
 		{
 			return $this->defaultPath;
 		}
-		elseif (isset ($this->hints[$namespace]))
+		elseif (isset($this->hints[$namespace]))
 		{
 			return $this->hints[$namespace];
 		}
@@ -218,7 +215,7 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $hint
 	 * @return void
 	 */
-	public function addNamespace ($namespace, $hint)
+	public function addNamespace($namespace, $hint)
 	{
 		$this->hints[$namespace] = $hint;
 	}
@@ -229,7 +226,7 @@ class FileLoader implements LoaderInterface
 	 *
 	 * @return array
 	 */
-	public function getNamespaces ()
+	public function getNamespaces()
 	{
 		return $this->hints;
 	}
@@ -240,9 +237,9 @@ class FileLoader implements LoaderInterface
 	 * @param  string  $path
 	 * @return mixed
 	 */
-	protected function getRequire ($path)
+	protected function getRequire($path)
 	{
-		return $this->files->getRequire ($path);
+		return $this->files->getRequire($path);
 	}
 
 	/**
@@ -250,7 +247,7 @@ class FileLoader implements LoaderInterface
 	 *
 	 * @return \Illuminate\Filesystem\Filesystem
 	 */
-	public function getFilesystem ()
+	public function getFilesystem()
 	{
 		return $this->files;
 	}

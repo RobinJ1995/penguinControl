@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListLength extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LLEN';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LLEN';
+    }
 }

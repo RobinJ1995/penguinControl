@@ -21,57 +21,55 @@ namespace Symfony\Component\CssSelector\Node;
  */
 class HashNode extends AbstractNode
 {
+    /**
+     * @var NodeInterface
+     */
+    private $selector;
 
-	/**
-	 * @var NodeInterface
-	 */
-	private $selector;
+    /**
+     * @var string
+     */
+    private $id;
 
-	/**
-	 * @var string
-	 */
-	private $id;
+    /**
+     * @param NodeInterface $selector
+     * @param string        $id
+     */
+    public function __construct(NodeInterface $selector, $id)
+    {
+        $this->selector = $selector;
+        $this->id = $id;
+    }
 
-	/**
-	 * @param NodeInterface $selector
-	 * @param string        $id
-	 */
-	public function __construct (NodeInterface $selector, $id)
-	{
-		$this->selector = $selector;
-		$this->id = $id;
-	}
+    /**
+     * @return NodeInterface
+     */
+    public function getSelector()
+    {
+        return $this->selector;
+    }
 
-	/**
-	 * @return NodeInterface
-	 */
-	public function getSelector ()
-	{
-		return $this->selector;
-	}
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getId ()
-	{
-		return $this->id;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecificity()
+    {
+        return $this->selector->getSpecificity()->plus(new Specificity(1, 0, 0));
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSpecificity ()
-	{
-		return $this->selector->getSpecificity ()->plus (new Specificity (1, 0, 0));
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __toString ()
-	{
-		return sprintf ('%s[%s#%s]', $this->getNodeName (), $this->selector, $this->id);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return sprintf('%s[%s#%s]', $this->getNodeName(), $this->selector, $this->id);
+    }
 }

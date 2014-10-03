@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class TransactionMulti extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'MULTI';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'MULTI';
+    }
 }

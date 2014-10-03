@@ -21,68 +21,66 @@ namespace Predis\Command;
  */
 class StringSubstrTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\StringSubstr';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\StringSubstr';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'SUBSTR';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'SUBSTR';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key', 5, 10);
+        $expected = array('key', 5, 10);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key', 5, 10);
-		$expected = array ('key', 5, 10);
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $this->assertSame('substring',$this->getCommand()->parseResponse('substring'));
+    }
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$this->assertSame ('substring', $this->getCommand ()->parseResponse ('substring'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key', 5, 10);
+        $expected = array('prefix:key', 5, 10);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key', 5, 10);
-		$expected = array ('prefix:key', 5, 10);
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
-
-		$this->assertSame (array (), $command->getArguments ());
-	}
-
+        $this->assertSame(array(), $command->getArguments());
+    }
 }

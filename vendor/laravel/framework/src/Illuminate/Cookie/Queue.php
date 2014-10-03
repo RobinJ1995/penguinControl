@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Cookie;
+<?php namespace Illuminate\Cookie;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class Queue implements HttpKernelInterface
-{
+class Queue implements HttpKernelInterface {
 
 	/**
 	 * The wrapped kernel implementation.
@@ -29,7 +26,7 @@ class Queue implements HttpKernelInterface
 	 * @param  \Illuminate\Cookie\CookieJar  $cookies
 	 * @return void
 	 */
-	public function __construct (HttpKernelInterface $app, CookieJar $cookies)
+	public function __construct(HttpKernelInterface $app, CookieJar $cookies)
 	{
 		$this->app = $app;
 		$this->cookies = $cookies;
@@ -45,13 +42,13 @@ class Queue implements HttpKernelInterface
 	 * @param  bool  $catch
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function handle (Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+	public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
 	{
-		$response = $this->app->handle ($request, $type, $catch);
+		$response = $this->app->handle($request, $type, $catch);
 
-		foreach ($this->cookies->getQueuedCookies () as $cookie)
+		foreach ($this->cookies->getQueuedCookies() as $cookie)
 		{
-			$response->headers->setCookie ($cookie);
+			$response->headers->setCookie($cookie);
 		}
 
 		return $response;

@@ -18,17 +18,14 @@ namespace Predis\Command;
  */
 abstract class PrefixableCommand extends AbstractCommand implements PrefixableCommandInterface
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function prefixKeys ($prefix)
-	{
-		if ($arguments = $this->getArguments ())
-		{
-			$arguments[0] = "$prefix{$arguments[0]}";
-			$this->setRawArguments ($arguments);
-		}
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+            $this->setRawArguments($arguments);
+        }
+    }
 }

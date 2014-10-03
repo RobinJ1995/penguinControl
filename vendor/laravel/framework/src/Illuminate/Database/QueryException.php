@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use PDOException;
 
-class QueryException extends PDOException
-{
+class QueryException extends PDOException {
 
 	/**
 	 * The SQL for the query.
@@ -29,13 +26,13 @@ class QueryException extends PDOException
 	 * @param  \Exception $previous
 	 * @return void
 	 */
-	public function __construct ($sql, array $bindings, $previous)
+	public function __construct($sql, array $bindings, $previous)
 	{
 		$this->sql = $sql;
 		$this->bindings = $bindings;
 		$this->previous = $previous;
-		$this->code = $previous->getCode ();
-		$this->message = $this->formatMessage ($sql, $bindings, $previous);
+		$this->code = $previous->getCode();
+		$this->message = $this->formatMessage($sql, $bindings, $previous);
 
 		if ($previous instanceof PDOException)
 		{
@@ -51,9 +48,9 @@ class QueryException extends PDOException
 	 * @param  \Exception $previous
 	 * @return string
 	 */
-	protected function formatMessage ($sql, $bindings, $previous)
+	protected function formatMessage($sql, $bindings, $previous)
 	{
-		return $previous->getMessage () . ' (SQL: ' . str_replace_array ('\?', $bindings, $sql) . ')';
+		return $previous->getMessage().' (SQL: '.str_replace_array('\?', $bindings, $sql).')';
 	}
 
 	/**
@@ -61,7 +58,7 @@ class QueryException extends PDOException
 	 *
 	 * @return string
 	 */
-	public function getSql ()
+	public function getSql()
 	{
 		return $this->sql;
 	}
@@ -71,7 +68,7 @@ class QueryException extends PDOException
 	 *
 	 * @return array
 	 */
-	public function getBindings ()
+	public function getBindings()
 	{
 		return $this->bindings;
 	}

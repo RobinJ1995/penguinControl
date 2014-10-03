@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringDecrementBy extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'DECRBY';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'DECRBY';
+    }
 }

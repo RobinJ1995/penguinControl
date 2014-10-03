@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Queue;
 
-namespace Illuminate\Queue;
-
-interface QueueInterface
-{
+interface QueueInterface {
 
 	/**
 	 * Push a new job onto the queue.
@@ -13,7 +10,7 @@ interface QueueInterface
 	 * @param  string  $queue
 	 * @return mixed
 	 */
-	public function push ($job, $data = '', $queue = null);
+	public function push($job, $data = '', $queue = null);
 
 	/**
 	 * Push a raw payload onto the queue.
@@ -23,7 +20,7 @@ interface QueueInterface
 	 * @param  array   $options
 	 * @return mixed
 	 */
-	public function pushRaw ($payload, $queue = null, array $options = array ());
+	public function pushRaw($payload, $queue = null, array $options = array());
 
 	/**
 	 * Push a new job onto the queue after a delay.
@@ -34,7 +31,7 @@ interface QueueInterface
 	 * @param  string  $queue
 	 * @return mixed
 	 */
-	public function later ($delay, $job, $data = '', $queue = null);
+	public function later($delay, $job, $data = '', $queue = null);
 
 	/**
 	 * Pop the next job off of the queue.
@@ -42,5 +39,6 @@ interface QueueInterface
 	 * @param  string  $queue
 	 * @return \Illuminate\Queue\Jobs\Job|null
 	 */
-	public function pop ($queue = null);
+	public function pop($queue = null);
+
 }

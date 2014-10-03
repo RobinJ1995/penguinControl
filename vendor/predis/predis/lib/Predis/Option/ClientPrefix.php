@@ -20,13 +20,11 @@ use Predis\Command\Processor\KeyPrefixProcessor;
  */
 class ClientPrefix extends AbstractOption
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function filter (ClientOptionsInterface $options, $value)
-	{
-		return new KeyPrefixProcessor ($value);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function filter(ClientOptionsInterface $options, $value)
+    {
+        return new KeyPrefixProcessor($value);
+    }
 }

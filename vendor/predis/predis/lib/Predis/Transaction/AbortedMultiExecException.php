@@ -20,28 +20,26 @@ use Predis\PredisException;
  */
 class AbortedMultiExecException extends PredisException
 {
+    private $transaction;
 
-	private $transaction;
+    /**
+     * @param MultiExecContext $transaction Transaction that generated the exception.
+     * @param string           $message     Error message.
+     * @param int              $code        Error code.
+     */
+    public function __construct(MultiExecContext $transaction, $message, $code = null)
+    {
+        parent::__construct($message, $code);
+        $this->transaction = $transaction;
+    }
 
-	/**
-	 * @param MultiExecContext $transaction Transaction that generated the exception.
-	 * @param string           $message     Error message.
-	 * @param int              $code        Error code.
-	 */
-	public function __construct (MultiExecContext $transaction, $message, $code = null)
-	{
-		parent::__construct ($message, $code);
-		$this->transaction = $transaction;
-	}
-
-	/**
-	 * Returns the transaction that generated the exception.
-	 *
-	 * @return MultiExecContext
-	 */
-	public function getTransaction ()
-	{
-		return $this->transaction;
-	}
-
+    /**
+     * Returns the transaction that generated the exception.
+     *
+     * @return MultiExecContext
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
 }

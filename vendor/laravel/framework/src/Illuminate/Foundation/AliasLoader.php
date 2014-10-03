@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Foundation;
 
-namespace Illuminate\Foundation;
-
-class AliasLoader
-{
+class AliasLoader {
 
 	/**
 	 * The array of class aliases.
@@ -32,7 +29,7 @@ class AliasLoader
 	 * @param  array  $aliases
 	 * @return void
 	 */
-	public function __construct (array $aliases = array ())
+	public function __construct(array $aliases = array())
 	{
 		$this->aliases = $aliases;
 	}
@@ -43,14 +40,13 @@ class AliasLoader
 	 * @param  array  $aliases
 	 * @return \Illuminate\Foundation\AliasLoader
 	 */
-	public static function getInstance (array $aliases = array ())
+	public static function getInstance(array $aliases = array())
 	{
-		if (is_null (static::$instance))
-			static::$instance = new static ($aliases);
+		if (is_null(static::$instance)) static::$instance = new static($aliases);
 
-		$aliases = array_merge (static::$instance->getAliases (), $aliases);
+		$aliases = array_merge(static::$instance->getAliases(), $aliases);
 
-		static::$instance->setAliases ($aliases);
+		static::$instance->setAliases($aliases);
 
 		return static::$instance;
 	}
@@ -61,11 +57,11 @@ class AliasLoader
 	 * @param  string  $alias
 	 * @return void
 	 */
-	public function load ($alias)
+	public function load($alias)
 	{
-		if (isset ($this->aliases[$alias]))
+		if (isset($this->aliases[$alias]))
 		{
-			return class_alias ($this->aliases[$alias], $alias);
+			return class_alias($this->aliases[$alias], $alias);
 		}
 	}
 
@@ -76,7 +72,7 @@ class AliasLoader
 	 * @param  string  $alias
 	 * @return void
 	 */
-	public function alias ($class, $alias)
+	public function alias($class, $alias)
 	{
 		$this->aliases[$class] = $alias;
 	}
@@ -86,11 +82,11 @@ class AliasLoader
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		if (!$this->registered)
+		if ( ! $this->registered)
 		{
-			$this->prependToLoaderStack ();
+			$this->prependToLoaderStack();
 
 			$this->registered = true;
 		}
@@ -101,9 +97,9 @@ class AliasLoader
 	 *
 	 * @return void
 	 */
-	protected function prependToLoaderStack ()
+	protected function prependToLoaderStack()
 	{
-		spl_autoload_register (array ($this, 'load'), true, true);
+		spl_autoload_register(array($this, 'load'), true, true);
 	}
 
 	/**
@@ -111,7 +107,7 @@ class AliasLoader
 	 *
 	 * @return array
 	 */
-	public function getAliases ()
+	public function getAliases()
 	{
 		return $this->aliases;
 	}
@@ -122,7 +118,7 @@ class AliasLoader
 	 * @param  array  $aliases
 	 * @return void
 	 */
-	public function setAliases (array $aliases)
+	public function setAliases(array $aliases)
 	{
 		$this->aliases = $aliases;
 	}
@@ -132,7 +128,7 @@ class AliasLoader
 	 *
 	 * @return bool
 	 */
-	public function isRegistered ()
+	public function isRegistered()
 	{
 		return $this->registered;
 	}
@@ -143,7 +139,7 @@ class AliasLoader
 	 * @param  bool  $value
 	 * @return void
 	 */
-	public function setRegistered ($value)
+	public function setRegistered($value)
 	{
 		$this->registered = $value;
 	}
@@ -154,7 +150,7 @@ class AliasLoader
 	 * @param  \Illuminate\Foundation\AliasLoader  $loader
 	 * @return void
 	 */
-	public static function setInstance ($loader)
+	public static function setInstance($loader)
 	{
 		static::$instance = $loader;
 	}

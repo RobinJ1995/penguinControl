@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Auth;
+<?php namespace Illuminate\Auth;
 
 use Illuminate\Database\Connection;
 use Illuminate\Hashing\HasherInterface;
 
-class DatabaseUserProvider implements UserProviderInterface
-{
+class DatabaseUserProvider implements UserProviderInterface {
 
 	/**
 	 * The active database connection.
@@ -37,7 +34,7 @@ class DatabaseUserProvider implements UserProviderInterface
 	 * @param  string  $table
 	 * @return void
 	 */
-	public function __construct (Connection $conn, HasherInterface $hasher, $table)
+	public function __construct(Connection $conn, HasherInterface $hasher, $table)
 	{
 		$this->conn = $conn;
 		$this->table = $table;
@@ -50,13 +47,13 @@ class DatabaseUserProvider implements UserProviderInterface
 	 * @param  mixed  $identifier
 	 * @return \Illuminate\Auth\UserInterface|null
 	 */
-	public function retrieveById ($identifier)
+	public function retrieveById($identifier)
 	{
-		$user = $this->conn->table ($this->table)->find ($identifier);
+		$user = $this->conn->table($this->table)->find($identifier);
 
-		if (!is_null ($user))
+		if ( ! is_null($user))
 		{
-			return new GenericUser ((array) $user);
+			return new GenericUser((array) $user);
 		}
 	}
 
@@ -67,16 +64,16 @@ class DatabaseUserProvider implements UserProviderInterface
 	 * @param  string  $token
 	 * @return \Illuminate\Auth\UserInterface|null
 	 */
-	public function retrieveByToken ($identifier, $token)
+	public function retrieveByToken($identifier, $token)
 	{
-		$user = $this->conn->table ($this->table)
-			->where ('id', $identifier)
-			->where ('remember_token', $token)
-			->first ();
+		$user = $this->conn->table($this->table)
+                                ->where('id', $identifier)
+                                ->where('remember_token', $token)
+                                ->first();
 
-		if (!is_null ($user))
+		if ( ! is_null($user))
 		{
-			return new GenericUser ((array) $user);
+			return new GenericUser((array) $user);
 		}
 	}
 
@@ -87,11 +84,11 @@ class DatabaseUserProvider implements UserProviderInterface
 	 * @param  string  $token
 	 * @return void
 	 */
-	public function updateRememberToken (UserInterface $user, $token)
+	public function updateRememberToken(UserInterface $user, $token)
 	{
-		$this->conn->table ($this->table)
-			->where ('id', $user->getAuthIdentifier ())
-			->update (array ('remember_token' => $token));
+		$this->conn->table($this->table)
+                            ->where('id', $user->getAuthIdentifier())
+                            ->update(array('remember_token' => $token));
 	}
 
 	/**
@@ -100,29 +97,29 @@ class DatabaseUserProvider implements UserProviderInterface
 	 * @param  array  $credentials
 	 * @return \Illuminate\Auth\UserInterface|null
 	 */
-	public function retrieveByCredentials (array $credentials)
+	public function retrieveByCredentials(array $credentials)
 	{
 		// First we will add each credential element to the query as a where clause.
 		// Then we can execute the query and, if we found a user, return it in a
 		// generic "user" object that will be utilized by the Guard instances.
-		$query = $this->conn->table ($this->table);
+		$query = $this->conn->table($this->table);
 
 		foreach ($credentials as $key => $value)
 		{
-			if (!str_contains ($key, 'password'))
+			if ( ! str_contains($key, 'password'))
 			{
-				$query->where ($key, $value);
+				$query->where($key, $value);
 			}
 		}
 
 		// Now we are ready to execute the query to see if we have an user matching
 		// the given credentials. If not, we will just return nulls and indicate
 		// that there are no matching users for these given credential arrays.
-		$user = $query->first ();
+		$user = $query->first();
 
-		if (!is_null ($user))
+		if ( ! is_null($user))
 		{
-			return new GenericUser ((array) $user);
+			return new GenericUser((array) $user);
 		}
 	}
 
@@ -133,11 +130,11 @@ class DatabaseUserProvider implements UserProviderInterface
 	 * @param  array  $credentials
 	 * @return bool
 	 */
-	public function validateCredentials (UserInterface $user, array $credentials)
+	public function validateCredentials(UserInterface $user, array $credentials)
 	{
 		$plain = $credentials['password'];
 
-		return $this->hasher->check ($plain, $user->getAuthPassword ());
+		return $this->hasher->check($plain, $user->getAuthPassword());
 	}
 
 }

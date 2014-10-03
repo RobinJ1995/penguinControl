@@ -23,23 +23,21 @@ use Predis\ClientInterface;
  */
 class Keyspace extends CursorBasedIterator
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(ClientInterface $client, $match = null, $count = null)
+    {
+        $this->requiredCommand($client, 'SCAN');
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct (ClientInterface $client, $match = null, $count = null)
-	{
-		$this->requiredCommand ($client, 'SCAN');
+        parent::__construct($client, $match, $count);
+    }
 
-		parent::__construct ($client, $match, $count);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function executeCommand ()
-	{
-		return $this->client->scan ($this->cursor, $this->getScanOptions ());
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    protected function executeCommand()
+    {
+        return $this->client->scan($this->cursor, $this->getScanOptions());
+    }
 }

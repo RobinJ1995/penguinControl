@@ -1,24 +1,21 @@
-<?php
-
-namespace Illuminate\Session;
+<?php namespace Illuminate\Session;
 
 use Illuminate\Support\ServiceProvider;
 
-class SessionServiceProvider extends ServiceProvider
-{
+class SessionServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the service provider.
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->setupDefaultDriver ();
+		$this->setupDefaultDriver();
 
-		$this->registerSessionManager ();
+		$this->registerSessionManager();
 
-		$this->registerSessionDriver ();
+		$this->registerSessionDriver();
 	}
 
 	/**
@@ -26,9 +23,9 @@ class SessionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function setupDefaultDriver ()
+	protected function setupDefaultDriver()
 	{
-		if ($this->app->runningInConsole ())
+		if ($this->app->runningInConsole())
 		{
 			$this->app['config']['session.driver'] = 'array';
 		}
@@ -39,11 +36,11 @@ class SessionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerSessionManager ()
+	protected function registerSessionManager()
 	{
-		$this->app->bindShared ('session', function($app)
+		$this->app->bindShared('session', function($app)
 		{
-			return new SessionManager ($app);
+			return new SessionManager($app);
 		});
 	}
 
@@ -52,16 +49,16 @@ class SessionServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerSessionDriver ()
+	protected function registerSessionDriver()
 	{
-		$this->app->bindShared ('session.store', function($app)
+		$this->app->bindShared('session.store', function($app)
 		{
 			// First, we will create the session manager which is responsible for the
 			// creation of the various session drivers when they are needed by the
 			// application instance, and will resolve them on a lazy load basis.
 			$manager = $app['session'];
 
-			return $manager->driver ();
+			return $manager->driver();
 		});
 	}
 
@@ -70,7 +67,7 @@ class SessionServiceProvider extends ServiceProvider
 	 *
 	 * @return string
 	 */
-	protected function getDriver ()
+	protected function getDriver()
 	{
 		return $this->app['config']['session.driver'];
 	}

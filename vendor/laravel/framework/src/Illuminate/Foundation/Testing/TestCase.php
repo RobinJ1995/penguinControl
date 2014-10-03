@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Foundation\Testing;
+<?php namespace Illuminate\Foundation\Testing;
 
 use Illuminate\View\View;
 use Illuminate\Auth\UserInterface;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
-{
+abstract class TestCase extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * The Illuminate application instance.
@@ -27,11 +24,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 */
-	public function setUp ()
+	public function setUp()
 	{
-		if (!$this->app)
+		if ( ! $this->app)
 		{
-			$this->refreshApplication ();
+			$this->refreshApplication();
 		}
 	}
 
@@ -40,15 +37,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 */
-	protected function refreshApplication ()
+	protected function refreshApplication()
 	{
-		$this->app = $this->createApplication ();
+		$this->app = $this->createApplication();
 
-		$this->client = $this->createClient ();
+		$this->client = $this->createClient();
 
-		$this->app->setRequestForConsoleEnvironment ();
+		$this->app->setRequestForConsoleEnvironment();
 
-		$this->app->boot ();
+		$this->app->boot();
 	}
 
 	/**
@@ -58,7 +55,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return \Symfony\Component\HttpKernel\HttpKernelInterface
 	 */
-	abstract public function createApplication ();
+	abstract public function createApplication();
 
 	/**
 	 * Call the given URI and return the Response.
@@ -72,11 +69,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  bool    $changeHistory
 	 * @return \Illuminate\Http\Response
 	 */
-	public function call ()
+	public function call()
 	{
-		call_user_func_array (array ($this->client, 'request'), func_get_args ());
+		call_user_func_array(array($this->client, 'request'), func_get_args());
 
-		return $this->client->getResponse ();
+		return $this->client->getResponse();
 	}
 
 	/**
@@ -91,13 +88,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  bool    $changeHistory
 	 * @return \Illuminate\Http\Response
 	 */
-	public function callSecure ()
+	public function callSecure()
 	{
-		$parameters = func_get_args ();
+		$parameters = func_get_args();
 
-		$parameters[1] = 'https://localhost/' . ltrim ($parameters[1], '/');
+		$parameters[1] = 'https://localhost/'.ltrim($parameters[1], '/');
 
-		return call_user_func_array (array ($this, 'call'), $parameters);
+		return call_user_func_array(array($this, 'call'), $parameters);
 	}
 
 	/**
@@ -113,11 +110,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  bool    $changeHistory
 	 * @return \Illuminate\Http\Response
 	 */
-	public function action ($method, $action, $wildcards = array (), $parameters = array (), $files = array (), $server = array (), $content = null, $changeHistory = true)
+	public function action($method, $action, $wildcards = array(), $parameters = array(), $files = array(), $server = array(), $content = null, $changeHistory = true)
 	{
-		$uri = $this->app['url']->action ($action, $wildcards, true);
+		$uri = $this->app['url']->action($action, $wildcards, true);
 
-		return $this->call ($method, $uri, $parameters, $files, $server, $content, $changeHistory);
+		return $this->call($method, $uri, $parameters, $files, $server, $content, $changeHistory);
 	}
 
 	/**
@@ -133,11 +130,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  bool    $changeHistory
 	 * @return \Illuminate\Http\Response
 	 */
-	public function route ($method, $name, $routeParameters = array (), $parameters = array (), $files = array (), $server = array (), $content = null, $changeHistory = true)
+	public function route($method, $name, $routeParameters = array(), $parameters = array(), $files = array(), $server = array(), $content = null, $changeHistory = true)
 	{
-		$uri = $this->app['url']->route ($name, $routeParameters);
+		$uri = $this->app['url']->route($name, $routeParameters);
 
-		return $this->call ($method, $uri, $parameters, $files, $server, $content, $changeHistory);
+		return $this->call($method, $uri, $parameters, $files, $server, $content, $changeHistory);
 	}
 
 	/**
@@ -145,13 +142,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 */
-	public function assertResponseOk ()
+	public function assertResponseOk()
 	{
-		$response = $this->client->getResponse ();
+		$response = $this->client->getResponse();
 
-		$actual = $response->getStatusCode ();
+		$actual = $response->getStatusCode();
 
-		return $this->assertTrue ($response->isOk (), 'Expected status code 200, got ' . $actual);
+		return $this->assertTrue($response->isOk(), 'Expected status code 200, got ' .$actual);
 	}
 
 	/**
@@ -160,9 +157,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  int  $code
 	 * @return void
 	 */
-	public function assertResponseStatus ($code)
+	public function assertResponseStatus($code)
 	{
-		return $this->assertEquals ($code, $this->client->getResponse ()->getStatusCode ());
+		return $this->assertEquals($code, $this->client->getResponse()->getStatusCode());
 	}
 
 	/**
@@ -172,25 +169,24 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  mixed  $value
 	 * @return void
 	 */
-	public function assertViewHas ($key, $value = null)
+	public function assertViewHas($key, $value = null)
 	{
-		if (is_array ($key))
-			return $this->assertViewHasAll ($key);
+		if (is_array($key)) return $this->assertViewHasAll($key);
 
-		$response = $this->client->getResponse ();
+		$response = $this->client->getResponse();
 
-		if (!isset ($response->original) || !$response->original instanceof View)
+		if ( ! isset($response->original) || ! $response->original instanceof View)
 		{
-			return $this->assertTrue (false, 'The response was not a view.');
+			return $this->assertTrue(false, 'The response was not a view.');
 		}
 
-		if (is_null ($value))
+		if (is_null($value))
 		{
-			$this->assertArrayHasKey ($key, $response->original->getData ());
+			$this->assertArrayHasKey($key, $response->original->getData());
 		}
 		else
 		{
-			$this->assertEquals ($value, $response->original->$key);
+			$this->assertEquals($value, $response->original->$key);
 		}
 	}
 
@@ -200,17 +196,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array  $bindings
 	 * @return void
 	 */
-	public function assertViewHasAll (array $bindings)
+	public function assertViewHasAll(array $bindings)
 	{
 		foreach ($bindings as $key => $value)
 		{
-			if (is_int ($key))
+			if (is_int($key))
 			{
-				$this->assertViewHas ($value);
+				$this->assertViewHas($value);
 			}
 			else
 			{
-				$this->assertViewHas ($key, $value);
+				$this->assertViewHas($key, $value);
 			}
 		}
 	}
@@ -221,16 +217,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  string  $key
 	 * @return void
 	 */
-	public function assertViewMissing ($key)
+	public function assertViewMissing($key)
 	{
-		$response = $this->client->getResponse ();
+		$response = $this->client->getResponse();
 
-		if (!isset ($response->original) || !$response->original instanceof View)
+		if ( ! isset($response->original) || ! $response->original instanceof View)
 		{
-			return $this->assertTrue (false, 'The response was not a view.');
+			return $this->assertTrue(false, 'The response was not a view.');
 		}
 
-		$this->assertArrayNotHasKey ($key, $response->original->getData ());
+		$this->assertArrayNotHasKey($key, $response->original->getData());
 	}
 
 	/**
@@ -240,15 +236,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array   $with
 	 * @return void
 	 */
-	public function assertRedirectedTo ($uri, $with = array ())
+	public function assertRedirectedTo($uri, $with = array())
 	{
-		$response = $this->client->getResponse ();
+		$response = $this->client->getResponse();
 
-		$this->assertInstanceOf ('Illuminate\Http\RedirectResponse', $response);
+		$this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
 
-		$this->assertEquals ($this->app['url']->to ($uri), $response->headers->get ('Location'));
+		$this->assertEquals($this->app['url']->to($uri), $response->headers->get('Location'));
 
-		$this->assertSessionHasAll ($with);
+		$this->assertSessionHasAll($with);
 	}
 
 	/**
@@ -259,9 +255,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array   $with
 	 * @return void
 	 */
-	public function assertRedirectedToRoute ($name, $parameters = array (), $with = array ())
+	public function assertRedirectedToRoute($name, $parameters = array(), $with = array())
 	{
-		$this->assertRedirectedTo ($this->app['url']->route ($name, $parameters), $with);
+		$this->assertRedirectedTo($this->app['url']->route($name, $parameters), $with);
 	}
 
 	/**
@@ -272,9 +268,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array   $with
 	 * @return void
 	 */
-	public function assertRedirectedToAction ($name, $parameters = array (), $with = array ())
+	public function assertRedirectedToAction($name, $parameters = array(), $with = array())
 	{
-		$this->assertRedirectedTo ($this->app['url']->action ($name, $parameters), $with);
+		$this->assertRedirectedTo($this->app['url']->action($name, $parameters), $with);
 	}
 
 	/**
@@ -284,18 +280,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  mixed  $value
 	 * @return void
 	 */
-	public function assertSessionHas ($key, $value = null)
+	public function assertSessionHas($key, $value = null)
 	{
-		if (is_array ($key))
-			return $this->assertSessionHasAll ($key);
+		if (is_array($key)) return $this->assertSessionHasAll($key);
 
-		if (is_null ($value))
+		if (is_null($value))
 		{
-			$this->assertTrue ($this->app['session.store']->has ($key), "Session missing key: $key");
+			$this->assertTrue($this->app['session.store']->has($key), "Session missing key: $key");
 		}
 		else
 		{
-			$this->assertEquals ($value, $this->app['session.store']->get ($key));
+			$this->assertEquals($value, $this->app['session.store']->get($key));
 		}
 	}
 
@@ -305,17 +300,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array  $bindings
 	 * @return void
 	 */
-	public function assertSessionHasAll (array $bindings)
+	public function assertSessionHasAll(array $bindings)
 	{
 		foreach ($bindings as $key => $value)
 		{
-			if (is_int ($key))
+			if (is_int($key))
 			{
-				$this->assertSessionHas ($value);
+				$this->assertSessionHas($value);
 			}
 			else
 			{
-				$this->assertSessionHas ($key, $value);
+				$this->assertSessionHas($key, $value);
 			}
 		}
 	}
@@ -327,23 +322,23 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  mixed  $format
 	 * @return void
 	 */
-	public function assertSessionHasErrors ($bindings = array (), $format = null)
+	public function assertSessionHasErrors($bindings = array(), $format = null)
 	{
-		$this->assertSessionHas ('errors');
+		$this->assertSessionHas('errors');
 
-		$bindings = (array) $bindings;
+		$bindings = (array)$bindings;
 
-		$errors = $this->app['session.store']->get ('errors');
+		$errors = $this->app['session.store']->get('errors');
 
 		foreach ($bindings as $key => $value)
 		{
-			if (is_int ($key))
+			if (is_int($key))
 			{
-				$this->assertTrue ($errors->has ($value), "Session missing error: $value");
+				$this->assertTrue($errors->has($value), "Session missing error: $value");
 			}
 			else
 			{
-				$this->assertContains ($value, $errors->get ($key, $format));
+				$this->assertContains($value, $errors->get($key, $format));
 			}
 		}
 	}
@@ -353,9 +348,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 */
-	public function assertHasOldInput ()
+	public function assertHasOldInput()
 	{
-		$this->assertSessionHas ('_old_input');
+		$this->assertSessionHas('_old_input');
 	}
 
 	/**
@@ -364,13 +359,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array  $data
 	 * @return void
 	 */
-	public function session (array $data)
+	public function session(array $data)
 	{
-		$this->startSession ();
+		$this->startSession();
 
 		foreach ($data as $key => $value)
 		{
-			$this->app['session']->put ($key, $value);
+			$this->app['session']->put($key, $value);
 		}
 	}
 
@@ -379,11 +374,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 */
-	public function flushSession ()
+	public function flushSession()
 	{
-		$this->startSession ();
+		$this->startSession();
 
-		$this->app['session']->flush ();
+		$this->app['session']->flush();
 	}
 
 	/**
@@ -391,11 +386,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 */
-	protected function startSession ()
+	protected function startSession()
 	{
-		if (!$this->app['session']->isStarted ())
+		if ( ! $this->app['session']->isStarted())
 		{
-			$this->app['session']->start ();
+			$this->app['session']->start();
 		}
 	}
 
@@ -406,9 +401,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  string  $driver
 	 * @return void
 	 */
-	public function be (UserInterface $user, $driver = null)
+	public function be(UserInterface $user, $driver = null)
 	{
-		$this->app['auth']->driver ($driver)->setUser ($user);
+		$this->app['auth']->driver($driver)->setUser($user);
 	}
 
 	/**
@@ -417,9 +412,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  string  $class
 	 * @return void
 	 */
-	public function seed ($class = 'DatabaseSeeder')
+	public function seed($class = 'DatabaseSeeder')
 	{
-		$this->app['artisan']->call ('db:seed', array ('--class' => $class));
+		$this->app['artisan']->call('db:seed', array('--class' => $class));
 	}
 
 	/**
@@ -428,9 +423,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	 * @param  array  $server
 	 * @return \Symfony\Component\HttpKernel\Client
 	 */
-	protected function createClient (array $server = array ())
+	protected function createClient(array $server = array())
 	{
-		return new Client ($this->app, $server);
+		return new Client($this->app, $server);
 	}
 
 }

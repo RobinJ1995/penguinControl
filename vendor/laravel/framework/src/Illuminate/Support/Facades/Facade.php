@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Support\Facades;
+<?php namespace Illuminate\Support\Facades;
 
 use Mockery\MockInterface;
 
-abstract class Facade
-{
+abstract class Facade {
 
 	/**
 	 * The application instance being facaded.
@@ -27,11 +24,11 @@ abstract class Facade
 	 * @param  mixed  $instance
 	 * @return void
 	 */
-	public static function swap ($instance)
+	public static function swap($instance)
 	{
-		static::$resolvedInstance[static::getFacadeAccessor ()] = $instance;
+		static::$resolvedInstance[static::getFacadeAccessor()] = $instance;
 
-		static::$app->instance (static::getFacadeAccessor (), $instance);
+		static::$app->instance(static::getFacadeAccessor(), $instance);
 	}
 
 	/**
@@ -40,20 +37,20 @@ abstract class Facade
 	 * @param  dynamic
 	 * @return \Mockery\Expectation
 	 */
-	public static function shouldReceive ()
+	public static function shouldReceive()
 	{
-		$name = static::getFacadeAccessor ();
+		$name = static::getFacadeAccessor();
 
-		if (static::isMock ())
+		if (static::isMock())
 		{
 			$mock = static::$resolvedInstance[$name];
 		}
 		else
 		{
-			$mock = static::createFreshMockInstance ($name);
+			$mock = static::createFreshMockInstance($name);
 		}
 
-		return call_user_func_array (array ($mock, 'shouldReceive'), func_get_args ());
+		return call_user_func_array(array($mock, 'shouldReceive'), func_get_args());
 	}
 
 	/**
@@ -62,13 +59,13 @@ abstract class Facade
 	 * @param  string  $name
 	 * @return \Mockery\Expectation
 	 */
-	protected static function createFreshMockInstance ($name)
+	protected static function createFreshMockInstance($name)
 	{
-		static::$resolvedInstance[$name] = $mock = static::createMockByName ($name);
+		static::$resolvedInstance[$name] = $mock = static::createMockByName($name);
 
-		if (isset (static::$app))
+		if (isset(static::$app))
 		{
-			static::$app->instance ($name, $mock);
+			static::$app->instance($name, $mock);
 		}
 
 		return $mock;
@@ -80,11 +77,11 @@ abstract class Facade
 	 * @param  string  $name
 	 * @return \Mockery\Expectation
 	 */
-	protected static function createMockByName ($name)
+	protected static function createMockByName($name)
 	{
-		$class = static::getMockableClass ($name);
+		$class = static::getMockableClass($name);
 
-		return $class ? \Mockery::mock ($class) : \Mockery::mock ();
+		return $class ? \Mockery::mock($class) : \Mockery::mock();
 	}
 
 	/**
@@ -92,11 +89,11 @@ abstract class Facade
 	 *
 	 * @return bool
 	 */
-	protected static function isMock ()
+	protected static function isMock()
 	{
-		$name = static::getFacadeAccessor ();
+		$name = static::getFacadeAccessor();
 
-		return isset (static::$resolvedInstance[$name]) && static::$resolvedInstance[$name] instanceof MockInterface;
+		return isset(static::$resolvedInstance[$name]) && static::$resolvedInstance[$name] instanceof MockInterface;
 	}
 
 	/**
@@ -104,10 +101,9 @@ abstract class Facade
 	 *
 	 * @return string
 	 */
-	protected static function getMockableClass ()
+	protected static function getMockableClass()
 	{
-		if ($root = static::getFacadeRoot ())
-			return get_class ($root);
+		if ($root = static::getFacadeRoot()) return get_class($root);
 	}
 
 	/**
@@ -115,9 +111,9 @@ abstract class Facade
 	 *
 	 * @return mixed
 	 */
-	public static function getFacadeRoot ()
+	public static function getFacadeRoot()
 	{
-		return static::resolveFacadeInstance (static::getFacadeAccessor ());
+		return static::resolveFacadeInstance(static::getFacadeAccessor());
 	}
 
 	/**
@@ -127,9 +123,9 @@ abstract class Facade
 	 *
 	 * @throws \RuntimeException
 	 */
-	protected static function getFacadeAccessor ()
+	protected static function getFacadeAccessor()
 	{
-		throw new \RuntimeException ("Facade does not implement getFacadeAccessor method.");
+		throw new \RuntimeException("Facade does not implement getFacadeAccessor method.");
 	}
 
 	/**
@@ -138,12 +134,11 @@ abstract class Facade
 	 * @param  string  $name
 	 * @return mixed
 	 */
-	protected static function resolveFacadeInstance ($name)
+	protected static function resolveFacadeInstance($name)
 	{
-		if (is_object ($name))
-			return $name;
+		if (is_object($name)) return $name;
 
-		if (isset (static::$resolvedInstance[$name]))
+		if (isset(static::$resolvedInstance[$name]))
 		{
 			return static::$resolvedInstance[$name];
 		}
@@ -157,9 +152,9 @@ abstract class Facade
 	 * @param  string  $name
 	 * @return void
 	 */
-	public static function clearResolvedInstance ($name)
+	public static function clearResolvedInstance($name)
 	{
-		unset (static::$resolvedInstance[$name]);
+		unset(static::$resolvedInstance[$name]);
 	}
 
 	/**
@@ -167,9 +162,9 @@ abstract class Facade
 	 *
 	 * @return void
 	 */
-	public static function clearResolvedInstances ()
+	public static function clearResolvedInstances()
 	{
-		static::$resolvedInstance = array ();
+		static::$resolvedInstance = array();
 	}
 
 	/**
@@ -177,7 +172,7 @@ abstract class Facade
 	 *
 	 * @return \Illuminate\Foundation\Application
 	 */
-	public static function getFacadeApplication ()
+	public static function getFacadeApplication()
 	{
 		return static::$app;
 	}
@@ -188,7 +183,7 @@ abstract class Facade
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return void
 	 */
-	public static function setFacadeApplication ($app)
+	public static function setFacadeApplication($app)
 	{
 		static::$app = $app;
 	}
@@ -200,29 +195,29 @@ abstract class Facade
 	 * @param  array   $args
 	 * @return mixed
 	 */
-	public static function __callStatic ($method, $args)
+	public static function __callStatic($method, $args)
 	{
-		$instance = static::resolveFacadeInstance (static::getFacadeAccessor ());
+		$instance = static::getFacadeRoot();
 
-		switch (count ($args))
+		switch (count($args))
 		{
 			case 0:
-				return $instance->$method ();
+				return $instance->$method();
 
 			case 1:
-				return $instance->$method ($args[0]);
+				return $instance->$method($args[0]);
 
 			case 2:
-				return $instance->$method ($args[0], $args[1]);
+				return $instance->$method($args[0], $args[1]);
 
 			case 3:
-				return $instance->$method ($args[0], $args[1], $args[2]);
+				return $instance->$method($args[0], $args[1], $args[2]);
 
 			case 4:
-				return $instance->$method ($args[0], $args[1], $args[2], $args[3]);
+				return $instance->$method($args[0], $args[1], $args[2], $args[3]);
 
 			default:
-				return call_user_func_array (array ($instance, $method), $args);
+				return call_user_func_array(array($instance, $method), $args);
 		}
 	}
 

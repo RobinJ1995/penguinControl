@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Cookie;
+<?php namespace Illuminate\Cookie;
 
 use Symfony\Component\HttpFoundation\Cookie;
 
-class CookieJar
-{
+class CookieJar {
 
 	/**
 	 * The default path (if specified).
@@ -26,7 +23,7 @@ class CookieJar
 	 *
 	 * @var array
 	 */
-	protected $queued = array ();
+	protected $queued = array();
 
 	/**
 	 * Create a new cookie instance.
@@ -40,13 +37,13 @@ class CookieJar
 	 * @param  bool    $httpOnly
 	 * @return \Symfony\Component\HttpFoundation\Cookie
 	 */
-	public function make ($name, $value, $minutes = 0, $path = null, $domain = null, $secure = false, $httpOnly = true)
+	public function make($name, $value, $minutes = 0, $path = null, $domain = null, $secure = false, $httpOnly = true)
 	{
-		list($path, $domain) = $this->getPathAndDomain ($path, $domain);
+		list($path, $domain) = $this->getPathAndDomain($path, $domain);
 
-		$time = ($minutes == 0) ? 0 : time () + ($minutes * 60);
+		$time = ($minutes == 0) ? 0 : time() + ($minutes * 60);
 
-		return new Cookie ($name, $value, $time, $path, $domain, $secure, $httpOnly);
+		return new Cookie($name, $value, $time, $path, $domain, $secure, $httpOnly);
 	}
 
 	/**
@@ -60,9 +57,9 @@ class CookieJar
 	 * @param  bool    $httpOnly
 	 * @return \Symfony\Component\HttpFoundation\Cookie
 	 */
-	public function forever ($name, $value, $path = null, $domain = null, $secure = false, $httpOnly = true)
+	public function forever($name, $value, $path = null, $domain = null, $secure = false, $httpOnly = true)
 	{
-		return $this->make ($name, $value, 2628000, $path, $domain, $secure, $httpOnly);
+		return $this->make($name, $value, 2628000, $path, $domain, $secure, $httpOnly);
 	}
 
 	/**
@@ -73,9 +70,9 @@ class CookieJar
 	 * @param  string  $domain
 	 * @return \Symfony\Component\HttpFoundation\Cookie
 	 */
-	public function forget ($name, $path = null, $domain = null)
+	public function forget($name, $path = null, $domain = null)
 	{
-		return $this->make ($name, null, -2628000, $path, $domain);
+		return $this->make($name, null, -2628000, $path, $domain);
 	}
 
 	/**
@@ -84,9 +81,9 @@ class CookieJar
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function hasQueued ($key)
+	public function hasQueued($key)
 	{
-		return !is_null ($this->queued ($key));
+		return ! is_null($this->queued($key));
 	}
 
 	/**
@@ -96,9 +93,9 @@ class CookieJar
 	 * @param  mixed   $default
 	 * @return \Symfony\Component\HttpFoundation\Cookie
 	 */
-	public function queued ($key, $default = null)
+	public function queued($key, $default = null)
 	{
-		return array_get ($this->queued, $key, $default);
+		return array_get($this->queued, $key, $default);
 	}
 
 	/**
@@ -107,18 +104,18 @@ class CookieJar
 	 * @param  dynamic
 	 * @return void
 	 */
-	public function queue ()
+	public function queue()
 	{
-		if (head (func_get_args ()) instanceof Cookie)
+		if (head(func_get_args()) instanceof Cookie)
 		{
-			$cookie = head (func_get_args ());
+			$cookie = head(func_get_args());
 		}
 		else
 		{
-			$cookie = call_user_func_array (array ($this, 'make'), func_get_args ());
+			$cookie = call_user_func_array(array($this, 'make'), func_get_args());
 		}
 
-		$this->queued[$cookie->getName ()] = $cookie;
+		$this->queued[$cookie->getName()] = $cookie;
 	}
 
 	/**
@@ -126,9 +123,9 @@ class CookieJar
 	 *
 	 * @param $cookieName
 	 */
-	public function unqueue ($name)
+	public function unqueue($name)
 	{
-		unset ($this->queued[$name]);
+		unset($this->queued[$name]);
 	}
 
 	/**
@@ -138,9 +135,9 @@ class CookieJar
 	 * @param  string  $domain
 	 * @return array
 	 */
-	protected function getPathAndDomain ($path, $domain)
+	protected function getPathAndDomain($path, $domain)
 	{
-		return array ($path ? : $this->path, $domain ? : $this->domain);
+		return array($path ?: $this->path, $domain ?: $this->domain);
 	}
 
 	/**
@@ -150,9 +147,9 @@ class CookieJar
 	 * @param  string  $domain
 	 * @return self
 	 */
-	public function setDefaultPathAndDomain ($path, $domain)
+	public function setDefaultPathAndDomain($path, $domain)
 	{
-		list($this->path, $this->domain) = array ($path, $domain);
+		list($this->path, $this->domain) = array($path, $domain);
 
 		return $this;
 	}
@@ -162,7 +159,7 @@ class CookieJar
 	 *
 	 * @return array
 	 */
-	public function getQueuedCookies ()
+	public function getQueuedCookies()
 	{
 		return $this->queued;
 	}

@@ -17,56 +17,54 @@ namespace Predis\Command;
  */
 class ConnectionQuitTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ConnectionQuit';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ConnectionQuit';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'QUIT';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'QUIT';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array();
+        $expected = array();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ();
-		$expected = array ();
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $command = $this->getCommand();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$command = $this->getCommand ();
+        $this->assertTrue($command->parseResponse(true));
+    }
 
-		$this->assertTrue ($command->parseResponse (true));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsTrueWhenClosingConnection()
+    {
+        $redis = $this->getClient();
+        $command = $this->getCommand();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsTrueWhenClosingConnection ()
-	{
-		$redis = $this->getClient ();
-		$command = $this->getCommand ();
-
-		$this->assertTrue ($redis->executeCommand ($command));
-	}
-
+        $this->assertTrue($redis->executeCommand($command));
+    }
 }

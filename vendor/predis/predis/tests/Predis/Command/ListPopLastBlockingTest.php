@@ -19,87 +19,85 @@ namespace Predis\Command;
  */
 class ListPopLastBlockingTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ListPopLastBlocking';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ListPopLastBlocking';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'BRPOP';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'BRPOP';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array('key1', 'key2', 'key3', 10);
+        $expected = array('key1', 'key2', 'key3', 10);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ('key1', 'key2', 'key3', 10);
-		$expected = array ('key1', 'key2', 'key3', 10);
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArgumentsKeysAsSingleArray()
+    {
+        $arguments = array(array('key1', 'key2', 'key3'), 10);
+        $expected = array('key1', 'key2', 'key3', 10);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArgumentsKeysAsSingleArray ()
-	{
-		$arguments = array (array ('key1', 'key2', 'key3'), 10);
-		$expected = array ('key1', 'key2', 'key3', 10);
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $raw = array('key', 'value');
+        $expected = array('key', 'value');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$raw = array ('key', 'value');
-		$expected = array ('key', 'value');
+        $command = $this->getCommand();
 
-		$command = $this->getCommand ();
+        $this->assertSame($expected, $command->parseResponse($raw));
+    }
 
-		$this->assertSame ($expected, $command->parseResponse ($raw));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        $arguments = array('key1', 'key2', 'key3', 10);
+        $expected = array('prefix:key1', 'prefix:key2', 'prefix:key3', 10);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeys ()
-	{
-		$arguments = array ('key1', 'key2', 'key3', 10);
-		$expected = array ('prefix:key1', 'prefix:key2', 'prefix:key3', 10);
+        $command = $this->getCommandWithArgumentsArray($arguments);
+        $command->prefixKeys('prefix:');
 
-		$command = $this->getCommandWithArgumentsArray ($arguments);
-		$command->prefixKeys ('prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixKeysIgnoredOnEmptyArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->prefixKeys ('prefix:');
-
-		$this->assertSame (array (), $command->getArguments ());
-	}
-
+        $this->assertSame(array(), $command->getArguments());
+    }
 }

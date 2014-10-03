@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Html;
+<?php namespace Illuminate\Html;
 
 use Illuminate\Support\ServiceProvider;
 
-class HtmlServiceProvider extends ServiceProvider
-{
+class HtmlServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -19,11 +16,11 @@ class HtmlServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->registerHtmlBuilder ();
+		$this->registerHtmlBuilder();
 
-		$this->registerFormBuilder ();
+		$this->registerFormBuilder();
 	}
 
 	/**
@@ -31,11 +28,11 @@ class HtmlServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerHtmlBuilder ()
+	protected function registerHtmlBuilder()
 	{
-		$this->app->bindShared ('html', function($app)
+		$this->app->bindShared('html', function($app)
 		{
-			return new HtmlBuilder ($app['url']);
+			return new HtmlBuilder($app['url']);
 		});
 	}
 
@@ -44,13 +41,13 @@ class HtmlServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerFormBuilder ()
+	protected function registerFormBuilder()
 	{
-		$this->app->bindShared ('form', function($app)
+		$this->app->bindShared('form', function($app)
 		{
-			$form = new FormBuilder ($app['html'], $app['url'], $app['session.store']->getToken ());
+			$form = new FormBuilder($app['html'], $app['url'], $app['session.store']->getToken());
 
-			return $form->setSessionStore ($app['session.store']);
+			return $form->setSessionStore($app['session.store']);
 		});
 	}
 
@@ -59,9 +56,9 @@ class HtmlServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('html', 'form');
+		return array('html', 'form');
 	}
 
 }

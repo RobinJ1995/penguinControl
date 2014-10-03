@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class HashValues extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HVALS';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HVALS';
+    }
 }

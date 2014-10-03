@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Database\Eloquent\Relations;
+<?php namespace Illuminate\Database\Eloquent\Relations;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
@@ -8,8 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Collection;
 
-abstract class Relation
-{
+abstract class Relation {
 
 	/**
 	 * The Eloquent query builder instance.
@@ -46,13 +43,13 @@ abstract class Relation
 	 * @param  \Illuminate\Database\Eloquent\Model  $parent
 	 * @return void
 	 */
-	public function __construct (Builder $query, Model $parent)
+	public function __construct(Builder $query, Model $parent)
 	{
 		$this->query = $query;
 		$this->parent = $parent;
-		$this->related = $query->getModel ();
+		$this->related = $query->getModel();
 
-		$this->addConstraints ();
+		$this->addConstraints();
 	}
 
 	/**
@@ -60,7 +57,7 @@ abstract class Relation
 	 *
 	 * @return void
 	 */
-	abstract public function addConstraints ();
+	abstract public function addConstraints();
 
 	/**
 	 * Set the constraints for an eager load of the relation.
@@ -68,16 +65,16 @@ abstract class Relation
 	 * @param  array  $models
 	 * @return void
 	 */
-	abstract public function addEagerConstraints (array $models);
+	abstract public function addEagerConstraints(array $models);
 
 	/**
 	 * Initialize the relation on a set of models.
 	 *
 	 * @param  array   $models
 	 * @param  string  $relation
-	 * @return void
+	 * @return array
 	 */
-	abstract public function initRelation (array $models, $relation);
+	abstract public function initRelation(array $models, $relation);
 
 	/**
 	 * Match the eagerly loaded results to their parents.
@@ -87,23 +84,23 @@ abstract class Relation
 	 * @param  string  $relation
 	 * @return array
 	 */
-	abstract public function match (array $models, Collection $results, $relation);
+	abstract public function match(array $models, Collection $results, $relation);
 
 	/**
 	 * Get the results of the relationship.
 	 *
 	 * @return mixed
 	 */
-	abstract public function getResults ();
+	abstract public function getResults();
 
 	/**
 	 * Get the relationship for eager loading.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
-	public function getEager ()
+	public function getEager()
 	{
-		return $this->get ();
+		return $this->get();
 	}
 
 	/**
@@ -111,11 +108,11 @@ abstract class Relation
 	 *
 	 * @return void
 	 */
-	public function touch ()
+	public function touch()
 	{
-		$column = $this->getRelated ()->getUpdatedAtColumn ();
+		$column = $this->getRelated()->getUpdatedAtColumn();
 
-		$this->rawUpdate (array ($column => $this->getRelated ()->freshTimestampString ()));
+		$this->rawUpdate(array($column => $this->getRelated()->freshTimestampString()));
 	}
 
 	/**
@@ -123,9 +120,9 @@ abstract class Relation
 	 *
 	 * @return int
 	 */
-	public function restore ()
+	public function restore()
 	{
-		return $this->query->withTrashed ()->restore ();
+		return $this->query->withTrashed()->restore();
 	}
 
 	/**
@@ -134,9 +131,9 @@ abstract class Relation
 	 * @param  array  $attributes
 	 * @return int
 	 */
-	public function rawUpdate (array $attributes = array ())
+	public function rawUpdate(array $attributes = array())
 	{
-		return $this->query->update ($attributes);
+		return $this->query->update($attributes);
 	}
 
 	/**
@@ -146,29 +143,29 @@ abstract class Relation
 	 * @param  \Illuminate\Database\Eloquent\Builder  $parent
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function getRelationCountQuery (Builder $query, Builder $parent)
+	public function getRelationCountQuery(Builder $query, Builder $parent)
 	{
-		$query->select (new Expression ('count(*)'));
+		$query->select(new Expression('count(*)'));
 
-		$key = $this->wrap ($this->getQualifiedParentKeyName ());
+		$key = $this->wrap($this->getQualifiedParentKeyName());
 
-		return $query->where ($this->getHasCompareKey (), '=', new Expression ($key));
+		return $query->where($this->getHasCompareKey(), '=', new Expression($key));
 	}
 
 	/**
-	 * Run a callback with constrains disabled on the relation.
+	 * Run a callback with constraints disabled on the relation.
 	 *
 	 * @param  \Closure  $callback
 	 * @return mixed
 	 */
-	public static function noConstraints (Closure $callback)
+	public static function noConstraints(Closure $callback)
 	{
 		static::$constraints = false;
 
 		// When resetting the relation where clause, we want to shift the first element
 		// off of the bindings, leaving only the constraints that the developers put
 		// as "extra" on the relationships, and not original relation constraints.
-		$results = call_user_func ($callback);
+		$results = call_user_func($callback);
 
 		static::$constraints = true;
 
@@ -182,12 +179,13 @@ abstract class Relation
 	 * @param  string  $key
 	 * @return array
 	 */
-	protected function getKeys (array $models, $key = null)
+	protected function getKeys(array $models, $key = null)
 	{
-		return array_values (array_map (function($value) use ($key)
-			{
-				return $key ? $value->getAttribute ($key) : $value->getKey ();
-			}, $models));
+		return array_values(array_map(function($value) use ($key)
+		{
+			return $key ? $value->getAttribute($key) : $value->getKey();
+
+		}, $models));
 	}
 
 	/**
@@ -195,7 +193,7 @@ abstract class Relation
 	 *
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function getQuery ()
+	public function getQuery()
 	{
 		return $this->query;
 	}
@@ -205,9 +203,9 @@ abstract class Relation
 	 *
 	 * @return \Illuminate\Database\Query\Builder
 	 */
-	public function getBaseQuery ()
+	public function getBaseQuery()
 	{
-		return $this->query->getQuery ();
+		return $this->query->getQuery();
 	}
 
 	/**
@@ -215,19 +213,19 @@ abstract class Relation
 	 *
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function getParent ()
+	public function getParent()
 	{
 		return $this->parent;
 	}
 
 	/**
-	 * Get the fully qualified parent key naem.
+	 * Get the fully qualified parent key name.
 	 *
 	 * @return string
 	 */
-	protected function getQualifiedParentKeyName ()
+	protected function getQualifiedParentKeyName()
 	{
-		return $this->parent->getQualifiedKeyName ();
+		return $this->parent->getQualifiedKeyName();
 	}
 
 	/**
@@ -235,7 +233,7 @@ abstract class Relation
 	 *
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function getRelated ()
+	public function getRelated()
 	{
 		return $this->related;
 	}
@@ -245,9 +243,9 @@ abstract class Relation
 	 *
 	 * @return string
 	 */
-	public function createdAt ()
+	public function createdAt()
 	{
-		return $this->parent->getCreatedAtColumn ();
+		return $this->parent->getCreatedAtColumn();
 	}
 
 	/**
@@ -255,9 +253,9 @@ abstract class Relation
 	 *
 	 * @return string
 	 */
-	public function updatedAt ()
+	public function updatedAt()
 	{
-		return $this->parent->getUpdatedAtColumn ();
+		return $this->parent->getUpdatedAtColumn();
 	}
 
 	/**
@@ -265,9 +263,9 @@ abstract class Relation
 	 *
 	 * @return string
 	 */
-	public function relatedUpdatedAt ()
+	public function relatedUpdatedAt()
 	{
-		return $this->related->getUpdatedAtColumn ();
+		return $this->related->getUpdatedAtColumn();
 	}
 
 	/**
@@ -276,9 +274,9 @@ abstract class Relation
 	 * @param  string  $value
 	 * @return string
 	 */
-	public function wrap ($value)
+	public function wrap($value)
 	{
-		return $this->parent->getQuery ()->getGrammar ()->wrap ($value);
+		return $this->parent->getQuery()->getGrammar()->wrap($value);
 	}
 
 	/**
@@ -288,12 +286,11 @@ abstract class Relation
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		$result = call_user_func_array (array ($this->query, $method), $parameters);
+		$result = call_user_func_array(array($this->query, $method), $parameters);
 
-		if ($result === $this->query)
-			return $this;
+		if ($result === $this->query) return $this;
 
 		return $result;
 	}

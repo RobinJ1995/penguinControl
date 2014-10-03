@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringGetBit extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'GETBIT';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'GETBIT';
+    }
 }

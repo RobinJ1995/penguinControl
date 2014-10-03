@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 
-class EnvironmentCommand extends Command
-{
+class EnvironmentCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -26,9 +23,9 @@ class EnvironmentCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->line ('<info>Current application environment:</info> <comment>' . $this->laravel['env'] . '</comment>');
+		$this->line('<info>Current application environment:</info> <comment>'.$this->laravel['env'].'</comment>');
 	}
 
 }

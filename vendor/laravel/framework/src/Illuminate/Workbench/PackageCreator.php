@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Workbench;
+<?php namespace Illuminate\Workbench;
 
 use Illuminate\Filesystem\Filesystem;
 
-class PackageCreator
-{
+class PackageCreator {
 
 	/**
 	 * The filesystem instance.
@@ -19,10 +16,10 @@ class PackageCreator
 	 *
 	 * @param  array
 	 */
-	protected $basicBlocks = array (
-	    'SupportFiles',
-	    'TestDirectory',
-	    'ServiceProvider',
+	protected $basicBlocks = array(
+		'SupportFiles',
+		'TestDirectory',
+		'ServiceProvider',
 	);
 
 	/**
@@ -30,12 +27,12 @@ class PackageCreator
 	 *
 	 * @param  array
 	 */
-	protected $blocks = array (
-	    'SupportFiles',
-	    'SupportDirectories',
-	    'PublicDirectory',
-	    'TestDirectory',
-	    'ServiceProvider',
+	protected $blocks = array(
+		'SupportFiles',
+		'SupportDirectories',
+		'PublicDirectory',
+		'TestDirectory',
+		'ServiceProvider',
 	);
 
 	/**
@@ -44,7 +41,7 @@ class PackageCreator
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
 		$this->files = $files;
 	}
@@ -57,16 +54,16 @@ class PackageCreator
 	 * @param  bool    $plain
 	 * @return string
 	 */
-	public function create (Package $package, $path, $plain = true)
+	public function create(Package $package, $path, $plain = true)
 	{
-		$directory = $this->createDirectory ($package, $path);
+		$directory = $this->createDirectory($package, $path);
 
 		// To create the package, we will spin through a list of building blocks that
 		// make up each package. We'll then call the method to build that block on
 		// the class, which keeps the actual building of stuff nice and cleaned.
-		foreach ($this->getBlocks ($plain) as $block)
+		foreach ($this->getBlocks($plain) as $block)
 		{
-			$this->{"write{$block}"} ($package, $directory, $plain);
+			$this->{"write{$block}"}($package, $directory, $plain);
 		}
 
 		return $directory;
@@ -79,9 +76,9 @@ class PackageCreator
 	 * @param  string   $path
 	 * @return void
 	 */
-	public function createWithResources (Package $package, $path)
+	public function createWithResources(Package $package, $path)
 	{
-		return $this->create ($package, $path, false);
+		return $this->create($package, $path, false);
 	}
 
 	/**
@@ -90,7 +87,7 @@ class PackageCreator
 	 * @param  bool   $plain
 	 * @return array
 	 */
-	protected function getBlocks ($plain)
+	protected function getBlocks($plain)
 	{
 		return $plain ? $this->basicBlocks : $this->blocks;
 	}
@@ -102,11 +99,11 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function writeSupportFiles (Package $package, $directory, $plain)
+	public function writeSupportFiles(Package $package, $directory, $plain)
 	{
-		foreach (array ('PhpUnit', 'Travis', 'Composer', 'Ignore') as $file)
+		foreach (array('PhpUnit', 'Travis', 'Composer', 'Ignore') as $file)
 		{
-			$this->{"write{$file}File"} ($package, $directory, $plain);
+			$this->{"write{$file}File"}($package, $directory, $plain);
 		}
 	}
 
@@ -117,11 +114,11 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	protected function writePhpUnitFile (Package $package, $directory)
+	protected function writePhpUnitFile(Package $package, $directory)
 	{
-		$stub = __DIR__ . '/stubs/phpunit.xml';
+		$stub = __DIR__.'/stubs/phpunit.xml';
 
-		$this->files->copy ($stub, $directory . '/phpunit.xml');
+		$this->files->copy($stub, $directory.'/phpunit.xml');
 	}
 
 	/**
@@ -131,11 +128,11 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	protected function writeTravisFile (Package $package, $directory)
+	protected function writeTravisFile(Package $package, $directory)
 	{
-		$stub = __DIR__ . '/stubs/.travis.yml';
+		$stub = __DIR__.'/stubs/.travis.yml';
 
-		$this->files->copy ($stub, $directory . '/.travis.yml');
+		$this->files->copy($stub, $directory.'/.travis.yml');
 	}
 
 	/**
@@ -145,13 +142,13 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	protected function writeComposerFile (Package $package, $directory, $plain)
+	protected function writeComposerFile(Package $package, $directory, $plain)
 	{
-		$stub = $this->getComposerStub ($plain);
+		$stub = $this->getComposerStub($plain);
 
-		$stub = $this->formatPackageStub ($package, $stub);
+		$stub = $this->formatPackageStub($package, $stub);
 
-		$this->files->put ($directory . '/composer.json', $stub);
+		$this->files->put($directory.'/composer.json', $stub);
 	}
 
 	/**
@@ -160,12 +157,11 @@ class PackageCreator
 	 * @param  bool    $plain
 	 * @return string
 	 */
-	protected function getComposerStub ($plain)
+	protected function getComposerStub($plain)
 	{
-		if ($plain)
-			return $this->files->get (__DIR__ . '/stubs/plain.composer.json');
+		if ($plain) return $this->files->get(__DIR__.'/stubs/plain.composer.json');
 
-		return $this->files->get (__DIR__ . '/stubs/composer.json');
+		return $this->files->get(__DIR__.'/stubs/composer.json');
 	}
 
 	/**
@@ -175,9 +171,9 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function writeIgnoreFile (Package $package, $directory, $plain)
+	public function writeIgnoreFile(Package $package, $directory, $plain)
 	{
-		$this->files->copy (__DIR__ . '/stubs/gitignore.txt', $directory . '/.gitignore');
+		$this->files->copy(__DIR__.'/stubs/gitignore.txt', $directory.'/.gitignore');
 	}
 
 	/**
@@ -187,11 +183,11 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function writeSupportDirectories (Package $package, $directory)
+	public function writeSupportDirectories(Package $package, $directory)
 	{
-		foreach (array ('config', 'controllers', 'lang', 'migrations', 'views') as $support)
+		foreach (array('config', 'controllers', 'lang', 'migrations', 'views') as $support)
 		{
-			$this->writeSupportDirectory ($package, $support, $directory);
+			$this->writeSupportDirectory($package, $support, $directory);
 		}
 	}
 
@@ -203,16 +199,16 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	protected function writeSupportDirectory (Package $package, $support, $directory)
+	protected function writeSupportDirectory(Package $package, $support, $directory)
 	{
 		// Once we create the source directory, we will write an empty file to the
 		// directory so that it will be kept in source control allowing the dev
-		// to go ahead and push these components to Github right on creation.
-		$path = $directory . '/src/' . $support;
+		// to go ahead and push these components to GitHub right on creation.
+		$path = $directory.'/src/'.$support;
 
-		$this->files->makeDirectory ($path, 0777, true);
+		$this->files->makeDirectory($path, 0777, true);
 
-		$this->files->put ($path . '/.gitkeep', '');
+		$this->files->put($path.'/.gitkeep', '');
 	}
 
 	/**
@@ -222,14 +218,13 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function writePublicDirectory (Package $package, $directory, $plain)
+	public function writePublicDirectory(Package $package, $directory, $plain)
 	{
-		if ($plain)
-			return;
+		if ($plain) return;
 
-		$this->files->makeDirectory ($directory . '/public');
+		$this->files->makeDirectory($directory.'/public');
 
-		$this->files->put ($directory . '/public/.gitkeep', '');
+		$this->files->put($directory.'/public/.gitkeep', '');
 	}
 
 	/**
@@ -239,11 +234,11 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function writeTestDirectory (Package $package, $directory)
+	public function writeTestDirectory(Package $package, $directory)
 	{
-		$this->files->makeDirectory ($directory . '/tests');
+		$this->files->makeDirectory($directory.'/tests');
 
-		$this->files->put ($directory . '/tests/.gitkeep', '');
+		$this->files->put($directory.'/tests/.gitkeep', '');
 	}
 
 	/**
@@ -253,14 +248,14 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return void
 	 */
-	public function writeServiceProvider (Package $package, $directory, $plain)
+	public function writeServiceProvider(Package $package, $directory, $plain)
 	{
 		// Once we have the service provider stub, we will need to format it and make
 		// the necessary replacements to the class, namespaces, etc. Then we'll be
 		// able to write it out into the package's workbench directory for them.
-		$stub = $this->getProviderStub ($package, $plain);
+		$stub = $this->getProviderStub($package, $plain);
 
-		$this->writeProviderStub ($package, $directory, $stub);
+		$this->writeProviderStub($package, $directory, $stub);
 	}
 
 	/**
@@ -271,16 +266,16 @@ class PackageCreator
 	 * @param  string  $stub
 	 * @return void
 	 */
-	protected function writeProviderStub (Package $package, $directory, $stub)
+	protected function writeProviderStub(Package $package, $directory, $stub)
 	{
-		$path = $this->createClassDirectory ($package, $directory);
+		$path = $this->createClassDirectory($package, $directory);
 
 		// The primary source directory where the package's classes will live may not
 		// exist yet, so we will need to create it before we write these providers
 		// out to that location. We'll go ahead and create now here before then.
-		$file = $path . '/' . $package->name . 'ServiceProvider.php';
+		$file = $path.'/'.$package->name.'ServiceProvider.php';
 
-		$this->files->put ($file, $stub);
+		$this->files->put($file, $stub);
 	}
 
 	/**
@@ -290,9 +285,9 @@ class PackageCreator
 	 * @param  bool    $plain
 	 * @return string
 	 */
-	protected function getProviderStub (Package $package, $plain)
+	protected function getProviderStub(Package $package, $plain)
 	{
-		return $this->formatPackageStub ($package, $this->getProviderFile ($plain));
+		return $this->formatPackageStub($package, $this->getProviderFile($plain));
 	}
 
 	/**
@@ -301,15 +296,15 @@ class PackageCreator
 	 * @param  bool   $plain
 	 * @return string
 	 */
-	protected function getProviderFile ($plain)
+	protected function getProviderFile($plain)
 	{
 		if ($plain)
 		{
-			return $this->files->get (__DIR__ . '/stubs/plain.provider.stub');
+			return $this->files->get(__DIR__.'/stubs/plain.provider.stub');
 		}
 		else
 		{
-			return $this->files->get (__DIR__ . '/stubs/provider.stub');
+			return $this->files->get(__DIR__.'/stubs/provider.stub');
 		}
 	}
 
@@ -320,13 +315,13 @@ class PackageCreator
 	 * @param  string  $directory
 	 * @return string
 	 */
-	protected function createClassDirectory (Package $package, $directory)
+	protected function createClassDirectory(Package $package, $directory)
 	{
-		$path = $directory . '/src/' . $package->vendor . '/' . $package->name;
+		$path = $directory.'/src/'.$package->vendor.'/'.$package->name;
 
-		if (!$this->files->isDirectory ($path))
+		if ( ! $this->files->isDirectory($path))
 		{
-			$this->files->makeDirectory ($path, 0777, true);
+			$this->files->makeDirectory($path, 0777, true);
 		}
 
 		return $path;
@@ -339,11 +334,11 @@ class PackageCreator
 	 * @param  string  $stub
 	 * @return string
 	 */
-	protected function formatPackageStub (Package $package, $stub)
+	protected function formatPackageStub(Package $package, $stub)
 	{
-		foreach (get_object_vars ($package) as $key => $value)
+		foreach (get_object_vars($package) as $key => $value)
 		{
-			$stub = str_replace ('{{' . snake_case ($key) . '}}', $value, $stub);
+			$stub = str_replace('{{'.snake_case($key).'}}', $value, $stub);
 		}
 
 		return $stub;
@@ -358,21 +353,21 @@ class PackageCreator
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function createDirectory (Package $package, $path)
+	protected function createDirectory(Package $package, $path)
 	{
-		$fullPath = $path . '/' . $package->getFullName ();
+		$fullPath = $path.'/'.$package->getFullName();
 
 		// If the directory doesn't exist, we will go ahead and create the package
 		// directory in the workbench location. We will use this entire package
 		// name when creating the directory to avoid any potential conflicts.
-		if (!$this->files->isDirectory ($fullPath))
+		if ( ! $this->files->isDirectory($fullPath))
 		{
-			$this->files->makeDirectory ($fullPath, 0777, true);
+			$this->files->makeDirectory($fullPath, 0777, true);
 
 			return $fullPath;
 		}
 
-		throw new \InvalidArgumentException ("Package exists.");
+		throw new \InvalidArgumentException("Package exists.");
 	}
 
 }

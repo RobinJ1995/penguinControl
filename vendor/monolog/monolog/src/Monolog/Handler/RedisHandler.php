@@ -27,36 +27,32 @@ use Monolog\Formatter\LineFormatter;
  */
 class RedisHandler extends AbstractProcessingHandler
 {
+    private $redisClient;
+    private $redisKey;
 
-	private $redisClient;
-	private $redisKey;
+    # redis instance, key to use
+    public function __construct($redis, $key, $level = Logger::DEBUG, $bubble = true)
+    {
+        if (!(($redis instanceof \Predis\Client) || ($redis instanceof \Redis))) {
+            throw new \InvalidArgumentException('Predis\Client or Redis instance required');
+        }
 
-	# redis instance, key to use
+        $this->redisClient = $redis;
+        $this->redisKey = $key;
 
-	public function __construct ($redis, $key, $level = Logger::DEBUG, $bubble = true)
-	{
-		if (!(($redis instanceof \Predis\Client) || ($redis instanceof \Redis)))
-		{
-			throw new \InvalidArgumentException ('Predis\Client or Redis instance required');
-		}
+        parent::__construct($level, $bubble);
+    }
 
-		$this->redisClient = $redis;
-		$this->redisKey = $key;
+    protected function write(array $record)
+    {
+        $this->redisClient->rpush($this->redisKey, $record["formatted"]);
+    }
 
-		parent::__construct ($level, $bubble);
-	}
-
-	protected function write (array $record)
-	{
-		$this->redisClient->rpush ($this->redisKey, $record["formatted"]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function getDefaultFormatter ()
-	{
-		return new LineFormatter();
-	}
-
+    /**
+     * {@inheritDoc}
+     */
+    protected function getDefaultFormatter()
+    {
+        return new LineFormatter();
+    }
 }

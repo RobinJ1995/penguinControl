@@ -15,18 +15,18 @@ require 'SharedConfigurations.php';
 // using MSET, then the same values can be retrieved with
 // a single command using MGET.
 
-$mkv = array (
+$mkv = array(
     'usr:0001' => 'First user',
     'usr:0002' => 'Second user',
     'usr:0003' => 'Third user'
 );
 
-$client = new Predis\Client ($single_server);
+$client = new Predis\Client($single_server);
 
-$client->mset ($mkv);
-$retval = $client->mget (array_keys ($mkv));
+$client->mset($mkv);
+$retval = $client->mget(array_keys($mkv));
 
-print_r ($retval);
+print_r($retval);
 
 /* OUTPUT:
 Array

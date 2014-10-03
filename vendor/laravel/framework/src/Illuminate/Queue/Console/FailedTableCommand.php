@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Queue\Console;
+<?php namespace Illuminate\Queue\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class FailedTableCommand extends Command
-{
+class FailedTableCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -35,9 +32,9 @@ class FailedTableCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->files = $files;
 	}
@@ -47,13 +44,13 @@ class FailedTableCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$fullPath = $this->createBaseMigration ();
+		$fullPath = $this->createBaseMigration();
 
-		$this->files->put ($fullPath, $this->files->get (__DIR__ . '/stubs/failed_jobs.stub'));
+		$this->files->put($fullPath, $this->files->get(__DIR__.'/stubs/failed_jobs.stub'));
 
-		$this->info ('Migration created successfully!');
+		$this->info('Migration created successfully!');
 	}
 
 	/**
@@ -61,13 +58,13 @@ class FailedTableCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function createBaseMigration ()
+	protected function createBaseMigration()
 	{
 		$name = 'create_failed_jobs_table';
 
-		$path = $this->laravel['path'] . '/database/migrations';
+		$path = $this->laravel['path'].'/database/migrations';
 
-		return $this->laravel['migration.creator']->create ($name, $path);
+		return $this->laravel['migration.creator']->create($name, $path);
 	}
 
 }

@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Translation;
 
-namespace Illuminate\Translation;
-
-interface LoaderInterface
-{
+interface LoaderInterface {
 
 	/**
 	 * Load the messages for the given locale.
@@ -13,7 +10,7 @@ interface LoaderInterface
 	 * @param  string  $namespace
 	 * @return array
 	 */
-	public function load ($locale, $group, $namespace = null);
+	public function load($locale, $group, $namespace = null);
 
 	/**
 	 * Add a new namespace to the loader.
@@ -22,5 +19,6 @@ interface LoaderInterface
 	 * @param  string  $hint
 	 * @return void
 	 */
-	public function addNamespace ($namespace, $hint);
+	public function addNamespace($namespace, $hint);
+
 }

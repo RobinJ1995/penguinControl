@@ -1,14 +1,11 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class CommandMakeCommand extends Command
-{
+class CommandMakeCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -30,9 +27,9 @@ class CommandMakeCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->files = $files;
 	}
@@ -42,18 +39,18 @@ class CommandMakeCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$path = $this->getPath ();
+		$path = $this->getPath();
 
-		$stub = $this->files->get (__DIR__ . '/stubs/command.stub');
+		$stub = $this->files->get(__DIR__.'/stubs/command.stub');
 
 		// We'll grab the class name to determine the file name. Since applications are
 		// typically using the PSR-0 standards we can safely assume the classes name
 		// will correspond to what the actual file should be stored as on storage.
-		$file = $path . '/' . $this->input->getArgument ('name') . '.php';
+		$file = $path.'/'.$this->input->getArgument('name').'.php';
 
-		$this->writeCommand ($file, $stub);
+		$this->writeCommand($file, $stub);
 	}
 
 	/**
@@ -63,17 +60,17 @@ class CommandMakeCommand extends Command
 	 * @param  string  $stub
 	 * @return void
 	 */
-	protected function writeCommand ($file, $stub)
+	protected function writeCommand($file, $stub)
 	{
-		if (!file_exists ($file))
+		if ( ! file_exists($file))
 		{
-			$this->files->put ($file, $this->formatStub ($stub));
+			$this->files->put($file, $this->formatStub($stub));
 
-			$this->info ('Command created successfully.');
+			$this->info('Command created successfully.');
 		}
 		else
 		{
-			$this->error ('Command already exists!');
+			$this->error('Command already exists!');
 		}
 	}
 
@@ -83,16 +80,16 @@ class CommandMakeCommand extends Command
 	 * @param  string  $stub
 	 * @return string
 	 */
-	protected function formatStub ($stub)
+	protected function formatStub($stub)
 	{
-		$stub = str_replace ('{{class}}', $this->input->getArgument ('name'), $stub);
+		$stub = str_replace('{{class}}', $this->input->getArgument('name'), $stub);
 
-		if (!is_null ($this->option ('command')))
+		if ( ! is_null($this->option('command')))
 		{
-			$stub = str_replace ('command:name', $this->option ('command'), $stub);
+			$stub = str_replace('command:name', $this->option('command'), $stub);
 		}
 
-		return $this->addNamespace ($stub);
+		return $this->addNamespace($stub);
 	}
 
 	/**
@@ -101,15 +98,15 @@ class CommandMakeCommand extends Command
 	 * @param  string  $stub
 	 * @return string
 	 */
-	protected function addNamespace ($stub)
+	protected function addNamespace($stub)
 	{
-		if (!is_null ($namespace = $this->input->getOption ('namespace')))
+		if ( ! is_null($namespace = $this->input->getOption('namespace')))
 		{
-			return str_replace ('{{namespace}}', ' namespace ' . $namespace . ';', $stub);
+			return str_replace('{{namespace}}', ' namespace '.$namespace.';', $stub);
 		}
 		else
 		{
-			return str_replace ('{{namespace}}', '', $stub);
+			return str_replace('{{namespace}}', '', $stub);
 		}
 	}
 
@@ -118,17 +115,17 @@ class CommandMakeCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getPath ()
+	protected function getPath()
 	{
-		$path = $this->input->getOption ('path');
+		$path = $this->input->getOption('path');
 
-		if (is_null ($path))
+		if (is_null($path))
 		{
-			return $this->laravel['path'] . '/commands';
+			return $this->laravel['path'].'/commands';
 		}
 		else
 		{
-			return $this->laravel['path.base'] . '/' . $path;
+			return $this->laravel['path.base'].'/'.$path;
 		}
 	}
 
@@ -137,10 +134,10 @@ class CommandMakeCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('name', InputArgument::REQUIRED, 'The name of the command.'),
+		return array(
+			array('name', InputArgument::REQUIRED, 'The name of the command.'),
 		);
 	}
 
@@ -149,12 +146,14 @@ class CommandMakeCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('command', null, InputOption::VALUE_OPTIONAL, 'The terminal command that should be assigned.', null),
-		    array ('path', null, InputOption::VALUE_OPTIONAL, 'The path where the command should be stored.', null),
-		    array ('namespace', null, InputOption::VALUE_OPTIONAL, 'The command namespace.', null),
+		return array(
+			array('command', null, InputOption::VALUE_OPTIONAL, 'The terminal command that should be assigned.', null),
+
+			array('path', null, InputOption::VALUE_OPTIONAL, 'The path where the command should be stored.', null),
+
+			array('namespace', null, InputOption::VALUE_OPTIONAL, 'The command namespace.', null),
 		);
 	}
 

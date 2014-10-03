@@ -29,103 +29,101 @@ namespace Symfony\Component\EventDispatcher;
  */
 class Event
 {
+    /**
+     * @var bool    Whether no further event listeners should be triggered
+     */
+    private $propagationStopped = false;
 
-	/**
-	 * @var bool    Whether no further event listeners should be triggered
-	 */
-	private $propagationStopped = false;
+    /**
+     * @var EventDispatcher Dispatcher that dispatched this event
+     */
+    private $dispatcher;
 
-	/**
-	 * @var EventDispatcher Dispatcher that dispatched this event
-	 */
-	private $dispatcher;
+    /**
+     * @var string This event's name
+     */
+    private $name;
 
-	/**
-	 * @var string This event's name
-	 */
-	private $name;
+    /**
+     * Returns whether further event listeners should be triggered.
+     *
+     * @see Event::stopPropagation
+     * @return bool    Whether propagation was already stopped for this event.
+     *
+     * @api
+     */
+    public function isPropagationStopped()
+    {
+        return $this->propagationStopped;
+    }
 
-	/**
-	 * Returns whether further event listeners should be triggered.
-	 *
-	 * @see Event::stopPropagation
-	 * @return bool    Whether propagation was already stopped for this event.
-	 *
-	 * @api
-	 */
-	public function isPropagationStopped ()
-	{
-		return $this->propagationStopped;
-	}
+    /**
+     * Stops the propagation of the event to further event listeners.
+     *
+     * If multiple event listeners are connected to the same event, no
+     * further event listener will be triggered once any trigger calls
+     * stopPropagation().
+     *
+     * @api
+     */
+    public function stopPropagation()
+    {
+        $this->propagationStopped = true;
+    }
 
-	/**
-	 * Stops the propagation of the event to further event listeners.
-	 *
-	 * If multiple event listeners are connected to the same event, no
-	 * further event listener will be triggered once any trigger calls
-	 * stopPropagation().
-	 *
-	 * @api
-	 */
-	public function stopPropagation ()
-	{
-		$this->propagationStopped = true;
-	}
+    /**
+     * Stores the EventDispatcher that dispatches this Event
+     *
+     * @param EventDispatcherInterface $dispatcher
+     *
+     * @deprecated Deprecated in 2.4, to be removed in 3.0. The event dispatcher is passed to the listener call.
+     *
+     * @api
+     */
+    public function setDispatcher(EventDispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
 
-	/**
-	 * Stores the EventDispatcher that dispatches this Event
-	 *
-	 * @param EventDispatcherInterface $dispatcher
-	 *
-	 * @deprecated Deprecated in 2.4, to be removed in 3.0. The event dispatcher is passed to the listener call.
-	 *
-	 * @api
-	 */
-	public function setDispatcher (EventDispatcherInterface $dispatcher)
-	{
-		$this->dispatcher = $dispatcher;
-	}
+    /**
+     * Returns the EventDispatcher that dispatches this Event
+     *
+     * @return EventDispatcherInterface
+     *
+     * @deprecated Deprecated in 2.4, to be removed in 3.0. The event dispatcher is passed to the listener call.
+     *
+     * @api
+     */
+    public function getDispatcher()
+    {
+        return $this->dispatcher;
+    }
 
-	/**
-	 * Returns the EventDispatcher that dispatches this Event
-	 *
-	 * @return EventDispatcherInterface
-	 *
-	 * @deprecated Deprecated in 2.4, to be removed in 3.0. The event dispatcher is passed to the listener call.
-	 *
-	 * @api
-	 */
-	public function getDispatcher ()
-	{
-		return $this->dispatcher;
-	}
+    /**
+     * Gets the event's name.
+     *
+     * @return string
+     *
+     * @deprecated Deprecated in 2.4, to be removed in 3.0. The event name is passed to the listener call.
+     *
+     * @api
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * Gets the event's name.
-	 *
-	 * @return string
-	 *
-	 * @deprecated Deprecated in 2.4, to be removed in 3.0. The event name is passed to the listener call.
-	 *
-	 * @api
-	 */
-	public function getName ()
-	{
-		return $this->name;
-	}
-
-	/**
-	 * Sets the event's name property.
-	 *
-	 * @param string $name The event name.
-	 *
-	 * @deprecated Deprecated in 2.4, to be removed in 3.0. The event name is passed to the listener call.
-	 *
-	 * @api
-	 */
-	public function setName ($name)
-	{
-		$this->name = $name;
-	}
-
+    /**
+     * Sets the event's name property.
+     *
+     * @param string $name The event name.
+     *
+     * @deprecated Deprecated in 2.4, to be removed in 3.0. The event name is passed to the listener call.
+     *
+     * @api
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 }

@@ -18,34 +18,32 @@ use Symfony\Component\CssSelector\Parser\Tokenizer\TokenizerEscaping;
 
 class IdentifierHandlerTest extends AbstractHandlerTest
 {
+    public function getHandleValueTestData()
+    {
+        return array(
+            array('foo', new Token(Token::TYPE_IDENTIFIER, 'foo', 0), ''),
+            array('foo|bar', new Token(Token::TYPE_IDENTIFIER, 'foo', 0), '|bar'),
+            array('foo.class', new Token(Token::TYPE_IDENTIFIER, 'foo', 0), '.class'),
+            array('foo[attr]', new Token(Token::TYPE_IDENTIFIER, 'foo', 0), '[attr]'),
+            array('foo bar', new Token(Token::TYPE_IDENTIFIER, 'foo', 0), ' bar'),
+        );
+    }
 
-	public function getHandleValueTestData ()
-	{
-		return array (
-		    array ('foo', new Token (Token::TYPE_IDENTIFIER, 'foo', 0), ''),
-		    array ('foo|bar', new Token (Token::TYPE_IDENTIFIER, 'foo', 0), '|bar'),
-		    array ('foo.class', new Token (Token::TYPE_IDENTIFIER, 'foo', 0), '.class'),
-		    array ('foo[attr]', new Token (Token::TYPE_IDENTIFIER, 'foo', 0), '[attr]'),
-		    array ('foo bar', new Token (Token::TYPE_IDENTIFIER, 'foo', 0), ' bar'),
-		);
-	}
+    public function getDontHandleValueTestData()
+    {
+        return array(
+            array('>'),
+            array('+'),
+            array(' '),
+            array('*|foo'),
+            array('/* comment */'),
+        );
+    }
 
-	public function getDontHandleValueTestData ()
-	{
-		return array (
-		    array ('>'),
-		    array ('+'),
-		    array (' '),
-		    array ('*|foo'),
-		    array ('/* comment */'),
-		);
-	}
+    protected function generateHandler()
+    {
+        $patterns = new TokenizerPatterns();
 
-	protected function generateHandler ()
-	{
-		$patterns = new TokenizerPatterns();
-
-		return new IdentifierHandler ($patterns, new TokenizerEscaping ($patterns));
-	}
-
+        return new IdentifierHandler($patterns, new TokenizerEscaping($patterns));
+    }
 }

@@ -15,37 +15,34 @@ use Symfony\Component\Process\ProcessUtils;
 
 class ProcessUtilsTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @dataProvider dataArguments
+     */
+    public function testEscapeArgument($result, $argument)
+    {
+        $this->assertSame($result, ProcessUtils::escapeArgument($argument));
+    }
 
-	/**
-	 * @dataProvider dataArguments
-	 */
-	public function testEscapeArgument ($result, $argument)
-	{
-		$this->assertSame ($result, ProcessUtils::escapeArgument ($argument));
-	}
+    public function dataArguments()
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            return array(
+                array('"\"php\" \"-v\""', '"php" "-v"'),
+                array('"foo bar"', 'foo bar'),
+                array('^%"path"^%', '%path%'),
+                array('"<|>\\" \\"\'f"', '<|>" "\'f'),
+                array('""', ''),
+                array('"with\trailingbs\\\\"', 'with\trailingbs\\'),
+            );
+        }
 
-	public function dataArguments ()
-	{
-		if (defined ('PHP_WINDOWS_VERSION_BUILD'))
-		{
-			return array (
-			    array ('"\"php\" \"-v\""', '"php" "-v"'),
-			    array ('"foo bar"', 'foo bar'),
-			    array ('^%"path"^%', '%path%'),
-			    array ('"<|>\\" \\"\'f"', '<|>" "\'f'),
-			    array ('""', ''),
-			    array ('"with\trailingbs\\\\"', 'with\trailingbs\\'),
-			);
-		}
-
-		return array (
-		    array ("'\"php\" \"-v\"'", '"php" "-v"'),
-		    array ("'foo bar'", 'foo bar'),
-		    array ("'%path%'", '%path%'),
-		    array ("'<|>\" \"'\\''f'", '<|>" "\'f'),
-		    array ("''", ''),
-		    array ("'with\\trailingbs\\'", 'with\trailingbs\\'),
-		);
-	}
-
+        return array(
+            array("'\"php\" \"-v\"'", '"php" "-v"'),
+            array("'foo bar'", 'foo bar'),
+            array("'%path%'", '%path%'),
+            array("'<|>\" \"'\\''f'", '<|>" "\'f'),
+            array("''", ''),
+            array("'with\\trailingbs\\'", 'with\trailingbs\\'),
+        );
+    }
 }

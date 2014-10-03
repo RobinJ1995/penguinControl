@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetUnionStore extends SetIntersectionStore
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SUNIONSTORE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SUNIONSTORE';
+    }
 }

@@ -1,18 +1,15 @@
-<?php
+<?php namespace Illuminate\Events;
 
-namespace Illuminate\Events;
-
-class Subscriber
-{
+class Subscriber {
 
 	/**
 	 * Get the events listened to by the subscriber.
 	 *
 	 * @return array
 	 */
-	public static function subscribes ()
+	public static function subscribes()
 	{
-		return array ();
+		return array();
 	}
 
 	/**
@@ -20,9 +17,9 @@ class Subscriber
 	 *
 	 * @return array
 	 */
-	public static function getSubscribedEvents ()
+	public static function getSubscribedEvents()
 	{
-		return static::subscribes ();
+		return static::subscribes();
 	}
 
 }

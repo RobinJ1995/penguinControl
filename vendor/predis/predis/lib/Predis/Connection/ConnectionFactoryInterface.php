@@ -19,36 +19,35 @@ namespace Predis\Connection;
  */
 interface ConnectionFactoryInterface
 {
+    /**
+     * Defines or overrides the connection class identified by a scheme prefix.
+     *
+     * @param string $scheme      URI scheme identifying the connection class.
+     * @param mixed  $initializer FQN of a connection class or a callable object for lazy initialization.
+     */
+    public function define($scheme, $initializer);
 
-	/**
-	 * Defines or overrides the connection class identified by a scheme prefix.
-	 *
-	 * @param string $scheme      URI scheme identifying the connection class.
-	 * @param mixed  $initializer FQN of a connection class or a callable object for lazy initialization.
-	 */
-	public function define ($scheme, $initializer);
+    /**
+     * Undefines the connection identified by a scheme prefix.
+     *
+     * @param string $scheme Parameters for the connection.
+     */
+    public function undefine($scheme);
 
-	/**
-	 * Undefines the connection identified by a scheme prefix.
-	 *
-	 * @param string $scheme Parameters for the connection.
-	 */
-	public function undefine ($scheme);
+    /**
+     * Creates a new connection object.
+     *
+     * @param  mixed                     $parameters Parameters for the connection.
+     * @return SingleConnectionInterface
+     */
+    public function create($parameters);
 
-	/**
-	 * Creates a new connection object.
-	 *
-	 * @param  mixed                     $parameters Parameters for the connection.
-	 * @return SingleConnectionInterface
-	 */
-	public function create ($parameters);
-
-	/**
-	 * Prepares an aggregation of connection objects.
-	 *
-	 * @param  AggregatedConnectionInterface $cluster    Instance of an aggregated connection class.
-	 * @param  array                         $parameters List of parameters for each connection object.
-	 * @return AggregatedConnectionInterface
-	 */
-	public function createAggregated (AggregatedConnectionInterface $cluster, Array $parameters);
+    /**
+     * Prepares an aggregation of connection objects.
+     *
+     * @param  AggregatedConnectionInterface $cluster    Instance of an aggregated connection class.
+     * @param  array                         $parameters List of parameters for each connection object.
+     * @return AggregatedConnectionInterface
+     */
+    public function createAggregated(AggregatedConnectionInterface $cluster, Array $parameters);
 }

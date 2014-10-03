@@ -21,82 +21,80 @@ use Predis\ResponseObjectInterface;
  */
 abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjectInterface
 {
+    protected $position;
+    protected $current;
+    protected $replySize;
 
-	protected $position;
-	protected $current;
-	protected $replySize;
+    /**
+     * {@inheritdoc}
+     */
+    public function rewind()
+    {
+        // NOOP
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function rewind ()
-	{
-		// NOOP
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function current()
+    {
+        return $this->current;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function current ()
-	{
-		return $this->current;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function key()
+    {
+        return $this->position;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function key ()
-	{
-		return $this->position;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function next()
+    {
+        if (++$this->position < $this->replySize) {
+            $this->current = $this->getValue();
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function next ()
-	{
-		if (++$this->position < $this->replySize)
-		{
-			$this->current = $this->getValue ();
-		}
+        return $this->position;
+    }
 
-		return $this->position;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function valid()
+    {
+        return $this->position < $this->replySize;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function valid ()
-	{
-		return $this->position < $this->replySize;
-	}
+    /**
+     * Returns the number of items of the whole multibulk reply.
+     *
+     * This method should be used to get the size of the current multibulk
+     * reply without using iterator_count, which actually consumes the
+     * iterator to calculate the size (rewinding is not supported).
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->replySize;
+    }
 
-	/**
-	 * Returns the number of items of the whole multibulk reply.
-	 *
-	 * This method should be used to get the size of the current multibulk
-	 * reply without using iterator_count, which actually consumes the
-	 * iterator to calculate the size (rewinding is not supported).
-	 *
-	 * @return int
-	 */
-	public function count ()
-	{
-		return $this->replySize;
-	}
+    /**
+     * Returns the current position of the iterator.
+     *
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
 
-	/**
-	 * Returns the current position of the iterator.
-	 *
-	 * @return int
-	 */
-	public function getPosition ()
-	{
-		return $this->position;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	abstract protected function getValue ();
+    /**
+     * {@inheritdoc}
+     */
+    abstract protected function getValue();
 }

@@ -22,13 +22,12 @@ use Predis\Connection\ConnectionInterface;
  */
 interface PipelineExecutorInterface
 {
-
-	/**
-	 * Writes a list of commands to the network and reads back their replies.
-	 *
-	 * @param  ConnectionInterface $connection Connection to Redis.
-	 * @param  SplQueue            $commands   Commands queued for execution.
-	 * @return array
-	 */
-	public function execute (ConnectionInterface $connection, SplQueue $commands);
+    /**
+     * Writes a list of commands to the network and reads back their replies.
+     *
+     * @param  ConnectionInterface $connection Connection to Redis.
+     * @param  SplQueue            $commands   Commands queued for execution.
+     * @return array
+     */
+    public function execute(ConnectionInterface $connection, SplQueue $commands);
 }

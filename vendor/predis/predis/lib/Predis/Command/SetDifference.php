@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetDifference extends SetIntersection
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SDIFF';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SDIFF';
+    }
 }

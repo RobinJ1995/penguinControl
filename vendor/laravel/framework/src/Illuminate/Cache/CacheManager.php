@@ -1,20 +1,17 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Illuminate\Support\Manager;
 
-class CacheManager extends Manager
-{
+class CacheManager extends Manager {
 
 	/**
 	 * Create an instance of the APC cache driver.
 	 *
 	 * @return \Illuminate\Cache\ApcStore
 	 */
-	protected function createApcDriver ()
+	protected function createApcDriver()
 	{
-		return $this->repository (new ApcStore (new ApcWrapper, $this->getPrefix ()));
+		return $this->repository(new ApcStore(new ApcWrapper, $this->getPrefix()));
 	}
 
 	/**
@@ -22,9 +19,9 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\ArrayStore
 	 */
-	protected function createArrayDriver ()
+	protected function createArrayDriver()
 	{
-		return $this->repository (new ArrayStore);
+		return $this->repository(new ArrayStore);
 	}
 
 	/**
@@ -32,11 +29,11 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\FileStore
 	 */
-	protected function createFileDriver ()
+	protected function createFileDriver()
 	{
 		$path = $this->app['config']['cache.path'];
 
-		return $this->repository (new FileStore ($this->app['files'], $path));
+		return $this->repository(new FileStore($this->app['files'], $path));
 	}
 
 	/**
@@ -44,13 +41,13 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\MemcachedStore
 	 */
-	protected function createMemcachedDriver ()
+	protected function createMemcachedDriver()
 	{
 		$servers = $this->app['config']['cache.memcached'];
 
-		$memcached = $this->app['memcached.connector']->connect ($servers);
+		$memcached = $this->app['memcached.connector']->connect($servers);
 
-		return $this->repository (new MemcachedStore ($memcached, $this->getPrefix ()));
+		return $this->repository(new MemcachedStore($memcached, $this->getPrefix()));
 	}
 
 	/**
@@ -58,9 +55,9 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\WinCacheStore
 	 */
-	protected function createWincacheDriver ()
+	protected function createWincacheDriver()
 	{
-		return $this->repository (new WinCacheStore ($this->getPrefix ()));
+		return $this->repository(new WinCacheStore($this->getPrefix()));
 	}
 
 	/**
@@ -68,9 +65,9 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\WinCacheStore
 	 */
-	protected function createXcacheDriver ()
+	protected function createXcacheDriver()
 	{
-		return $this->repository (new XCacheStore ($this->getPrefix ()));
+		return $this->repository(new XCacheStore($this->getPrefix()));
 	}
 
 	/**
@@ -78,11 +75,11 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\RedisStore
 	 */
-	protected function createRedisDriver ()
+	protected function createRedisDriver()
 	{
 		$redis = $this->app['redis'];
 
-		return $this->repository (new RedisStore ($redis, $this->getPrefix ()));
+		return $this->repository(new RedisStore($redis, $this->getPrefix()));
 	}
 
 	/**
@@ -90,9 +87,9 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Cache\DatabaseStore
 	 */
-	protected function createDatabaseDriver ()
+	protected function createDatabaseDriver()
 	{
-		$connection = $this->getDatabaseConnection ();
+		$connection = $this->getDatabaseConnection();
 
 		$encrypter = $this->app['encrypter'];
 
@@ -101,9 +98,9 @@ class CacheManager extends Manager
 		// is being used by multiple applications although this is very unlikely.
 		$table = $this->app['config']['cache.table'];
 
-		$prefix = $this->getPrefix ();
+		$prefix = $this->getPrefix();
 
-		return $this->repository (new DatabaseStore ($connection, $encrypter, $table, $prefix));
+		return $this->repository(new DatabaseStore($connection, $encrypter, $table, $prefix));
 	}
 
 	/**
@@ -111,11 +108,11 @@ class CacheManager extends Manager
 	 *
 	 * @return \Illuminate\Database\Connection
 	 */
-	protected function getDatabaseConnection ()
+	protected function getDatabaseConnection()
 	{
 		$connection = $this->app['config']['cache.connection'];
 
-		return $this->app['db']->connection ($connection);
+		return $this->app['db']->connection($connection);
 	}
 
 	/**
@@ -123,7 +120,7 @@ class CacheManager extends Manager
 	 *
 	 * @return string
 	 */
-	public function getPrefix ()
+	public function getPrefix()
 	{
 		return $this->app['config']['cache.prefix'];
 	}
@@ -134,7 +131,7 @@ class CacheManager extends Manager
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setPrefix ($name)
+	public function setPrefix($name)
 	{
 		$this->app['config']['cache.prefix'] = $name;
 	}
@@ -145,9 +142,9 @@ class CacheManager extends Manager
 	 * @param  \Illuminate\Cache\StoreInterface  $store
 	 * @return \Illuminate\Cache\Repository
 	 */
-	protected function repository (StoreInterface $store)
+	protected function repository(StoreInterface $store)
 	{
-		return new Repository ($store);
+		return new Repository($store);
 	}
 
 	/**
@@ -155,7 +152,7 @@ class CacheManager extends Manager
 	 *
 	 * @return string
 	 */
-	public function getDefaultDriver ()
+	public function getDefaultDriver()
 	{
 		return $this->app['config']['cache.driver'];
 	}
@@ -166,7 +163,7 @@ class CacheManager extends Manager
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setDefaultDriver ($name)
+	public function setDefaultDriver($name)
 	{
 		$this->app['config']['cache.driver'] = $name;
 	}

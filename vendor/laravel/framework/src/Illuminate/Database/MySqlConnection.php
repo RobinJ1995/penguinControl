@@ -1,28 +1,22 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use Illuminate\Database\Schema\MySqlBuilder;
 use Doctrine\DBAL\Driver\PDOMySql\Driver as DoctrineDriver;
 use Illuminate\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 
-class MySqlConnection extends Connection
-{
+class MySqlConnection extends Connection {
 
 	/**
 	 * Get a schema builder instance for the connection.
 	 *
 	 * @return \Illuminate\Database\Schema\MySqlBuilder
 	 */
-	public function getSchemaBuilder ()
+	public function getSchemaBuilder()
 	{
-		if (is_null ($this->schemaGrammar))
-		{
-			$this->useDefaultSchemaGrammar ();
-		}
+		if (is_null($this->schemaGrammar)) { $this->useDefaultSchemaGrammar(); }
 
-		return new MySqlBuilder ($this);
+		return new MySqlBuilder($this);
 	}
 
 	/**
@@ -30,9 +24,9 @@ class MySqlConnection extends Connection
 	 *
 	 * @return \Illuminate\Database\Query\Grammars\MySqlGrammar
 	 */
-	protected function getDefaultQueryGrammar ()
+	protected function getDefaultQueryGrammar()
 	{
-		return $this->withTablePrefix (new QueryGrammar);
+		return $this->withTablePrefix(new QueryGrammar);
 	}
 
 	/**
@@ -40,9 +34,9 @@ class MySqlConnection extends Connection
 	 *
 	 * @return \Illuminate\Database\Schema\Grammars\MySqlGrammar
 	 */
-	protected function getDefaultSchemaGrammar ()
+	protected function getDefaultSchemaGrammar()
 	{
-		return $this->withTablePrefix (new SchemaGrammar);
+		return $this->withTablePrefix(new SchemaGrammar);
 	}
 
 	/**
@@ -50,7 +44,7 @@ class MySqlConnection extends Connection
 	 *
 	 * @return \Illuminate\Database\Query\Processors\Processor
 	 */
-	protected function getDefaultPostProcessor ()
+	protected function getDefaultPostProcessor()
 	{
 		return new Query\Processors\MySqlProcessor;
 	}
@@ -60,7 +54,7 @@ class MySqlConnection extends Connection
 	 *
 	 * @return \Doctrine\DBAL\Driver\PDOMySql\Driver
 	 */
-	protected function getDoctrineDriver ()
+	protected function getDoctrineDriver()
 	{
 		return new DoctrineDriver;
 	}

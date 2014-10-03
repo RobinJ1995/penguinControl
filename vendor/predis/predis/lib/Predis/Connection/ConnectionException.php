@@ -20,5 +20,4 @@ use Predis\CommunicationException;
  */
 class ConnectionException extends CommunicationException
 {
-	
 }

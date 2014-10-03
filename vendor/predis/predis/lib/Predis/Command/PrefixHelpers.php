@@ -18,102 +18,91 @@ namespace Predis\Command;
  */
 class PrefixHelpers
 {
+    /**
+     * Applies the specified prefix only the first argument.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function first(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+            $command->setRawArguments($arguments);
+        }
+    }
 
-	/**
-	 * Applies the specified prefix only the first argument.
-	 *
-	 * @param CommandInterface $command Command instance.
-	 * @param string           $prefix  Prefix string.
-	 */
-	public static function first (CommandInterface $command, $prefix)
-	{
-		if ($arguments = $command->getArguments ())
-		{
-			$arguments[0] = "$prefix{$arguments[0]}";
-			$command->setRawArguments ($arguments);
-		}
-	}
+    /**
+     * Applies the specified prefix to all the arguments.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function all(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            foreach ($arguments as &$key) {
+                $key = "$prefix$key";
+            }
 
-	/**
-	 * Applies the specified prefix to all the arguments.
-	 *
-	 * @param CommandInterface $command Command instance.
-	 * @param string           $prefix  Prefix string.
-	 */
-	public static function all (CommandInterface $command, $prefix)
-	{
-		if ($arguments = $command->getArguments ())
-		{
-			foreach ($arguments as &$key)
-			{
-				$key = "$prefix$key";
-			}
+            $command->setRawArguments($arguments);
+        }
+    }
 
-			$command->setRawArguments ($arguments);
-		}
-	}
+    /**
+     * Applies the specified prefix only to even arguments in the list.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function interleaved(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $length = count($arguments);
 
-	/**
-	 * Applies the specified prefix only to even arguments in the list.
-	 *
-	 * @param CommandInterface $command Command instance.
-	 * @param string           $prefix  Prefix string.
-	 */
-	public static function interleaved (CommandInterface $command, $prefix)
-	{
-		if ($arguments = $command->getArguments ())
-		{
-			$length = count ($arguments);
+            for ($i = 0; $i < $length; $i += 2) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
 
-			for ($i = 0; $i < $length; $i += 2)
-			{
-				$arguments[$i] = "$prefix{$arguments[$i]}";
-			}
+            $command->setRawArguments($arguments);
+        }
+    }
 
-			$command->setRawArguments ($arguments);
-		}
-	}
+    /**
+     * Applies the specified prefix to all the arguments but the first one.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function skipFirst(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $length = count($arguments);
 
-	/**
-	 * Applies the specified prefix to all the arguments but the first one.
-	 *
-	 * @param CommandInterface $command Command instance.
-	 * @param string           $prefix  Prefix string.
-	 */
-	public static function skipFirst (CommandInterface $command, $prefix)
-	{
-		if ($arguments = $command->getArguments ())
-		{
-			$length = count ($arguments);
+            for ($i = 1; $i < $length; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
 
-			for ($i = 1; $i < $length; $i++)
-			{
-				$arguments[$i] = "$prefix{$arguments[$i]}";
-			}
+            $command->setRawArguments($arguments);
+        }
+    }
 
-			$command->setRawArguments ($arguments);
-		}
-	}
+    /**
+     * Applies the specified prefix to all the arguments but the last one.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function skipLast(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $length = count($arguments);
 
-	/**
-	 * Applies the specified prefix to all the arguments but the last one.
-	 *
-	 * @param CommandInterface $command Command instance.
-	 * @param string           $prefix  Prefix string.
-	 */
-	public static function skipLast (CommandInterface $command, $prefix)
-	{
-		if ($arguments = $command->getArguments ())
-		{
-			$length = count ($arguments);
+            for ($i = 0; $i < $length - 1; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
 
-			for ($i = 0; $i < $length - 1; $i++)
-			{
-				$arguments[$i] = "$prefix{$arguments[$i]}";
-			}
-
-			$command->setRawArguments ($arguments);
-		}
-	}
-
+            $command->setRawArguments($arguments);
+        }
+    }
 }

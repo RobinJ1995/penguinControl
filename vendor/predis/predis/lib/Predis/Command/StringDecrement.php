@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringDecrement extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'DECR';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'DECR';
+    }
 }

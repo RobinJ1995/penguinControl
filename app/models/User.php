@@ -57,12 +57,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	
 	public function hasExpired ()
 	{
-		if ($this->expire === null)
-			return false;
+		$now = ceil (time () / 60 / 60 / 24);
 		
-		$validUntilUnix = ($this->expire - 1) * 24 * 60 * 60;
-		
-		return (time () >= $validUntilUnix);
+		return ($this->expire <= $now && $this->expire != -1);
 	}
 
 	/**

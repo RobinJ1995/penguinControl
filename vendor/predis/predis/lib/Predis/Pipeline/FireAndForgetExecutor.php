@@ -23,37 +23,33 @@ use Predis\Connection\ReplicationConnectionInterface;
  */
 class FireAndForgetExecutor implements PipelineExecutorInterface
 {
+    /**
+     * Allows the pipeline executor to perform operations on the
+     * connection before starting to execute the commands stored
+     * in the pipeline.
+     *
+     * @param ConnectionInterface $connection Connection instance.
+     */
+    protected function checkConnection(ConnectionInterface $connection)
+    {
+        if ($connection instanceof ReplicationConnectionInterface) {
+            $connection->switchTo('master');
+        }
+    }
 
-	/**
-	 * Allows the pipeline executor to perform operations on the
-	 * connection before starting to execute the commands stored
-	 * in the pipeline.
-	 *
-	 * @param ConnectionInterface $connection Connection instance.
-	 */
-	protected function checkConnection (ConnectionInterface $connection)
-	{
-		if ($connection instanceof ReplicationConnectionInterface)
-		{
-			$connection->switchTo ('master');
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(ConnectionInterface $connection, SplQueue $commands)
+    {
+        $this->checkConnection($connection);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function execute (ConnectionInterface $connection, SplQueue $commands)
-	{
-		$this->checkConnection ($connection);
+        while (!$commands->isEmpty()) {
+            $connection->writeCommand($commands->dequeue());
+        }
 
-		while (!$commands->isEmpty ())
-		{
-			$connection->writeCommand ($commands->dequeue ());
-		}
+        $connection->disconnect();
 
-		$connection->disconnect ();
-
-		return array ();
-	}
-
+        return array();
+    }
 }

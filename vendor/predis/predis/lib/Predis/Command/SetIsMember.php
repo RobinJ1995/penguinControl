@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class SetIsMember extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SISMEMBER';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SISMEMBER';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return (bool) $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

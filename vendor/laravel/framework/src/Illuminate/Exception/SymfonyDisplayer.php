@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Exception;
+<?php namespace Illuminate\Exception;
 
 use Exception;
 use Symfony\Component\Debug\ExceptionHandler;
 
-class SymfonyDisplayer implements ExceptionDisplayerInterface
-{
+class SymfonyDisplayer implements ExceptionDisplayerInterface {
 
 	/**
 	 * The Symfony exception handler.
@@ -21,7 +18,7 @@ class SymfonyDisplayer implements ExceptionDisplayerInterface
 	 * @param  \Symfony\Component\Debug\ExceptionHandler  $symfony
 	 * @return void
 	 */
-	public function __construct (ExceptionHandler $symfony)
+	public function __construct(ExceptionHandler $symfony)
 	{
 		$this->symfony = $symfony;
 	}
@@ -31,9 +28,9 @@ class SymfonyDisplayer implements ExceptionDisplayerInterface
 	 *
 	 * @param  \Exception  $exception
 	 */
-	public function display (Exception $exception)
+	public function display(Exception $exception)
 	{
-		$this->symfony->handle ($exception);
+		$this->symfony->handle($exception);
 	}
 
 }

@@ -17,58 +17,56 @@ namespace Predis\Command;
  */
 class ServerTimeTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerTime';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerTime';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'TIME';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'TIME';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $arguments = array();
+        $expected = array();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$arguments = array ();
-		$expected = array ();
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
 
-		$command = $this->getCommand ();
-		$command->setArguments ($arguments);
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        $expected = array(1331114908, 453990);
+        $command = $this->getCommand();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testParseResponse ()
-	{
-		$expected = array (1331114908, 453990);
-		$command = $this->getCommand ();
+        $this->assertSame($expected, $command->parseResponse($expected));
+    }
 
-		$this->assertSame ($expected, $command->parseResponse ($expected));
-	}
+    /**
+     * @group connected
+     */
+    public function testReturnsServerTime()
+    {
+        $redis = $this->getClient();
 
-	/**
-	 * @group connected
-	 */
-	public function testReturnsServerTime ()
-	{
-		$redis = $this->getClient ();
-
-		$this->assertInternalType ('array', $time = $redis->time ());
-		$this->assertInternalType ('string', $time[0]);
-		$this->assertInternalType ('string', $time[1]);
-	}
-
+        $this->assertInternalType('array', $time = $redis->time());
+        $this->assertInternalType('string', $time[0]);
+        $this->assertInternalType('string', $time[1]);
+    }
 }

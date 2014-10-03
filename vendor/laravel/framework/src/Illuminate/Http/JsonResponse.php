@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Http;
+<?php namespace Illuminate\Http;
 
 use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Support\Contracts\JsonableInterface;
 
-class JsonResponse extends \Symfony\Component\HttpFoundation\JsonResponse
-{
+class JsonResponse extends \Symfony\Component\HttpFoundation\JsonResponse {
 
 	/**
 	 * The json encoding options.
@@ -22,12 +19,12 @@ class JsonResponse extends \Symfony\Component\HttpFoundation\JsonResponse
 	 * @param  int    $status
 	 * @param  array  $headers
 	 * @param  int    $options
-	 */
-	public function __construct ($data = null, $status = 200, $headers = array (), $options = 0)
+	*/
+	public function __construct($data = null, $status = 200, $headers = array(), $options = 0)
 	{
 		$this->jsonOptions = $options;
 
-		parent::__construct ($data, $status, $headers);
+		parent::__construct($data, $status, $headers);
 	}
 
 	/**
@@ -37,19 +34,21 @@ class JsonResponse extends \Symfony\Component\HttpFoundation\JsonResponse
 	 * @param  int  $depth
 	 * @return mixed
 	 */
-	public function getData ($assoc = false, $depth = 512)
+	public function getData($assoc = false, $depth = 512)
 	{
-		return json_decode ($this->data, $assoc, $depth);
+		return json_decode($this->data, $assoc, $depth);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setData ($data = array ())
+	public function setData($data = array())
 	{
-		$this->data = $data instanceof JsonableInterface ? $data->toJson ($this->jsonOptions) : json_encode ($data, $this->jsonOptions);
+		$this->data = $data instanceof JsonableInterface
+                                   ? $data->toJson($this->jsonOptions)
+                                   : json_encode($data, $this->jsonOptions);
 
-		return $this->update ();
+		return $this->update();
 	}
 
 	/**
@@ -60,9 +59,9 @@ class JsonResponse extends \Symfony\Component\HttpFoundation\JsonResponse
 	 * @param  bool    $replace
 	 * @return \Illuminate\Http\Response
 	 */
-	public function header ($key, $value, $replace = true)
+	public function header($key, $value, $replace = true)
 	{
-		$this->headers->set ($key, $value, $replace);
+		$this->headers->set($key, $value, $replace);
 
 		return $this;
 	}
@@ -73,9 +72,9 @@ class JsonResponse extends \Symfony\Component\HttpFoundation\JsonResponse
 	 * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
 	 * @return \Illuminate\Http\Response
 	 */
-	public function withCookie (Cookie $cookie)
+	public function withCookie(Cookie $cookie)
 	{
-		$this->headers->setCookie ($cookie);
+		$this->headers->setCookie($cookie);
 
 		return $this;
 	}

@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Cache;
+<?php namespace Illuminate\Cache;
 
 use Illuminate\Support\ServiceProvider;
 
-class CacheServiceProvider extends ServiceProvider
-{
+class CacheServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -19,24 +16,24 @@ class CacheServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('cache', function($app)
+		$this->app->bindShared('cache', function($app)
 		{
-			return new CacheManager ($app);
+			return new CacheManager($app);
 		});
 
-		$this->app->bindShared ('cache.store', function($app)
+		$this->app->bindShared('cache.store', function($app)
 		{
-			return $app['cache']->driver ();
+			return $app['cache']->driver();
 		});
 
-		$this->app->bindShared ('memcached.connector', function()
+		$this->app->bindShared('memcached.connector', function()
 		{
 			return new MemcachedConnector;
 		});
 
-		$this->registerCommands ();
+		$this->registerCommands();
 	}
 
 	/**
@@ -44,14 +41,14 @@ class CacheServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function registerCommands ()
+	public function registerCommands()
 	{
-		$this->app->bindShared ('command.cache.clear', function($app)
+		$this->app->bindShared('command.cache.clear', function($app)
 		{
-			return new Console\ClearCommand ($app['cache'], $app['files']);
+			return new Console\ClearCommand($app['cache'], $app['files']);
 		});
 
-		$this->commands ('command.cache.clear');
+		$this->commands('command.cache.clear');
 	}
 
 	/**
@@ -59,9 +56,9 @@ class CacheServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('cache', 'cache.store', 'memcached.connector', 'command.cache.clear');
+		return array('cache', 'cache.store', 'memcached.connector', 'command.cache.clear');
 	}
 
 }

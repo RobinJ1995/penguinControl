@@ -18,5 +18,4 @@ namespace Predis\Cluster\Distribution;
  */
 class EmptyRingException extends \Exception
 {
-	
 }

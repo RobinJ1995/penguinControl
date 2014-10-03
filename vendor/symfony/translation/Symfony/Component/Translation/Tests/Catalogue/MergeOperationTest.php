@@ -17,40 +17,44 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 
 class MergeOperationTest extends AbstractOperationTest
 {
+    public function testGetMessagesFromSingleDomain()
+    {
+        $operation = $this->createOperation(
+            new MessageCatalogue('en', array('messages' => array('a' => 'old_a', 'b' => 'old_b'))),
+            new MessageCatalogue('en', array('messages' => array('a' => 'new_a', 'c' => 'new_c')))
+        );
 
-	public function testGetMessagesFromSingleDomain ()
-	{
-		$operation = $this->createOperation (
-			new MessageCatalogue ('en', array ('messages' => array ('a' => 'old_a', 'b' => 'old_b'))), new MessageCatalogue ('en', array ('messages' => array ('a' => 'new_a', 'c' => 'new_c')))
-		);
+        $this->assertEquals(
+            array('a' => 'old_a', 'b' => 'old_b', 'c' => 'new_c'),
+            $operation->getMessages('messages')
+        );
 
-		$this->assertEquals (
-			array ('a' => 'old_a', 'b' => 'old_b', 'c' => 'new_c'), $operation->getMessages ('messages')
-		);
+        $this->assertEquals(
+            array('c' => 'new_c'),
+            $operation->getNewMessages('messages')
+        );
 
-		$this->assertEquals (
-			array ('c' => 'new_c'), $operation->getNewMessages ('messages')
-		);
+        $this->assertEquals(
+            array(),
+            $operation->getObsoleteMessages('messages')
+        );
+    }
 
-		$this->assertEquals (
-			array (), $operation->getObsoleteMessages ('messages')
-		);
-	}
+    public function testGetResultFromSingleDomain()
+    {
+        $this->assertEquals(
+            new MessageCatalogue('en', array(
+                'messages' => array('a' => 'old_a', 'b' => 'old_b', 'c' => 'new_c'),
+            )),
+            $this->createOperation(
+                new MessageCatalogue('en', array('messages' => array('a' => 'old_a', 'b' => 'old_b'))),
+                new MessageCatalogue('en', array('messages' => array('a' => 'new_a', 'c' => 'new_c')))
+            )->getResult()
+        );
+    }
 
-	public function testGetResultFromSingleDomain ()
-	{
-		$this->assertEquals (
-			new MessageCatalogue ('en', array (
-		    'messages' => array ('a' => 'old_a', 'b' => 'old_b', 'c' => 'new_c')
-			)), $this->createOperation (
-				new MessageCatalogue ('en', array ('messages' => array ('a' => 'old_a', 'b' => 'old_b'))), new MessageCatalogue ('en', array ('messages' => array ('a' => 'new_a', 'c' => 'new_c')))
-			)->getResult ()
-		);
-	}
-
-	protected function createOperation (MessageCatalogueInterface $source, MessageCatalogueInterface $target)
-	{
-		return new MergeOperation ($source, $target);
-	}
-
+    protected function createOperation(MessageCatalogueInterface $source, MessageCatalogueInterface $target)
+    {
+        return new MergeOperation($source, $target);
+    }
 }

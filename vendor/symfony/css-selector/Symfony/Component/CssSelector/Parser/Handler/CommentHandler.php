@@ -24,29 +24,23 @@ use Symfony\Component\CssSelector\Parser\TokenStream;
  */
 class CommentHandler implements HandlerInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(Reader $reader, TokenStream $stream)
+    {
+        if ('/*' !== $reader->getSubstring(2)) {
+            return false;
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function handle (Reader $reader, TokenStream $stream)
-	{
-		if ('/*' !== $reader->getSubstring (2))
-		{
-			return false;
-		}
+        $offset = $reader->getOffset('*/');
 
-		$offset = $reader->getOffset ('*/');
+        if (false === $offset) {
+            $reader->moveToEnd();
+        } else {
+            $reader->moveForward($offset + 2);
+        }
 
-		if (false === $offset)
-		{
-			$reader->moveToEnd ();
-		}
-		else
-		{
-			$reader->moveForward ($offset + 2);
-		}
-
-		return true;
-	}
-
+        return true;
+    }
 }

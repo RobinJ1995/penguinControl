@@ -21,12 +21,11 @@ use Predis\Connection\ComposableConnectionInterface;
  */
 interface ResponseReaderInterface
 {
-
-	/**
-	 * Reads replies from a connection to Redis and deserializes them.
-	 *
-	 * @param  ComposableConnectionInterface $connection Connection to Redis.
-	 * @return mixed
-	 */
-	public function read (ComposableConnectionInterface $connection);
+    /**
+     * Reads replies from a connection to Redis and deserializes them.
+     *
+     * @param  ComposableConnectionInterface $connection Connection to Redis.
+     * @return mixed
+     */
+    public function read(ComposableConnectionInterface $connection);
 }

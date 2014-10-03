@@ -18,55 +18,53 @@ use PredisTestCase;
  */
 class ResponseIntegerHandlerTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testInteger()
+    {
+        $handler = new ResponseIntegerHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testInteger ()
-	{
-		$handler = new ResponseIntegerHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $this->assertSame(0, $handler->handle($connection, '0'));
+        $this->assertSame(1, $handler->handle($connection, '1'));
+        $this->assertSame(10, $handler->handle($connection, '10'));
+        $this->assertSame(-10, $handler->handle($connection, '-10'));
+    }
 
-		$this->assertSame (0, $handler->handle ($connection, '0'));
-		$this->assertSame (1, $handler->handle ($connection, '1'));
-		$this->assertSame (10, $handler->handle ($connection, '10'));
-		$this->assertSame (-10, $handler->handle ($connection, '-10'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testNull()
+    {
+        $handler = new ResponseIntegerHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testNull ()
-	{
-		$handler = new ResponseIntegerHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $this->assertNull($handler->handle($connection, 'nil'));
+    }
 
-		$this->assertNull ($handler->handle ($connection, 'nil'));
-	}
+    /**
+     * @group disconnected
+     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedExceptionMessage Cannot parse 'invalid' as numeric response
+     */
+    public function testInvalid()
+    {
+        $handler = new ResponseIntegerHandler();
 
-	/**
-	 * @group disconnected
-	 * @expectedException Predis\Protocol\ProtocolException
-	 * @expectedExceptionMessage Cannot parse 'invalid' as numeric response
-	 */
-	public function testInvalid ()
-	{
-		$handler = new ResponseIntegerHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
-
-		$handler->handle ($connection, 'invalid');
-	}
-
+        $handler->handle($connection, 'invalid');
+    }
 }

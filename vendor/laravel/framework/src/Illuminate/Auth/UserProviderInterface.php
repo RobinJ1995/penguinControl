@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Auth;
 
-namespace Illuminate\Auth;
-
-interface UserProviderInterface
-{
+interface UserProviderInterface {
 
 	/**
 	 * Retrieve a user by their unique identifier.
@@ -11,7 +8,7 @@ interface UserProviderInterface
 	 * @param  mixed  $identifier
 	 * @return \Illuminate\Auth\UserInterface|null
 	 */
-	public function retrieveById ($identifier);
+	public function retrieveById($identifier);
 
 	/**
 	 * Retrieve a user by by their unique identifier and "remember me" token.
@@ -20,7 +17,7 @@ interface UserProviderInterface
 	 * @param  string  $token
 	 * @return \Illuminate\Auth\UserInterface|null
 	 */
-	public function retrieveByToken ($identifier, $token);
+	public function retrieveByToken($identifier, $token);
 
 	/**
 	 * Update the "remember me" token for the given user in storage.
@@ -29,7 +26,7 @@ interface UserProviderInterface
 	 * @param  string  $token
 	 * @return void
 	 */
-	public function updateRememberToken (UserInterface $user, $token);
+	public function updateRememberToken(UserInterface $user, $token);
 
 	/**
 	 * Retrieve a user by the given credentials.
@@ -37,7 +34,7 @@ interface UserProviderInterface
 	 * @param  array  $credentials
 	 * @return \Illuminate\Auth\UserInterface|null
 	 */
-	public function retrieveByCredentials (array $credentials);
+	public function retrieveByCredentials(array $credentials);
 
 	/**
 	 * Validate a user against the given credentials.
@@ -46,5 +43,6 @@ interface UserProviderInterface
 	 * @param  array  $credentials
 	 * @return bool
 	 */
-	public function validateCredentials (UserInterface $user, array $credentials);
+	public function validateCredentials(UserInterface $user, array $credentials);
+
 }

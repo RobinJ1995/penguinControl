@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Support\Facades;
+<?php namespace Illuminate\Support\Facades;
 
 /**
  * @see \Illuminate\Database\Schema\Builder
  */
-class Schema extends Facade
-{
+class Schema extends Facade {
 
 	/**
 	 * Get a schema builder instance for a connection.
@@ -14,9 +11,9 @@ class Schema extends Facade
 	 * @param  string  $name
 	 * @return \Illuminate\Database\Schema\Builder
 	 */
-	public static function connection ($name)
+	public static function connection($name)
 	{
-		return static::$app['db']->connection ($name)->getSchemaBuilder ();
+		return static::$app['db']->connection($name)->getSchemaBuilder();
 	}
 
 	/**
@@ -24,9 +21,9 @@ class Schema extends Facade
 	 *
 	 * @return string
 	 */
-	protected static function getFacadeAccessor ()
+	protected static function getFacadeAccessor()
 	{
-		return static::$app['db']->connection ()->getSchemaBuilder ();
+		return static::$app['db']->connection()->getSchemaBuilder();
 	}
 
 }

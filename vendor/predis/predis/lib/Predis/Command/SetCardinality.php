@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class SetCardinality extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SCARD';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SCARD';
+    }
 }

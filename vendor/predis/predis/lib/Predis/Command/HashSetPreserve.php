@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class HashSetPreserve extends PrefixableCommand
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HSETNX';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HSETNX';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return (bool) $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

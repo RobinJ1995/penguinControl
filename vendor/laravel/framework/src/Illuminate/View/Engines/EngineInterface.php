@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\View\Engines;
 
-namespace Illuminate\View\Engines;
-
-interface EngineInterface
-{
+interface EngineInterface {
 
 	/**
 	 * Get the evaluated contents of the view.
@@ -12,5 +9,6 @@ interface EngineInterface
 	 * @param  array   $data
 	 * @return string
 	 */
-	public function get ($path, array $data = array ());
+	public function get($path, array $data = array());
+
 }

@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Pagination;
+<?php namespace Illuminate\Pagination;
 
 use Illuminate\Support\ServiceProvider;
 
-class PaginationServiceProvider extends ServiceProvider
-{
+class PaginationServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -19,15 +16,15 @@ class PaginationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('paginator', function($app)
+		$this->app->bindShared('paginator', function($app)
 		{
-			$paginator = new Environment ($app['request'], $app['view'], $app['translator']);
+			$paginator = new Environment($app['request'], $app['view'], $app['translator']);
 
-			$paginator->setViewName ($app['config']['view.pagination']);
+			$paginator->setViewName($app['config']['view.pagination']);
 
-			$app->refresh ('request', $paginator, 'setRequest');
+			$app->refresh('request', $paginator, 'setRequest');
 
 			return $paginator;
 		});
@@ -38,9 +35,9 @@ class PaginationServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('paginator');
+		return array('paginator');
 	}
 
 }

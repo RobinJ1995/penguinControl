@@ -26,93 +26,88 @@ use Predis\Protocol\ResponseReaderInterface;
  */
 class TextResponseReader implements ResponseReaderInterface
 {
+    private $handlers;
 
-	private $handlers;
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->handlers = $this->getDefaultHandlers();
+    }
 
-	/**
-	 *
-	 */
-	public function __construct ()
-	{
-		$this->handlers = $this->getDefaultHandlers ();
-	}
+    /**
+     * Returns the default set of response handlers for all the type of replies
+     * that can be returned by Redis.
+     */
+    private function getDefaultHandlers()
+    {
+        return array(
+            TextProtocol::PREFIX_STATUS     => new ResponseStatusHandler(),
+            TextProtocol::PREFIX_ERROR      => new ResponseErrorHandler(),
+            TextProtocol::PREFIX_INTEGER    => new ResponseIntegerHandler(),
+            TextProtocol::PREFIX_BULK       => new ResponseBulkHandler(),
+            TextProtocol::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(),
+        );
+    }
 
-	/**
-	 * Returns the default set of response handlers for all the type of replies
-	 * that can be returned by Redis.
-	 */
-	private function getDefaultHandlers ()
-	{
-		return array (
-		    TextProtocol::PREFIX_STATUS => new ResponseStatusHandler(),
-		    TextProtocol::PREFIX_ERROR => new ResponseErrorHandler(),
-		    TextProtocol::PREFIX_INTEGER => new ResponseIntegerHandler(),
-		    TextProtocol::PREFIX_BULK => new ResponseBulkHandler(),
-		    TextProtocol::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(),
-		);
-	}
+    /**
+     * Sets a response handler for a certain prefix that identifies a type of
+     * reply that can be returned by Redis.
+     *
+     * @param string                   $prefix  Identifier for a type of reply.
+     * @param ResponseHandlerInterface $handler Response handler for the reply.
+     */
+    public function setHandler($prefix, ResponseHandlerInterface $handler)
+    {
+        $this->handlers[$prefix] = $handler;
+    }
 
-	/**
-	 * Sets a response handler for a certain prefix that identifies a type of
-	 * reply that can be returned by Redis.
-	 *
-	 * @param string                   $prefix  Identifier for a type of reply.
-	 * @param ResponseHandlerInterface $handler Response handler for the reply.
-	 */
-	public function setHandler ($prefix, ResponseHandlerInterface $handler)
-	{
-		$this->handlers[$prefix] = $handler;
-	}
+    /**
+     * Returns the response handler associated to a certain type of reply that
+     * can be returned by Redis.
+     *
+     * @param  string                   $prefix Identifier for a type of reply.
+     * @return ResponseHandlerInterface
+     */
+    public function getHandler($prefix)
+    {
+        if (isset($this->handlers[$prefix])) {
+            return $this->handlers[$prefix];
+        }
+    }
 
-	/**
-	 * Returns the response handler associated to a certain type of reply that
-	 * can be returned by Redis.
-	 *
-	 * @param  string                   $prefix Identifier for a type of reply.
-	 * @return ResponseHandlerInterface
-	 */
-	public function getHandler ($prefix)
-	{
-		if (isset ($this->handlers[$prefix]))
-		{
-			return $this->handlers[$prefix];
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function read(ComposableConnectionInterface $connection)
+    {
+        $header = $connection->readLine();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function read (ComposableConnectionInterface $connection)
-	{
-		$header = $connection->readLine ();
+        if ($header === '') {
+            $this->protocolError($connection, 'Unexpected empty header');
+        }
 
-		if ($header === '')
-		{
-			$this->protocolError ($connection, 'Unexpected empty header');
-		}
+        $prefix = $header[0];
 
-		$prefix = $header[0];
+        if (!isset($this->handlers[$prefix])) {
+            $this->protocolError($connection, "Unknown prefix: '$prefix'");
+        }
 
-		if (!isset ($this->handlers[$prefix]))
-		{
-			$this->protocolError ($connection, "Unknown prefix: '$prefix'");
-		}
+        $handler = $this->handlers[$prefix];
 
-		$handler = $this->handlers[$prefix];
+        return $handler->handle($connection, substr($header, 1));
+    }
 
-		return $handler->handle ($connection, substr ($header, 1));
-	}
-
-	/**
-	 * Helper method used to handle a protocol error generated while reading a
-	 * reply from a connection to Redis.
-	 *
-	 * @param ComposableConnectionInterface $connection Connection to Redis that generated the error.
-	 * @param string                        $message    Error message.
-	 */
-	private function protocolError (ComposableConnectionInterface $connection, $message)
-	{
-		CommunicationException::handle (new ProtocolException ($connection, $message));
-	}
-
+    /**
+     * Helper method used to handle a protocol error generated while reading a
+     * reply from a connection to Redis.
+     *
+     * @param ComposableConnectionInterface $connection Connection to Redis that generated the error.
+     * @param string                        $message    Error message.
+     */
+    private function protocolError(ComposableConnectionInterface $connection, $message)
+    {
+        CommunicationException::handle(new ProtocolException($connection, $message));
+    }
 }

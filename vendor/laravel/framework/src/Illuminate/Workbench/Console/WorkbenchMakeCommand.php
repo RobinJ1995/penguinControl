@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Workbench\Console;
+<?php namespace Illuminate\Workbench\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Workbench\Package;
@@ -8,8 +6,7 @@ use Illuminate\Workbench\PackageCreator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class WorkbenchMakeCommand extends Command
-{
+class WorkbenchMakeCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -38,9 +35,9 @@ class WorkbenchMakeCommand extends Command
 	 * @param  \Illuminate\Workbench\PackageCreator  $creator
 	 * @return void
 	 */
-	public function __construct (PackageCreator $creator)
+	public function __construct(PackageCreator $creator)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->creator = $creator;
 	}
@@ -50,13 +47,13 @@ class WorkbenchMakeCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$workbench = $this->runCreator ($this->buildPackage ());
+		$workbench = $this->runCreator($this->buildPackage());
 
-		$this->info ('Package workbench created!');
+		$this->info('Package workbench created!');
 
-		$this->callComposerUpdate ($workbench);
+		$this->callComposerUpdate($workbench);
 	}
 
 	/**
@@ -65,13 +62,13 @@ class WorkbenchMakeCommand extends Command
 	 * @param  \Illuminate\Workbench\Package  $package
 	 * @return string
 	 */
-	protected function runCreator ($package)
+	protected function runCreator($package)
 	{
-		$path = $this->laravel['path.base'] . '/workbench';
+		$path = $this->laravel['path.base'].'/workbench';
 
-		$plain = !$this->option ('resources');
+		$plain = ! $this->option('resources');
 
-		return $this->creator->create ($package, $path, $plain);
+		return $this->creator->create($package, $path, $plain);
 	}
 
 	/**
@@ -80,11 +77,11 @@ class WorkbenchMakeCommand extends Command
 	 * @param  string  $path
 	 * @return void
 	 */
-	protected function callComposerUpdate ($path)
+	protected function callComposerUpdate($path)
 	{
-		chdir ($path);
+		chdir($path);
 
-		passthru ('composer install --dev');
+		passthru('composer install --dev');
 	}
 
 	/**
@@ -92,13 +89,13 @@ class WorkbenchMakeCommand extends Command
 	 *
 	 * @return \Illuminate\Workbench\Package
 	 */
-	protected function buildPackage ()
+	protected function buildPackage()
 	{
-		list($vendor, $name) = $this->getPackageSegments ();
+		list($vendor, $name) = $this->getPackageSegments();
 
 		$config = $this->laravel['config']['workbench'];
 
-		return new Package ($vendor, $name, $config['name'], $config['email']);
+		return new Package($vendor, $name, $config['name'], $config['email']);
 	}
 
 	/**
@@ -106,11 +103,11 @@ class WorkbenchMakeCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getPackageSegments ()
+	protected function getPackageSegments()
 	{
-		$package = $this->argument ('package');
+		$package = $this->argument('package');
 
-		return array_map ('studly_case', explode ('/', $package, 2));
+		return array_map('studly_case', explode('/', $package, 2));
 	}
 
 	/**
@@ -118,10 +115,10 @@ class WorkbenchMakeCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getArguments ()
+	protected function getArguments()
 	{
-		return array (
-		    array ('package', InputArgument::REQUIRED, 'The name (vendor/name) of the package.'),
+		return array(
+			array('package', InputArgument::REQUIRED, 'The name (vendor/name) of the package.'),
 		);
 	}
 
@@ -130,10 +127,10 @@ class WorkbenchMakeCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('resources', null, InputOption::VALUE_NONE, 'Create Laravel specific directories.'),
+		return array(
+			array('resources', null, InputOption::VALUE_NONE, 'Create Laravel specific directories.'),
 		);
 	}
 

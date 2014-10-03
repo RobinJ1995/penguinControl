@@ -16,24 +16,21 @@ use Symfony\Component\Translation\Dumper\JsonFileDumper;
 
 class JsonFileDumperTest extends \PHPUnit_Framework_TestCase
 {
+    public function testDump()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->markTestIncomplete('PHP below 5.4 doesn\'t support JSON pretty printing');
+        }
 
-	public function testDump ()
-	{
-		if (version_compare (PHP_VERSION, '5.4.0', '<'))
-		{
-			$this->markTestIncomplete ('PHP below 5.4 doesn\'t support JSON pretty printing');
-		}
+        $catalogue = new MessageCatalogue('en');
+        $catalogue->add(array('foo' => 'bar'));
 
-		$catalogue = new MessageCatalogue ('en');
-		$catalogue->add (array ('foo' => 'bar'));
+        $tempDir = sys_get_temp_dir();
+        $dumper = new JsonFileDumper();
+        $dumper->dump($catalogue, array('path' => $tempDir));
 
-		$tempDir = sys_get_temp_dir ();
-		$dumper = new JsonFileDumper();
-		$dumper->dump ($catalogue, array ('path' => $tempDir));
+        $this->assertEquals(file_get_contents(__DIR__.'/../fixtures/resources.json'), file_get_contents($tempDir.'/messages.en.json'));
 
-		$this->assertEquals (file_get_contents (__DIR__ . '/../fixtures/resources.json'), file_get_contents ($tempDir . '/messages.en.json'));
-
-		unlink ($tempDir . '/messages.en.json');
-	}
-
+        unlink($tempDir.'/messages.en.json');
+    }
 }

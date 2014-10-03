@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Database\Query;
 
-namespace Illuminate\Database\Query;
-
-class JoinClause
-{
+class JoinClause {
 
 	/**
 	 * The query builder instance.
@@ -31,7 +28,7 @@ class JoinClause
 	 *
 	 * @var array
 	 */
-	public $clauses = array ();
+	public $clauses = array();
 
 	/**
 	 * Create a new join clause instance.
@@ -41,7 +38,7 @@ class JoinClause
 	 * @param  string  $table
 	 * @return void
 	 */
-	public function __construct (Builder $query, $type, $table)
+	public function __construct(Builder $query, $type, $table)
 	{
 		$this->type = $type;
 		$this->query = $query;
@@ -58,12 +55,11 @@ class JoinClause
 	 * @param  bool  $where
 	 * @return \Illuminate\Database\Query\JoinClause
 	 */
-	public function on ($first, $operator, $second, $boolean = 'and', $where = false)
+	public function on($first, $operator, $second, $boolean = 'and', $where = false)
 	{
-		$this->clauses[] = compact ('first', 'operator', 'second', 'boolean', 'where');
+		$this->clauses[] = compact('first', 'operator', 'second', 'boolean', 'where');
 
-		if ($where)
-			$this->query->addBinding ($second);
+		if ($where) $this->query->addBinding($second);
 
 		return $this;
 	}
@@ -76,9 +72,9 @@ class JoinClause
 	 * @param  string  $second
 	 * @return \Illuminate\Database\Query\JoinClause
 	 */
-	public function orOn ($first, $operator, $second)
+	public function orOn($first, $operator, $second)
 	{
-		return $this->on ($first, $operator, $second, 'or');
+		return $this->on($first, $operator, $second, 'or');
 	}
 
 	/**
@@ -90,9 +86,9 @@ class JoinClause
 	 * @param  string  $boolean
 	 * @return \Illuminate\Database\Query\JoinClause
 	 */
-	public function where ($first, $operator, $second, $boolean = 'and')
+	public function where($first, $operator, $second, $boolean = 'and')
 	{
-		return $this->on ($first, $operator, $second, $boolean, true);
+		return $this->on($first, $operator, $second, $boolean, true);
 	}
 
 	/**
@@ -104,9 +100,9 @@ class JoinClause
 	 * @param  string  $boolean
 	 * @return \Illuminate\Database\Query\JoinClause
 	 */
-	public function orWhere ($first, $operator, $second)
+	public function orWhere($first, $operator, $second)
 	{
-		return $this->on ($first, $operator, $second, 'or', true);
+		return $this->on($first, $operator, $second, 'or', true);
 	}
 
 }

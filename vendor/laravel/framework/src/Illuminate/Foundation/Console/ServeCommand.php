@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Foundation\Console;
+<?php namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
-class ServeCommand extends Command
-{
+class ServeCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -27,21 +24,21 @@ class ServeCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->checkPhpVersion ();
+		$this->checkPhpVersion();
 
-		chdir ($this->laravel['path.base']);
+		chdir($this->laravel['path.base']);
 
-		$host = $this->input->getOption ('host');
+		$host = $this->input->getOption('host');
 
-		$port = $this->input->getOption ('port');
+		$port = $this->input->getOption('port');
 
 		$public = $this->laravel['path.public'];
 
-		$this->info ("Laravel development server started on http://{$host}:{$port}");
+		$this->info("Laravel development server started on http://{$host}:{$port}");
 
-		passthru ('"' . PHP_BINARY . '"' . " -S {$host}:{$port} -t \"{$public}\" server.php");
+		passthru('"'.PHP_BINARY.'"'." -S {$host}:{$port} -t \"{$public}\" server.php");
 	}
 
 	/**
@@ -51,11 +48,11 @@ class ServeCommand extends Command
 	 *
 	 * @throws \Exception
 	 */
-	protected function checkPhpVersion ()
+	protected function checkPhpVersion()
 	{
-		if (version_compare (PHP_VERSION, '5.4.0', '<'))
+		if (version_compare(PHP_VERSION, '5.4.0', '<'))
 		{
-			throw new \Exception ('This PHP binary is not version 5.4 or greater.');
+			throw new \Exception('This PHP binary is not version 5.4 or greater.');
 		}
 	}
 
@@ -64,11 +61,12 @@ class ServeCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('host', null, InputOption::VALUE_OPTIONAL, 'The host address to serve the application on.', 'localhost'),
-		    array ('port', null, InputOption::VALUE_OPTIONAL, 'The port to serve the application on.', 8000),
+		return array(
+			array('host', null, InputOption::VALUE_OPTIONAL, 'The host address to serve the application on.', 'localhost'),
+
+			array('port', null, InputOption::VALUE_OPTIONAL, 'The port to serve the application on.', 8000),
 		);
 	}
 

@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\Database;
+<?php namespace Illuminate\Database;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Migrations\Migrator;
@@ -13,8 +11,7 @@ use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Console\Migrations\MigrateMakeCommand;
 use Illuminate\Database\Migrations\DatabaseMigrationRepository;
 
-class MigrationServiceProvider extends ServiceProvider
-{
+class MigrationServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -28,16 +25,16 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->registerRepository ();
+		$this->registerRepository();
 
 		// Once we have registered the migrator instance we will go ahead and register
 		// all of the migration related commands that are used by the "Artisan" CLI
 		// so that they may be easily accessed for registering with the consoles.
-		$this->registerMigrator ();
+		$this->registerMigrator();
 
-		$this->registerCommands ();
+		$this->registerCommands();
 	}
 
 	/**
@@ -45,13 +42,13 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerRepository ()
+	protected function registerRepository()
 	{
-		$this->app->bindShared ('migration.repository', function($app)
+		$this->app->bindShared('migration.repository', function($app)
 		{
 			$table = $app['config']['database.migrations'];
 
-			return new DatabaseMigrationRepository ($app['db'], $table);
+			return new DatabaseMigrationRepository($app['db'], $table);
 		});
 	}
 
@@ -60,16 +57,16 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerMigrator ()
+	protected function registerMigrator()
 	{
 		// The migrator is responsible for actually running and rollback the migration
 		// files in the application. We'll pass in our database connection resolver
 		// so the migrator can resolve any of these connections when it needs to.
-		$this->app->bindShared ('migrator', function($app)
+		$this->app->bindShared('migrator', function($app)
 		{
 			$repository = $app['migration.repository'];
 
-			return new Migrator ($repository, $app['db'], $app['files']);
+			return new Migrator($repository, $app['db'], $app['files']);
 		});
 	}
 
@@ -78,23 +75,25 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerCommands ()
+	protected function registerCommands()
 	{
-		$commands = array ('Migrate', 'Rollback', 'Reset', 'Refresh', 'Install', 'Make');
+		$commands = array('Migrate', 'Rollback', 'Reset', 'Refresh', 'Install', 'Make');
 
 		// We'll simply spin through the list of commands that are migration related
 		// and register each one of them with an application container. They will
 		// be resolved in the Artisan start file and registered on the console.
 		foreach ($commands as $command)
 		{
-			$this->{'register' . $command . 'Command'} ();
+			$this->{'register'.$command.'Command'}();
 		}
 
 		// Once the commands are registered in the application IoC container we will
 		// register them with the Artisan start event so that these are available
 		// when the Artisan application actually starts up and is getting used.
-		$this->commands (
-			'command.migrate', 'command.migrate.make', 'command.migrate.install', 'command.migrate.rollback', 'command.migrate.reset', 'command.migrate.refresh'
+		$this->commands(
+			'command.migrate', 'command.migrate.make',
+			'command.migrate.install', 'command.migrate.rollback',
+			'command.migrate.reset', 'command.migrate.refresh'
 		);
 	}
 
@@ -103,13 +102,13 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerMigrateCommand ()
+	protected function registerMigrateCommand()
 	{
-		$this->app->bindShared ('command.migrate', function($app)
+		$this->app->bindShared('command.migrate', function($app)
 		{
-			$packagePath = $app['path.base'] . '/vendor';
+			$packagePath = $app['path.base'].'/vendor';
 
-			return new MigrateCommand ($app['migrator'], $packagePath);
+			return new MigrateCommand($app['migrator'], $packagePath);
 		});
 	}
 
@@ -118,11 +117,11 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerRollbackCommand ()
+	protected function registerRollbackCommand()
 	{
-		$this->app->bindShared ('command.migrate.rollback', function($app)
+		$this->app->bindShared('command.migrate.rollback', function($app)
 		{
-			return new RollbackCommand ($app['migrator']);
+			return new RollbackCommand($app['migrator']);
 		});
 	}
 
@@ -131,11 +130,11 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerResetCommand ()
+	protected function registerResetCommand()
 	{
-		$this->app->bindShared ('command.migrate.reset', function($app)
+		$this->app->bindShared('command.migrate.reset', function($app)
 		{
-			return new ResetCommand ($app['migrator']);
+			return new ResetCommand($app['migrator']);
 		});
 	}
 
@@ -144,9 +143,9 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerRefreshCommand ()
+	protected function registerRefreshCommand()
 	{
-		$this->app->bindShared ('command.migrate.refresh', function($app)
+		$this->app->bindShared('command.migrate.refresh', function($app)
 		{
 			return new RefreshCommand;
 		});
@@ -157,11 +156,11 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerInstallCommand ()
+	protected function registerInstallCommand()
 	{
-		$this->app->bindShared ('command.migrate.install', function($app)
+		$this->app->bindShared('command.migrate.install', function($app)
 		{
-			return new InstallCommand ($app['migration.repository']);
+			return new InstallCommand($app['migration.repository']);
 		});
 	}
 
@@ -170,23 +169,23 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	protected function registerMakeCommand ()
+	protected function registerMakeCommand()
 	{
-		$this->app->bindShared ('migration.creator', function($app)
+		$this->app->bindShared('migration.creator', function($app)
 		{
-			return new MigrationCreator ($app['files']);
+			return new MigrationCreator($app['files']);
 		});
 
-		$this->app->bindShared ('command.migrate.make', function($app)
+		$this->app->bindShared('command.migrate.make', function($app)
 		{
 			// Once we have the migration creator registered, we will create the command
 			// and inject the creator. The creator is responsible for the actual file
 			// creation of the migrations, and may be extended by these developers.
 			$creator = $app['migration.creator'];
 
-			$packagePath = $app['path.base'] . '/vendor';
+			$packagePath = $app['path.base'].'/vendor';
 
-			return new MigrateMakeCommand ($creator, $packagePath);
+			return new MigrateMakeCommand($creator, $packagePath);
 		});
 	}
 
@@ -195,13 +194,13 @@ class MigrationServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array (
-		    'migrator', 'migration.repository', 'command.migrate',
-		    'command.migrate.rollback', 'command.migrate.reset',
-		    'command.migrate.refresh', 'command.migrate.install',
-		    'migration.creator', 'command.migrate.make',
+		return array(
+			'migrator', 'migration.repository', 'command.migrate',
+			'command.migrate.rollback', 'command.migrate.reset',
+			'command.migrate.refresh', 'command.migrate.install',
+			'migration.creator', 'command.migrate.make',
 		);
 	}
 

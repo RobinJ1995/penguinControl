@@ -1,29 +1,19 @@
-<?php
-
-namespace Illuminate\Database\Query\Grammars;
+<?php namespace Illuminate\Database\Query\Grammars;
 
 use Illuminate\Database\Query\Builder;
 
-class SqlServerGrammar extends Grammar
-{
+class SqlServerGrammar extends Grammar {
 
 	/**
 	 * All of the available clause operators.
 	 *
 	 * @var array
 	 */
-	protected $operators = array (
-	    '=', '<', '>', '<=', '>=', '!<', '!>', '<>', '!=',
-	    'like', 'not like', 'between', 'ilike',
-	    '&', '&=', '|', '|=', '^', '^=',
+	protected $operators = array(
+		'=', '<', '>', '<=', '>=', '!<', '!>', '<>', '!=',
+		'like', 'not like', 'between', 'ilike',
+		'&', '&=', '|', '|=', '^', '^=',
 	);
-
-	/**
-	 * The keyword identifier wrapper format.
-	 *
-	 * @var string
-	 */
-	protected $wrapper = '[%s]';
 
 	/**
 	 * Compile a select query into SQL.
@@ -31,19 +21,19 @@ class SqlServerGrammar extends Grammar
 	 * @param  \Illuminate\Database\Query\Builder
 	 * @return string
 	 */
-	public function compileSelect (Builder $query)
+	public function compileSelect(Builder $query)
 	{
-		$components = $this->compileComponents ($query);
+		$components = $this->compileComponents($query);
 
 		// If an offset is present on the query, we will need to wrap the query in
 		// a big "ANSI" offset syntax block. This is very nasty compared to the
 		// other database systems but is necessary for implementing features.
 		if ($query->offset > 0)
 		{
-			return $this->compileAnsiOffset ($query, $components);
+			return $this->compileAnsiOffset($query, $components);
 		}
 
-		return $this->concatenate ($components);
+		return $this->concatenate($components);
 	}
 
 	/**
@@ -53,10 +43,9 @@ class SqlServerGrammar extends Grammar
 	 * @param  array  $columns
 	 * @return string
 	 */
-	protected function compileColumns (Builder $query, $columns)
+	protected function compileColumns(Builder $query, $columns)
 	{
-		if (!is_null ($query->aggregate))
-			return;
+		if ( ! is_null($query->aggregate)) return;
 
 		$select = $query->distinct ? 'select distinct ' : 'select ';
 
@@ -65,10 +54,10 @@ class SqlServerGrammar extends Grammar
 		// SQL Server system similar to the limit keywords available in MySQL.
 		if ($query->limit > 0 && $query->offset <= 0)
 		{
-			$select .= 'top ' . $query->limit . ' ';
+			$select .= 'top '.$query->limit.' ';
 		}
 
-		return $select . $this->columnize ($columns);
+		return $select.$this->columnize($columns);
 	}
 
 	/**
@@ -78,16 +67,15 @@ class SqlServerGrammar extends Grammar
 	 * @param  string  $table
 	 * @return string
 	 */
-	protected function compileFrom (Builder $query, $table)
+	protected function compileFrom(Builder $query, $table)
 	{
-		$from = parent::compileFrom ($query, $table);
+		$from = parent::compileFrom($query, $table);
 
-		if (is_string ($query->lock))
-			return $from . ' ' . $query->lock;
+		if (is_string($query->lock)) return $from.' '.$query->lock;
 
-		if (!is_null ($query->lock))
+		if ( ! is_null($query->lock))
 		{
-			return $from . ' with(rowlock,' . ($query->lock ? 'updlock,' : '') . 'holdlock)';
+			return $from.' with(rowlock,'.($query->lock ? 'updlock,' : '').'holdlock)';
 		}
 		else
 		{
@@ -102,12 +90,12 @@ class SqlServerGrammar extends Grammar
 	 * @param  array  $components
 	 * @return string
 	 */
-	protected function compileAnsiOffset (Builder $query, $components)
+	protected function compileAnsiOffset(Builder $query, $components)
 	{
 		// An ORDER BY clause is required to make this offset query work, so if one does
 		// not exist we'll just create a dummy clause to trick the database and so it
 		// does not complain about the queries for not having an "order by" clause.
-		if (!isset ($components['orders']))
+		if ( ! isset($components['orders']))
 		{
 			$components['orders'] = 'order by (select 0)';
 		}
@@ -117,21 +105,21 @@ class SqlServerGrammar extends Grammar
 		// the "select" that will give back the row numbers on each of the records.
 		$orderings = $components['orders'];
 
-		$components['columns'] .= $this->compileOver ($orderings);
+		$components['columns'] .= $this->compileOver($orderings);
 
-		unset ($components['orders']);
+		unset($components['orders']);
 
 		// Next we need to calculate the constraints that should be placed on the query
 		// to get the right offset and limit from our query but if there is no limit
 		// set we will just handle the offset only since that is all that matters.
-		$constraint = $this->compileRowConstraint ($query);
+		$constraint = $this->compileRowConstraint($query);
 
-		$sql = $this->concatenate ($components);
+		$sql = $this->concatenate($components);
 
 		// We are now ready to build the final SQL query so we'll create a common table
 		// expression from the query and get the records with row numbers within our
 		// given limit and offset value that we just put on as a query constraint.
-		return $this->compileTableExpression ($sql, $constraint);
+		return $this->compileTableExpression($sql, $constraint);
 	}
 
 	/**
@@ -140,7 +128,7 @@ class SqlServerGrammar extends Grammar
 	 * @param  string  $orderings
 	 * @return string
 	 */
-	protected function compileOver ($orderings)
+	protected function compileOver($orderings)
 	{
 		return ", row_number() over ({$orderings}) as row_num";
 	}
@@ -151,7 +139,7 @@ class SqlServerGrammar extends Grammar
 	 * @param  \Illuminate\Database\Query\Builder  $query
 	 * @return string
 	 */
-	protected function compileRowConstraint ($query)
+	protected function compileRowConstraint($query)
 	{
 		$start = $query->offset + 1;
 
@@ -172,7 +160,7 @@ class SqlServerGrammar extends Grammar
 	 * @param  string  $constraint
 	 * @return string
 	 */
-	protected function compileTableExpression ($sql, $constraint)
+	protected function compileTableExpression($sql, $constraint)
 	{
 		return "select * from ({$sql}) as temp_table where row_num {$constraint}";
 	}
@@ -184,7 +172,7 @@ class SqlServerGrammar extends Grammar
 	 * @param  int  $limit
 	 * @return string
 	 */
-	protected function compileLimit (Builder $query, $limit)
+	protected function compileLimit(Builder $query, $limit)
 	{
 		return '';
 	}
@@ -196,7 +184,7 @@ class SqlServerGrammar extends Grammar
 	 * @param  int  $offset
 	 * @return string
 	 */
-	protected function compileOffset (Builder $query, $offset)
+	protected function compileOffset(Builder $query, $offset)
 	{
 		return '';
 	}
@@ -207,9 +195,9 @@ class SqlServerGrammar extends Grammar
 	 * @param  \Illuminate\Database\Query\Builder  $query
 	 * @return array
 	 */
-	public function compileTruncate (Builder $query)
+	public function compileTruncate(Builder $query)
 	{
-		return array ('truncate table ' . $this->wrapTable ($query->from) => array ());
+		return array('truncate table '.$this->wrapTable($query->from) => array());
 	}
 
 	/**
@@ -217,9 +205,22 @@ class SqlServerGrammar extends Grammar
 	 *
 	 * @return string
 	 */
-	public function getDateFormat ()
+	public function getDateFormat()
 	{
 		return 'Y-m-d H:i:s.000';
+	}
+
+	/**
+	 * Wrap a single string in keyword identifiers.
+	 *
+	 * @param  string  $value
+	 * @return string
+	 */
+	protected function wrapValue($value)
+	{
+		if ($value === '*') return $value;
+
+		return '['.str_replace(']', ']]', $value).']';
 	}
 
 }

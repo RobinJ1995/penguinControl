@@ -19,62 +19,62 @@ use Monolog\Logger;
  */
 class BrowserConsoleHandlerTest extends TestCase
 {
+    protected function setUp()
+    {
+        BrowserConsoleHandler::reset();
+    }
 
-	protected function setUp ()
-	{
-		BrowserConsoleHandler::reset ();
-	}
+    protected function generateScript()
+    {
+        $reflMethod = new \ReflectionMethod('Monolog\Handler\BrowserConsoleHandler', 'generateScript');
+        $reflMethod->setAccessible(true);
 
-	protected function generateScript ()
-	{
-		$reflMethod = new \ReflectionMethod ('Monolog\Handler\BrowserConsoleHandler', 'generateScript');
-		$reflMethod->setAccessible (true);
+        return $reflMethod->invoke(null);
+    }
 
-		return $reflMethod->invoke (null);
-	}
+    public function testStyling()
+    {
+        $handler = new BrowserConsoleHandler();
+        $handler->setFormatter($this->getIdentityFormatter());
 
-	public function testStyling ()
-	{
-		$handler = new BrowserConsoleHandler();
-		$handler->setFormatter ($this->getIdentityFormatter ());
+        $handler->handle($this->getRecord(Logger::DEBUG, 'foo[[bar]]{color: red}'));
 
-		$handler->handle ($this->getRecord (Logger::DEBUG, 'foo[[bar]]{color: red}'));
-
-		$expected = <<<EOF
+        $expected = <<<EOF
 (function (c) {if (c && c.groupCollapsed) {
 c.log("%cfoo%cbar%c", "font-weight: normal", "color: red", "font-weight: normal");
 }})(console);
 EOF;
 
-		$this->assertEquals ($expected, $this->generateScript ());
-	}
+        $this->assertEquals($expected, $this->generateScript());
+    }
 
-	public function testEscaping ()
-	{
-		$handler = new BrowserConsoleHandler();
-		$handler->setFormatter ($this->getIdentityFormatter ());
+    public function testEscaping()
+    {
+        $handler = new BrowserConsoleHandler();
+        $handler->setFormatter($this->getIdentityFormatter());
 
-		$handler->handle ($this->getRecord (Logger::DEBUG, "[foo] [[\"bar\n[baz]\"]]{color: red}"));
+        $handler->handle($this->getRecord(Logger::DEBUG, "[foo] [[\"bar\n[baz]\"]]{color: red}"));
 
-		$expected = <<<EOF
+        $expected = <<<EOF
 (function (c) {if (c && c.groupCollapsed) {
 c.log("%c[foo] %c\"bar\\n[baz]\"%c", "font-weight: normal", "color: red", "font-weight: normal");
 }})(console);
 EOF;
 
-		$this->assertEquals ($expected, $this->generateScript ());
-	}
+        $this->assertEquals($expected, $this->generateScript());
+    }
 
-	public function testAutolabel ()
-	{
-		$handler = new BrowserConsoleHandler();
-		$handler->setFormatter ($this->getIdentityFormatter ());
 
-		$handler->handle ($this->getRecord (Logger::DEBUG, '[[foo]]{macro: autolabel}'));
-		$handler->handle ($this->getRecord (Logger::DEBUG, '[[bar]]{macro: autolabel}'));
-		$handler->handle ($this->getRecord (Logger::DEBUG, '[[foo]]{macro: autolabel}'));
+    public function testAutolabel()
+    {
+        $handler = new BrowserConsoleHandler();
+        $handler->setFormatter($this->getIdentityFormatter());
 
-		$expected = <<<EOF
+        $handler->handle($this->getRecord(Logger::DEBUG, '[[foo]]{macro: autolabel}'));
+        $handler->handle($this->getRecord(Logger::DEBUG, '[[bar]]{macro: autolabel}'));
+        $handler->handle($this->getRecord(Logger::DEBUG, '[[foo]]{macro: autolabel}'));
+
+        $expected = <<<EOF
 (function (c) {if (c && c.groupCollapsed) {
 c.log("%c%cfoo%c", "font-weight: normal", "background-color: blue; color: white; border-radius: 3px; padding: 0 2px 0 2px", "font-weight: normal");
 c.log("%c%cbar%c", "font-weight: normal", "background-color: green; color: white; border-radius: 3px; padding: 0 2px 0 2px", "font-weight: normal");
@@ -82,17 +82,17 @@ c.log("%c%cfoo%c", "font-weight: normal", "background-color: blue; color: white;
 }})(console);
 EOF;
 
-		$this->assertEquals ($expected, $this->generateScript ());
-	}
+        $this->assertEquals($expected, $this->generateScript());
+    }
 
-	public function testContext ()
-	{
-		$handler = new BrowserConsoleHandler();
-		$handler->setFormatter ($this->getIdentityFormatter ());
+    public function testContext()
+    {
+        $handler = new BrowserConsoleHandler();
+        $handler->setFormatter($this->getIdentityFormatter());
 
-		$handler->handle ($this->getRecord (Logger::DEBUG, 'test', array ('foo' => 'bar')));
+        $handler->handle($this->getRecord(Logger::DEBUG, 'test', array('foo' => 'bar')));
 
-		$expected = <<<EOF
+        $expected = <<<EOF
 (function (c) {if (c && c.groupCollapsed) {
 c.groupCollapsed("%ctest", "font-weight: normal");
 c.log("%c%s", "font-weight: bold", "Context");
@@ -101,23 +101,23 @@ c.groupEnd();
 }})(console);
 EOF;
 
-		$this->assertEquals ($expected, $this->generateScript ());
-	}
+        $this->assertEquals($expected, $this->generateScript());
+    }
 
-	public function testConcurrentHandlers ()
-	{
-		$handler1 = new BrowserConsoleHandler();
-		$handler1->setFormatter ($this->getIdentityFormatter ());
+    public function testConcurrentHandlers()
+    {
+        $handler1 = new BrowserConsoleHandler();
+        $handler1->setFormatter($this->getIdentityFormatter());
 
-		$handler2 = new BrowserConsoleHandler();
-		$handler2->setFormatter ($this->getIdentityFormatter ());
+        $handler2 = new BrowserConsoleHandler();
+        $handler2->setFormatter($this->getIdentityFormatter());
 
-		$handler1->handle ($this->getRecord (Logger::DEBUG, 'test1'));
-		$handler2->handle ($this->getRecord (Logger::DEBUG, 'test2'));
-		$handler1->handle ($this->getRecord (Logger::DEBUG, 'test3'));
-		$handler2->handle ($this->getRecord (Logger::DEBUG, 'test4'));
+        $handler1->handle($this->getRecord(Logger::DEBUG, 'test1'));
+        $handler2->handle($this->getRecord(Logger::DEBUG, 'test2'));
+        $handler1->handle($this->getRecord(Logger::DEBUG, 'test3'));
+        $handler2->handle($this->getRecord(Logger::DEBUG, 'test4'));
 
-		$expected = <<<EOF
+        $expected = <<<EOF
 (function (c) {if (c && c.groupCollapsed) {
 c.log("%ctest1", "font-weight: normal");
 c.log("%ctest2", "font-weight: normal");
@@ -126,7 +126,6 @@ c.log("%ctest4", "font-weight: normal");
 }})(console);
 EOF;
 
-		$this->assertEquals ($expected, $this->generateScript ());
-	}
-
+        $this->assertEquals($expected, $this->generateScript());
+    }
 }

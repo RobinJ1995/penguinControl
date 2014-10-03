@@ -1,28 +1,25 @@
-<?php
-
-namespace Illuminate\Foundation\Providers;
+<?php namespace Illuminate\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class ConsoleSupportServiceProvider extends ServiceProvider
-{
+class ConsoleSupportServiceProvider extends ServiceProvider {
 
 	/**
 	 * The provider class names.
 	 *
 	 * @var array
 	 */
-	protected $providers = array (
-	    'Illuminate\Foundation\Providers\CommandCreatorServiceProvider',
-	    'Illuminate\Foundation\Providers\ComposerServiceProvider',
-	    'Illuminate\Foundation\Providers\KeyGeneratorServiceProvider',
-	    'Illuminate\Foundation\Providers\MaintenanceServiceProvider',
-	    'Illuminate\Foundation\Providers\OptimizeServiceProvider',
-	    'Illuminate\Foundation\Providers\PublisherServiceProvider',
-	    'Illuminate\Foundation\Providers\RouteListServiceProvider',
-	    'Illuminate\Foundation\Providers\ServerServiceProvider',
-	    'Illuminate\Foundation\Providers\TinkerServiceProvider',
-	    'Illuminate\Queue\FailConsoleServiceProvider',
+	protected $providers = array(
+		'Illuminate\Foundation\Providers\CommandCreatorServiceProvider',
+		'Illuminate\Foundation\Providers\ComposerServiceProvider',
+		'Illuminate\Foundation\Providers\KeyGeneratorServiceProvider',
+		'Illuminate\Foundation\Providers\MaintenanceServiceProvider',
+		'Illuminate\Foundation\Providers\OptimizeServiceProvider',
+		'Illuminate\Foundation\Providers\PublisherServiceProvider',
+		'Illuminate\Foundation\Providers\RouteListServiceProvider',
+		'Illuminate\Foundation\Providers\ServerServiceProvider',
+		'Illuminate\Foundation\Providers\TinkerServiceProvider',
+		'Illuminate\Queue\FailConsoleServiceProvider',
 	);
 
 	/**
@@ -30,7 +27,7 @@ class ConsoleSupportServiceProvider extends ServiceProvider
 	 *
 	 * @var array
 	 */
-	protected $instances = array ();
+	protected $instances = array();
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -44,13 +41,13 @@ class ConsoleSupportServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->instances = array ();
+		$this->instances = array();
 
 		foreach ($this->providers as $provider)
 		{
-			$this->instances[] = $this->app->register ($provider);
+			$this->instances[] = $this->app->register($provider);
 		}
 	}
 
@@ -59,15 +56,15 @@ class ConsoleSupportServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		$provides = array ();
+		$provides = array();
 
 		foreach ($this->providers as $provider)
 		{
-			$instance = $this->app->resolveProviderClass ($provider);
+			$instance = $this->app->resolveProviderClass($provider);
 
-			$provides = array_merge ($provides, $instance->provides ());
+			$provides = array_merge($provides, $instance->provides());
 		}
 
 		return $provides;

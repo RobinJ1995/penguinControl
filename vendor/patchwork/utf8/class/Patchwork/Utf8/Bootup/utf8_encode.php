@@ -1,6 +1,4 @@
-<?php
-
-// vi: set fenc=utf-8 ts=4 sw=4 et:
+<?php // vi: set fenc=utf-8 ts=4 sw=4 et:
 /*
  * Copyright (C) 2013 Nicolas Grekas - p@tchwork.com
  *
@@ -12,16 +10,5 @@
 
 use Patchwork\PHP\Shim as s;
 
-function utf8_encode ($s)
-{
-	return s\Xml::utf8_encode ($s);
-}
-
-;
-
-function utf8_decode ($s)
-{
-	return s\Xml::utf8_decode ($s);
-}
-
-;
+function utf8_encode($s) {return s\Xml::utf8_encode($s);};
+function utf8_decode($s) {return s\Xml::utf8_decode($s);};

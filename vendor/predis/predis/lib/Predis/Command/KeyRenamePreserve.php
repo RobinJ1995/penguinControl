@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class KeyRenamePreserve extends KeyRename
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'RENAMENX';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'RENAMENX';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return (bool) $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

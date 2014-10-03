@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class TransactionExec extends AbstractCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'EXEC';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'EXEC';
+    }
 }

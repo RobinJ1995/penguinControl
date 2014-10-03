@@ -1,6 +1,4 @@
-<?php
-
-namespace Illuminate\View;
+<?php namespace Illuminate\View;
 
 use Closure;
 use Illuminate\Events\Dispatcher;
@@ -8,8 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\View\Engines\EngineResolver;
 use Illuminate\Support\Contracts\ArrayableInterface as Arrayable;
 
-class Environment
-{
+class Environment {
 
 	/**
 	 * The engine implementation.
@@ -44,42 +41,42 @@ class Environment
 	 *
 	 * @var array
 	 */
-	protected $shared = array ();
+	protected $shared = array();
 
 	/**
 	 * All of the registered view names.
 	 *
 	 * @var array
 	 */
-	protected $names = array ();
+	protected $names = array();
 
 	/**
 	 * The extension to engine bindings.
 	 *
 	 * @var array
 	 */
-	protected $extensions = array ('blade.php' => 'blade', 'php' => 'php');
+	protected $extensions = array('blade.php' => 'blade', 'php' => 'php');
 
 	/**
 	 * The view composer events.
 	 *
 	 * @var array
 	 */
-	protected $composers = array ();
+	protected $composers = array();
 
 	/**
 	 * All of the finished, captured sections.
 	 *
 	 * @var array
 	 */
-	protected $sections = array ();
+	protected $sections = array();
 
 	/**
 	 * The stack of in-progress sections.
 	 *
 	 * @var array
 	 */
-	protected $sectionStack = array ();
+	protected $sectionStack = array();
 
 	/**
 	 * The number of active rendering operations.
@@ -96,13 +93,13 @@ class Environment
 	 * @param  \Illuminate\Events\Dispatcher  $events
 	 * @return void
 	 */
-	public function __construct (EngineResolver $engines, ViewFinderInterface $finder, Dispatcher $events)
+	public function __construct(EngineResolver $engines, ViewFinderInterface $finder, Dispatcher $events)
 	{
 		$this->finder = $finder;
 		$this->events = $events;
 		$this->engines = $engines;
 
-		$this->share ('__env', $this);
+		$this->share('__env', $this);
 	}
 
 	/**
@@ -113,13 +110,13 @@ class Environment
 	 * @param  array   $mergeData
 	 * @return \Illuminate\View\View
 	 */
-	public function make ($view, $data = array (), $mergeData = array ())
+	public function make($view, $data = array(), $mergeData = array())
 	{
-		$path = $this->finder->find ($view);
+		$path = $this->finder->find($view);
 
-		$data = array_merge ($mergeData, $this->parseData ($data));
+		$data = array_merge($mergeData, $this->parseData($data));
 
-		$this->callCreator ($view = new View ($this, $this->getEngineFromPath ($path), $view, $path, $data));
+		$this->callCreator($view = new View($this, $this->getEngineFromPath($path), $view, $path, $data));
 
 		return $view;
 	}
@@ -130,9 +127,9 @@ class Environment
 	 * @param  mixed  $data
 	 * @return array
 	 */
-	protected function parseData ($data)
+	protected function parseData($data)
 	{
-		return $data instanceof Arrayable ? $data->toArray () : $data;
+		return $data instanceof Arrayable ? $data->toArray() : $data;
 	}
 
 	/**
@@ -142,9 +139,9 @@ class Environment
 	 * @param mixed $data
 	 * @return \Illuminate\View\View
 	 */
-	public function of ($view, $data = array ())
+	public function of($view, $data = array())
 	{
-		return $this->make ($this->names[$view], $data);
+		return $this->make($this->names[$view], $data);
 	}
 
 	/**
@@ -154,7 +151,7 @@ class Environment
 	 * @param string $name
 	 * @return void
 	 */
-	public function name ($view, $name)
+	public function name($view, $name)
 	{
 		$this->names[$name] = $view;
 	}
@@ -165,11 +162,11 @@ class Environment
 	 * @param  string  $view
 	 * @return bool
 	 */
-	public function exists ($view)
+	public function exists($view)
 	{
 		try
 		{
-			$this->finder->find ($view);
+			$this->finder->find($view);
 		}
 		catch (\InvalidArgumentException $e)
 		{
@@ -188,20 +185,20 @@ class Environment
 	 * @param  string  $empty
 	 * @return string
 	 */
-	public function renderEach ($view, $data, $iterator, $empty = 'raw|')
+	public function renderEach($view, $data, $iterator, $empty = 'raw|')
 	{
 		$result = '';
 
 		// If is actually data in the array, we will loop through the data and append
 		// an instance of the partial view to the final result HTML passing in the
 		// iterated value of this data array, allowing the views to access them.
-		if (count ($data) > 0)
+		if (count($data) > 0)
 		{
 			foreach ($data as $key => $value)
 			{
-				$data = array ('key' => $key, $iterator => $value);
+				$data = array('key' => $key, $iterator => $value);
 
-				$result .= $this->make ($view, $data)->render ();
+				$result .= $this->make($view, $data)->render();
 			}
 		}
 
@@ -210,13 +207,13 @@ class Environment
 		// with "raw|" for convenience and to let this know that it is a string.
 		else
 		{
-			if (starts_with ($empty, 'raw|'))
+			if (starts_with($empty, 'raw|'))
 			{
-				$result = substr ($empty, 4);
+				$result = substr($empty, 4);
 			}
 			else
 			{
-				$result = $this->make ($empty)->render ();
+				$result = $this->make($empty)->render();
 			}
 		}
 
@@ -229,11 +226,11 @@ class Environment
 	 * @param  string  $path
 	 * @return \Illuminate\View\Engines\EngineInterface
 	 */
-	protected function getEngineFromPath ($path)
+	protected function getEngineFromPath($path)
 	{
-		$engine = $this->extensions[$this->getExtension ($path)];
+		$engine = $this->extensions[$this->getExtension($path)];
 
-		return $this->engines->resolve ($engine);
+		return $this->engines->resolve($engine);
 	}
 
 	/**
@@ -242,13 +239,13 @@ class Environment
 	 * @param  string  $path
 	 * @return string
 	 */
-	protected function getExtension ($path)
+	protected function getExtension($path)
 	{
-		$extensions = array_keys ($this->extensions);
+		$extensions = array_keys($this->extensions);
 
-		return array_first ($extensions, function($key, $value) use ($path)
+		return array_first($extensions, function($key, $value) use ($path)
 		{
-			return ends_with ($path, $value);
+			return ends_with($path, $value);
 		});
 	}
 
@@ -259,14 +256,13 @@ class Environment
 	 * @param  mixed   $value
 	 * @return void
 	 */
-	public function share ($key, $value = null)
+	public function share($key, $value = null)
 	{
-		if (!is_array ($key))
-			return $this->shared[$key] = $value;
+		if ( ! is_array($key)) return $this->shared[$key] = $value;
 
 		foreach ($key as $innerKey => $innerValue)
 		{
-			$this->share ($innerKey, $innerValue);
+			$this->share($innerKey, $innerValue);
 		}
 	}
 
@@ -277,13 +273,13 @@ class Environment
 	 * @param  \Closure|string  $callback
 	 * @return array
 	 */
-	public function creator ($views, $callback)
+	public function creator($views, $callback)
 	{
-		$creators = array ();
+		$creators = array();
 
 		foreach ((array) $views as $view)
 		{
-			$creators[] = $this->addViewEvent ($view, $callback, 'creating: ');
+			$creators[] = $this->addViewEvent($view, $callback, 'creating: ');
 		}
 
 		return $creators;
@@ -295,13 +291,13 @@ class Environment
 	 * @param array  $composers
 	 * @return array
 	 */
-	public function composers (array $composers)
+	public function composers(array $composers)
 	{
-		$registered = array ();
+		$registered = array();
 
 		foreach ($composers as $callback => $views)
 		{
-			$registered += $this->composer ($views, $callback);
+			$registered += $this->composer($views, $callback);
 		}
 
 		return $registered;
@@ -314,13 +310,13 @@ class Environment
 	 * @param  \Closure|string  $callback
 	 * @return array
 	 */
-	public function composer ($views, $callback, $priority = null)
+	public function composer($views, $callback, $priority = null)
 	{
-		$composers = array ();
+		$composers = array();
 
 		foreach ((array) $views as $view)
 		{
-			$composers[] = $this->addViewEvent ($view, $callback, 'composing: ', $priority);
+			$composers[] = $this->addViewEvent($view, $callback, 'composing: ', $priority);
 		}
 
 		return $composers;
@@ -334,17 +330,17 @@ class Environment
 	 * @param  string  $prefix
 	 * @return Closure
 	 */
-	protected function addViewEvent ($view, $callback, $prefix = 'composing: ', $priority = null)
+	protected function addViewEvent($view, $callback, $prefix = 'composing: ', $priority = null)
 	{
 		if ($callback instanceof Closure)
 		{
-			$this->addEventListener ($prefix . $view, $callback, $priority);
+			$this->addEventListener($prefix.$view, $callback, $priority);
 
 			return $callback;
 		}
-		elseif (is_string ($callback))
+		elseif (is_string($callback))
 		{
-			return $this->addClassEvent ($view, $callback, $prefix, $priority);
+			return $this->addClassEvent($view, $callback, $prefix, $priority);
 		}
 	}
 
@@ -356,16 +352,16 @@ class Environment
 	 * @param  string   $prefix
 	 * @return \Closure
 	 */
-	protected function addClassEvent ($view, $class, $prefix, $priority = null)
+	protected function addClassEvent($view, $class, $prefix, $priority = null)
 	{
-		$name = $prefix . $view;
+		$name = $prefix.$view;
 
 		// When registering a class based view "composer", we will simply resolve the
 		// classes from the application IoC container then call the compose method
 		// on the instance. This allows for convenient, testable view composers.
-		$callback = $this->buildClassEventCallback ($class, $prefix);
+		$callback = $this->buildClassEventCallback($class, $prefix);
 
-		$this->addEventListener ($name, $callback, $priority);
+		$this->addEventListener($name, $callback, $priority);
 
 		return $callback;
 	}
@@ -377,15 +373,15 @@ class Environment
 	 * @param \Closure $callback
 	 * @param integer  $priority
 	 */
-	protected function addEventListener ($name, $callback, $priority = null)
+	protected function addEventListener($name, $callback, $priority = null)
 	{
-		if (is_null ($priority))
+		if (is_null($priority))
 		{
-			$this->events->listen ($name, $callback);
+			$this->events->listen($name, $callback);
 		}
 		else
 		{
-			$this->events->listen ($name, $callback, $priority);
+			$this->events->listen($name, $callback, $priority);
 		}
 	}
 
@@ -396,20 +392,20 @@ class Environment
 	 * @param  string  $prefix
 	 * @return \Closure
 	 */
-	protected function buildClassEventCallback ($class, $prefix)
+	protected function buildClassEventCallback($class, $prefix)
 	{
 		$container = $this->container;
 
-		list($class, $method) = $this->parseClassEvent ($class, $prefix);
+		list($class, $method) = $this->parseClassEvent($class, $prefix);
 
 		// Once we have the class and method name, we can build the Closure to resolve
 		// the instance out of the IoC container and call the method on it with the
 		// given arguments that are passed to the Closure as the composer's data.
 		return function() use ($class, $method, $container)
 		{
-			$callable = array ($container->make ($class), $method);
+			$callable = array($container->make($class), $method);
 
-			return call_user_func_array ($callable, func_get_args ());
+			return call_user_func_array($callable, func_get_args());
 		};
 	}
 
@@ -420,17 +416,17 @@ class Environment
 	 * @param  string  $prefix
 	 * @return array
 	 */
-	protected function parseClassEvent ($class, $prefix)
+	protected function parseClassEvent($class, $prefix)
 	{
-		if (str_contains ($class, '@'))
+		if (str_contains($class, '@'))
 		{
-			return explode ('@', $class);
+			return explode('@', $class);
 		}
 		else
 		{
-			$method = str_contains ($prefix, 'composing') ? 'compose' : 'create';
+			$method = str_contains($prefix, 'composing') ? 'compose' : 'create';
 
-			return array ($class, $method);
+			return array($class, $method);
 		}
 	}
 
@@ -440,9 +436,9 @@ class Environment
 	 * @param  \Illuminate\View\View  $view
 	 * @return void
 	 */
-	public function callComposer (View $view)
+	public function callComposer(View $view)
 	{
-		$this->events->fire ('composing: ' . $view->getName (), array ($view));
+		$this->events->fire('composing: '.$view->getName(), array($view));
 	}
 
 	/**
@@ -451,9 +447,9 @@ class Environment
 	 * @param  \Illuminate\View\View  $view
 	 * @return void
 	 */
-	public function callCreator (View $view)
+	public function callCreator(View $view)
 	{
-		$this->events->fire ('creating: ' . $view->getName (), array ($view));
+		$this->events->fire('creating: '.$view->getName(), array($view));
 	}
 
 	/**
@@ -463,15 +459,15 @@ class Environment
 	 * @param  string  $content
 	 * @return void
 	 */
-	public function startSection ($section, $content = '')
+	public function startSection($section, $content = '')
 	{
 		if ($content === '')
 		{
-			ob_start () && $this->sectionStack[] = $section;
+			ob_start() && $this->sectionStack[] = $section;
 		}
 		else
 		{
-			$this->extendSection ($section, $content);
+			$this->extendSection($section, $content);
 		}
 	}
 
@@ -482,9 +478,9 @@ class Environment
 	 * @param  string  $content
 	 * @return void
 	 */
-	public function inject ($section, $content)
+	public function inject($section, $content)
 	{
-		return $this->startSection ($section, $content);
+		return $this->startSection($section, $content);
 	}
 
 	/**
@@ -492,9 +488,9 @@ class Environment
 	 *
 	 * @return string
 	 */
-	public function yieldSection ()
+	public function yieldSection()
 	{
-		return $this->yieldContent ($this->stopSection ());
+		return $this->yieldContent($this->stopSection());
 	}
 
 	/**
@@ -503,17 +499,17 @@ class Environment
 	 * @param  bool  $overwrite
 	 * @return string
 	 */
-	public function stopSection ($overwrite = false)
+	public function stopSection($overwrite = false)
 	{
-		$last = array_pop ($this->sectionStack);
+		$last = array_pop($this->sectionStack);
 
 		if ($overwrite)
 		{
-			$this->sections[$last] = ob_get_clean ();
+			$this->sections[$last] = ob_get_clean();
 		}
 		else
 		{
-			$this->extendSection ($last, ob_get_clean ());
+			$this->extendSection($last, ob_get_clean());
 		}
 
 		return $last;
@@ -524,17 +520,17 @@ class Environment
 	 *
 	 * @return string
 	 */
-	public function appendSection ()
+	public function appendSection()
 	{
-		$last = array_pop ($this->sectionStack);
+		$last = array_pop($this->sectionStack);
 
-		if (isset ($this->sections[$last]))
+		if (isset($this->sections[$last]))
 		{
-			$this->sections[$last] .= ob_get_clean ();
+			$this->sections[$last] .= ob_get_clean();
 		}
 		else
 		{
-			$this->sections[$last] = ob_get_clean ();
+			$this->sections[$last] = ob_get_clean();
 		}
 
 		return $last;
@@ -547,11 +543,11 @@ class Environment
 	 * @param  string  $content
 	 * @return void
 	 */
-	protected function extendSection ($section, $content)
+	protected function extendSection($section, $content)
 	{
-		if (isset ($this->sections[$section]))
+		if (isset($this->sections[$section]))
 		{
-			$content = str_replace ('@parent', $content, $this->sections[$section]);
+			$content = str_replace('@parent', $content, $this->sections[$section]);
 
 			$this->sections[$section] = $content;
 		}
@@ -568,9 +564,9 @@ class Environment
 	 * @param  string  $default
 	 * @return string
 	 */
-	public function yieldContent ($section, $default = '')
+	public function yieldContent($section, $default = '')
 	{
-		return isset ($this->sections[$section]) ? $this->sections[$section] : $default;
+		return isset($this->sections[$section]) ? $this->sections[$section] : $default;
 	}
 
 	/**
@@ -578,11 +574,11 @@ class Environment
 	 *
 	 * @return void
 	 */
-	public function flushSections ()
+	public function flushSections()
 	{
-		$this->sections = array ();
+		$this->sections = array();
 
-		$this->sectionStack = array ();
+		$this->sectionStack = array();
 	}
 
 	/**
@@ -590,10 +586,9 @@ class Environment
 	 *
 	 * @return void
 	 */
-	public function flushSectionsIfDoneRendering ()
+	public function flushSectionsIfDoneRendering()
 	{
-		if ($this->doneRendering ())
-			$this->flushSections ();
+		if ($this->doneRendering()) $this->flushSections();
 	}
 
 	/**
@@ -601,7 +596,7 @@ class Environment
 	 *
 	 * @return void
 	 */
-	public function incrementRender ()
+	public function incrementRender()
 	{
 		$this->renderCount++;
 	}
@@ -611,7 +606,7 @@ class Environment
 	 *
 	 * @return void
 	 */
-	public function decrementRender ()
+	public function decrementRender()
 	{
 		$this->renderCount--;
 	}
@@ -621,7 +616,7 @@ class Environment
 	 *
 	 * @return bool
 	 */
-	public function doneRendering ()
+	public function doneRendering()
 	{
 		return $this->renderCount == 0;
 	}
@@ -632,9 +627,9 @@ class Environment
 	 * @param  string  $location
 	 * @return void
 	 */
-	public function addLocation ($location)
+	public function addLocation($location)
 	{
-		$this->finder->addLocation ($location);
+		$this->finder->addLocation($location);
 	}
 
 	/**
@@ -644,9 +639,9 @@ class Environment
 	 * @param  string|array  $hints
 	 * @return void
 	 */
-	public function addNamespace ($namespace, $hints)
+	public function addNamespace($namespace, $hints)
 	{
-		$this->finder->addNamespace ($namespace, $hints);
+		$this->finder->addNamespace($namespace, $hints);
 	}
 
 	/**
@@ -656,9 +651,9 @@ class Environment
 	 * @param  string|array  $hints
 	 * @return void
 	 */
-	public function prependNamespace ($namespace, $hints)
+	public function prependNamespace($namespace, $hints)
 	{
-		$this->finder->prependNamespace ($namespace, $hints);
+		$this->finder->prependNamespace($namespace, $hints);
 	}
 
 	/**
@@ -669,18 +664,18 @@ class Environment
 	 * @param  Closure  $resolver
 	 * @return void
 	 */
-	public function addExtension ($extension, $engine, $resolver = null)
+	public function addExtension($extension, $engine, $resolver = null)
 	{
-		$this->finder->addExtension ($extension);
+		$this->finder->addExtension($extension);
 
-		if (isset ($resolver))
+		if (isset($resolver))
 		{
-			$this->engines->register ($engine, $resolver);
+			$this->engines->register($engine, $resolver);
 		}
 
-		unset ($this->extensions[$extension]);
+		unset($this->extensions[$extension]);
 
-		$this->extensions = array_merge (array ($extension => $engine), $this->extensions);
+		$this->extensions = array_merge(array($extension => $engine), $this->extensions);
 	}
 
 	/**
@@ -688,7 +683,7 @@ class Environment
 	 *
 	 * @return array
 	 */
-	public function getExtensions ()
+	public function getExtensions()
 	{
 		return $this->extensions;
 	}
@@ -698,7 +693,7 @@ class Environment
 	 *
 	 * @return \Illuminate\View\Engines\EngineResolver
 	 */
-	public function getEngineResolver ()
+	public function getEngineResolver()
 	{
 		return $this->engines;
 	}
@@ -708,7 +703,7 @@ class Environment
 	 *
 	 * @return \Illuminate\View\ViewFinderInterface
 	 */
-	public function getFinder ()
+	public function getFinder()
 	{
 		return $this->finder;
 	}
@@ -718,7 +713,7 @@ class Environment
 	 *
 	 * @return void
 	 */
-	public function setFinder (ViewFinderInterface $finder)
+	public function setFinder(ViewFinderInterface $finder)
 	{
 		$this->finder = $finder;
 	}
@@ -728,7 +723,7 @@ class Environment
 	 *
 	 * @return \Illuminate\Events\Dispatcher
 	 */
-	public function getDispatcher ()
+	public function getDispatcher()
 	{
 		return $this->events;
 	}
@@ -739,7 +734,7 @@ class Environment
 	 * @param  \Illuminate\Events\Dispatcher
 	 * @return void
 	 */
-	public function setDispatcher (Dispatcher $events)
+	public function setDispatcher(Dispatcher $events)
 	{
 		$this->events = $events;
 	}
@@ -749,7 +744,7 @@ class Environment
 	 *
 	 * @return \Illuminate\Container\Container
 	 */
-	public function getContainer ()
+	public function getContainer()
 	{
 		return $this->container;
 	}
@@ -760,7 +755,7 @@ class Environment
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function setContainer (Container $container)
+	public function setContainer(Container $container)
 	{
 		$this->container = $container;
 	}
@@ -772,9 +767,9 @@ class Environment
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function shared ($key, $default = null)
+	public function shared($key, $default = null)
 	{
-		return array_get ($this->shared, $key, $default);
+		return array_get($this->shared, $key, $default);
 	}
 
 	/**
@@ -782,7 +777,7 @@ class Environment
 	 *
 	 * @return array
 	 */
-	public function getShared ()
+	public function getShared()
 	{
 		return $this->shared;
 	}
@@ -792,7 +787,7 @@ class Environment
 	 *
 	 * @return array
 	 */
-	public function getSections ()
+	public function getSections()
 	{
 		return $this->sections;
 	}
@@ -802,7 +797,7 @@ class Environment
 	 *
 	 * @return array
 	 */
-	public function getNames ()
+	public function getNames()
 	{
 		return $this->names;
 	}

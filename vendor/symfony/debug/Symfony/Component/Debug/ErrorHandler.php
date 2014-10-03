@@ -27,243 +27,226 @@ use Symfony\Component\Debug\FatalErrorHandler\FatalErrorHandlerInterface;
  */
 class ErrorHandler
 {
+    const TYPE_DEPRECATION = -100;
 
-	const TYPE_DEPRECATION = -100;
+    private $levels = array(
+        E_WARNING           => 'Warning',
+        E_NOTICE            => 'Notice',
+        E_USER_ERROR        => 'User Error',
+        E_USER_WARNING      => 'User Warning',
+        E_USER_NOTICE       => 'User Notice',
+        E_STRICT            => 'Runtime Notice',
+        E_RECOVERABLE_ERROR => 'Catchable Fatal Error',
+        E_DEPRECATED        => 'Deprecated',
+        E_USER_DEPRECATED   => 'User Deprecated',
+        E_ERROR             => 'Error',
+        E_CORE_ERROR        => 'Core Error',
+        E_COMPILE_ERROR     => 'Compile Error',
+        E_PARSE             => 'Parse',
+    );
 
-	private $levels = array (
-	    E_WARNING => 'Warning',
-	    E_NOTICE => 'Notice',
-	    E_USER_ERROR => 'User Error',
-	    E_USER_WARNING => 'User Warning',
-	    E_USER_NOTICE => 'User Notice',
-	    E_STRICT => 'Runtime Notice',
-	    E_RECOVERABLE_ERROR => 'Catchable Fatal Error',
-	    E_DEPRECATED => 'Deprecated',
-	    E_USER_DEPRECATED => 'User Deprecated',
-	    E_ERROR => 'Error',
-	    E_CORE_ERROR => 'Core Error',
-	    E_COMPILE_ERROR => 'Compile Error',
-	    E_PARSE => 'Parse',
-	);
-	private $level;
-	private $reservedMemory;
-	private $displayErrors;
+    private $level;
 
-	/**
-	 * @var LoggerInterface[] Loggers for channels
-	 */
-	private static $loggers = array ();
+    private $reservedMemory;
 
-	/**
-	 * Registers the error handler.
-	 *
-	 * @param int  $level         The level at which the conversion to Exception is done (null to use the error_reporting() value and 0 to disable)
-	 * @param bool $displayErrors Display errors (for dev environment) or just log them (production usage)
-	 *
-	 * @return ErrorHandler The registered error handler
-	 */
-	public static function register ($level = null, $displayErrors = true)
-	{
-		$handler = new static();
-		$handler->setLevel ($level);
-		$handler->setDisplayErrors ($displayErrors);
+    private $displayErrors;
 
-		ini_set ('display_errors', 0);
-		set_error_handler (array ($handler, 'handle'));
-		register_shutdown_function (array ($handler, 'handleFatal'));
-		$handler->reservedMemory = str_repeat ('x', 10240);
+    /**
+     * @var LoggerInterface[] Loggers for channels
+     */
+    private static $loggers = array();
 
-		return $handler;
-	}
+    /**
+     * Registers the error handler.
+     *
+     * @param int  $level         The level at which the conversion to Exception is done (null to use the error_reporting() value and 0 to disable)
+     * @param bool $displayErrors Display errors (for dev environment) or just log them (production usage)
+     *
+     * @return ErrorHandler The registered error handler
+     */
+    public static function register($level = null, $displayErrors = true)
+    {
+        $handler = new static();
+        $handler->setLevel($level);
+        $handler->setDisplayErrors($displayErrors);
 
-	/**
-	 * Sets the level at which the conversion to Exception is done.
-	 *
-	 * @param int|null     $level The level (null to use the error_reporting() value and 0 to disable)
-	 */
-	public function setLevel ($level)
-	{
-		$this->level = null === $level ? error_reporting () : $level;
-	}
+        ini_set('display_errors', 0);
+        set_error_handler(array($handler, 'handle'));
+        register_shutdown_function(array($handler, 'handleFatal'));
+        $handler->reservedMemory = str_repeat('x', 10240);
 
-	/**
-	 * Sets the display_errors flag value.
-	 *
-	 * @param int     $displayErrors The display_errors flag value
-	 */
-	public function setDisplayErrors ($displayErrors)
-	{
-		$this->displayErrors = $displayErrors;
-	}
+        return $handler;
+    }
 
-	/**
-	 * Sets a logger for the given channel.
-	 *
-	 * @param LoggerInterface $logger  A logger interface
-	 * @param string          $channel The channel associated with the logger (deprecation or emergency)
-	 */
-	public static function setLogger (LoggerInterface $logger, $channel = 'deprecation')
-	{
-		self::$loggers[$channel] = $logger;
-	}
+    /**
+     * Sets the level at which the conversion to Exception is done.
+     *
+     * @param int|null     $level The level (null to use the error_reporting() value and 0 to disable)
+     */
+    public function setLevel($level)
+    {
+        $this->level = null === $level ? error_reporting() : $level;
+    }
 
-	/**
-	 * @throws ContextErrorException When error_reporting returns error
-	 */
-	public function handle ($level, $message, $file = 'unknown', $line = 0, $context = array ())
-	{
-		if (0 === $this->level)
-		{
-			return false;
-		}
+    /**
+     * Sets the display_errors flag value.
+     *
+     * @param int     $displayErrors The display_errors flag value
+     */
+    public function setDisplayErrors($displayErrors)
+    {
+        $this->displayErrors = $displayErrors;
+    }
 
-		if ($level & (E_USER_DEPRECATED | E_DEPRECATED))
-		{
-			if (isset (self::$loggers['deprecation']))
-			{
-				if (version_compare (PHP_VERSION, '5.4', '<'))
-				{
-					$stack = array_map (
-						function ($row)
-					{
-						unset ($row['args']);
+    /**
+     * Sets a logger for the given channel.
+     *
+     * @param LoggerInterface $logger  A logger interface
+     * @param string          $channel The channel associated with the logger (deprecation or emergency)
+     */
+    public static function setLogger(LoggerInterface $logger, $channel = 'deprecation')
+    {
+        self::$loggers[$channel] = $logger;
+    }
 
-						return $row;
-					}, array_slice (debug_backtrace (false), 0, 10)
-					);
-				}
-				else
-				{
-					$stack = debug_backtrace (DEBUG_BACKTRACE_IGNORE_ARGS, 10);
-				}
+    /**
+     * @throws ContextErrorException When error_reporting returns error
+     */
+    public function handle($level, $message, $file = 'unknown', $line = 0, $context = array())
+    {
+        if (0 === $this->level) {
+            return false;
+        }
 
-				self::$loggers['deprecation']->warning ($message, array ('type' => self::TYPE_DEPRECATION, 'stack' => $stack));
-			}
+        if ($level & (E_USER_DEPRECATED | E_DEPRECATED)) {
+            if (isset(self::$loggers['deprecation'])) {
+                if (version_compare(PHP_VERSION, '5.4', '<')) {
+                    $stack = array_map(
+                        function ($row) {
+                            unset($row['args']);
 
-			return true;
-		}
+                            return $row;
+                        },
+                        array_slice(debug_backtrace(false), 0, 10)
+                    );
+                } else {
+                    $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+                }
 
-		if ($this->displayErrors && error_reporting () & $level && $this->level & $level)
-		{
-			// make sure the ContextErrorException class is loaded (https://bugs.php.net/bug.php?id=65322)
-			if (!class_exists ('Symfony\Component\Debug\Exception\ContextErrorException'))
-			{
-				require __DIR__ . '/Exception/ContextErrorException.php';
-			}
+                self::$loggers['deprecation']->warning($message, array('type' => self::TYPE_DEPRECATION, 'stack' => $stack));
+            }
 
-			$exception = new ContextErrorException (sprintf ('%s: %s in %s line %d', isset ($this->levels[$level]) ? $this->levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line, $context);
+            return true;
+        }
 
-			// Exceptions thrown from error handlers are sometimes not caught by the exception
-			// handler, so we invoke it directly (https://bugs.php.net/bug.php?id=54275)
-			$exceptionHandler = set_exception_handler (function ()
-			{
-				
-			});
-			restore_exception_handler ();
+        if ($this->displayErrors && error_reporting() & $level && $this->level & $level) {
+            // make sure the ContextErrorException class is loaded (https://bugs.php.net/bug.php?id=65322)
+            if (!class_exists('Symfony\Component\Debug\Exception\ContextErrorException')) {
+                require __DIR__.'/Exception/ContextErrorException.php';
+            }
+            if (!class_exists('Symfony\Component\Debug\Exception\FlattenException')) {
+                require __DIR__.'/Exception/FlattenException.php';
+            }
 
-			if (is_array ($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler)
-			{
-				$exceptionHandler[0]->handle ($exception);
+            if (PHP_VERSION_ID < 50400 && isset($context['GLOBALS']) && is_array($context)) {
+                unset($context['GLOBALS']);
+            }
 
-				if (!class_exists ('Symfony\Component\Debug\Exception\DummyException'))
-				{
-					require __DIR__ . '/Exception/DummyException.php';
-				}
+            $exception = new ContextErrorException(sprintf('%s: %s in %s line %d', isset($this->levels[$level]) ? $this->levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line, $context);
 
-				// we must stop the PHP script execution, as the exception has
-				// already been dealt with, so, let's throw an exception that
-				// will be caught by a dummy exception handler
-				set_exception_handler (function (\Exception $e) use ($exceptionHandler)
-				{
-					if (!$e instanceof DummyException)
-					{
-						// happens if our dummy exception is caught by a
-						// catch-all from user code, in which case, let's the
-						// current handler handle this "new" exception
-						call_user_func ($exceptionHandler, $e);
-					}
-				});
+            // Exceptions thrown from error handlers are sometimes not caught by the exception
+            // handler, so we invoke it directly (https://bugs.php.net/bug.php?id=54275)
+            $exceptionHandler = set_exception_handler(function () {});
+            restore_exception_handler();
 
-				throw new DummyException();
-			}
-		}
+            if (is_array($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler) {
+                $exceptionHandler[0]->handle($exception);
 
-		return false;
-	}
+                if (!class_exists('Symfony\Component\Debug\Exception\DummyException')) {
+                    require __DIR__.'/Exception/DummyException.php';
+                }
 
-	public function handleFatal ()
-	{
-		if (null === $error = error_get_last ())
-		{
-			return;
-		}
+                // we must stop the PHP script execution, as the exception has
+                // already been dealt with, so, let's throw an exception that
+                // will be caught by a dummy exception handler
+                set_exception_handler(function (\Exception $e) use ($exceptionHandler) {
+                    if (!$e instanceof DummyException) {
+                        // happens if our dummy exception is caught by a
+                        // catch-all from user code, in which case, let's the
+                        // current handler handle this "new" exception
+                        call_user_func($exceptionHandler, $e);
+                    }
+                });
 
-		$this->reservedMemory = '';
-		$type = $error['type'];
-		if (0 === $this->level || !in_array ($type, array (E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE)))
-		{
-			return;
-		}
+                throw new DummyException();
+            }
+        }
 
-		if (isset (self::$loggers['emergency']))
-		{
-			$fatal = array (
-			    'type' => $type,
-			    'file' => $error['file'],
-			    'line' => $error['line'],
-			);
+        return false;
+    }
 
-			self::$loggers['emergency']->emerg ($error['message'], $fatal);
-		}
+    public function handleFatal()
+    {
+        if (null === $error = error_get_last()) {
+            return;
+        }
 
-		if (!$this->displayErrors)
-		{
-			return;
-		}
+        $this->reservedMemory = '';
+        $type = $error['type'];
+        if (0 === $this->level || !in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
+            return;
+        }
 
-		// get current exception handler
-		$exceptionHandler = set_exception_handler (function ()
-		{
-			
-		});
-		restore_exception_handler ();
+        if (isset(self::$loggers['emergency'])) {
+            $fatal = array(
+                'type' => $type,
+                'file' => $error['file'],
+                'line' => $error['line'],
+            );
 
-		if (is_array ($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler)
-		{
-			$this->handleFatalError ($exceptionHandler[0], $error);
-		}
-	}
+            self::$loggers['emergency']->emerg($error['message'], $fatal);
+        }
 
-	/**
-	 * Gets the fatal error handlers.
-	 *
-	 * Override this method if you want to define more fatal error handlers.
-	 *
-	 * @return FatalErrorHandlerInterface[] An array of FatalErrorHandlerInterface
-	 */
-	protected function getFatalErrorHandlers ()
-	{
-		return array (
-		    new UndefinedFunctionFatalErrorHandler(),
-		    new ClassNotFoundFatalErrorHandler(),
-		);
-	}
+        if (!$this->displayErrors) {
+            return;
+        }
 
-	private function handleFatalError (ExceptionHandler $exceptionHandler, array $error)
-	{
-		$level = isset ($this->levels[$error['type']]) ? $this->levels[$error['type']] : $error['type'];
-		$message = sprintf ('%s: %s in %s line %d', $level, $error['message'], $error['file'], $error['line']);
-		$exception = new FatalErrorException ($message, 0, $error['type'], $error['file'], $error['line']);
+        // get current exception handler
+        $exceptionHandler = set_exception_handler(function () {});
+        restore_exception_handler();
 
-		foreach ($this->getFatalErrorHandlers () as $handler)
-		{
-			if ($ex = $handler->handleError ($error, $exception))
-			{
-				return $exceptionHandler->handle ($ex);
-			}
-		}
+        if (is_array($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler) {
+            $this->handleFatalError($exceptionHandler[0], $error);
+        }
+    }
 
-		$exceptionHandler->handle ($exception);
-	}
+    /**
+     * Gets the fatal error handlers.
+     *
+     * Override this method if you want to define more fatal error handlers.
+     *
+     * @return FatalErrorHandlerInterface[] An array of FatalErrorHandlerInterface
+     */
+    protected function getFatalErrorHandlers()
+    {
+        return array(
+            new UndefinedFunctionFatalErrorHandler(),
+            new ClassNotFoundFatalErrorHandler(),
+        );
+    }
 
+    private function handleFatalError(ExceptionHandler $exceptionHandler, array $error)
+    {
+        $level = isset($this->levels[$error['type']]) ? $this->levels[$error['type']] : $error['type'];
+        $message = sprintf('%s: %s in %s line %d', $level, $error['message'], $error['file'], $error['line']);
+        $exception = new FatalErrorException($message, 0, $error['type'], $error['file'], $error['line']);
+
+        foreach ($this->getFatalErrorHandlers() as $handler) {
+            if ($ex = $handler->handleError($error, $exception)) {
+                return $exceptionHandler->handle($ex);
+            }
+        }
+
+        $exceptionHandler->handle($exception);
+    }
 }

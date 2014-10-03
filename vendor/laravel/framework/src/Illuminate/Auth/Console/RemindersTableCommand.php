@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Auth\Console;
+<?php namespace Illuminate\Auth\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class RemindersTableCommand extends Command
-{
+class RemindersTableCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -35,9 +32,9 @@ class RemindersTableCommand extends Command
 	 * @param  \Illuminate\Filesystem\Filesystem  $files
 	 * @return void
 	 */
-	public function __construct (Filesystem $files)
+	public function __construct(Filesystem $files)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->files = $files;
 	}
@@ -47,15 +44,15 @@ class RemindersTableCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$fullPath = $this->createBaseMigration ();
+		$fullPath = $this->createBaseMigration();
 
-		$this->files->put ($fullPath, $this->getMigrationStub ());
+		$this->files->put($fullPath, $this->getMigrationStub());
 
-		$this->info ('Migration created successfully!');
+		$this->info('Migration created successfully!');
 
-		$this->call ('dump-autoload');
+		$this->call('dump-autoload');
 	}
 
 	/**
@@ -63,13 +60,13 @@ class RemindersTableCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function createBaseMigration ()
+	protected function createBaseMigration()
 	{
 		$name = 'create_password_reminders_table';
 
-		$path = $this->laravel['path'] . '/database/migrations';
+		$path = $this->laravel['path'].'/database/migrations';
 
-		return $this->laravel['migration.creator']->create ($name, $path);
+		return $this->laravel['migration.creator']->create($name, $path);
 	}
 
 	/**
@@ -77,11 +74,11 @@ class RemindersTableCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getMigrationStub ()
+	protected function getMigrationStub()
 	{
-		$stub = $this->files->get (__DIR__ . '/stubs/reminders.stub');
+		$stub = $this->files->get(__DIR__.'/stubs/reminders.stub');
 
-		return str_replace ('password_reminders', $this->getTable (), $stub);
+		return str_replace('password_reminders', $this->getTable(), $stub);
 	}
 
 	/**
@@ -89,9 +86,9 @@ class RemindersTableCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getTable ()
+	protected function getTable()
 	{
-		return $this->laravel['config']->get ('auth.reminder.table');
+		return $this->laravel['config']->get('auth.reminder.table');
 	}
 
 }

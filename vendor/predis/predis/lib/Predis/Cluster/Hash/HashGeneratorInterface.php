@@ -19,12 +19,11 @@ namespace Predis\Cluster\Hash;
  */
 interface HashGeneratorInterface
 {
-
-	/**
-	 * Generates an hash that is used by the distributor algorithm
-	 *
-	 * @param  string $value Value used to generate the hash.
-	 * @return int
-	 */
-	public function hash ($value);
+    /**
+     * Generates an hash that is used by the distributor algorithm
+     *
+     * @param  string $value Value used to generate the hash.
+     * @return int
+     */
+    public function hash($value);
 }

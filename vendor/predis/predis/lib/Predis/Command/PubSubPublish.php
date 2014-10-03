@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class PubSubPublish extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'PUBLISH';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'PUBLISH';
+    }
 }

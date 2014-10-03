@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Support\Facades;
+<?php namespace Illuminate\Support\Facades;
 
 /**
  * @see \Illuminate\Http\Request
  */
-class Input extends Facade
-{
+class Input extends Facade {
 
 	/**
 	 * Get an item from the input data.
@@ -17,9 +14,9 @@ class Input extends Facade
 	 * @param  mixed  $default
 	 * @return mixed
 	 */
-	public static function get ($key = null, $default = null)
+	public static function get($key = null, $default = null)
 	{
-		return static::$app['request']->input ($key, $default);
+		return static::$app['request']->input($key, $default);
 	}
 
 	/**
@@ -27,9 +24,6 @@ class Input extends Facade
 	 *
 	 * @return string
 	 */
-	protected static function getFacadeAccessor ()
-	{
-		return 'request';
-	}
+	protected static function getFacadeAccessor() { return 'request'; }
 
 }

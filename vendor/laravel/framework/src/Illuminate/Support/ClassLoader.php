@@ -1,16 +1,13 @@
-<?php
+<?php namespace Illuminate\Support;
 
-namespace Illuminate\Support;
-
-class ClassLoader
-{
+class ClassLoader {
 
 	/**
 	 * The registered directories.
 	 *
 	 * @var array
 	 */
-	protected static $directories = array ();
+	protected static $directories = array();
 
 	/**
 	 * Indicates if a ClassLoader has been registered.
@@ -23,21 +20,22 @@ class ClassLoader
 	 * Load the given class file.
 	 *
 	 * @param  string  $class
-	 * @return void
+	 * @return bool
 	 */
-	public static function load ($class)
+	public static function load($class)
 	{
-		$class = static::normalizeClass ($class);
+		$class = static::normalizeClass($class);
 
 		foreach (static::$directories as $directory)
 		{
-			if (file_exists ($path = $directory . DIRECTORY_SEPARATOR . $class))
+			if (file_exists($path = $directory.DIRECTORY_SEPARATOR.$class))
 			{
 				require_once $path;
 
 				return true;
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -46,12 +44,11 @@ class ClassLoader
 	 * @param  string  $class
 	 * @return string
 	 */
-	public static function normalizeClass ($class)
+	public static function normalizeClass($class)
 	{
-		if ($class[0] == '\\')
-			$class = substr ($class, 1);
+		if ($class[0] == '\\') $class = substr($class, 1);
 
-		return str_replace (array ('\\', '_'), DIRECTORY_SEPARATOR, $class) . '.php';
+		return str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class).'.php';
 	}
 
 	/**
@@ -59,11 +56,11 @@ class ClassLoader
 	 *
 	 * @return void
 	 */
-	public static function register ()
+	public static function register()
 	{
-		if (!static::$registered)
+		if ( ! static::$registered)
 		{
-			static::$registered = spl_autoload_register (array ('\Illuminate\Support\ClassLoader', 'load'));
+			static::$registered = spl_autoload_register(array('\Illuminate\Support\ClassLoader', 'load'));
 		}
 	}
 
@@ -73,11 +70,11 @@ class ClassLoader
 	 * @param  string|array  $directories
 	 * @return void
 	 */
-	public static function addDirectories ($directories)
+	public static function addDirectories($directories)
 	{
-		static::$directories = array_merge (static::$directories, (array) $directories);
+		static::$directories = array_merge(static::$directories, (array) $directories);
 
-		static::$directories = array_unique (static::$directories);
+		static::$directories = array_unique(static::$directories);
 	}
 
 	/**
@@ -86,19 +83,19 @@ class ClassLoader
 	 * @param  string|array  $directories
 	 * @return void
 	 */
-	public static function removeDirectories ($directories = null)
+	public static function removeDirectories($directories = null)
 	{
-		if (is_null ($directories))
+		if (is_null($directories))
 		{
-			static::$directories = array ();
+			static::$directories = array();
 		}
 		else
 		{
 			$directories = (array) $directories;
 
-			static::$directories = array_filter (static::$directories, function($directory) use ($directories)
+			static::$directories = array_filter(static::$directories, function($directory) use ($directories)
 			{
-				return (!in_array ($directory, $directories));
+				return ( ! in_array($directory, $directories));
 			});
 		}
 	}
@@ -108,7 +105,7 @@ class ClassLoader
 	 *
 	 * @return array
 	 */
-	public static function getDirectories ()
+	public static function getDirectories()
 	{
 		return static::$directories;
 	}

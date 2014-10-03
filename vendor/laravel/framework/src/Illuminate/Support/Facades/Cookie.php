@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Support\Facades;
+<?php namespace Illuminate\Support\Facades;
 
 /**
  * @see \Illuminate\Cookie\CookieJar
  */
-class Cookie extends Facade
-{
+class Cookie extends Facade {
 
 	/**
 	 * Determine if a cookie exists on the request.
@@ -14,9 +11,9 @@ class Cookie extends Facade
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public static function has ($key)
+	public static function has($key)
 	{
-		return !is_null (static::$app['request']->cookie ($key, null));
+		return ! is_null(static::$app['request']->cookie($key, null));
 	}
 
 	/**
@@ -26,9 +23,9 @@ class Cookie extends Facade
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public static function get ($key = null, $default = null)
+	public static function get($key = null, $default = null)
 	{
-		return static::$app['request']->cookie ($key, $default);
+		return static::$app['request']->cookie($key, $default);
 	}
 
 	/**
@@ -36,9 +33,6 @@ class Cookie extends Facade
 	 *
 	 * @return string
 	 */
-	protected static function getFacadeAccessor ()
-	{
-		return 'cookie';
-	}
+	protected static function getFacadeAccessor() { return 'cookie'; }
 
 }

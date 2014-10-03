@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListRemove extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LREM';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LREM';
+    }
 }

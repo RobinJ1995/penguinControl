@@ -1,100 +1,86 @@
 <?php
 
-require_once 'Swift/Tests/SwiftUnitTestCase.php';
-require_once 'Swift/Mime/ContentEncoder/NativeQpContentEncoder.php';
-require_once 'Swift/CharacterStream/ArrayCharacterStream.php';
-require_once 'Swift/CharacterReaderFactory/SimpleCharacterReaderFactory.php';
-require_once 'Swift/ByteStream/ArrayByteStream.php';
-
-class Swift_Mime_ContentEncoder_NativeQpContentEncoderAcceptanceTest extends Swift_Tests_SwiftUnitTestCase
+class Swift_Mime_ContentEncoder_NativeQpContentEncoderAcceptanceTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Swift_Mime_ContentEncoder_NativeQpContentEncoder
+     */
+    protected $_encoder;
 
-	/**
-	 * @var Swift_Mime_ContentEncoder_NativeQpContentEncoder
-	 */
-	protected $_encoder;
+    public function setUp()
+    {
+        $this->_samplesDir = realpath(__DIR__.'/../../../../_samples/charsets');
+        $this->_encoder = new Swift_Mime_ContentEncoder_NativeQpContentEncoder();
+    }
 
-	public function setUp ()
-	{
-		$this->_samplesDir = realpath (dirname (__FILE__) . '/../../../../_samples/charsets');
-		$this->_encoder = new Swift_Mime_ContentEncoder_NativeQpContentEncoder();
-	}
+    public function testEncodingAndDecodingSamples()
+    {
+        $sampleFp = opendir($this->_samplesDir);
+        while (false !== $encodingDir = readdir($sampleFp)) {
+            if (substr($encodingDir, 0, 1) == '.') {
+                continue;
+            }
 
-	public function testEncodingAndDecodingSamples ()
-	{
-		$sampleFp = opendir ($this->_samplesDir);
-		while (false !== $encodingDir = readdir ($sampleFp))
-		{
-			if (substr ($encodingDir, 0, 1) == '.')
-			{
-				continue;
-			}
+            $sampleDir = $this->_samplesDir.'/'.$encodingDir;
 
-			$sampleDir = $this->_samplesDir . '/' . $encodingDir;
+            if (is_dir($sampleDir)) {
+                $fileFp = opendir($sampleDir);
+                while (false !== $sampleFile = readdir($fileFp)) {
+                    if (substr($sampleFile, 0, 1) == '.') {
+                        continue;
+                    }
 
-			if (is_dir ($sampleDir))
-			{
+                    $text = file_get_contents($sampleDir.'/'.$sampleFile);
 
-				$fileFp = opendir ($sampleDir);
-				while (false !== $sampleFile = readdir ($fileFp))
-				{
-					if (substr ($sampleFile, 0, 1) == '.')
-					{
-						continue;
-					}
+                    $os = new Swift_ByteStream_ArrayByteStream();
+                    $os->write($text);
 
-					$text = file_get_contents ($sampleDir . '/' . $sampleFile);
+                    $is = new Swift_ByteStream_ArrayByteStream();
+                    $this->_encoder->encodeByteStream($os, $is);
 
-					$os = new Swift_ByteStream_ArrayByteStream();
-					$os->write ($text);
+                    $encoded = '';
+                    while (false !== $bytes = $is->read(8192)) {
+                        $encoded .= $bytes;
+                    }
 
-					$is = new Swift_ByteStream_ArrayByteStream();
-					$this->_encoder->encodeByteStream ($os, $is);
+                    $this->assertEquals(
+                        quoted_printable_decode($encoded),
+                        // CR and LF are converted to CRLF
+                        preg_replace('~\r(?!\n)|(?<!\r)\n~', "\r\n", $text),
+                        '%s: Encoded string should decode back to original string for sample '.$sampleDir.'/'.$sampleFile
+                    );
+                }
+                closedir($fileFp);
+            }
+        }
+        closedir($sampleFp);
+    }
 
-					$encoded = '';
-					while (false !== $bytes = $is->read (8192))
-					{
-						$encoded .= $bytes;
-					}
+    public function testEncodingAndDecodingSamplesFromDiConfiguredInstance()
+    {
+        $encoder = $this->_createEncoderFromContainer();
+        $this->assertSame('=C3=A4=C3=B6=C3=BC=C3=9F', $encoder->encodeString('äöüß'));
+    }
 
-					$this->assertEqual (
-						quoted_printable_decode ($encoded),
-						// CR and LF are converted to CRLF
-						preg_replace ('~\r(?!\n)|(?<!\r)\n~', "\r\n", $text), '%s: Encoded string should decode back to original string for sample ' . $sampleDir . '/' . $sampleFile
-					);
-				}
-				closedir ($fileFp);
-			}
-		}
-		closedir ($sampleFp);
-	}
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCharsetChangeNotImplemented()
+    {
+        $this->_encoder->charsetChanged('utf-8');
+        $this->_encoder->charsetChanged('charset');
+        $this->_encoder->encodeString('foo');
+    }
 
-	public function testEncodingAndDecodingSamplesFromDiConfiguredInstance ()
-	{
-		$encoder = $this->_createEncoderFromContainer ();
-		$this->assertSame ('=C3=A4=C3=B6=C3=BC=C3=9F', $encoder->encodeString ('äöüß'));
-	}
+    public function testGetName()
+    {
+        $this->assertSame('quoted-printable', $this->_encoder->getName());
+    }
 
-	public function testCharsetChangeNotImplemented ()
-	{
-		$this->_encoder->charsetChanged ('utf-8');
-		$this->expectException (new RuntimeException ('Charset "charset" not supported. NativeQpContentEncoder only supports "utf-8"'));
-		$this->_encoder->charsetChanged ('charset');
-		$this->_encoder->encodeString ('foo');
-	}
-
-	public function testGetName ()
-	{
-		$this->assertSame ('quoted-printable', $this->_encoder->getName ());
-	}
-
-	// -- Private Methods
-
-	private function _createEncoderFromContainer ()
-	{
-		return Swift_DependencyContainer::getInstance ()
-				->lookup ('mime.nativeqpcontentencoder')
-		;
-	}
-
+    private function _createEncoderFromContainer()
+    {
+        return Swift_DependencyContainer::getInstance()
+            ->lookup('mime.nativeqpcontentencoder')
+            ;
+    }
 }

@@ -18,76 +18,74 @@ use PredisTestCase;
  */
 class ResponseBulkHandlerTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testZeroLengthBulk()
+    {
+        $handler = new ResponseBulkHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testZeroLengthBulk ()
-	{
-		$handler = new ResponseBulkHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->once())
+                   ->method('readBytes')
+                   ->with($this->equalTo(2))
+                   ->will($this->returnValue("\r\n"));
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->once ())
-			->method ('readBytes')
-			->with ($this->equalTo (2))
-			->will ($this->returnValue ("\r\n"));
+        $this->assertSame('', $handler->handle($connection, '0'));
+    }
 
-		$this->assertSame ('', $handler->handle ($connection, '0'));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testBulk()
+    {
+        $bulk = "This is a bulk string.";
+        $bulkLengh = strlen($bulk);
 
-	/**
-	 * @group disconnected
-	 */
-	public function testBulk ()
-	{
-		$bulk = "This is a bulk string.";
-		$bulkLengh = strlen ($bulk);
+        $handler = new ResponseBulkHandler();
 
-		$handler = new ResponseBulkHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->once())
+                   ->method('readBytes')
+                   ->with($this->equalTo($bulkLengh + 2))
+                   ->will($this->returnValue("$bulk\r\n"));
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->once ())
-			->method ('readBytes')
-			->with ($this->equalTo ($bulkLengh + 2))
-			->will ($this->returnValue ("$bulk\r\n"));
+        $this->assertSame($bulk, $handler->handle($connection, (string) $bulkLengh));
+    }
 
-		$this->assertSame ($bulk, $handler->handle ($connection, (string) $bulkLengh));
-	}
+    /**
+     * @group disconnected
+     */
+    public function testNull()
+    {
+        $handler = new ResponseBulkHandler();
 
-	/**
-	 * @group disconnected
-	 */
-	public function testNull ()
-	{
-		$handler = new ResponseBulkHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
+        $this->assertNull($handler->handle($connection, '-1'));
+    }
 
-		$this->assertNull ($handler->handle ($connection, '-1'));
-	}
+    /**
+     * @group disconnected
+     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedExceptionMessage Cannot parse 'invalid' as bulk length
+     */
+    public function testInvalidLength()
+    {
+        $handler = new ResponseBulkHandler();
 
-	/**
-	 * @group disconnected
-	 * @expectedException Predis\Protocol\ProtocolException
-	 * @expectedExceptionMessage Cannot parse 'invalid' as bulk length
-	 */
-	public function testInvalidLength ()
-	{
-		$handler = new ResponseBulkHandler();
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-		$connection = $this->getMock ('Predis\Connection\ComposableConnectionInterface');
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBytes');
 
-		$connection->expects ($this->never ())->method ('readLine');
-		$connection->expects ($this->never ())->method ('readBytes');
-
-		$handler->handle ($connection, 'invalid');
-	}
-
+        $handler->handle($connection, 'invalid');
+    }
 }

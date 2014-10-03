@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Foundation\Providers;
+<?php namespace Illuminate\Foundation\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Console\ServeCommand;
 
-class ServerServiceProvider extends ServiceProvider
-{
+class ServerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -20,14 +17,14 @@ class ServerServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register ()
+	public function register()
 	{
-		$this->app->bindShared ('command.serve', function()
+		$this->app->bindShared('command.serve', function()
 		{
 			return new ServeCommand;
 		});
 
-		$this->commands ('command.serve');
+		$this->commands('command.serve');
 	}
 
 	/**
@@ -35,9 +32,9 @@ class ServerServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ('command.serve');
+		return array('command.serve');
 	}
 
 }

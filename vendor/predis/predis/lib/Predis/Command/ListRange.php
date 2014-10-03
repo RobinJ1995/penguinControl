@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListRange extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LRANGE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LRANGE';
+    }
 }

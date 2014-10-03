@@ -1,16 +1,13 @@
-<?php
-
-namespace Illuminate\Queue;
+<?php namespace Illuminate\Queue;
 
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Queue\Failed\FailedJobProviderInterface;
 
-class Worker
-{
+class Worker {
 
 	/**
-	 * THe queue manager instance.
+	 * The queue manager instance.
 	 *
 	 * @var \Illuminate\Queue\QueueManager
 	 */
@@ -38,7 +35,9 @@ class Worker
 	 * @param  \Illuminate\Events\Dispatcher  $events
 	 * @return void
 	 */
-	public function __construct (QueueManager $manager, FailedJobProviderInterface $failer = null, Dispatcher $events = null)
+	public function __construct(QueueManager $manager,
+                                FailedJobProviderInterface $failer = null,
+                                Dispatcher $events = null)
 	{
 		$this->failer = $failer;
 		$this->events = $events;
@@ -56,24 +55,24 @@ class Worker
 	 * @param  int     $maxTries
 	 * @return void
 	 */
-	public function pop ($connectionName, $queue = null, $delay = 0, $memory = 128, $sleep = 3, $maxTries = 0)
+	public function pop($connectionName, $queue = null, $delay = 0, $memory = 128, $sleep = 3, $maxTries = 0)
 	{
-		$connection = $this->manager->connection ($connectionName);
+		$connection = $this->manager->connection($connectionName);
 
-		$job = $this->getNextJob ($connection, $queue);
+		$job = $this->getNextJob($connection, $queue);
 
 		// If we're able to pull a job off of the stack, we will process it and
 		// then make sure we are not exceeding our memory limits for the run
 		// which is to protect against run-away memory leakages from here.
-		if (!is_null ($job))
+		if ( ! is_null($job))
 		{
-			$this->process (
-				$this->manager->getName ($connectionName), $job, $maxTries, $delay
+			$this->process(
+				$this->manager->getName($connectionName), $job, $maxTries, $delay
 			);
 		}
 		else
 		{
-			$this->sleep ($sleep);
+			$this->sleep($sleep);
 		}
 	}
 
@@ -84,15 +83,13 @@ class Worker
 	 * @param  string  $queue
 	 * @return \Illuminate\Queue\Jobs\Job|null
 	 */
-	protected function getNextJob ($connection, $queue)
+	protected function getNextJob($connection, $queue)
 	{
-		if (is_null ($queue))
-			return $connection->pop ();
+		if (is_null($queue)) return $connection->pop();
 
-		foreach (explode (',', $queue) as $queue)
+		foreach (explode(',', $queue) as $queue)
 		{
-			if (!is_null ($job = $connection->pop ($queue)))
-				return $job;
+			if ( ! is_null($job = $connection->pop($queue))) return $job;
 		}
 	}
 
@@ -107,11 +104,11 @@ class Worker
 	 *
 	 * @throws \Exception
 	 */
-	public function process ($connection, Job $job, $maxTries = 0, $delay = 0)
+	public function process($connection, Job $job, $maxTries = 0, $delay = 0)
 	{
-		if ($maxTries > 0 && $job->attempts () > $maxTries)
+		if ($maxTries > 0 && $job->attempts() > $maxTries)
 		{
-			return $this->logFailedJob ($connection, $job);
+			return $this->logFailedJob($connection, $job);
 		}
 
 		try
@@ -119,18 +116,17 @@ class Worker
 			// First we will fire off the job. Once it is done we will see if it will
 			// be auto-deleted after processing and if so we will go ahead and run
 			// the delete method on the job. Otherwise we will just keep moving.
-			$job->fire ();
+			$job->fire();
 
-			if ($job->autoDelete ())
-				$job->delete ();
+			if ($job->autoDelete()) $job->delete();
 		}
+
 		catch (\Exception $e)
 		{
 			// If we catch an exception, we will attempt to release the job back onto
 			// the queue so it is not lost. This will let is be retried at a later
 			// time by another listener (or the same one). We will do that here.
-			if (!$job->isDeleted ())
-				$job->release ($delay);
+			if ( ! $job->isDeleted()) $job->release($delay);
 
 			throw $e;
 		}
@@ -143,15 +139,15 @@ class Worker
 	 * @param  \Illuminate\Queue\Jobs\Job  $job
 	 * @return void
 	 */
-	protected function logFailedJob ($connection, Job $job)
+	protected function logFailedJob($connection, Job $job)
 	{
 		if ($this->failer)
 		{
-			$this->failer->log ($connection, $job->getQueue (), $job->getRawBody ());
+			$this->failer->log($connection, $job->getQueue(), $job->getRawBody());
 
-			$job->delete ();
+			$job->delete();
 
-			$this->raiseFailedJobEvent ($connection, $job);
+			$this->raiseFailedJobEvent($connection, $job);
 		}
 	}
 
@@ -162,13 +158,13 @@ class Worker
 	 * @param  \Illuminate\Queue\Jobs\Job  $job
 	 * @return void
 	 */
-	protected function raiseFailedJobEvent ($connection, Job $job)
+	protected function raiseFailedJobEvent($connection, Job $job)
 	{
 		if ($this->events)
 		{
-			$data = json_decode ($job->getRawBody (), true);
+			$data = json_decode($job->getRawBody(), true);
 
-			$this->events->fire ('illuminate.queue.failed', array ($connection, $job, $data));
+			$this->events->fire('illuminate.queue.failed', array($connection, $job, $data));
 		}
 	}
 
@@ -178,9 +174,9 @@ class Worker
 	 * @param  int   $seconds
 	 * @return void
 	 */
-	public function sleep ($seconds)
+	public function sleep($seconds)
 	{
-		sleep ($seconds);
+		sleep($seconds);
 	}
 
 	/**
@@ -188,7 +184,7 @@ class Worker
 	 *
 	 * @return \Illuminate\Queue\QueueManager
 	 */
-	public function getManager ()
+	public function getManager()
 	{
 		return $this->manager;
 	}
@@ -199,7 +195,7 @@ class Worker
 	 * @param  \Illuminate\Queue\QueueManager  $manager
 	 * @return void
 	 */
-	public function setManager (QueueManager $manager)
+	public function setManager(QueueManager $manager)
 	{
 		$this->manager = $manager;
 	}

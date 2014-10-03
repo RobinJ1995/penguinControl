@@ -21,39 +21,17 @@ use Symfony\Component\HttpKernel\Tests\Fixtures\ExtensionPresentBundle\Extension
 
 class BundleTest extends \PHPUnit_Framework_TestCase
 {
+    public function testRegisterCommands()
+    {
+        $cmd = new FooCommand();
+        $app = $this->getMock('Symfony\Component\Console\Application');
+        $app->expects($this->once())->method('add')->with($this->equalTo($cmd));
 
-	public function testRegisterCommands ()
-	{
-		$cmd = new FooCommand();
-		$app = $this->getMock ('Symfony\Component\Console\Application');
-		$app->expects ($this->once ())->method ('add')->with ($this->equalTo ($cmd));
+        $bundle = new ExtensionPresentBundle();
+        $bundle->registerCommands($app);
 
-		$bundle = new ExtensionPresentBundle();
-		$bundle->registerCommands ($app);
+        $bundle2 = new ExtensionAbsentBundle();
 
-		$bundle2 = new ExtensionAbsentBundle();
-
-		$this->assertNull ($bundle2->registerCommands ($app));
-	}
-
-	public function testRegisterCommandsIngoreCommandAsAService ()
-	{
-		$container = new ContainerBuilder();
-		$container->addCompilerPass (new AddConsoleCommandPass ());
-		$definition = new Definition ('Symfony\Component\HttpKernel\Tests\Fixtures\ExtensionPresentBundle\Command\FooCommand');
-		$definition->addTag ('console.command');
-		$container->setDefinition ('my-command', $definition);
-		$container->compile ();
-
-		$application = $this->getMock ('Symfony\Component\Console\Application');
-		// Never called, because it's the
-		// Symfony\Bundle\FrameworkBundle\Console\Application that register
-		// commands as a service
-		$application->expects ($this->never ())->method ('add');
-
-		$bundle = new ExtensionPresentBundle();
-		$bundle->setContainer ($container);
-		$bundle->registerCommands ($application);
-	}
-
+        $this->assertNull($bundle2->registerCommands($app));
+    }
 }

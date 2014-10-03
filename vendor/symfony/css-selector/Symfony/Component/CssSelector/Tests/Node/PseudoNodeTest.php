@@ -16,19 +16,17 @@ use Symfony\Component\CssSelector\Node\PseudoNode;
 
 class PseudoNodeTest extends AbstractNodeTest
 {
+    public function getToStringConversionTestData()
+    {
+        return array(
+            array(new PseudoNode(new ElementNode(), 'pseudo'), 'Pseudo[Element[*]:pseudo]'),
+        );
+    }
 
-	public function getToStringConversionTestData ()
-	{
-		return array (
-		    array (new PseudoNode (new ElementNode (), 'pseudo'), 'Pseudo[Element[*]:pseudo]'),
-		);
-	}
-
-	public function getSpecificityValueTestData ()
-	{
-		return array (
-		    array (new PseudoNode (new ElementNode (), 'pseudo'), 10),
-		);
-	}
-
+    public function getSpecificityValueTestData()
+    {
+        return array(
+            array(new PseudoNode(new ElementNode(), 'pseudo'), 10),
+        );
+    }
 }

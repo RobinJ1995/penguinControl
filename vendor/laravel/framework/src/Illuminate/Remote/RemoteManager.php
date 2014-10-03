@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Remote;
+<?php namespace Illuminate\Remote;
 
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class RemoteManager
-{
+class RemoteManager {
 
 	/**
 	 * The application instance.
@@ -20,7 +17,7 @@ class RemoteManager
 	 *
 	 * @var array
 	 */
-	protected $connections = array ();
+	protected $connections = array();
 
 	/**
 	 * Create a new remote manager instance.
@@ -28,7 +25,7 @@ class RemoteManager
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return void
 	 */
-	public function __construct ($app)
+	public function __construct($app)
 	{
 		$this->app = $app;
 	}
@@ -39,15 +36,15 @@ class RemoteManager
 	 * @param  string|array|dynamic  $name
 	 * @return \Illuminate\Remote\ConnectionInterface
 	 */
-	public function into ($name)
+	public function into($name)
 	{
-		if (is_string ($name) || is_array ($name))
+		if (is_string($name) || is_array($name))
 		{
-			return $this->connection ($name);
+			return $this->connection($name);
 		}
 		else
 		{
-			return $this->connection (func_get_args ());
+			return $this->connection(func_get_args());
 		}
 	}
 
@@ -57,12 +54,11 @@ class RemoteManager
 	 * @param  string|array  $name
 	 * @return \Illuminate\Remote\ConnectionInterface
 	 */
-	public function connection ($name = null)
+	public function connection($name = null)
 	{
-		if (is_array ($name))
-			return $this->multiple ($name);
+		if (is_array($name)) return $this->multiple($name);
 
-		return $this->resolve ($name ? : $this->getDefaultConnection ());
+		return $this->resolve($name ?: $this->getDefaultConnection());
 	}
 
 	/**
@@ -71,9 +67,9 @@ class RemoteManager
 	 * @param  string  $name
 	 * @return \Illuminate\Remote\ConnectionInterface
 	 */
-	public function group ($name)
+	public function group($name)
 	{
-		return $this->connection ($this->app['config']['remote.groups.' . $name]);
+		return $this->connection($this->app['config']['remote.groups.'.$name]);
 	}
 
 	/**
@@ -82,9 +78,9 @@ class RemoteManager
 	 * @param  array  $names
 	 * @return \Illuminate\Remote\MultiConnection
 	 */
-	public function multiple (array $names)
+	public function multiple(array $names)
 	{
-		return new MultiConnection (array_map (array ($this, 'resolve'), $names));
+		return new MultiConnection(array_map(array($this, 'resolve'), $names));
 	}
 
 	/**
@@ -93,11 +89,11 @@ class RemoteManager
 	 * @param  string  $name
 	 * @return \Illuminate\Remote\Connection
 	 */
-	public function resolve ($name)
+	public function resolve($name)
 	{
-		if (!isset ($this->connections[$name]))
+		if ( ! isset($this->connections[$name]))
 		{
-			$this->connections[$name] = $this->makeConnection ($name, $this->getConfig ($name));
+			$this->connections[$name] = $this->makeConnection($name, $this->getConfig($name));
 		}
 
 		return $this->connections[$name];
@@ -110,10 +106,12 @@ class RemoteManager
 	 * @param  array   $config
 	 * @return \Illuminate\Remote\Connection
 	 */
-	protected function makeConnection ($name, array $config)
+	protected function makeConnection($name, array $config)
 	{
-		$this->setOutput ($connection = new Connection (
-			$name, $config['host'], $config['username'], $this->getAuth ($config)
+		$this->setOutput($connection = new Connection(
+
+			$name, $config['host'], $config['username'], $this->getAuth($config)
+
 		));
 
 		return $connection;
@@ -125,11 +123,11 @@ class RemoteManager
 	 * @param  \Illuminate\Remote\Connection  $connection
 	 * @return void
 	 */
-	protected function setOutput (Connection $connection)
+	protected function setOutput(Connection $connection)
 	{
-		$output = php_sapi_name () == 'cli' ? new ConsoleOutput : new NullOutput;
+		$output = php_sapi_name() == 'cli' ? new ConsoleOutput : new NullOutput;
 
-		$connection->setOutput ($output);
+		$connection->setOutput($output);
 	}
 
 	/**
@@ -140,22 +138,26 @@ class RemoteManager
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function getAuth (array $config)
+	protected function getAuth(array $config)
 	{
-		if (isset ($config['key']) && trim ($config['key']) != '')
+		if (isset($config['agent']) && $config['agent'] === true)
 		{
-			return array ('key' => $config['key'], 'keyphrase' => $config['keyphrase']);
+			return array('agent' => true);
 		}
-		elseif (isset ($config['keytext']) && trim ($config['keytext']) != '')
+		elseif (isset($config['key']) && trim($config['key']) != '')
 		{
-			return array ('keytext' => $config['keytext']);
+			return array('key' => $config['key'], 'keyphrase' => $config['keyphrase']);
 		}
-		elseif (isset ($config['password']))
+		elseif (isset($config['keytext']) && trim($config['keytext']) != '')
 		{
-			return array ('password' => $config['password']);
+			return array('keytext' => $config['keytext']);
+		}
+		elseif (isset($config['password']))
+		{
+			return array('password' => $config['password']);
 		}
 
-		throw new \InvalidArgumentException ('Password / key is required.');
+		throw new \InvalidArgumentException('Password / key is required.');
 	}
 
 	/**
@@ -166,14 +168,13 @@ class RemoteManager
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function getConfig ($name)
+	protected function getConfig($name)
 	{
-		$config = $this->app['config']['remote.connections.' . $name];
+		$config = $this->app['config']['remote.connections.'.$name];
 
-		if (!is_null ($config))
-			return $config;
+		if ( ! is_null($config)) return $config;
 
-		throw new \InvalidArgumentException ("Remote connection [$name] not defined.");
+		throw new \InvalidArgumentException("Remote connection [$name] not defined.");
 	}
 
 	/**
@@ -181,7 +182,7 @@ class RemoteManager
 	 *
 	 * @return string
 	 */
-	public function getDefaultConnection ()
+	public function getDefaultConnection()
 	{
 		return $this->app['config']['remote.default'];
 	}
@@ -192,7 +193,7 @@ class RemoteManager
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setDefaultConnection ($name)
+	public function setDefaultConnection($name)
 	{
 		$this->app['config']['remote.default'] = $name;
 	}
@@ -204,9 +205,9 @@ class RemoteManager
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		return call_user_func_array (array ($this->connection (), $method), $parameters);
+		return call_user_func_array(array($this->connection(), $method), $parameters);
 	}
 
 }

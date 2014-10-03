@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Queue;
+<?php namespace Illuminate\Queue;
 
 use Closure;
 
-class QueueManager
-{
+class QueueManager {
 
 	/**
 	 * The application instance.
@@ -19,7 +16,7 @@ class QueueManager
 	 *
 	 * @var array
 	 */
-	protected $connections = array ();
+	protected $connections = array();
 
 	/**
 	 * Create a new queue manager instance.
@@ -27,7 +24,7 @@ class QueueManager
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return void
 	 */
-	public function __construct ($app)
+	public function __construct($app)
 	{
 		$this->app = $app;
 	}
@@ -38,9 +35,9 @@ class QueueManager
 	 * @param  mixed  $callback
 	 * @return void
 	 */
-	public function failing ($callback)
+	public function failing($callback)
 	{
-		$this->app['events']->listen ('illuminate.queue.failed', $callback);
+		$this->app['events']->listen('illuminate.queue.failed', $callback);
 	}
 
 	/**
@@ -49,9 +46,9 @@ class QueueManager
 	 * @param  string  $name
 	 * @return bool
 	 */
-	public function connected ($name = null)
+	public function connected($name = null)
 	{
-		return isset ($this->connections[$name ? : $this->getDefaultDriver ()]);
+		return isset($this->connections[$name ?: $this->getDefaultDriver()]);
 	}
 
 	/**
@@ -60,18 +57,18 @@ class QueueManager
 	 * @param  string  $name
 	 * @return \Illuminate\Queue\QueueInterface
 	 */
-	public function connection ($name = null)
+	public function connection($name = null)
 	{
-		$name = $name ? : $this->getDefaultDriver ();
+		$name = $name ?: $this->getDefaultDriver();
 
 		// If the connection has not been resolved yet we will resolve it now as all
 		// of the connections are resolved when they are actually needed so we do
 		// not make any unnecessary connection to the various queue end-points.
-		if (!isset ($this->connections[$name]))
+		if ( ! isset($this->connections[$name]))
 		{
-			$this->connections[$name] = $this->resolve ($name);
+			$this->connections[$name] = $this->resolve($name);
 
-			$this->connections[$name]->setContainer ($this->app);
+			$this->connections[$name]->setContainer($this->app);
 		}
 
 		return $this->connections[$name];
@@ -83,11 +80,11 @@ class QueueManager
 	 * @param  string  $name
 	 * @return \Illuminate\Queue\QueueInterface
 	 */
-	protected function resolve ($name)
+	protected function resolve($name)
 	{
-		$config = $this->getConfig ($name);
+		$config = $this->getConfig($name);
 
-		return $this->getConnector ($config['driver'])->connect ($config);
+		return $this->getConnector($config['driver'])->connect($config);
 	}
 
 	/**
@@ -98,14 +95,14 @@ class QueueManager
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function getConnector ($driver)
+	protected function getConnector($driver)
 	{
-		if (isset ($this->connectors[$driver]))
+		if (isset($this->connectors[$driver]))
 		{
-			return call_user_func ($this->connectors[$driver]);
+			return call_user_func($this->connectors[$driver]);
 		}
 
-		throw new \InvalidArgumentException ("No connector for [$driver]");
+		throw new \InvalidArgumentException("No connector for [$driver]");
 	}
 
 	/**
@@ -115,9 +112,9 @@ class QueueManager
 	 * @param  Closure  $resolver
 	 * @return void
 	 */
-	public function extend ($driver, Closure $resolver)
+	public function extend($driver, Closure $resolver)
 	{
-		return $this->addConnector ($driver, $resolver);
+		return $this->addConnector($driver, $resolver);
 	}
 
 	/**
@@ -127,7 +124,7 @@ class QueueManager
 	 * @param  Closure  $resolver
 	 * @return void
 	 */
-	public function addConnector ($driver, Closure $resolver)
+	public function addConnector($driver, Closure $resolver)
 	{
 		$this->connectors[$driver] = $resolver;
 	}
@@ -138,7 +135,7 @@ class QueueManager
 	 * @param  string  $name
 	 * @return array
 	 */
-	protected function getConfig ($name)
+	protected function getConfig($name)
 	{
 		return $this->app['config']["queue.connections.{$name}"];
 	}
@@ -148,7 +145,7 @@ class QueueManager
 	 *
 	 * @return string
 	 */
-	public function getDefaultDriver ()
+	public function getDefaultDriver()
 	{
 		return $this->app['config']['queue.default'];
 	}
@@ -159,7 +156,7 @@ class QueueManager
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function setDefaultDriver ($name)
+	public function setDefaultDriver($name)
 	{
 		$this->app['config']['queue.default'] = $name;
 	}
@@ -170,9 +167,9 @@ class QueueManager
 	 * @param  string  $connection
 	 * @return string
 	 */
-	public function getName ($connection = null)
+	public function getName($connection = null)
 	{
-		return $connection ? : $this->getDefaultDriver ();
+		return $connection ?: $this->getDefaultDriver();
 	}
 
 	/**
@@ -182,11 +179,11 @@ class QueueManager
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call ($method, $parameters)
+	public function __call($method, $parameters)
 	{
-		$callable = array ($this->connection (), $method);
+		$callable = array($this->connection(), $method);
 
-		return call_user_func_array ($callable, $parameters);
+		return call_user_func_array($callable, $parameters);
 	}
 
 }

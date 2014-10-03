@@ -1,13 +1,10 @@
-<?php
-
-namespace Illuminate\Database\Console;
+<?php namespace Illuminate\Database\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 
-class SeedCommand extends Command
-{
+class SeedCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -36,9 +33,9 @@ class SeedCommand extends Command
 	 * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
 	 * @return void
 	 */
-	public function __construct (Resolver $resolver)
+	public function __construct(Resolver $resolver)
 	{
-		parent::__construct ();
+		parent::__construct();
 
 		$this->resolver = $resolver;
 	}
@@ -48,11 +45,11 @@ class SeedCommand extends Command
 	 *
 	 * @return void
 	 */
-	public function fire ()
+	public function fire()
 	{
-		$this->resolver->setDefaultConnection ($this->getDatabase ());
+		$this->resolver->setDefaultConnection($this->getDatabase());
 
-		$this->getSeeder ()->run ();
+		$this->getSeeder()->run();
 	}
 
 	/**
@@ -60,11 +57,11 @@ class SeedCommand extends Command
 	 *
 	 * @return \Illuminate\Database\Seeder
 	 */
-	protected function getSeeder ()
+	protected function getSeeder()
 	{
-		$class = $this->laravel->make ($this->input->getOption ('class'));
+		$class = $this->laravel->make($this->input->getOption('class'));
 
-		return $class->setContainer ($this->laravel)->setCommand ($this);
+		return $class->setContainer($this->laravel)->setCommand($this);
 	}
 
 	/**
@@ -72,11 +69,11 @@ class SeedCommand extends Command
 	 *
 	 * @return string
 	 */
-	protected function getDatabase ()
+	protected function getDatabase()
 	{
-		$database = $this->input->getOption ('database');
+		$database = $this->input->getOption('database');
 
-		return $database ? : $this->laravel['config']['database.default'];
+		return $database ?: $this->laravel['config']['database.default'];
 	}
 
 	/**
@@ -84,11 +81,12 @@ class SeedCommand extends Command
 	 *
 	 * @return array
 	 */
-	protected function getOptions ()
+	protected function getOptions()
 	{
-		return array (
-		    array ('class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', 'DatabaseSeeder'),
-		    array ('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed'),
+		return array(
+			array('class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', 'DatabaseSeeder'),
+
+			array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed'),
 		);
 	}
 

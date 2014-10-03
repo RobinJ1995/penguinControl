@@ -17,32 +17,30 @@ namespace Predis\Command;
  */
 class ServerShutdownTest extends PredisCommandTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return 'Predis\Command\ServerShutdown';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedCommand ()
-	{
-		return 'Predis\Command\ServerShutdown';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return 'SHUTDOWN';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getExpectedId ()
-	{
-		return 'SHUTDOWN';
-	}
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        $command = $this->getCommand();
+        $command->setArguments(array());
 
-	/**
-	 * @group disconnected
-	 */
-	public function testFilterArguments ()
-	{
-		$command = $this->getCommand ();
-		$command->setArguments (array ());
-
-		$this->assertSame (array (), $command->getArguments ());
-	}
-
+        $this->assertSame(array(), $command->getArguments());
+    }
 }

@@ -19,112 +19,110 @@ use Predis\Client;
  */
 class MultiBulkResponseSimpleTest extends PredisTestCase
 {
+    /**
+     * @group connected
+     */
+    public function testIterableMultibulk()
+    {
+        $client = $this->getClient();
+        $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
-	/**
-	 * @group connected
-	 */
-	public function testIterableMultibulk ()
-	{
-		$client = $this->getClient ();
-		$client->rpush ('metavars', 'foo', 'hoge', 'lol');
+        $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
+        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $iterator);
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(3, $iterator->count());
 
-		$this->assertInstanceOf ('Iterator', $iterator = $client->lrange ('metavars', 0, -1));
-		$this->assertInstanceOf ('Predis\Iterator\MultiBulkResponseSimple', $iterator);
-		$this->assertTrue ($iterator->valid ());
-		$this->assertSame (3, $iterator->count ());
+        $this->assertSame('foo', $iterator->current());
+        $this->assertSame(1, $iterator->next());
+        $this->assertTrue($iterator->valid());
 
-		$this->assertSame ('foo', $iterator->current ());
-		$this->assertSame (1, $iterator->next ());
-		$this->assertTrue ($iterator->valid ());
+        $this->assertSame('hoge', $iterator->current());
+        $this->assertSame(2, $iterator->next());
+        $this->assertTrue($iterator->valid());
 
-		$this->assertSame ('hoge', $iterator->current ());
-		$this->assertSame (2, $iterator->next ());
-		$this->assertTrue ($iterator->valid ());
+        $this->assertSame('lol', $iterator->current());
+        $this->assertSame(3, $iterator->next());
+        $this->assertFalse($iterator->valid());
 
-		$this->assertSame ('lol', $iterator->current ());
-		$this->assertSame (3, $iterator->next ());
-		$this->assertFalse ($iterator->valid ());
+        $this->assertTrue($client->ping());
+    }
 
-		$this->assertTrue ($client->ping ());
-	}
+    /**
+     * @group connected
+     */
+    public function testIterableMultibulkCanBeWrappedAsTupleIterator()
+    {
+        $client = $this->getClient();
+        $client->mset('foo', 'bar', 'hoge', 'piyo');
 
-	/**
-	 * @group connected
-	 */
-	public function testIterableMultibulkCanBeWrappedAsTupleIterator ()
-	{
-		$client = $this->getClient ();
-		$client->mset ('foo', 'bar', 'hoge', 'piyo');
+        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $iterator = $client->mget('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseTuple', $iterator->asTuple());
+    }
 
-		$this->assertInstanceOf ('Predis\Iterator\MultiBulkResponseSimple', $iterator = $client->mget ('foo', 'bar'));
-		$this->assertInstanceOf ('Predis\Iterator\MultiBulkResponseTuple', $iterator->asTuple ());
-	}
+    /**
+     * @group connected
+     */
+    public function testSyncWithFalseConsumesReplyFromUnderlyingConnection()
+    {
+        $client = $this->getClient();
+        $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
-	/**
-	 * @group connected
-	 */
-	public function testSyncWithFalseConsumesReplyFromUnderlyingConnection ()
-	{
-		$client = $this->getClient ();
-		$client->rpush ('metavars', 'foo', 'hoge', 'lol');
+        $iterator = $client->lrange('metavars', 0, -1);
+        $iterator->sync(false);
 
-		$iterator = $client->lrange ('metavars', 0, -1);
-		$iterator->sync (false);
+        $this->assertTrue($client->isConnected());
+        $this->assertTrue($client->ping());
+    }
 
-		$this->assertTrue ($client->isConnected ());
-		$this->assertTrue ($client->ping ());
-	}
+    /**
+     * @group connected
+     */
+    public function testSyncWithTrueDropsUnderlyingConnection()
+    {
+        $client = $this->getClient();
+        $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
-	/**
-	 * @group connected
-	 */
-	public function testSyncWithTrueDropsUnderlyingConnection ()
-	{
-		$client = $this->getClient ();
-		$client->rpush ('metavars', 'foo', 'hoge', 'lol');
+        $iterator = $client->lrange('metavars', 0, -1);
+        $iterator->sync(true);
 
-		$iterator = $client->lrange ('metavars', 0, -1);
-		$iterator->sync (true);
+        $this->assertFalse($client->isConnected());
+        $this->assertTrue($client->ping());
+    }
 
-		$this->assertFalse ($client->isConnected ());
-		$this->assertTrue ($client->ping ());
-	}
+    /**
+     * @group connected
+     */
+    public function testGarbageCollectorDropsUnderlyingConnection()
+    {
+        $client = $this->getClient();
+        $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
-	/**
-	 * @group connected
-	 */
-	public function testGarbageCollectorDropsUnderlyingConnection ()
-	{
-		$client = $this->getClient ();
-		$client->rpush ('metavars', 'foo', 'hoge', 'lol');
+        $iterator = $client->lrange('metavars', 0, -1);
 
-		$iterator = $client->lrange ('metavars', 0, -1);
+        unset($iterator);
 
-		unset ($iterator);
+        $this->assertFalse($client->isConnected());
+        $this->assertTrue($client->ping());
+    }
 
-		$this->assertFalse ($client->isConnected ());
-		$this->assertTrue ($client->ping ());
-	}
+    // ******************************************************************** //
+    // ---- HELPER METHODS ------------------------------------------------ //
+    // ******************************************************************** //
 
-	// ******************************************************************** //
-	// ---- HELPER METHODS ------------------------------------------------ //
-	// ******************************************************************** //
+    /**
+     * Returns a new client instance.
+     *
+     * @return Client
+     */
+    protected function getClient()
+    {
+        $parameters = $this->getParametersArray(array(
+            'iterable_multibulk' => true,
+            'read_write_timeout' => 2,
+        ));
 
-	/**
-	 * Returns a new client instance.
-	 *
-	 * @return Client
-	 */
-	protected function getClient ()
-	{
-		$parameters = $this->getParametersArray (array (
-		    'iterable_multibulk' => true,
-		    'read_write_timeout' => 2,
-		));
+        $client = $this->createClient($parameters);
 
-		$client = $this->createClient ($parameters);
-
-		return $client;
-	}
-
+        return $client;
+    }
 }

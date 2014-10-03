@@ -26,115 +26,113 @@ use Predis\ClientInterface;
  */
 class SessionHandler implements SessionHandlerInterface
 {
+    protected $client;
+    protected $ttl;
 
-	protected $client;
-	protected $ttl;
+    /**
+     * @param ClientInterface $client  Fully initialized client instance.
+     * @param array           $options Session handler options.
+     */
+    public function __construct(ClientInterface $client, Array $options = array())
+    {
+        $this->client = $client;
+        $this->ttl = (int) (isset($options['gc_maxlifetime']) ? $options['gc_maxlifetime'] : ini_get('session.gc_maxlifetime'));
+    }
 
-	/**
-	 * @param ClientInterface $client  Fully initialized client instance.
-	 * @param array           $options Session handler options.
-	 */
-	public function __construct (ClientInterface $client, Array $options = array ())
-	{
-		$this->client = $client;
-		$this->ttl = (int) (isset ($options['gc_maxlifetime']) ? $options['gc_maxlifetime'] : ini_get ('session.gc_maxlifetime'));
-	}
+    /**
+     * Registers the handler instance as the current session handler.
+     */
+    public function register()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
+            session_set_save_handler($this, true);
+        } else {
+            session_set_save_handler(
+                array($this, 'open'),
+                array($this, 'close'),
+                array($this, 'read'),
+                array($this, 'write'),
+                array($this, 'destroy'),
+                array($this, 'gc')
+            );
+        }
+    }
 
-	/**
-	 * Registers the handler instance as the current session handler.
-	 */
-	public function register ()
-	{
-		if (version_compare (PHP_VERSION, '5.4.0') >= 0)
-		{
-			session_set_save_handler ($this, true);
-		}
-		else
-		{
-			session_set_save_handler (
-				array ($this, 'open'), array ($this, 'close'), array ($this, 'read'), array ($this, 'write'), array ($this, 'destroy'), array ($this, 'gc')
-			);
-		}
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function open($save_path, $session_id)
+    {
+        // NOOP
+        return true;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function open ($save_path, $session_id)
-	{
-		// NOOP
-		return true;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        // NOOP
+        return true;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function close ()
-	{
-		// NOOP
-		return true;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function gc($maxlifetime)
+    {
+        // NOOP
+        return true;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function gc ($maxlifetime)
-	{
-		// NOOP
-		return true;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function read($session_id)
+    {
+        if ($data = $this->client->get($session_id)) {
+            return $data;
+        }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function read ($session_id)
-	{
-		if ($data = $this->client->get ($session_id))
-		{
-			return $data;
-		}
+        return '';
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function write($session_id, $session_data)
+    {
+        $this->client->setex($session_id, $this->ttl, $session_data);
 
-		return '';
-	}
+        return true;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function write ($session_id, $session_data)
-	{
-		$this->client->setex ($session_id, $this->ttl, $session_data);
+    /**
+     * {@inheritdoc}
+     */
+    public function destroy($session_id)
+    {
+        $this->client->del($session_id);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function destroy ($session_id)
-	{
-		$this->client->del ($session_id);
+    /**
+     * Returns the underlying client instance.
+     *
+     * @return ClientInterface
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
 
-		return true;
-	}
-
-	/**
-	 * Returns the underlying client instance.
-	 *
-	 * @return ClientInterface
-	 */
-	public function getClient ()
-	{
-		return $this->client;
-	}
-
-	/**
-	 * Returns the session max lifetime value.
-	 *
-	 * @return int
-	 */
-	public function getMaxLifeTime ()
-	{
-		return $this->ttl;
-	}
-
+    /**
+     * Returns the session max lifetime value.
+     *
+     * @return int
+     */
+    public function getMaxLifeTime()
+    {
+        return $this->ttl;
+    }
 }

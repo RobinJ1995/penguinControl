@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class KeyType extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'TYPE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'TYPE';
+    }
 }

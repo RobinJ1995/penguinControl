@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class HashIncrementBy extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'HINCRBY';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HINCRBY';
+    }
 }

@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListPopFirst extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LPOP';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LPOP';
+    }
 }

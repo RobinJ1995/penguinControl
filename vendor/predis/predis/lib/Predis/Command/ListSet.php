@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class ListSet extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'LSET';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'LSET';
+    }
 }

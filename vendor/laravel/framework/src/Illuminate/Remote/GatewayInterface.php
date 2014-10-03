@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Remote;
 
-namespace Illuminate\Remote;
-
-interface GatewayInterface
-{
+interface GatewayInterface {
 
 	/**
 	 * Connect to the SSH server.
@@ -11,14 +8,14 @@ interface GatewayInterface
 	 * @param  string  $username
 	 * @return void
 	 */
-	public function connect ($username);
+	public function connect($username);
 
 	/**
 	 * Determine if the gateway is connected.
 	 *
 	 * @return bool
 	 */
-	public function connected ();
+	public function connected();
 
 	/**
 	 * Run a command against the server (non-blocking).
@@ -26,7 +23,7 @@ interface GatewayInterface
 	 * @param  string  $command
 	 * @return void
 	 */
-	public function run ($command);
+	public function run($command);
 
 	/**
 	 * Upload a local file to the server.
@@ -35,7 +32,7 @@ interface GatewayInterface
 	 * @param  string  $remote
 	 * @return void
 	 */
-	public function put ($local, $remote);
+	public function put($local, $remote);
 
 	/**
 	 * Upload a string to to the given file on the server.
@@ -44,19 +41,20 @@ interface GatewayInterface
 	 * @param  string  $contents
 	 * @return void
 	 */
-	public function putString ($remote, $contents);
+	public function putString($remote, $contents);
 
 	/**
 	 * Get the next line of output from the server.
 	 *
 	 * @return string|null
 	 */
-	public function nextLine ();
+	public function nextLine();
 
 	/**
 	 * Get the exit status of the last command.
 	 *
 	 * @return int|bool
 	 */
-	public function status ();
+	public function status();
+
 }

@@ -17,21 +17,19 @@ namespace Predis\Command;
  */
 class StringSetMultiplePreserve extends StringSetMultiple
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'MSETNX';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'MSETNX';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function parseResponse ($data)
-	{
-		return (bool) $data;
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Http;
+<?php namespace Illuminate\Http;
 
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
-class Request extends SymfonyRequest
-{
+class Request extends SymfonyRequest {
 
 	/**
 	 * The decoded JSON content for the request.
@@ -27,7 +24,7 @@ class Request extends SymfonyRequest
 	 *
 	 * @return \Illuminate\Http\Request
 	 */
-	public function instance ()
+	public function instance()
 	{
 		return $this;
 	}
@@ -37,9 +34,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function method ()
+	public function method()
 	{
-		return $this->getMethod ();
+		return $this->getMethod();
 	}
 
 	/**
@@ -47,9 +44,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function root ()
+	public function root()
 	{
-		return rtrim ($this->getSchemeAndHttpHost () . $this->getBaseUrl (), '/');
+		return rtrim($this->getSchemeAndHttpHost().$this->getBaseUrl(), '/');
 	}
 
 	/**
@@ -57,9 +54,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function url ()
+	public function url()
 	{
-		return rtrim (preg_replace ('/\?.*/', '', $this->getUri ()), '/');
+		return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
 	}
 
 	/**
@@ -67,11 +64,11 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function fullUrl ()
+	public function fullUrl()
 	{
-		$query = $this->getQueryString ();
+		$query = $this->getQueryString();
 
-		return $query ? $this->url () . '?' . $query : $this->url ();
+		return $query ? $this->url().'?'.$query : $this->url();
 	}
 
 	/**
@@ -79,9 +76,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function path ()
+	public function path()
 	{
-		$pattern = trim ($this->getPathInfo (), '/');
+		$pattern = trim($this->getPathInfo(), '/');
 
 		return $pattern == '' ? '/' : $pattern;
 	}
@@ -91,9 +88,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function decodedPath ()
+	public function decodedPath()
 	{
-		return rawurldecode ($this->path ());
+		return rawurldecode($this->path());
 	}
 
 	/**
@@ -103,9 +100,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public function segment ($index, $default = null)
+	public function segment($index, $default = null)
 	{
-		return array_get ($this->segments (), $index - 1, $default);
+		return array_get($this->segments(), $index - 1, $default);
 	}
 
 	/**
@@ -113,11 +110,11 @@ class Request extends SymfonyRequest
 	 *
 	 * @return array
 	 */
-	public function segments ()
+	public function segments()
 	{
-		$segments = explode ('/', $this->path ());
+		$segments = explode('/', $this->path());
 
-		return array_values (array_filter ($segments));
+		return array_values(array_filter($segments, function($v) { return $v != ''; }));
 	}
 
 	/**
@@ -126,11 +123,11 @@ class Request extends SymfonyRequest
 	 * @param  dynamic  string
 	 * @return bool
 	 */
-	public function is ()
+	public function is()
 	{
-		foreach (func_get_args () as $pattern)
+		foreach (func_get_args() as $pattern)
 		{
-			if (str_is ($pattern, urldecode ($this->path ())))
+			if (str_is($pattern, urldecode($this->path())))
 			{
 				return true;
 			}
@@ -144,9 +141,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return bool
 	 */
-	public function ajax ()
+	public function ajax()
 	{
-		return $this->isXmlHttpRequest ();
+		return $this->isXmlHttpRequest();
 	}
 
 	/**
@@ -154,9 +151,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return bool
 	 */
-	public function secure ()
+	public function secure()
 	{
-		return $this->isSecure ();
+		return $this->isSecure();
 	}
 
 	/**
@@ -165,46 +162,49 @@ class Request extends SymfonyRequest
 	 * @param  string|array  $key
 	 * @return bool
 	 */
-	public function exists ($key)
+	public function exists($key)
 	{
-		$keys = is_array ($key) ? $key : func_get_args ();
+		$keys = is_array($key) ? $key : func_get_args();
 
-		$input = $this->all ();
+		$input = $this->all();
 
 		foreach ($keys as $value)
 		{
-			if (!array_key_exists ($value, $input))
-				return false;
+			if ( ! array_key_exists($value, $input)) return false;
 		}
 
 		return true;
 	}
 
 	/**
-	 * Determine if the request contains a non-emtpy value for an  input item.
+	 * Determine if the request contains a non-emtpy value for an input item.
 	 *
 	 * @param  string|array  $key
 	 * @return bool
 	 */
-	public function has ($key)
+	public function has($key)
 	{
-		if (count (func_get_args ()) > 1)
-		{
-			foreach (func_get_args () as $value)
-			{
-				if (!$this->has ($value))
-					return false;
-			}
+		$keys = is_array($key) ? $key : func_get_args();
 
-			return true;
+		foreach ($keys as $value)
+		{
+			if ($this->isEmptyString($value)) return false;
 		}
 
-		if (is_bool ($this->input ($key)) || is_array ($this->input ($key)))
-		{
-			return true;
-		}
+		return true;
+	}
 
-		return trim ((string) $this->input ($key)) !== '';
+	/**
+	 * Determine if the given input key is an empty string for "has".
+	 *
+	 * @param  string  $key
+	 * @return bool
+	 */
+	protected function isEmptyString($key)
+	{
+		$boolOrArray = is_bool($this->input($key)) || is_array($this->input($key));
+
+		return ! $boolOrArray && trim((string) $this->input($key)) === '';
 	}
 
 	/**
@@ -212,9 +212,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return array
 	 */
-	public function all ()
+	public function all()
 	{
-		return array_merge_recursive ($this->input (), $this->files->all ());
+		return array_merge_recursive($this->input(), $this->files->all());
 	}
 
 	/**
@@ -224,11 +224,11 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public function input ($key = null, $default = null)
+	public function input($key = null, $default = null)
 	{
-		$input = $this->getInputSource ()->all () + $this->query->all ();
+		$input = $this->getInputSource()->all() + $this->query->all();
 
-		return array_get ($input, $key, $default);
+		return array_get($input, $key, $default);
 	}
 
 	/**
@@ -237,11 +237,11 @@ class Request extends SymfonyRequest
 	 * @param  array  $keys
 	 * @return array
 	 */
-	public function only ($keys)
+	public function only($keys)
 	{
-		$keys = is_array ($keys) ? $keys : func_get_args ();
+		$keys = is_array($keys) ? $keys : func_get_args();
 
-		return array_only ($this->input (), $keys) + array_fill_keys ($keys, null);
+		return array_only($this->input(), $keys) + array_fill_keys($keys, null);
 	}
 
 	/**
@@ -250,14 +250,13 @@ class Request extends SymfonyRequest
 	 * @param  array  $keys
 	 * @return array
 	 */
-	public function except ($keys)
+	public function except($keys)
 	{
-		$keys = is_array ($keys) ? $keys : func_get_args ();
+		$keys = is_array($keys) ? $keys : func_get_args();
 
-		$results = $this->input ();
+		$results = $this->input();
 
-		foreach ($keys as $key)
-			array_forget ($results, $key);
+		foreach ($keys as $key) array_forget($results, $key);
 
 		return $results;
 	}
@@ -269,9 +268,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public function query ($key = null, $default = null)
+	public function query($key = null, $default = null)
 	{
-		return $this->retrieveItem ('query', $key, $default);
+		return $this->retrieveItem('query', $key, $default);
 	}
 
 	/**
@@ -280,9 +279,9 @@ class Request extends SymfonyRequest
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function hasCookie ($key)
+	public function hasCookie($key)
 	{
-		return !is_null ($this->cookie ($key));
+		return ! is_null($this->cookie($key));
 	}
 
 	/**
@@ -292,9 +291,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public function cookie ($key = null, $default = null)
+	public function cookie($key = null, $default = null)
 	{
-		return $this->retrieveItem ('cookies', $key, $default);
+		return $this->retrieveItem('cookies', $key, $default);
 	}
 
 	/**
@@ -304,9 +303,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return \Symfony\Component\HttpFoundation\File\UploadedFile|array
 	 */
-	public function file ($key = null, $default = null)
+	public function file($key = null, $default = null)
 	{
-		return array_get ($this->files->all (), $key, $default);
+		return array_get($this->files->all(), $key, $default);
 	}
 
 	/**
@@ -315,12 +314,11 @@ class Request extends SymfonyRequest
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function hasFile ($key)
+	public function hasFile($key)
 	{
-		if (is_array ($file = $this->file ($key)))
-			$file = head ($file);
+		if (is_array($file = $this->file($key))) $file = head($file);
 
-		return $file instanceof \SplFileInfo && $file->getPath () != '';
+		return $file instanceof \SplFileInfo && $file->getPath() != '';
 	}
 
 	/**
@@ -330,9 +328,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public function header ($key = null, $default = null)
+	public function header($key = null, $default = null)
 	{
-		return $this->retrieveItem ('headers', $key, $default);
+		return $this->retrieveItem('headers', $key, $default);
 	}
 
 	/**
@@ -342,9 +340,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	public function server ($key = null, $default = null)
+	public function server($key = null, $default = null)
 	{
-		return $this->retrieveItem ('server', $key, $default);
+		return $this->retrieveItem('server', $key, $default);
 	}
 
 	/**
@@ -354,9 +352,9 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function old ($key = null, $default = null)
+	public function old($key = null, $default = null)
 	{
-		return $this->session ()->getOldInput ($key, $default);
+		return $this->session()->getOldInput($key, $default);
 	}
 
 	/**
@@ -366,11 +364,11 @@ class Request extends SymfonyRequest
 	 * @param  array  $keys
 	 * @return void
 	 */
-	public function flash ($filter = null, $keys = array ())
+	public function flash($filter = null, $keys = array())
 	{
-		$flash = (!is_null ($filter)) ? $this->$filter ($keys) : $this->input ();
+		$flash = ( ! is_null($filter)) ? $this->$filter($keys) : $this->input();
 
-		$this->session ()->flashInput ($flash);
+		$this->session()->flashInput($flash);
 	}
 
 	/**
@@ -379,11 +377,11 @@ class Request extends SymfonyRequest
 	 * @param  dynamic  string
 	 * @return void
 	 */
-	public function flashOnly ($keys)
+	public function flashOnly($keys)
 	{
-		$keys = is_array ($keys) ? $keys : func_get_args ();
+		$keys = is_array($keys) ? $keys : func_get_args();
 
-		return $this->flash ('only', $keys);
+		return $this->flash('only', $keys);
 	}
 
 	/**
@@ -392,11 +390,11 @@ class Request extends SymfonyRequest
 	 * @param  dynamic  string
 	 * @return void
 	 */
-	public function flashExcept ($keys)
+	public function flashExcept($keys)
 	{
-		$keys = is_array ($keys) ? $keys : func_get_args ();
+		$keys = is_array($keys) ? $keys : func_get_args();
 
-		return $this->flash ('except', $keys);
+		return $this->flash('except', $keys);
 	}
 
 	/**
@@ -404,9 +402,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return void
 	 */
-	public function flush ()
+	public function flush()
 	{
-		$this->session ()->flashInput (array ());
+		$this->session()->flashInput(array());
 	}
 
 	/**
@@ -417,15 +415,15 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return string
 	 */
-	protected function retrieveItem ($source, $key, $default)
+	protected function retrieveItem($source, $key, $default)
 	{
-		if (is_null ($key))
+		if (is_null($key))
 		{
-			return $this->$source->all ();
+			return $this->$source->all();
 		}
 		else
 		{
-			return $this->$source->get ($key, $default, true);
+			return $this->$source->get($key, $default, true);
 		}
 	}
 
@@ -435,9 +433,9 @@ class Request extends SymfonyRequest
 	 * @param  array  $input
 	 * @return void
 	 */
-	public function merge (array $input)
+	public function merge(array $input)
 	{
-		$this->getInputSource ()->add ($input);
+		$this->getInputSource()->add($input);
 	}
 
 	/**
@@ -446,9 +444,9 @@ class Request extends SymfonyRequest
 	 * @param  array  $input
 	 * @return void
 	 */
-	public function replace (array $input)
+	public function replace(array $input)
 	{
-		$this->getInputSource ()->replace ($input);
+		$this->getInputSource()->replace($input);
 	}
 
 	/**
@@ -458,17 +456,16 @@ class Request extends SymfonyRequest
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function json ($key = null, $default = null)
+	public function json($key = null, $default = null)
 	{
-		if (!isset ($this->json))
+		if ( ! isset($this->json))
 		{
-			$this->json = new ParameterBag ((array) json_decode ($this->getContent (), true));
+			$this->json = new ParameterBag((array) json_decode($this->getContent(), true));
 		}
 
-		if (is_null ($key))
-			return $this->json;
+		if (is_null($key)) return $this->json;
 
-		return array_get ($this->json->all (), $key, $default);
+		return array_get($this->json->all(), $key, $default);
 	}
 
 	/**
@@ -476,12 +473,11 @@ class Request extends SymfonyRequest
 	 *
 	 * @return \Symfony\Component\HttpFoundation\ParameterBag
 	 */
-	protected function getInputSource ()
+	protected function getInputSource()
 	{
-		if ($this->isJson ())
-			return $this->json ();
+		if ($this->isJson()) return $this->json();
 
-		return $this->getMethod () == 'GET' ? $this->query : $this->request;
+		return $this->getMethod() == 'GET' ? $this->query : $this->request;
 	}
 
 	/**
@@ -489,9 +485,9 @@ class Request extends SymfonyRequest
 	 *
 	 * @return bool
 	 */
-	public function isJson ()
+	public function isJson()
 	{
-		return str_contains ($this->header ('CONTENT_TYPE'), '/json');
+		return str_contains($this->header('CONTENT_TYPE'), '/json');
 	}
 
 	/**
@@ -499,11 +495,11 @@ class Request extends SymfonyRequest
 	 *
 	 * @return bool
 	 */
-	public function wantsJson ()
+	public function wantsJson()
 	{
-		$acceptable = $this->getAcceptableContentTypes ();
+		$acceptable = $this->getAcceptableContentTypes();
 
-		return isset ($acceptable[0]) && $acceptable[0] == 'application/json';
+		return isset($acceptable[0]) && $acceptable[0] == 'application/json';
 	}
 
 	/**
@@ -511,12 +507,11 @@ class Request extends SymfonyRequest
 	 *
 	 * @return string
 	 */
-	public function format ($default = 'html')
+	public function format($default = 'html')
 	{
-		foreach ($this->getAcceptableContentTypes () as $type)
+		foreach ($this->getAcceptableContentTypes() as $type)
 		{
-			if ($format = $this->getFormat ($type))
-				return $format;
+			if ($format = $this->getFormat($type)) return $format;
 		}
 
 		return $default;
@@ -528,13 +523,15 @@ class Request extends SymfonyRequest
 	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return \Illuminate\Http\Request
 	 */
-	public static function createFromBase (SymfonyRequest $request)
+	public static function createFromBase(SymfonyRequest $request)
 	{
-		if ($request instanceof static)
-			return $request;
+		if ($request instanceof static) return $request;
 
-		return with ($self = new static)->duplicate (
-				$request->query->all (), $request->request->all (), $request->attributes->all (), $request->cookies->all (), $request->files->all (), $request->server->all ()
+		return with(new static)->duplicate(
+
+			$request->query->all(), $request->request->all(), $request->attributes->all(),
+
+			$request->cookies->all(), $request->files->all(), $request->server->all()
 		);
 	}
 
@@ -545,14 +542,14 @@ class Request extends SymfonyRequest
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function session ()
+	public function session()
 	{
-		if (!$this->hasSession ())
+		if ( ! $this->hasSession())
 		{
-			throw new \RuntimeException ("Session store not set on request.");
+			throw new \RuntimeException("Session store not set on request.");
 		}
 
-		return $this->getSession ();
+		return $this->getSession();
 	}
 
 }

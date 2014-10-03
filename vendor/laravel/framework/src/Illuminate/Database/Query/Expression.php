@@ -1,9 +1,6 @@
-<?php
+<?php namespace Illuminate\Database\Query;
 
-namespace Illuminate\Database\Query;
-
-class Expression
-{
+class Expression {
 
 	/**
 	 * The value of the expression.
@@ -18,7 +15,7 @@ class Expression
 	 * @param  mixed  $value
 	 * @return void
 	 */
-	public function __construct ($value)
+	public function __construct($value)
 	{
 		$this->value = $value;
 	}
@@ -28,7 +25,7 @@ class Expression
 	 *
 	 * @return mixed
 	 */
-	public function getValue ()
+	public function getValue()
 	{
 		return $this->value;
 	}
@@ -38,9 +35,9 @@ class Expression
 	 *
 	 * @return string
 	 */
-	public function __toString ()
+	public function __toString()
 	{
-		return (string) $this->getValue ();
+		return (string) $this->getValue();
 	}
 
 }

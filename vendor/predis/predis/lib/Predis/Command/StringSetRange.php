@@ -17,13 +17,11 @@ namespace Predis\Command;
  */
 class StringSetRange extends PrefixableCommand
 {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getId ()
-	{
-		return 'SETRANGE';
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SETRANGE';
+    }
 }

@@ -1,12 +1,9 @@
-<?php
-
-namespace Illuminate\Session;
+<?php namespace Illuminate\Session;
 
 use Illuminate\Cookie\CookieJar;
 use Symfony\Component\HttpFoundation\Request;
 
-class CookieSessionHandler implements \SessionHandlerInterface
-{
+class CookieSessionHandler implements \SessionHandlerInterface {
 
 	/**
 	 * The cookie jar instance.
@@ -29,7 +26,7 @@ class CookieSessionHandler implements \SessionHandlerInterface
 	 * @param  int  $minutes
 	 * @return void
 	 */
-	public function __construct (CookieJar $cookie, $minutes)
+	public function __construct(CookieJar $cookie, $minutes)
 	{
 		$this->cookie = $cookie;
 		$this->minutes = $minutes;
@@ -38,7 +35,7 @@ class CookieSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function open ($savePath, $sessionName)
+	public function open($savePath, $sessionName)
 	{
 		return true;
 	}
@@ -46,7 +43,7 @@ class CookieSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function close ()
+	public function close()
 	{
 		return true;
 	}
@@ -54,31 +51,31 @@ class CookieSessionHandler implements \SessionHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function read ($sessionId)
+	public function read($sessionId)
 	{
-		return $this->request->cookies->get ($sessionId) ? : '';
+		return $this->request->cookies->get($sessionId) ?: '';
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function write ($sessionId, $data)
+	public function write($sessionId, $data)
 	{
-		$this->cookie->queue ($sessionId, $data, $this->minutes);
+		$this->cookie->queue($sessionId, $data, $this->minutes);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function destroy ($sessionId)
+	public function destroy($sessionId)
 	{
-		$this->cookie->queue ($this->cookie->forget ($sessionId));
+		$this->cookie->queue($this->cookie->forget($sessionId));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function gc ($lifetime)
+	public function gc($lifetime)
 	{
 		return true;
 	}
@@ -89,7 +86,7 @@ class CookieSessionHandler implements \SessionHandlerInterface
 	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return void
 	 */
-	public function setRequest (Request $request)
+	public function setRequest(Request $request)
 	{
 		$this->request = $request;
 	}

@@ -18,69 +18,67 @@ use PredisTestCase;
  */
 class PrefixHelpersTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testPrefixFirst()
+    {
+        $arguments = array('1st', '2nd', '3rd', '4th');
+        $expected = array('prefix:1st', '2nd', '3rd', '4th');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixFirst ()
-	{
-		$arguments = array ('1st', '2nd', '3rd', '4th');
-		$expected = array ('prefix:1st', '2nd', '3rd', '4th');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setRawArguments ($arguments);
+        PrefixHelpers::first($command, 'prefix:');
 
-		PrefixHelpers::first ($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixAll()
+    {
+        $arguments = array('1st', '2nd', '3rd', '4th');
+        $expected = array('prefix:1st', 'prefix:2nd', 'prefix:3rd', 'prefix:4th');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixAll ()
-	{
-		$arguments = array ('1st', '2nd', '3rd', '4th');
-		$expected = array ('prefix:1st', 'prefix:2nd', 'prefix:3rd', 'prefix:4th');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setRawArguments ($arguments);
+        PrefixHelpers::all($command, 'prefix:');
 
-		PrefixHelpers::all ($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixInterleaved()
+    {
+        $arguments = array('1st', '2nd', '3rd', '4th');
+        $expected = array('prefix:1st', '2nd', 'prefix:3rd', '4th');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixInterleaved ()
-	{
-		$arguments = array ('1st', '2nd', '3rd', '4th');
-		$expected = array ('prefix:1st', '2nd', 'prefix:3rd', '4th');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setRawArguments ($arguments);
+        PrefixHelpers::interleaved($command, 'prefix:');
 
-		PrefixHelpers::interleaved ($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+    }
 
-		$this->assertSame ($expected, $command->getArguments ());
-	}
+    /**
+     * @group disconnected
+     */
+    public function testPrefixSkipLast()
+    {
+        $arguments = array('1st', '2nd', '3rd', '4th');
+        $expected = array('prefix:1st', 'prefix:2nd', 'prefix:3rd', '4th');
 
-	/**
-	 * @group disconnected
-	 */
-	public function testPrefixSkipLast ()
-	{
-		$arguments = array ('1st', '2nd', '3rd', '4th');
-		$expected = array ('prefix:1st', 'prefix:2nd', 'prefix:3rd', '4th');
+        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command->setRawArguments($arguments);
 
-		$command = $this->getMockForAbstractClass ('Predis\Command\AbstractCommand');
-		$command->setRawArguments ($arguments);
+        PrefixHelpers::skipLast($command, 'prefix:');
 
-		PrefixHelpers::skipLast ($command, 'prefix:');
-
-		$this->assertSame ($expected, $command->getArguments ());
-	}
-
+        $this->assertSame($expected, $command->getArguments());
+    }
 }

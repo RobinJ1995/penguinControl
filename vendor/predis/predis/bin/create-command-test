@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /*
  * This file is part of the Predis package.
  *
@@ -37,138 +38,126 @@ use Predis\Command\PrefixableCommandInterface;
 
 class CommandTestCaseGenerator
 {
+    private $options;
 
-	private $options;
+    public function __construct(Array $options)
+    {
+        if (!isset($options['class'])) {
+            throw new RuntimeException("Missing 'class' option.");
+        }
+        $this->options = $options;
+    }
 
-	public function __construct (Array $options)
-	{
-		if (!isset ($options['class']))
-		{
-			throw new RuntimeException ("Missing 'class' option.");
-		}
-		$this->options = $options;
-	}
+    public static function fromCommandLine()
+    {
+        $parameters = array(
+            'c:'  => 'class:',
+            'r::' => 'realm::',
+            'o::' => 'output::',
+            'x::' => 'overwrite::'
+        );
 
-	public static function fromCommandLine ()
-	{
-		$parameters = array (
-		    'c:' => 'class:',
-		    'r::' => 'realm::',
-		    'o::' => 'output::',
-		    'x::' => 'overwrite::'
-		);
+        $getops = getopt(implode(array_keys($parameters)), $parameters);
 
-		$getops = getopt (implode (array_keys ($parameters)), $parameters);
+        $options = array(
+            'overwrite' => false,
+            'tests' => __DIR__.'/../tests',
+        );
 
-		$options = array (
-		    'overwrite' => false,
-		    'tests' => __DIR__ . '/../tests',
-		);
+        foreach ($getops as $option => $value) {
+            switch ($option) {
+                case 'c':
+                case 'class':
+                    $options['class'] = $value;
+                    break;
 
-		foreach ($getops as $option => $value)
-		{
-			switch ($option)
-			{
-				case 'c':
-				case 'class':
-					$options['class'] = $value;
-					break;
+                case 'r':
+                case 'realm':
+                    $options['realm'] = $value;
+                    break;
 
-				case 'r':
-				case 'realm':
-					$options['realm'] = $value;
-					break;
+                case 'o':
+                case 'output':
+                    $options['output'] = $value;
+                    break;
 
-				case 'o':
-				case 'output':
-					$options['output'] = $value;
-					break;
+                case 'x':
+                case 'overwrite':
+                    $options['overwrite'] = true;
+                    break;
+            }
+        }
 
-				case 'x':
-				case 'overwrite':
-					$options['overwrite'] = true;
-					break;
-			}
-		}
+        if (!isset($options['class'])) {
+            throw new RuntimeException("Missing 'class' option.");
+        }
 
-		if (!isset ($options['class']))
-		{
-			throw new RuntimeException ("Missing 'class' option.");
-		}
+        $options['fqn'] = "Predis\\Command\\{$options['class']}";
+        $options['path'] = "Predis/Command/{$options['class']}.php";
 
-		$options['fqn'] = "Predis\\Command\\{$options['class']}";
-		$options['path'] = "Predis/Command/{$options['class']}.php";
+        $source = __DIR__.'/../lib/'.$options['path'];
+        if (!file_exists($source)) {
+            throw new RuntimeException("Cannot find class file for {$options['fqn']} in $source.");
+        }
 
-		$source = __DIR__ . '/../lib/' . $options['path'];
-		if (!file_exists ($source))
-		{
-			throw new RuntimeException ("Cannot find class file for {$options['fqn']} in $source.");
-		}
+        if (!isset($options['output'])) {
+            $options['output'] = sprintf("%s/%s", $options['tests'], str_replace('.php', 'Test.php', $options['path']));
+        }
 
-		if (!isset ($options['output']))
-		{
-			$options['output'] = sprintf ("%s/%s", $options['tests'], str_replace ('.php', 'Test.php', $options['path']));
-		}
+        return new self($options);
+    }
 
-		return new self ($options);
-	}
+    protected function getTestRealm()
+    {
+        if (isset($this->options['realm'])) {
+            if (!$this->options['realm']) {
+                throw new RuntimeException('Invalid value for realm has been sepcified (empty).');
+            }
+            return $this->options['realm'];
+        }
 
-	protected function getTestRealm ()
-	{
-		if (isset ($this->options['realm']))
-		{
-			if (!$this->options['realm'])
-			{
-				throw new RuntimeException ('Invalid value for realm has been sepcified (empty).');
-			}
-			return $this->options['realm'];
-		}
+        $fqnParts = explode('\\', $this->options['fqn']);
+        $class = array_pop($fqnParts);
+        list($realm,) = preg_split('/([[:upper:]][[:lower:]]+)/', $class, 2, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
-		$fqnParts = explode ('\\', $this->options['fqn']);
-		$class = array_pop ($fqnParts);
-		list($realm, ) = preg_split ('/([[:upper:]][[:lower:]]+)/', $class, 2, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        return strtolower($realm);
+    }
 
-		return strtolower ($realm);
-	}
+    public function generate()
+    {
+        $reflection = new ReflectionClass($class = $this->options['fqn']);
 
-	public function generate ()
-	{
-		$reflection = new ReflectionClass ($class = $this->options['fqn']);
+        if (!$reflection->isInstantiable()) {
+            throw new RuntimeException("Class $class must be instantiable, abstract classes or interfaces are not allowed.");
+        }
+        if (!$reflection->implementsInterface('Predis\Command\CommandInterface')) {
+            throw new RuntimeException("Class $class must implement Predis\Command\CommandInterface.");
+        }
 
-		if (!$reflection->isInstantiable ())
-		{
-			throw new RuntimeException ("Class $class must be instantiable, abstract classes or interfaces are not allowed.");
-		}
-		if (!$reflection->implementsInterface ('Predis\Command\CommandInterface'))
-		{
-			throw new RuntimeException ("Class $class must implement Predis\Command\CommandInterface.");
-		}
+        $instance = $reflection->newInstance();
+        $buffer = $this->getTestCaseBuffer($instance);
 
-		$instance = $reflection->newInstance ();
-		$buffer = $this->getTestCaseBuffer ($instance);
+        return $buffer;
+    }
 
-		return $buffer;
-	}
+    public function save()
+    {
+        $options = $this->options;
+        if (file_exists($options['output']) && !$options['overwrite']) {
+            throw new RuntimeException("File {$options['output']} already exist. Specify the --overwrite option to overwrite the existing file.");
+        }
+        file_put_contents($options['output'], $this->generate());
+    }
 
-	public function save ()
-	{
-		$options = $this->options;
-		if (file_exists ($options['output']) && !$options['overwrite'])
-		{
-			throw new RuntimeException ("File {$options['output']} already exist. Specify the --overwrite option to overwrite the existing file.");
-		}
-		file_put_contents ($options['output'], $this->generate ());
-	}
+    protected function getTestCaseBuffer(CommandInterface $instance)
+    {
+        $id = $instance->getId();
+        $fqn = get_class($instance);
+        $fqnParts = explode('\\', $fqn);
+        $class = array_pop($fqnParts) . "Test";
+        $realm = $this->getTestRealm();
 
-	protected function getTestCaseBuffer (CommandInterface $instance)
-	{
-		$id = $instance->getId ();
-		$fqn = get_class ($instance);
-		$fqnParts = explode ('\\', $fqn);
-		$class = array_pop ($fqnParts) . "Test";
-		$realm = $this->getTestRealm ();
-
-		$buffer = <<<PHP
+        $buffer =<<<PHP
 <?php
 
 /*
@@ -237,9 +226,8 @@ class $class extends PredisCommandTestCase
 
 PHP;
 
-		if ($instance instanceof PrefixableCommandInterface)
-		{
-			$buffer .=<<<PHP
+        if ($instance instanceof PrefixableCommandInterface) {
+            $buffer .=<<<PHP
 
     /**
      * @group disconnected
@@ -269,16 +257,15 @@ PHP;
     }
 
 PHP;
-		}
+        }
 
-		return "$buffer}\n";
-	}
-
+        return "$buffer}\n";
+    }
 }
 
 // ------------------------------------------------------------------------- //
 
-require __DIR__ . '/../autoload.php';
+require __DIR__.'/../autoload.php';
 
-$generator = CommandTestCaseGenerator::fromCommandLine ();
-$generator->save ();
+$generator = CommandTestCaseGenerator::fromCommandLine();
+$generator->save();

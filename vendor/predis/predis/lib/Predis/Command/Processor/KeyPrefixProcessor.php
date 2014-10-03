@@ -22,54 +22,51 @@ use Predis\Command\PrefixableCommandInterface;
  */
 class KeyPrefixProcessor implements CommandProcessorInterface
 {
+    private $prefix;
 
-	private $prefix;
+    /**
+     * @param string $prefix Prefix for the keys.
+     */
+    public function __construct($prefix)
+    {
+        $this->setPrefix($prefix);
+    }
 
-	/**
-	 * @param string $prefix Prefix for the keys.
-	 */
-	public function __construct ($prefix)
-	{
-		$this->setPrefix ($prefix);
-	}
+    /**
+     * Sets a prefix that is applied to all the keys.
+     *
+     * @param string $prefix Prefix for the keys.
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
+    }
 
-	/**
-	 * Sets a prefix that is applied to all the keys.
-	 *
-	 * @param string $prefix Prefix for the keys.
-	 */
-	public function setPrefix ($prefix)
-	{
-		$this->prefix = $prefix;
-	}
+    /**
+     * Gets the current prefix.
+     *
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
 
-	/**
-	 * Gets the current prefix.
-	 *
-	 * @return string
-	 */
-	public function getPrefix ()
-	{
-		return $this->prefix;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function process(CommandInterface $command)
+    {
+        if ($command instanceof PrefixableCommandInterface && $command->getArguments()) {
+            $command->prefixKeys($this->prefix);
+        }
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function process (CommandInterface $command)
-	{
-		if ($command instanceof PrefixableCommandInterface && $command->getArguments ())
-		{
-			$command->prefixKeys ($this->prefix);
-		}
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __toString ()
-	{
-		return $this->getPrefix ();
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return $this->getPrefix();
+    }
 }

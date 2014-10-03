@@ -1,11 +1,8 @@
-<?php
-
-namespace Illuminate\Support;
+<?php namespace Illuminate\Support;
 
 use ReflectionClass;
 
-abstract class ServiceProvider
-{
+abstract class ServiceProvider {
 
 	/**
 	 * The application instance.
@@ -27,7 +24,7 @@ abstract class ServiceProvider
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @return void
 	 */
-	public function __construct ($app)
+	public function __construct($app)
 	{
 		$this->app = $app;
 	}
@@ -37,17 +34,14 @@ abstract class ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function boot ()
-	{
-		
-	}
+	public function boot() {}
 
 	/**
 	 * Register the service provider.
 	 *
 	 * @return void
 	 */
-	abstract public function register ();
+	abstract public function register();
 
 	/**
 	 * Register the package's component namespaces.
@@ -57,50 +51,50 @@ abstract class ServiceProvider
 	 * @param  string  $path
 	 * @return void
 	 */
-	public function package ($package, $namespace = null, $path = null)
+	public function package($package, $namespace = null, $path = null)
 	{
-		$namespace = $this->getPackageNamespace ($package, $namespace);
+		$namespace = $this->getPackageNamespace($package, $namespace);
 
 		// In this method we will register the configuration package for the package
 		// so that the configuration options cleanly cascade into the application
 		// folder to make the developers lives much easier in maintaining them.
-		$path = $path ? : $this->guessPackagePath ();
+		$path = $path ?: $this->guessPackagePath();
 
-		$config = $path . '/config';
+		$config = $path.'/config';
 
-		if ($this->app['files']->isDirectory ($config))
+		if ($this->app['files']->isDirectory($config))
 		{
-			$this->app['config']->package ($package, $config, $namespace);
+			$this->app['config']->package($package, $config, $namespace);
 		}
 
 		// Next we will check for any "language" components. If language files exist
 		// we will register them with this given package's namespace so that they
 		// may be accessed using the translation facilities of the application.
-		$lang = $path . '/lang';
+		$lang = $path.'/lang';
 
-		if ($this->app['files']->isDirectory ($lang))
+		if ($this->app['files']->isDirectory($lang))
 		{
-			$this->app['translator']->addNamespace ($namespace, $lang);
+			$this->app['translator']->addNamespace($namespace, $lang);
 		}
 
 		// Next, we will see if the application view folder contains a folder for the
 		// package and namespace. If it does, we'll give that folder precedence on
 		// the loader list for the views so the package views can be overridden.
-		$appView = $this->getAppViewPath ($package);
+		$appView = $this->getAppViewPath($package);
 
-		if ($this->app['files']->isDirectory ($appView))
+		if ($this->app['files']->isDirectory($appView))
 		{
-			$this->app['view']->addNamespace ($namespace, $appView);
+			$this->app['view']->addNamespace($namespace, $appView);
 		}
 
 		// Finally we will register the view namespace so that we can access each of
 		// the views available in this package. We use a standard convention when
 		// registering the paths to every package's views and other components.
-		$view = $path . '/views';
+		$view = $path.'/views';
 
-		if ($this->app['files']->isDirectory ($view))
+		if ($this->app['files']->isDirectory($view))
 		{
-			$this->app['view']->addNamespace ($namespace, $view);
+			$this->app['view']->addNamespace($namespace, $view);
 		}
 	}
 
@@ -109,11 +103,11 @@ abstract class ServiceProvider
 	 *
 	 * @return string
 	 */
-	public function guessPackagePath ()
+	public function guessPackagePath()
 	{
-		$path = with (new ReflectionClass ($this))->getFileName ();
+		$path = with(new ReflectionClass($this))->getFileName();
 
-		return realpath (dirname ($path) . '/../../');
+		return realpath(dirname($path).'/../../');
 	}
 
 	/**
@@ -123,11 +117,11 @@ abstract class ServiceProvider
 	 * @param  string  $namespace
 	 * @return string
 	 */
-	protected function getPackageNamespace ($package, $namespace)
+	protected function getPackageNamespace($package, $namespace)
 	{
-		if (is_null ($namespace))
+		if (is_null($namespace))
 		{
-			list($vendor, $namespace) = explode ('/', $package);
+			list($vendor, $namespace) = explode('/', $package);
 		}
 
 		return $namespace;
@@ -139,18 +133,18 @@ abstract class ServiceProvider
 	 * @param  array  $commands
 	 * @return void
 	 */
-	public function commands ($commands)
+	public function commands($commands)
 	{
-		$commands = is_array ($commands) ? $commands : func_get_args ();
+		$commands = is_array($commands) ? $commands : func_get_args();
 
 		// To register the commands with Artisan, we will grab each of the arguments
 		// passed into the method and listen for Artisan "start" event which will
 		// give us the Artisan console instance which we will give commands to.
 		$events = $this->app['events'];
 
-		$events->listen ('artisan.start', function($artisan) use ($commands)
+		$events->listen('artisan.start', function($artisan) use ($commands)
 		{
-			$artisan->resolveCommands ($commands);
+			$artisan->resolveCommands($commands);
 		});
 	}
 
@@ -160,9 +154,9 @@ abstract class ServiceProvider
 	 * @param  string  $package
 	 * @return string
 	 */
-	protected function getAppViewPath ($package)
+	protected function getAppViewPath($package)
 	{
-		return $this->app['path'] . "/views/packages/{$package}";
+		return $this->app['path']."/views/packages/{$package}";
 	}
 
 	/**
@@ -170,9 +164,9 @@ abstract class ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides ()
+	public function provides()
 	{
-		return array ();
+		return array();
 	}
 
 	/**
@@ -180,9 +174,9 @@ abstract class ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function when ()
+	public function when()
 	{
-		return array ();
+		return array();
 	}
 
 	/**
@@ -190,7 +184,7 @@ abstract class ServiceProvider
 	 *
 	 * @return bool
 	 */
-	public function isDeferred ()
+	public function isDeferred()
 	{
 		return $this->defer;
 	}

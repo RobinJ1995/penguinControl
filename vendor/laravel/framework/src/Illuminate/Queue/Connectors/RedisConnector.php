@@ -1,16 +1,13 @@
-<?php
-
-namespace Illuminate\Queue\Connectors;
+<?php namespace Illuminate\Queue\Connectors;
 
 use Illuminate\Redis\Database;
 use Illuminate\Queue\RedisQueue;
 
-class RedisConnector implements ConnectorInterface
-{
+class RedisConnector implements ConnectorInterface {
 
 	/**
-	 * The Redis database instance.
-	 *
+	* The Redis database instance.
+	*
 	 * @var \Illuminate\Redis\Database
 	 */
 	protected $redis;
@@ -29,7 +26,7 @@ class RedisConnector implements ConnectorInterface
 	 * @param  string|null  $connection
 	 * @return void
 	 */
-	public function __construct (Database $redis, $connection = null)
+	public function __construct(Database $redis, $connection = null)
 	{
 		$this->redis = $redis;
 		$this->connection = $connection;
@@ -41,9 +38,9 @@ class RedisConnector implements ConnectorInterface
 	 * @param  array  $config
 	 * @return \Illuminate\Queue\QueueInterface
 	 */
-	public function connect (array $config)
+	public function connect(array $config)
 	{
-		return new RedisQueue ($this->redis, $config['queue'], $this->connection);
+		return new RedisQueue($this->redis, $config['queue'], $this->connection);
 	}
 
 }
