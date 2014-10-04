@@ -350,7 +350,7 @@ class UserController extends BaseController
 			$userInfo->save ();
 			$user->save ();
 			
-			$vhosts = ApacheVhostVirtual::where ('uid', $user->id)->get ();
+			$vhosts = ApacheVhostVirtual::where ('uid', $user->uid)->get ();
 			foreach ($vhosts as $vhost)
 				$vhost->save (); // In save () wordt nagekeken of user expired is //
 			
