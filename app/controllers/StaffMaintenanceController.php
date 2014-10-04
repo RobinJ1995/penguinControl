@@ -27,6 +27,31 @@ class StaffMaintenanceController extends BaseController
 		}
 	}
 	
+	public function saveAllVHosts ()
+	{
+		try
+		{
+			$vhosts = ApacheVhostVirtual::all ();
+			$alerts = array ();
+			
+			foreach ($vhosts as $vhost)
+			{
+				$vhost->save ();
+				
+				$alerts[] = new Alert ('vHost opnieuw opgeslagen: ' . $vhost->servername, 'success');
+			}
+			
+			$user = Auth::user ();
+			$userInfo = $user->getUserInfo ();
+			
+			return View::make ('user.start', compact ('alerts', 'user', 'userInfo'));
+		}
+		catch (Exception $ex)
+		{
+			return Redirect::to ('/error')->with ('ex', new SinException ($ex));
+		}
+	}
+	
 	public function generateServiceData ()
 	{
 		$alerts = array ();
