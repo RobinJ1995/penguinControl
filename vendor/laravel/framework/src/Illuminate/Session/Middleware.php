@@ -243,7 +243,6 @@ class Middleware implements HttpKernelInterface {
 	/**
 	 * Get the session implementation from the manager.
 	 *
-	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return \Illuminate\Session\SessionInterface
 	 */
 	public function getSession(Request $request)

@@ -1,12 +1,14 @@
 <?php
+
 /**
  * Whoops - php errors for cool kids
  * @author Filipe Dobreira <http://github.com/filp>
  */
 
 namespace Whoops\Handler;
+
 use Whoops\Handler\Handler;
-use Whoops\Exception\Formatter;
+use Whoops\Exception\Frame;
 
 /**
  * Catches an exception and converts it to a JSON
@@ -15,77 +17,101 @@ use Whoops\Exception\Formatter;
  */
 class JsonResponseHandler extends Handler
 {
-    /**
-     * @var bool
-     */
-    private $returnFrames = false;
 
-    /**
-     * @var bool
-     */
-    private $onlyForAjaxRequests = false;
+	/**
+	 * @var bool
+	 */
+	private $returnFrames = false;
 
-    /**
-     * @param  bool|null $returnFrames
-     * @return bool|$this
-     */
-    public function addTraceToOutput($returnFrames = null)
-    {
-        if(func_num_args() == 0) {
-            return $this->returnFrames;
-        }
+	/**
+	 * @var bool
+	 */
+	private $onlyForAjaxRequests = false;
 
-        $this->returnFrames = (bool) $returnFrames;
-        return $this;
-    }
+	/**
+	 * @param  bool|null $returnFrames
+	 * @return null|bool
+	 */
+	public function addTraceToOutput ($returnFrames = null)
+	{
+		if (func_num_args () == 0)
+		{
+			return $this->returnFrames;
+		}
 
-    /**
-     * @param  bool|null $onlyForAjaxRequests
-     * @return null|bool
-     */
-    public function onlyForAjaxRequests($onlyForAjaxRequests = null)
-    {
-        if(func_num_args() == 0) {
-            return $this->onlyForAjaxRequests;
-        }
+		$this->returnFrames = (bool) $returnFrames;
+	}
 
-        $this->onlyForAjaxRequests = (bool) $onlyForAjaxRequests;
-    }
+	/**
+	 * @param  bool|null $onlyForAjaxRequests
+	 * @return null|bool
+	 */
+	public function onlyForAjaxRequests ($onlyForAjaxRequests = null)
+	{
+		if (func_num_args () == 0)
+		{
+			return $this->onlyForAjaxRequests;
+		}
 
-    /**
-     * Check, if possible, that this execution was triggered by an AJAX request.
-     *
-     * @return bool
-     */
-    private function isAjaxRequest()
-    {
-        return (
-            !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
-        ;
-    }
+		$this->onlyForAjaxRequests = (bool) $onlyForAjaxRequests;
+	}
 
-    /**
-     * @return int
-     */
-    public function handle()
-    {
-        if($this->onlyForAjaxRequests() && !$this->isAjaxRequest()) {
-            return Handler::DONE;
-        }
+	/**
+	 * Check, if possible, that this execution was triggered by an AJAX request.
+	 *
+	 * @return bool
+	 */
+	private function isAjaxRequest ()
+	{
+		return (
+			!empty ($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower ($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+		;
+	}
 
-        $response = array(
-            'error' => Formatter::formatExceptionAsDataArray(
-                $this->getInspector(),
-                $this->addTraceToOutput()
-            ),
-        );
+	/**
+	 * @return int
+	 */
+	public function handle ()
+	{
+		if ($this->onlyForAjaxRequests () && !$this->isAjaxRequest ())
+		{
+			return Handler::DONE;
+		}
 
-        if (\Whoops\Util\Misc::canSendHeaders()) {
-            header('Content-Type: application/json');
-        }
+		$exception = $this->getException ();
 
-        echo json_encode($response);
-        return Handler::QUIT;
-    }
+		$response = array (
+		    'error' => array (
+			'type' => get_class ($exception),
+			'message' => $exception->getMessage (),
+			'file' => $exception->getFile (),
+			'line' => $exception->getLine ()
+		    )
+		);
+
+		if ($this->addTraceToOutput ())
+		{
+			$inspector = $this->getInspector ();
+			$frames = $inspector->getFrames ();
+			$frameData = array ();
+
+			foreach ($frames as $frame)
+			{
+				/** @var Frame $frame */
+				$frameData[] = array (
+				    'file' => $frame->getFile (),
+				    'line' => $frame->getLine (),
+				    'function' => $frame->getFunction (),
+				    'class' => $frame->getClass (),
+				    'args' => $frame->getArgs ()
+				);
+			}
+
+			$response['error']['trace'] = $frameData;
+		}
+
+		echo json_encode ($response);
+		return Handler::QUIT;
+	}
+
 }

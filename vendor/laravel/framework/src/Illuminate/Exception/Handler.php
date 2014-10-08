@@ -57,7 +57,6 @@ class Handler {
 	 * @param  \Illuminate\Support\Contracts\ResponsePreparerInterface  $responsePreparer
 	 * @param  \Illuminate\Exception\ExceptionDisplayerInterface  $plainDisplayer
 	 * @param  \Illuminate\Exception\ExceptionDisplayerInterface  $debugDisplayer
-	 * @param  bool  $debug
 	 * @return void
 	 */
 	public function __construct(ResponsePreparerInterface $responsePreparer,
@@ -200,7 +199,7 @@ class Handler {
 	 */
 	protected function isFatal($type)
 	{
-		return in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE));
+        return in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE));
 	}
 
 	/**
@@ -283,7 +282,7 @@ class Handler {
 	/**
 	 * Determine if the given handler handles this exception.
 	 *
-	 * @param  \Closure    $handler
+	 * @param  Closure    $handler
 	 * @param  \Exception  $exception
 	 * @return bool
 	 */
@@ -297,7 +296,7 @@ class Handler {
 	/**
 	 * Determine if the given handler type hints the exception.
 	 *
-	 * @param  \ReflectionFunction  $reflection
+	 * @param  ReflectionFunction  $reflection
 	 * @param  \Exception  $exception
 	 * @return bool
 	 */
@@ -331,7 +330,7 @@ class Handler {
 	/**
 	 * Register an application error handler.
 	 *
-	 * @param  \Closure  $callback
+	 * @param  Closure  $callback
 	 * @return void
 	 */
 	public function error(Closure $callback)
@@ -342,7 +341,7 @@ class Handler {
 	/**
 	 * Register an application error handler at the bottom of the stack.
 	 *
-	 * @param  \Closure  $callback
+	 * @param  Closure  $callback
 	 * @return void
 	 */
 	public function pushError(Closure $callback)

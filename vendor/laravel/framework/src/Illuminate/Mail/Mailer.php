@@ -4,8 +4,7 @@ use Closure;
 use Swift_Mailer;
 use Swift_Message;
 use Illuminate\Log\Writer;
-use Illuminate\View\Factory;
-use Illuminate\Events\Dispatcher;
+use Illuminate\View\Environment;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Container\Container;
 use Illuminate\Support\SerializableClosure;
@@ -13,9 +12,9 @@ use Illuminate\Support\SerializableClosure;
 class Mailer {
 
 	/**
-	 * The view factory instance.
+	 * The view environment instance.
 	 *
-	 * @var \Illuminate\View\Factory
+	 * @var \Illuminate\View\Environment
 	 */
 	protected $views;
 
@@ -25,13 +24,6 @@ class Mailer {
 	 * @var \Swift_Mailer
 	 */
 	protected $swift;
-
-	/**
-	 * The event dispatcher instance.
-	 *
-	 * @var \Illuminate\Events\Dispatcher
-	 */
-	protected $events;
 
 	/**
 	 * The global from address and name.
@@ -54,13 +46,6 @@ class Mailer {
 	 */
 	protected $container;
 
-	/*
-	 * The QueueManager instance.
-	 *
-	 * @var \Illuminate\Queue\QueueManager
-	 */
-	protected $queue;
-
 	/**
 	 * Indicates if the actual sending is disabled.
 	 *
@@ -76,25 +61,23 @@ class Mailer {
 	protected $failedRecipients = array();
 
 	/**
-	 * Array of parsed views containing html and text view name.
+	 * The QueueManager instance.
 	 *
-	 * @var array
+	 * @var \Illuminate\Queue\QueueManager
 	 */
-	protected $parsedViews = array();
+	protected $queue;
 
 	/**
 	 * Create a new Mailer instance.
 	 *
-	 * @param  \Illuminate\View\Factory  $views
+	 * @param  \Illuminate\View\Environment  $views
 	 * @param  \Swift_Mailer  $swift
-	 * @param  \Illuminate\Events\Dispatcher  $events
 	 * @return void
 	 */
-	public function __construct(Factory $views, Swift_Mailer $swift, Dispatcher $events = null)
+	public function __construct(Environment $views, Swift_Mailer $swift)
 	{
 		$this->views = $views;
 		$this->swift = $swift;
-		$this->events = $events;
 	}
 
 	/**
@@ -127,8 +110,8 @@ class Mailer {
 	 *
 	 * @param  string|array  $view
 	 * @param  array  $data
-	 * @param  \Closure|string  $callback
-	 * @return void
+	 * @param  Closure|string  $callback
+	 * @return int
 	 */
 	public function send($view, array $data, $callback)
 	{
@@ -148,7 +131,7 @@ class Mailer {
 
 		$message = $message->getSwiftMessage();
 
-		$this->sendSwiftMessage($message);
+		return $this->sendSwiftMessage($message);
 	}
 
 	/**
@@ -156,15 +139,15 @@ class Mailer {
 	 *
 	 * @param  string|array  $view
 	 * @param  array   $data
-	 * @param  \Closure|string  $callback
+	 * @param  Closure|string  $callback
 	 * @param  string  $queue
-	 * @return mixed
+	 * @return void
 	 */
 	public function queue($view, array $data, $callback, $queue = null)
 	{
 		$callback = $this->buildQueueCallable($callback);
 
-		return $this->queue->push('mailer@handleQueuedMessage', compact('view', 'data', 'callback'), $queue);
+		$this->queue->push('mailer@handleQueuedMessage', compact('view', 'data', 'callback'), $queue);
 	}
 
 	/**
@@ -173,12 +156,12 @@ class Mailer {
 	 * @param  string  $queue
 	 * @param  string|array  $view
 	 * @param  array   $data
-	 * @param  \Closure|string  $callback
-	 * @return mixed
+	 * @param  Closure|string  $callback
+	 * @return void
 	 */
 	public function queueOn($queue, $view, array $data, $callback)
 	{
-		return $this->queue($view, $data, $callback, $queue);
+		$this->queue($view, $data, $callback, $queue);
 	}
 
 	/**
@@ -187,15 +170,15 @@ class Mailer {
 	 * @param  int  $delay
 	 * @param  string|array  $view
 	 * @param  array  $data
-	 * @param  \Closure|string  $callback
+	 * @param  Closure|string  $callback
 	 * @param  string  $queue
-	 * @return mixed
+	 * @return void
 	 */
 	public function later($delay, $view, array $data, $callback, $queue = null)
 	{
 		$callback = $this->buildQueueCallable($callback);
 
-		return $this->queue->later($delay, 'mailer@handleQueuedMessage', compact('view', 'data', 'callback'), $queue);
+		$this->queue->later($delay, 'mailer@handleQueuedMessage', compact('view', 'data', 'callback'), $queue);
 	}
 
 	/**
@@ -205,12 +188,12 @@ class Mailer {
 	 * @param  int  $delay
 	 * @param  string|array  $view
 	 * @param  array  $data
-	 * @param  \Closure|string  $callback
-	 * @return mixed
+	 * @param  Closure|string  $callback
+	 * @return void
 	 */
 	public function laterOn($queue, $delay, $view, array $data, $callback)
 	{
-		return $this->later($delay, $view, $data, $callback, $queue);
+		$this->later($delay, $view, $data, $callback, $queue);
 	}
 
 	/**
@@ -315,22 +298,19 @@ class Mailer {
 	 * Send a Swift Message instance.
 	 *
 	 * @param  \Swift_Message  $message
-	 * @return void
+	 * @return int
 	 */
 	protected function sendSwiftMessage($message)
 	{
-		if ($this->events)
-		{
-			$this->events->fire('mailer.sending', array($message));
-		}
-
 		if ( ! $this->pretending)
 		{
-			$this->swift->send($message, $this->failedRecipients);
+			return $this->swift->send($message, $this->failedRecipients);
 		}
 		elseif (isset($this->logger))
 		{
 			$this->logMessage($message);
+
+			return 1;
 		}
 	}
 
@@ -350,7 +330,7 @@ class Mailer {
 	/**
 	 * Call the provided message builder.
 	 *
-	 * @param  \Closure|string  $callback
+	 * @param  Closure|string  $callback
 	 * @param  \Illuminate\Mail\Message  $message
 	 * @return mixed
 	 *
@@ -414,21 +394,11 @@ class Mailer {
 	}
 
 	/**
-	 * Check if the mailer is pretending to send messages.
+	 * Get the view environment instance.
 	 *
-	 * @return bool
+	 * @return \Illuminate\View\Environment
 	 */
-	public function isPretending()
-	{
-		return $this->pretending;
-	}
-
-	/**
-	 * Get the view factory instance.
-	 *
-	 * @return \Illuminate\View\Factory
-	 */
-	public function getViewFactory()
+	public function getViewEnvironment()
 	{
 		return $this->views;
 	}
@@ -468,7 +438,7 @@ class Mailer {
 	 * Set the log writer instance.
 	 *
 	 * @param  \Illuminate\Log\Writer  $logger
-	 * @return $this
+	 * @return \Illuminate\Mail\Mailer
 	 */
 	public function setLogger(Writer $logger)
 	{
@@ -481,7 +451,7 @@ class Mailer {
 	 * Set the queue manager instance.
 	 *
 	 * @param  \Illuminate\Queue\QueueManager  $queue
-	 * @return $this
+	 * @return \Illuminate\Mail\Mailer
 	 */
 	public function setQueue(QueueManager $queue)
 	{

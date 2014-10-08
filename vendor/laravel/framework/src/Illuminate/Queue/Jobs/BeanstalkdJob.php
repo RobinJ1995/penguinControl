@@ -9,14 +9,14 @@ class BeanstalkdJob extends Job {
 	/**
 	 * The Pheanstalk instance.
 	 *
-	 * @var \Pheanstalk_Pheanstalk
+	 * @var Pheanstalk
 	 */
 	protected $pheanstalk;
 
 	/**
 	 * The Pheanstalk job instance.
 	 *
-	 * @var \Pheanstalk_Job
+	 * @var Pheanstalk_Job
 	 */
 	protected $job;
 
@@ -24,8 +24,8 @@ class BeanstalkdJob extends Job {
 	 * Create a new job instance.
 	 *
 	 * @param  \Illuminate\Container\Container  $container
-	 * @param  \Pheanstalk_Pheanstalk  $pheanstalk
-	 * @param  \Pheanstalk_Job  $job
+	 * @param  Pheanstalk  $pheanstalk
+	 * @param  Pheanstalk_Job  $job
 	 * @param  string  $queue
 	 * @return void
 	 */
@@ -130,7 +130,7 @@ class BeanstalkdJob extends Job {
 	/**
 	 * Get the underlying Pheanstalk instance.
 	 *
-	 * @return \Pheanstalk_Pheanstalk
+	 * @return Pheanstalk
 	 */
 	public function getPheanstalk()
 	{
@@ -140,7 +140,7 @@ class BeanstalkdJob extends Job {
 	/**
 	 * Get the underlying Pheanstalk job.
 	 *
-	 * @return \Pheanstalk_Job
+	 * @return Pheanstalk_Job
 	 */
 	public function getPheanstalkJob()
 	{

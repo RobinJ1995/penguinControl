@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Whoops - php errors for cool kids
  * @author Filipe Dobreira <http://github.com/filp>
@@ -14,6 +15,7 @@
  */
 
 namespace Whoops\Example;
+
 use Whoops\Run;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Handler\JsonResponseHandler;
@@ -25,7 +27,7 @@ $run = new Run;
 
 // We want the error page to be shown by default, if this is a
 // regular request, so that's the first thing to go into the stack:
-$run->pushHandler(new PrettyPageHandler);
+$run->pushHandler (new PrettyPageHandler);
 
 // Now, we want a second handler that will run before the error page,
 // and immediately return an error message in JSON format, if something
@@ -33,14 +35,13 @@ $run->pushHandler(new PrettyPageHandler);
 $jsonHandler = new JsonResponseHandler;
 
 // Make sure it only triggers for AJAX requests:
-$jsonHandler->onlyForAjaxRequests(true);
+$jsonHandler->onlyForAjaxRequests (true);
 
 // You can also tell JsonResponseHandler to give you a full stack trace:
 // $jsonHandler->addTraceToOutput(true);
-
 // And push it into the stack:
-$run->pushHandler($jsonHandler);
+$run->pushHandler ($jsonHandler);
 
 // That's it! Register Whoops and throw a dummy exception:
-$run->register();
-throw new RuntimeException("Oh fudge napkins!");
+$run->register ();
+throw new RuntimeException ("Oh fudge napkins!");

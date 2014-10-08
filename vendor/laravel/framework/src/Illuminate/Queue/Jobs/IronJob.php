@@ -15,7 +15,7 @@ class IronJob extends Job {
 	/**
 	 * The IronMQ message instance.
 	 *
-	 * @var object
+	 * @var array
 	 */
 	protected $job;
 
@@ -32,6 +32,7 @@ class IronJob extends Job {
 	 * @param  \Illuminate\Container\Container  $container
 	 * @param  \Illuminate\Queue\IronQueue  $iron
 	 * @param  object  $job
+	 * @param  string  $queue
 	 * @param  bool    $pushed
 	 * @return void
 	 */

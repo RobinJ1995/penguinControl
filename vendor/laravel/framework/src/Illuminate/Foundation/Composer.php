@@ -66,7 +66,7 @@ class Composer {
 	{
 		if ($this->files->exists($this->workingPath.'/composer.phar'))
 		{
-			return '"'.PHP_BINARY.'" composer.phar';
+			return 'php composer.phar';
 		}
 
 		return 'composer';
@@ -79,14 +79,14 @@ class Composer {
 	 */
 	protected function getProcess()
 	{
-		return (new Process('', $this->workingPath))->setTimeout(null);
+		return with(new Process('', $this->workingPath))->setTimeout(null);
 	}
 
 	/**
 	 * Set the working path used by the class.
 	 *
 	 * @param  string  $path
-	 * @return $this
+	 * @return \Illuminate\Foundation\Composer
 	 */
 	public function setWorkingPath($path)
 	{

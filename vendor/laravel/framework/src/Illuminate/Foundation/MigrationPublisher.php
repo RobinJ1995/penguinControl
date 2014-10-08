@@ -61,9 +61,11 @@ class MigrationPublisher {
 	 */
 	protected function getFreshMigrations($source, $destination)
 	{
-		return array_filter($this->getPackageMigrations($source), function($file) use ($destination)
+		$me = $this;
+
+		return array_filter($this->getPackageMigrations($source), function($file) use ($me, $destination)
 		{
-			return ! $this->migrationExists($file, $destination);
+			return ! $me->migrationExists($file, $destination);
 		});
 	}
 
@@ -71,7 +73,6 @@ class MigrationPublisher {
 	 * Determine if the migration is already published.
 	 *
 	 * @param  string  $migration
-	 * @param  string  $destination
 	 * @return bool
 	 */
 	public function migrationExists($migration, $destination)

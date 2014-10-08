@@ -3,6 +3,8 @@
 use Symfony\Component\Security\Core\Util\StringUtils;
 use Symfony\Component\Security\Core\Util\SecureRandom;
 
+class DecryptException extends \RuntimeException {}
+
 class Encrypter {
 
 	/**
@@ -17,21 +19,21 @@ class Encrypter {
 	 *
 	 * @var string
 	 */
-	protected $cipher = MCRYPT_RIJNDAEL_128;
+	protected $cipher = 'rijndael-256';
 
 	/**
 	 * The mode used for encryption.
 	 *
 	 * @var string
 	 */
-	protected $mode = MCRYPT_MODE_CBC;
+	protected $mode = 'cbc';
 
 	/**
 	 * The block size of the cipher.
 	 *
 	 * @var int
 	 */
-	protected $block = 16;
+	protected $block = 32;
 
 	/**
 	 * Create a new encrypter instance.
@@ -104,19 +106,10 @@ class Encrypter {
 	 * @param  string  $value
 	 * @param  string  $iv
 	 * @return string
-	 *
-	 * @throws \Exception
 	 */
 	protected function mcryptDecrypt($value, $iv)
 	{
-		try
-		{
-			return mcrypt_decrypt($this->cipher, $this->key, $value, $this->mode, $iv);
-		}
-		catch (\Exception $e)
-		{
-			throw new DecryptException($e->getMessage());
-		}
+		return mcrypt_decrypt($this->cipher, $this->key, $value, $this->mode, $iv);
 	}
 
 	/**
@@ -125,7 +118,7 @@ class Encrypter {
 	 * @param  string  $payload
 	 * @return array
 	 *
-	 * @throws \Illuminate\Encryption\DecryptException
+	 * @throws DecryptException
 	 */
 	protected function getJsonPayload($payload)
 	{
@@ -152,17 +145,10 @@ class Encrypter {
 	 *
 	 * @param  array  $payload
 	 * @return bool
-	 *
-	 * @throws \RuntimeException
 	 */
 	protected function validMac(array $payload)
 	{
-		if ( ! function_exists('openssl_random_pseudo_bytes'))
-		{
-			throw new \RuntimeException('OpenSSL extension is required.');
-		}
-
-		$bytes = (new SecureRandom)->nextBytes(16);
+		$bytes = with(new SecureRandom)->nextBytes(16);
 
 		$calcMac = hash_hmac('sha256', $this->hash($payload['iv'], $payload['value']), $bytes, true);
 
@@ -278,8 +264,6 @@ class Encrypter {
 	public function setCipher($cipher)
 	{
 		$this->cipher = $cipher;
-
-		$this->updateBlockSize();
 	}
 
 	/**
@@ -291,18 +275,6 @@ class Encrypter {
 	public function setMode($mode)
 	{
 		$this->mode = $mode;
-
-		$this->updateBlockSize();
-	}
-
-	/**
-	 * Update the block size for the current cipher and mode.
-	 *
-	 * @return void
-	 */
-	protected function updateBlockSize()
-	{
-		$this->block = mcrypt_get_iv_size($this->cipher, $this->mode);
 	}
 
 }

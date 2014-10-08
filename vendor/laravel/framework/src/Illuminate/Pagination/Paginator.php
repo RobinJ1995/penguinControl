@@ -11,11 +11,11 @@ use Illuminate\Support\Contracts\ArrayableInterface;
 class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorAggregate, JsonableInterface {
 
 	/**
-	 * The pagination factory.
+	 * The pagination environment.
 	 *
-	 * @var \Illuminate\Pagination\Factory
+	 * @var \Illuminate\Pagination\Environment
 	 */
-	protected $factory;
+	protected $env;
 
 	/**
 	 * The items being paginated.
@@ -30,13 +30,6 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 * @var int
 	 */
 	protected $total;
-
-	/**
-	 * Indicates if a pagination doing "quick" pagination has more items.
-	 *
-	 * @var bool
-	 */
-	protected $hasMore;
 
 	/**
 	 * The amount of items to show per page.
@@ -90,34 +83,24 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	/**
 	 * Create a new Paginator instance.
 	 *
-	 * @param  \Illuminate\Pagination\Factory  $factory
-	 * @param  array     $items
-	 * @param  int       $total
-	 * @param  int|null  $perPage
+	 * @param  \Illuminate\Pagination\Environment  $env
+	 * @param  array  $items
+	 * @param  int    $total
+	 * @param  int    $perPage
 	 * @return void
 	 */
-	public function __construct(Factory $factory, array $items, $total, $perPage = null)
+	public function __construct(Environment $env, array $items, $total, $perPage)
 	{
-		$this->factory = $factory;
-
-		if (is_null($perPage))
-		{
-			$this->perPage = (int) $total;
-			$this->hasMore = count($items) > $this->perPage;
-			$this->items = array_slice($items, 0, $this->perPage);
-		}
-		else
-		{
-			$this->items = $items;
-			$this->total = (int) $total;
-			$this->perPage = (int) $perPage;
-		}
+		$this->env = $env;
+		$this->items = $items;
+		$this->total = (int) $total;
+		$this->perPage = (int) $perPage;
 	}
 
 	/**
 	 * Setup the pagination context (current and last page).
 	 *
-	 * @return $this
+	 * @return \Illuminate\Pagination\Paginator
 	 */
 	public function setupPaginationContext()
 	{
@@ -135,18 +118,9 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 */
 	protected function calculateCurrentAndLastPages()
 	{
-		if ($this->isQuickPaginating())
-		{
-			$this->currentPage = $this->factory->getCurrentPage();
+		$this->lastPage = (int) ceil($this->total / $this->perPage);
 
-			$this->lastPage = $this->hasMore ? $this->currentPage + 1 : $this->currentPage;
-		}
-		else
-		{
-			$this->lastPage = (int) ceil($this->total / $this->perPage);
-
-			$this->currentPage = $this->calculateCurrentPage($this->lastPage);
-		}
+		$this->currentPage = $this->calculateCurrentPage($this->lastPage);
 	}
 
 	/**
@@ -169,7 +143,7 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 */
 	protected function calculateCurrentPage($lastPage)
 	{
-		$page = $this->factory->getCurrentPage();
+		$page = $this->env->getCurrentPage();
 
 		// The page number will get validated and adjusted if it either less than one
 		// or greater than the last page available based on the count of the given
@@ -201,19 +175,19 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 */
 	public function links($view = null)
 	{
-		return $this->factory->getPaginationView($this, $view);
+		return $this->env->getPaginationView($this, $view);
 	}
 
 	/**
 	 * Get a URL for a given page number.
 	 *
-	 * @param  int  $page
+	 * @param  int     $page
 	 * @return string
 	 */
 	public function getUrl($page)
 	{
 		$parameters = array(
-			$this->factory->getPageName() => $page,
+			$this->env->getPageName() => $page,
 		);
 
 		// If we have any extra query string key / value pairs that need to be added
@@ -226,22 +200,20 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 
 		$fragment = $this->buildFragment();
 
-		return $this->factory->getCurrentUrl().'?'.http_build_query($parameters, null, '&').$fragment;
+		return $this->env->getCurrentUrl().'?'.http_build_query($parameters, null, '&').$fragment;
 	}
 
 	/**
 	 * Get / set the URL fragment to be appended to URLs.
 	 *
 	 * @param  string|null  $fragment
-	 * @return $this|string
+	 * @return \Illuminate\Pagination\Paginator|string
 	 */
 	public function fragment($fragment = null)
 	{
 		if (is_null($fragment)) return $this->fragment;
 
-		$this->fragment = $fragment;
-
-		return $this;
+		$this->fragment = $fragment; return $this;
 	}
 
 	/**
@@ -259,7 +231,7 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 *
 	 * @param  string  $key
 	 * @param  string  $value
-	 * @return $this
+	 * @return \Illuminate\Pagination\Paginator
 	 */
 	public function appends($key, $value = null)
 	{
@@ -272,7 +244,7 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 * Add an array of query string values.
 	 *
 	 * @param  array  $keys
-	 * @return $this
+	 * @return \Illuminate\Pagination\Paginator
 	 */
 	protected function appendArray(array $keys)
 	{
@@ -289,26 +261,13 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	 *
 	 * @param  string  $key
 	 * @param  string  $value
-	 * @return $this
+	 * @return \Illuminate\Pagination\Paginator
 	 */
 	public function addQuery($key, $value)
 	{
-		if ($key !== $this->factory->getPageName())
-		{
-			$this->query[$key] = $value;
-		}
+		$this->query[$key] = $value;
 
 		return $this;
-	}
-
-	/**
-	 * Determine if the paginator is doing "quick" pagination.
-	 *
-	 * @return bool
-	 */
-	public function isQuickPaginating()
-	{
-		return is_null($this->total);
 	}
 
 	/**
@@ -323,8 +282,10 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 		{
 			return $this->currentPage;
 		}
-
-		return min($this->currentPage, (int) ceil($total / $this->perPage));
+		else
+		{
+			return min($this->currentPage, (int) ceil($total / $this->perPage));
+		}
 	}
 
 	/**
@@ -416,23 +377,23 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	*/
 	public function setBaseUrl($baseUrl)
 	{
-		$this->factory->setBaseUrl($baseUrl);
+		$this->env->setBaseUrl($baseUrl);
 	}
 
 	/**
-	 * Get the pagination factory.
+	 * Get the pagination environment.
 	 *
-	 * @return \Illuminate\Pagination\Factory
+	 * @return \Illuminate\Pagination\Environment
 	 */
-	public function getFactory()
+	public function getEnvironment()
 	{
-		return $this->factory;
+		return $this->env;
 	}
 
 	/**
 	 * Get an iterator for the items.
 	 *
-	 * @return \ArrayIterator
+	 * @return ArrayIterator
 	 */
 	public function getIterator()
 	{
@@ -532,8 +493,8 @@ class Paginator implements ArrayableInterface, ArrayAccess, Countable, IteratorA
 	/**
 	 * Call a method on the underlying Collection
 	 *
-	 * @param  string  $method
-	 * @param  array   $arguments
+	 * @param string $method
+	 * @param array  $arguments
 	 * @return mixed
 	 */
 	public function __call($method, $arguments)

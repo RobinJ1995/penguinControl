@@ -53,7 +53,7 @@ class Dispatcher {
 	/**
 	 * Register an event listener with the dispatcher.
 	 *
-	 * @param  string|array  $events
+	 * @param  string|array  $event
 	 * @param  mixed   $listener
 	 * @param  int     $priority
 	 * @return void
@@ -64,14 +64,12 @@ class Dispatcher {
 		{
 			if (str_contains($event, '*'))
 			{
-				$this->setupWildcardListen($event, $listener);
+				return $this->setupWildcardListen($event, $listener);
 			}
-			else
-			{
-				$this->listeners[$event][$priority][] = $this->makeListener($listener);
 
-				unset($this->sorted[$event]);
-			}
+			$this->listeners[$event][$priority][] = $this->makeListener($listener);
+
+			unset($this->sorted[$event]);
 		}
 	}
 
@@ -107,9 +105,11 @@ class Dispatcher {
 	 */
 	public function queue($event, $payload = array())
 	{
-		$this->listen($event.'_queue', function() use ($event, $payload)
+		$me = $this;
+
+		$this->listen($event.'_queue', function() use ($me, $event, $payload)
 		{
-			$this->fire($event, $payload);
+			$me->fire($event, $payload);
 		});
 	}
 
@@ -332,20 +332,9 @@ class Dispatcher {
 	 */
 	public function forget($event)
 	{
-		unset($this->listeners[$event], $this->sorted[$event]);
-	}
+		unset($this->listeners[$event]);
 
-	/**
-	 * Forget all of the queued listeners.
-	 *
-	 * @return void
-	 */
-	public function forgetQueued()
-	{
-		foreach ($this->listeners as $key => $value)
-		{
-			if (ends_with($key, '_queue')) $this->forget($key);
-		}
+		unset($this->sorted[$event]);
 	}
 
 }

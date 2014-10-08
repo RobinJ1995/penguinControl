@@ -142,11 +142,6 @@ class Grammar extends BaseGrammar {
 				$clauses[] = $this->compileJoinConstraint($clause);
 			}
 
-			foreach ($join->bindings as $binding)
-			{
-				$query->addBinding($binding, 'join');
-			}
-
 			// Once we have constructed the clauses, we'll need to take the boolean connector
 			// off of the first clause as it obviously will not be required on that clause
 			// because it leads the rest of the clauses, thus not requiring any boolean.
@@ -495,7 +490,7 @@ class Grammar extends BaseGrammar {
 
 		$parameter = $this->parameter($having['value']);
 
-		return $having['boolean'].' '.$column.' '.$having['operator'].' '.$parameter;
+		return 'and '.$column.' '.$having['operator'].' '.$parameter;
 	}
 
 	/**
@@ -507,11 +502,13 @@ class Grammar extends BaseGrammar {
 	 */
 	protected function compileOrders(Builder $query, $orders)
 	{
-		return 'order by '.implode(', ', array_map(function($order)
+		$me = $this;
+
+		return 'order by '.implode(', ', array_map(function($order) use ($me)
 		{
 			if (isset($order['sql'])) return $order['sql'];
 
-			return $this->wrap($order['column']).' '.$order['direction'];
+			return $me->wrap($order['column']).' '.$order['direction'];
 		}
 		, $orders));
 	}
@@ -664,6 +661,7 @@ class Grammar extends BaseGrammar {
 	 * Compile a delete statement into SQL.
 	 *
 	 * @param  \Illuminate\Database\Query\Builder  $query
+	 * @param  array  $values
 	 * @return string
 	 */
 	public function compileDelete(Builder $query)

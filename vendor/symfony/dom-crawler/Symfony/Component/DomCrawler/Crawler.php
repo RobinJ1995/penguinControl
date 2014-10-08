@@ -14,7 +14,7 @@ namespace Symfony\Component\DomCrawler;
 use Symfony\Component\CssSelector\CssSelector;
 
 /**
- * Crawler eases navigation of a list of \DOMElement objects.
+ * Crawler eases navigation of a list of \DOMNode objects.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  *
@@ -639,7 +639,9 @@ class Crawler extends \SplObjectStorage
     public function filter($selector)
     {
         if (!class_exists('Symfony\\Component\\CssSelector\\CssSelector')) {
+            // @codeCoverageIgnoreStart
             throw new \RuntimeException('Unable to filter with a CSS selector as the Symfony CssSelector is not installed (you can use filterXPath instead).');
+            // @codeCoverageIgnoreEnd
         }
 
         // The CssSelector already prefixes the selector with descendant-or-self::
@@ -918,7 +920,9 @@ class Crawler extends \SplObjectStorage
             if ($i == $position) {
                 return $node;
             }
+        // @codeCoverageIgnoreStart
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**

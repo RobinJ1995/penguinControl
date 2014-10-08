@@ -47,7 +47,7 @@ class ConfigPublisher {
 	 */
 	public function publish($package, $source)
 	{
-		$destination = $this->getDestinationPath($package);
+		$destination = $this->publishPath."/packages/{$package}";
 
 		$this->makeDestination($destination);
 
@@ -106,28 +106,6 @@ class ConfigPublisher {
 		{
 			$this->files->makeDirectory($destination, 0777, true);
 		}
-	}
-
-	/**
-	 * Determine if a given package has already been published.
-	 *
-	 * @param  string  $package
-	 * @return bool
-	 */
-	public function alreadyPublished($package)
-	{
-		return $this->files->isDirectory($this->getDestinationPath($package));
-	}
-
-	/**
-	 * Get the target destination path for the configuration files.
-	 *
-	 * @param  string  $package
-	 * @return string
-	 */
-	public function getDestinationPath($package)
-	{
-		return $this->publishPath."/packages/{$package}";
 	}
 
 	/**

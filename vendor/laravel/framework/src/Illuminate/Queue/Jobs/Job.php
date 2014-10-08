@@ -142,28 +142,10 @@ abstract class Job {
 		{
 			return max(0, $delay->getTimestamp() - $this->getTime());
 		}
-
-		return (int) $delay;
-	}
-
-	/**
-	 * Get the current system time.
-	 *
-	 * @return int
-	 */
-	protected function getTime()
-	{
-		return time();
-	}
-
-	/**
-	 * Get the name of the queued job class.
-	 *
-	 * @return string
-	 */
-	public function getName()
-	{
-		return json_decode($this->getRawBody(), true)['job'];
+		else
+		{
+			return intval($delay);
+		}
 	}
 
 	/**

@@ -43,6 +43,7 @@ class ProviderRepository {
 	 *
 	 * @param  \Illuminate\Foundation\Application  $app
 	 * @param  array  $providers
+	 * @param  string  $path
 	 * @return void
 	 */
 	public function load(Application $app, array $providers)
@@ -199,7 +200,7 @@ class ProviderRepository {
 	{
 		$path = $this->manifestPath.'/services.json';
 
-		$this->files->put($path, json_encode($manifest, JSON_PRETTY_PRINT));
+		$this->files->put($path, json_encode($manifest));
 
 		return $manifest;
 	}

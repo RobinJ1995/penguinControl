@@ -30,25 +30,19 @@ class ProcessPipes
     private $useFiles;
     /** @var bool    */
     private $ttyMode;
-    /** @var bool    */
-    private $ptyMode;
-    /** @var bool    */
-    private $disableOutput;
 
     const CHUNK_SIZE = 16384;
 
-    public function __construct($useFiles, $ttyMode, $ptyMode = false, $disableOutput = false)
+    public function __construct($useFiles, $ttyMode)
     {
         $this->useFiles = (bool) $useFiles;
         $this->ttyMode = (bool) $ttyMode;
-        $this->ptyMode = (bool) $ptyMode;
-        $this->disableOutput = (bool) $disableOutput;
 
         // Fix for PHP bug #51800: reading from STDOUT pipe hangs forever on Windows if the output is too big.
         // Workaround for this problem is to use temporary files instead of pipes on Windows platform.
         //
         // @see https://bugs.php.net/bug.php?id=51800
-        if ($this->useFiles && !$this->disableOutput) {
+        if ($this->useFiles) {
             $this->files = array(
                 Process::STDOUT => tempnam(sys_get_temp_dir(), 'sf_proc_stdout'),
                 Process::STDERR => tempnam(sys_get_temp_dir(), 'sf_proc_stderr'),
@@ -114,16 +108,6 @@ class ProcessPipes
      */
     public function getDescriptors()
     {
-        if ($this->disableOutput) {
-            $nullstream = fopen(defined('PHP_WINDOWS_VERSION_BUILD') ? 'NUL' : '/dev/null', 'c');
-
-            return array(
-                array('pipe', 'r'),
-                $nullstream,
-                $nullstream,
-            );
-        }
-
         if ($this->useFiles) {
             // We're not using pipe on Windows platform as it hangs (https://bugs.php.net/bug.php?id=51800)
             // We're not using file handles as it can produce corrupted output https://bugs.php.net/bug.php?id=65650
@@ -140,12 +124,6 @@ class ProcessPipes
                 array('file', '/dev/tty', 'r'),
                 array('file', '/dev/tty', 'w'),
                 array('file', '/dev/tty', 'w'),
-            );
-        } elseif ($this->ptyMode && Process::isPtySupported()) {
-            return array(
-                array('pty'),
-                array('pty'),
-                array('pty'),
             );
         }
 

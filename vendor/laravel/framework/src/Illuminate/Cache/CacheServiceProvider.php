@@ -48,12 +48,7 @@ class CacheServiceProvider extends ServiceProvider {
 			return new Console\ClearCommand($app['cache'], $app['files']);
 		});
 
-		$this->app->bindShared('command.cache.table', function($app)
-		{
-			return new Console\CacheTableCommand($app['files']);
-		});
-
-		$this->commands('command.cache.clear', 'command.cache.table');
+		$this->commands('command.cache.clear');
 	}
 
 	/**
@@ -63,9 +58,7 @@ class CacheServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return [
-			'cache', 'cache.store', 'memcached.connector', 'command.cache.clear', 'command.cache.table'
-		];
+		return array('cache', 'cache.store', 'memcached.connector', 'command.cache.clear');
 	}
 
 }

@@ -56,16 +56,11 @@ class Application extends \Symfony\Component\Console\Application {
 	/**
 	 * Boot the Console application.
 	 *
-	 * @return $this
+	 * @return \Illuminate\Console\Application
 	 */
 	public function boot()
 	{
-		$path = $this->laravel['path'].'/start/artisan.php';
-
-		if (file_exists($path))
-		{
-			require $path;
-		}
+		require $this->laravel['path'].'/start/artisan.php';
 
 		// If the event dispatcher is set on the application, we will fire an event
 		// with the Artisan instance to provide each listener the opportunity to
@@ -142,7 +137,7 @@ class Application extends \Symfony\Component\Console\Application {
 	/**
 	 * Resolve an array of commands through the application.
 	 *
-	 * @param  array|mixed  $commands
+	 * @param  array|dynamic  $commands
 	 * @return void
 	 */
 	public function resolveCommands($commands)
@@ -205,7 +200,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * Set the exception handler instance.
 	 *
 	 * @param  \Illuminate\Exception\Handler  $handler
-	 * @return $this
+	 * @return \Illuminate\Console\Application
 	 */
 	public function setExceptionHandler($handler)
 	{
@@ -218,7 +213,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * Set the Laravel application instance.
 	 *
 	 * @param  \Illuminate\Foundation\Application  $laravel
-	 * @return $this
+	 * @return \Illuminate\Console\Application
 	 */
 	public function setLaravel($laravel)
 	{
@@ -231,7 +226,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * Set whether the Console app should auto-exit when done.
 	 *
 	 * @param  bool  $boolean
-	 * @return $this
+	 * @return \Illuminate\Console\Application
 	 */
 	public function setAutoExit($boolean)
 	{

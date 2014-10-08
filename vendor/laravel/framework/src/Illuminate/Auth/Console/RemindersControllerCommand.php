@@ -2,7 +2,6 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputOption;
 
 class RemindersControllerCommand extends Command {
 
@@ -47,7 +46,7 @@ class RemindersControllerCommand extends Command {
 	 */
 	public function fire()
 	{
-		$destination = $this->getPath() . '/RemindersController.php';
+		$destination = $this->laravel['path'].'/controllers/RemindersController.php';
 
 		if ( ! $this->files->exists($destination))
 		{
@@ -61,33 +60,6 @@ class RemindersControllerCommand extends Command {
 		{
 			$this->error('Password reminders controller already exists!');
 		}
-	}
-
-	/**
-	 * Get the path to the migration directory.
-	 *
-	 * @return string
-	 */
-	private function getPath()
-	{
-		if ( ! $path = $this->input->getOption('path'))
-		{
-			$path = $this->laravel['path'].'/controllers';
-		}
-
-		return rtrim($path, '/');
-	}
-
-	/**
-	 * Get the console command options.
-	 *
-	 * @return array
-	 */
-	protected function getOptions()
-	{
-		return array(
-			array('path', null, InputOption::VALUE_OPTIONAL, 'The directory where the controller should be placed.', null),
-		);
 	}
 
 }

@@ -35,7 +35,6 @@ class ClassLoader {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -73,7 +72,9 @@ class ClassLoader {
 	 */
 	public static function addDirectories($directories)
 	{
-		static::$directories = array_unique(array_merge(static::$directories, (array) $directories));
+		static::$directories = array_merge(static::$directories, (array) $directories);
+
+		static::$directories = array_unique(static::$directories);
 	}
 
 	/**
@@ -90,7 +91,12 @@ class ClassLoader {
 		}
 		else
 		{
-			static::$directories = array_diff(static::$directories, (array) $directories);
+			$directories = (array) $directories;
+
+			static::$directories = array_filter(static::$directories, function($directory) use ($directories)
+			{
+				return ( ! in_array($directory, $directories));
+			});
 		}
 	}
 

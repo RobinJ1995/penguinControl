@@ -37,13 +37,6 @@ abstract class Manager {
 	}
 
 	/**
-	 * Get the default driver name.
-	 *
-	 * @return string
-	 */
-	abstract public function getDefaultDriver();
-
-	/**
 	 * Get a driver instance.
 	 *
 	 * @param  string  $driver
@@ -105,9 +98,9 @@ abstract class Manager {
 	/**
 	 * Register a custom driver creator Closure.
 	 *
-	 * @param  string    $driver
-	 * @param  \Closure  $callback
-	 * @return $this
+	 * @param  string   $driver
+	 * @param  Closure  $callback
+	 * @return \Illuminate\Support\Manager|static
 	 */
 	public function extend($driver, Closure $callback)
 	{

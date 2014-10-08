@@ -1,11 +1,13 @@
 <?php
+
 /**
  * Whoops - php errors for cool kids
  * @author Filipe Dobreira <http://github.com/filp>
  *
- * NOTE: Requires silex/silex, can be installed with composer:
+ * NOTE: Requires silex/silex, can be installed with composer
+ * within this project using the --dev flag:
  *
- * $ composer require silex/silex:*
+ * $ composer install --dev
  *
  * Run this example file with the PHP 5.4 web server with:
  *
@@ -24,12 +26,14 @@ use Silex\Application;
 $app = new Application;
 $app['debug'] = true;
 
-if($app['debug']) {
-    $app->register(new WhoopsServiceProvider);
+if ($app['debug'])
+{
+	$app->register (new WhoopsServiceProvider);
 }
 
-$app->get('/', function() use($app) {
-    throw new RuntimeException("Oh no!");
+$app->get ('/', function() use($app)
+{
+	throw new RuntimeException ("Oh no!");
 });
 
-$app->run();
+$app->run ();

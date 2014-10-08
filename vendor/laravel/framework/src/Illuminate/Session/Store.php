@@ -38,7 +38,7 @@ class Store implements SessionInterface {
 	/**
 	 * The meta-data bag instance.
 	 *
-	 * @var \Symfony\Component\HttpFoundation\Session\Storage\MetadataBag
+	 * @var \Symfony\Component\Session\Storage\MetadataBag
 	 */
 	protected $metaBag;
 
@@ -68,15 +68,15 @@ class Store implements SessionInterface {
 	 *
 	 * @param  string  $name
 	 * @param  \SessionHandlerInterface  $handler
-	 * @param  string|null  $id
+	 * @param  string|null $id
 	 * @return void
 	 */
 	public function __construct($name, SessionHandlerInterface $handler, $id = null)
 	{
-		$this->setId($id);
 		$this->name = $name;
 		$this->handler = $handler;
 		$this->metaBag = new MetadataBag;
+		$this->setId($id ?: $this->generateSessionId());
 	}
 
 	/**
@@ -128,7 +128,9 @@ class Store implements SessionInterface {
 	 */
 	protected function initializeLocalBag($bag)
 	{
-		$this->bagData[$bag->getStorageKey()] = $this->pull($bag->getStorageKey(), []);
+		$this->bagData[$bag->getStorageKey()] = $this->get($bag->getStorageKey(), array());
+
+		$this->forget($bag->getStorageKey());
 	}
 
 	/**
@@ -144,23 +146,7 @@ class Store implements SessionInterface {
 	 */
 	public function setId($id)
 	{
-		if ( ! $this->isValidId($id))
-		{
-			$id = $this->generateSessionId();
-		}
-
-		$this->id = $id;
-	}
-
-	/**
-	 * Determine if this is a valid session ID.
-	 *
-	 * @param  string  $id
-	 * @return bool
-	 */
-	public function isValidId($id)
-	{
-		return is_string($id) && preg_match('/^[a-f0-9]{40}$/', $id);
+		$this->id = $id ?: $this->generateSessionId();
 	}
 
 	/**
@@ -170,7 +156,7 @@ class Store implements SessionInterface {
 	 */
 	protected function generateSessionId()
 	{
-		return sha1(uniqid('', true).str_random(25).microtime(true));
+		return sha1(uniqid(true).str_random(25).microtime(true));
 	}
 
 	/**
@@ -207,8 +193,6 @@ class Store implements SessionInterface {
 	public function migrate($destroy = false, $lifetime = null)
 	{
 		if ($destroy) $this->handler->destroy($this->getId());
-
-		$this->setExists(false);
 
 		$this->id = $this->generateSessionId(); return true;
 	}
@@ -282,18 +266,6 @@ class Store implements SessionInterface {
 	}
 
 	/**
-	 * Get the value of a given key and then forget it.
-	 *
-	 * @param  string  $key
-	 * @param  string  $default
-	 * @return mixed
-	 */
-	public function pull($key, $default = null)
-	{
-		return array_pull($this->attributes, $key, $default);
-	}
-
-	/**
 	 * Determine if the session contains old input.
 	 *
 	 * @param  string  $key
@@ -320,6 +292,8 @@ class Store implements SessionInterface {
 		// Input that is flashed to the session can be easily retrieved by the
 		// developer, making repopulating old forms and the like much more
 		// convenient, since the request's previous input is available.
+		if (is_null($key)) return $input;
+
 		return array_get($input, $key, $default);
 	}
 
@@ -338,7 +312,7 @@ class Store implements SessionInterface {
 	 * @param  mixed|null  	 $value
 	 * @return void
 	 */
-	public function put($key, $value = null)
+	public function put($key, $value)
 	{
 		if ( ! is_array($key)) $key = array($key => $value);
 
@@ -406,7 +380,7 @@ class Store implements SessionInterface {
 	/**
 	 * Reflash a subset of the current flash data.
 	 *
-	 * @param  array|mixed  $keys
+	 * @param  array|dynamic  $keys
 	 * @return void
 	 */
 	public function keep($keys = null)
@@ -577,20 +551,6 @@ class Store implements SessionInterface {
 	public function regenerateToken()
 	{
 		$this->put('_token', str_random(40));
-	}
-
-	/**
-	 * Set the existence of the session on the handler if applicable.
-	 *
-	 * @param  bool  $value
-	 * @return void
-	 */
-	public function setExists($value)
-	{
-		if ($this->handler instanceof ExistenceAwareInterface)
-		{
-			$this->handler->setExists($value);
-		}
 	}
 
 	/**

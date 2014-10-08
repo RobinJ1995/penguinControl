@@ -47,7 +47,7 @@ class GenericUser implements UserInterface {
 	 */
 	public function getRememberToken()
 	{
-		return $this->attributes[$this->getRememberTokenName()];
+		return $this->attributes['remember_token'];
 	}
 
 	/**
@@ -58,7 +58,7 @@ class GenericUser implements UserInterface {
 	 */
 	public function setRememberToken($value)
 	{
-		$this->attributes[$this->getRememberTokenName()] = $value;
+		$this->attributes['remember_token'] = $value;
 	}
 
 	/**
@@ -109,7 +109,7 @@ class GenericUser implements UserInterface {
 	 * Dynamically unset a value on the user.
 	 *
 	 * @param  string  $key
-	 * @return void
+	 * @return bool
 	 */
 	public function __unset($key)
 	{

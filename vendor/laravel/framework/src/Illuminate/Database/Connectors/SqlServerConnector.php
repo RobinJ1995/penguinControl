@@ -20,7 +20,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface {
 	 * Establish a database connection.
 	 *
 	 * @param  array  $config
-	 * @return \PDO
+	 * @return PDO
 	 */
 	public function connect(array $config)
 	{
@@ -48,10 +48,12 @@ class SqlServerConnector extends Connector implements ConnectorInterface {
 		{
 			return "dblib:host={$host}{$port};dbname={$database}";
 		}
+		else
+		{
+			$dbName = $database != '' ? ";Database={$database}" : '';
 
-		$dbName = $database != '' ? ";Database={$database}" : '';
-
-		return "sqlsrv:Server={$host}{$port}{$dbName}";
+			return "sqlsrv:Server={$host}{$port}{$dbName}";
+		}
 	}
 
 	/**

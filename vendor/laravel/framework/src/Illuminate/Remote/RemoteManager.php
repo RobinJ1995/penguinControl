@@ -13,6 +13,13 @@ class RemoteManager {
 	protected $app;
 
 	/**
+	 * The active connection instances.
+	 *
+	 * @var array
+	 */
+	protected $connections = array();
+
+	/**
 	 * Create a new remote manager instance.
 	 *
 	 * @param  \Illuminate\Foundation\Application  $app
@@ -26,7 +33,7 @@ class RemoteManager {
 	/**
 	 * Get a remote connection instance.
 	 *
-	 * @param  string|array|mixed  $name
+	 * @param  string|array|dynamic  $name
 	 * @return \Illuminate\Remote\ConnectionInterface
 	 */
 	public function into($name)
@@ -35,8 +42,10 @@ class RemoteManager {
 		{
 			return $this->connection($name);
 		}
-
-		return $this->connection(func_get_args());
+		else
+		{
+			return $this->connection(func_get_args());
+		}
 	}
 
 	/**
@@ -82,7 +91,12 @@ class RemoteManager {
 	 */
 	public function resolve($name)
 	{
-		return $this->makeConnection($name, $this->getConfig($name));
+		if ( ! isset($this->connections[$name]))
+		{
+			$this->connections[$name] = $this->makeConnection($name, $this->getConfig($name));
+		}
+
+		return $this->connections[$name];
 	}
 
 	/**

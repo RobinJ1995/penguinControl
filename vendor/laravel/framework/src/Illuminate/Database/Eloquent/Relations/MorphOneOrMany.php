@@ -27,6 +27,7 @@ abstract class MorphOneOrMany extends HasOneOrMany {
 	 * @param  string  $type
 	 * @param  string  $id
 	 * @param  string  $localKey
+	 * @param  string  $morphClass
 	 * @return void
 	 */
 	public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
@@ -54,7 +55,7 @@ abstract class MorphOneOrMany extends HasOneOrMany {
 	}
 
 	/**
-	 * Get the relationship count query.
+	 * Add the constraints for a relationship count query.
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder  $query
 	 * @param  \Illuminate\Database\Eloquent\Builder  $parent
