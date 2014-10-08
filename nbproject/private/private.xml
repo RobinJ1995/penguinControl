@@ -3,17 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/scripts/SystemTask.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/scripts/ApacheVhostVirtual.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/models/AbuseMain.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/models/ApacheVhostVirtual.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/VHostController.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/scripts/cron.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/UserController.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/routes.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/systemtask/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/scripts/ServiceApache.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffSystemTaskController.php</file>
+            <file>file:/home/sin/NetBeansProjects/sincontrol/app/controllers/UserController.php</file>
         </group>
     </open-files>
 </project-private>
