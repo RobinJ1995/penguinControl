@@ -25,7 +25,7 @@ return array (
 	  | you may use many connections at once using the Database library.
 	  |
 	 */
-	'default' => 'local',
+	'default' => 'mysql',
 	/*
 	  |--------------------------------------------------------------------------
 	  | Database Connections
