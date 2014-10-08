@@ -31,23 +31,7 @@ ClassLoader::addDirectories (array (
 
 Log::useFiles (storage_path () . '/logs/laravel.log');
 
-/*
-  |--------------------------------------------------------------------------
-  | Application Error Handler
-  |--------------------------------------------------------------------------
-  |
-  | Here you may handle any errors that occur in your application, including
-  | logging them or displaying custom views for specific errors. You may
-  | even register several error handlers to handle different types of
-  | exceptions. If nothing is returned, the default error view is
-  | shown, which includes a detailed stack trace during debug.
-  |
- */
-
-App::error (function(Exception $exception, $code)
-{
-	Log::error ($exception);
-});
+require app_path () . '/errors.php';
 
 /*
   |--------------------------------------------------------------------------
@@ -62,7 +46,7 @@ App::error (function(Exception $exception, $code)
 
 App::down (function()
 {
-	return Response::make ("Be right back!", 503);
+	return Response::make ("SINControl is momenteel offline voor onderhoud. Dit betekent waarschijnlijk gewoon dat er updates of bugfixes worden doorgevoerd aan het systeem, in welk geval de downtime vrij kort zal zijn.", 503);
 });
 
 /*
@@ -77,3 +61,6 @@ App::down (function()
  */
 
 require app_path () . '/filters.php';
+
+require app_path () . '/validators.php';
+require app_path () . '/menu.php';

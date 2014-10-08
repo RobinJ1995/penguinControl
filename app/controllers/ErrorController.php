@@ -11,8 +11,11 @@ class ErrorController extends BaseController
 		
 		if (! (empty ($ex) && empty ($alerts)))
 		{
-			foreach ($alerts as $key => $alert)
-				$strAlerts .= '[' . $key . '] ' . $alert->getMessage () . PHP_EOL;
+			if (! empty ($alerts))
+			{
+				foreach ($alerts as $key => $alert)
+					$strAlerts .= '[' . $key . '] ' . $alert->getMessage () . PHP_EOL;
+			}
 
 			$message = 'SINControl just crashed!' . PHP_EOL
 				. 'Fix it, monkey! Fix it!' . PHP_EOL
