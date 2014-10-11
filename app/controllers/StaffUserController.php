@@ -6,6 +6,7 @@ class StaffUserController extends BaseController
 	{
 		$now = time () / 60 / 60 / 24;
 		
+		Paginator::setPageName ('user_page');
 		$usersQ = User::where ('expire', '>', $now)
 			->orWhere ('expire', -1)
 			->orderBy ($order);
