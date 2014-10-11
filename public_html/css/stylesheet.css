@@ -61,6 +61,22 @@ table
 	margin: 0px;
 }
 
+ul.pagination li.current a
+{
+	background-color: #ff9900;
+}
+
+ul.pagination li.current a:hover
+{
+	color: black;
+	background-color: #ffad33;
+}
+
+#content
+{
+	margin-top: 8px;
+}
+
 #clippy
 {
 	transition: all 2s;
