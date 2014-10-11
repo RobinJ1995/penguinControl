@@ -115,11 +115,11 @@ class UserController extends BaseController
 		);
 		
 		if ($validator->fails ())
-			return View::make ('user.edit', compact ('user'))->withErrors ($validator);
+			return Redirect::to ('/user/edit')->with ('user', $user)->withErrors ($validator);
 		
 		$hashedPass = crypt (Input::get ('currentPass'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
-			return View::make ('user.edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
+			return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
 		
 		$userInfo = $user->getUserInfo ();
 		$userInfo->email = Input::get ('email');
