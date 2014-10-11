@@ -2,6 +2,19 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/config/local/database.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffUserController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/PageController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/ErrorController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/config/database.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/filters.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/menu.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/validators.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/errors.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/routes.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/config/local/app.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/start/global.php</file>
+        </group>
     </open-files>
 </project-private>
