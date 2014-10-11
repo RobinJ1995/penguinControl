@@ -1,4 +1,4 @@
-@if (! empty (Auth::user ()) && (Auth::user ()->gid <= Group::where ('name', 'staff')->firstOrFail ()->gid))
+@if (! empty (Auth::user ()) && (Auth::user ()->getLowestGid() <= Group::where ('name', 'staff')->firstOrFail ()->gid))
 <div class="contain-to-grid">
 	<nav id="staffMenu" class="top-bar" data-topbar>
 		<ul class="title-area">
