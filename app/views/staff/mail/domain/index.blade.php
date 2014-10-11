@@ -5,6 +5,7 @@ E-maildomeinen &bull; Staff
 @endsection
 
 @section ('content')
+{{ $domains->links () }}
 <table>
 	<thead>
 		<tr>
@@ -33,6 +34,7 @@ E-maildomeinen &bull; Staff
 		@endforeach
 	</tbody>
 </table>
+{{ $domains->links () }}
 <div class="right">
 	<a href="/staff/mail/domain/create" title="Toevoegen" class="button radius">
 		<img src="/img/icons/add.png" alt="Toevoegen" />

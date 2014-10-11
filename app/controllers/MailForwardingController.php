@@ -78,6 +78,9 @@ class MailForwardingController extends BaseController
 		$user = Auth::user ();
 		$userInfo = $user->getUserInfo ();
 		
+		if ($mFwd->uid !== $user->uid)
+			return Redirect::to ('/mail/forwarding')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
+		
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
@@ -95,6 +98,9 @@ class MailForwardingController extends BaseController
 	public function update ($mFwd)
 	{
 		$user = Auth::user ();
+		
+		if ($mFwd->uid !== $user->uid)
+			return Redirect::to ('/mail/forwarding')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
 		
 		$validator = Validator::make
 		(

@@ -4,7 +4,7 @@ class StaffMailForwardingController extends BaseController
 {
 	public function index ()
 	{
-		$mFwds = MailForwardingVirtual::all ();
+		$mFwds = MailForwardingVirtual::paginate ();
 		
 		return View::make ('staff.mail.forwarding.index', compact ('mFwds'));
 	}

@@ -21,6 +21,8 @@ Gebruikers &bull; Staff
 
 <fieldset>
 	<legend id="users">Gebruikers</legend>
+	<?php Paginator::setPageName ('user_page'); ?>
+	{{ $users->links () }}
 	<table>
 		<thead>
 			<tr>
@@ -69,6 +71,7 @@ Gebruikers &bull; Staff
 			@endforeach
 		</tbody>
 	</table>
+	{{ $users->links () }}
 	<div class="right">
 		<a href="/staff/user/user/create" title="Toevoegen" class="button radius">
 			<img src="/img/icons/add.png" alt="Toevoegen" />
@@ -78,6 +81,8 @@ Gebruikers &bull; Staff
 
 <fieldset>
 	<legend id="expired">Vervallen</legend>
+	<?php Paginator::setPageName ('expired_page'); ?>
+	{{ $expired->links () }}
 	<table>
 		<thead>
 			<tr>
@@ -126,10 +131,13 @@ Gebruikers &bull; Staff
 			@endforeach
 		</tbody>
 	</table>
+	{{ $expired->links () }}
 </fieldset>
 
 <fieldset>
 	<legend id="pending">Nog te valideren</legend>
+	<?php Paginator::setPageName ('pending_page'); ?>
+	{{ $pending->links () }}
 	<table>
 		<thead>
 			<tr>
@@ -160,5 +168,6 @@ Gebruikers &bull; Staff
 			@endforeach
 		</tbody>
 	</table>
+	{{ $pending->links () }}
 </fieldset>
 @endsection

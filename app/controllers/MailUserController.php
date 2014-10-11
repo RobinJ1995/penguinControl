@@ -80,6 +80,9 @@ class MailUserController extends BaseController
 		$user = Auth::user ();
 		$userInfo = $user->getUserInfo ();
 		
+		if ($mUser->uid !== $user->uid)
+			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
+		
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
@@ -97,6 +100,9 @@ class MailUserController extends BaseController
 	public function update ($mUser)
 	{
 		$user = Auth::user ();
+		
+		if ($mUser->uid !== $user->uid)
+			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
 		
 		$validator = Validator::make
 		(

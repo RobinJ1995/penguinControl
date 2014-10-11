@@ -66,6 +66,9 @@ class FtpController extends BaseController
 		$user = Auth::user ();
 		$userInfo = $user->getUserInfo ();
 		
+		if ($ftp->uid !== $user->uid)
+			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze FTP-account!', 'alert')));
+		
 		if ($ftp->locked)
 			return Redirect::to ('/ftp')->withInput ()->with ('alerts', array (new Alert ('U kan deze FTP-account niet zelf bewerken. Indien u hier toch graag iets aan zou willen wijzigen, neem dan contact met ons op.', 'alert')));
 		
@@ -75,6 +78,9 @@ class FtpController extends BaseController
 	public function update ($ftp)
 	{
 		$user = Auth::user ();
+		
+		if ($ftp->uid !== $user->uid)
+			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze FTP-account!', 'alert')));
 		
 		$validator = Validator::make
 		(

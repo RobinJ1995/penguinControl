@@ -27,7 +27,7 @@ class ErrorController extends BaseController
 
 			$headers = 'From: sin@sinners.be' . "\r\n" .
 				   'Content-type: text/plain'. "\r\n" .
-    				   'CC: runesmacher@hotmail.com , r0446734@student.thomasmore.be' . "\r\n";
+    				   'CC: r0446734@student.thomasmore.be' . "\r\n";
 
 			$mailSent = mail ('sin@sinners.be', 'Danger! Mayday! Error!' , $message, $headers);
 		}

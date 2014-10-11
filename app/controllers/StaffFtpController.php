@@ -4,7 +4,7 @@ class StaffFtpController extends BaseController
 {
 	public function index ()
 	{
-		$ftps = FtpUserVirtual::all ();
+		$ftps = FtpUserVirtual::paginate ();
 		
 		return View::make ('staff.ftp.index', compact ('ftps'));
 	}

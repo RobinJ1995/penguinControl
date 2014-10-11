@@ -65,6 +65,9 @@ class MailDomainController extends BaseController
 		$user = Auth::user ();
 		$userInfo = $user->getUserInfo ();
 		
+		if ($domain->uid !== $user->uid)
+			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('U bent niet de eigenaar van dit e-maildomein!', 'alert')));
+		
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
@@ -74,6 +77,9 @@ class MailDomainController extends BaseController
 	public function update ($domain)
 	{
 		$user = Auth::user ();
+		
+		if ($domain->uid !== $user->uid)
+			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('U bent niet de eigenaar van dit e-maildomein!', 'alert')));
 		
 		$validator = Validator::make
 		(

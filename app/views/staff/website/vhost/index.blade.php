@@ -5,6 +5,7 @@ vHosts &bull; Staff
 @endsection
 
 @section ('content')
+{{ $vhosts->links () }}
 <table>
 	<thead>
 		<tr>
@@ -45,6 +46,7 @@ vHosts &bull; Staff
 		@endforeach
 	</tbody>
 </table>
+{{ $vhosts->links () }}
 <div class="right">
 	<a href="/staff/website/vhost/create" title="Toevoegen" class="button radius">
 		<img src="/img/icons/add.png" alt="Toevoegen" />

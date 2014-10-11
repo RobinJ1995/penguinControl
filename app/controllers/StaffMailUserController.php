@@ -4,7 +4,7 @@ class StaffMailUserController extends BaseController
 {
 	public function index ()
 	{
-		$mUsers = MailUserVirtual::all ();
+		$mUsers = MailUserVirtual::paginate ();
 		
 		return View::make ('staff.mail.user.index', compact ('mUsers'));
 	}

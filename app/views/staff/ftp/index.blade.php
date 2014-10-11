@@ -5,6 +5,7 @@ FTP-accounts &bull; Staff
 @endsection
 
 @section ('content')
+{{ $ftps->links () }}
 <table>
 	<thead>
 		<tr>
@@ -40,6 +41,7 @@ FTP-accounts &bull; Staff
 		@endforeach
 	</tbody>
 </table>
+{{ $ftps->links () }}
 <div class="right">
 	<a href="/staff/ftp/create" title="Toevoegen" class="button radius">
 		<img src="/img/icons/add.png" alt="Toevoegen" />

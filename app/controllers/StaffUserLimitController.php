@@ -5,7 +5,7 @@ class StaffUserLimitController extends BaseController
 	public function index ($order = 'username')
 	{
 		$global = UserLimit::whereNull ('uid')->first ();
-		$limits = UserLimit::join ('user', 'user.uid', '=', 'user_limit.uid')->join ('user_info', 'user_info.id', '=', 'user.user_info_id')->whereNotNull ('user_limit.uid')->orderBy ($order)->get();
+		$limits = UserLimit::join ('user', 'user.uid', '=', 'user_limit.uid')->join ('user_info', 'user_info.id', '=', 'user.user_info_id')->whereNotNull ('user_limit.uid')->orderBy ($order)->paginate ();
 		
 		$url = action ('StaffUserLimitController@index');
 		

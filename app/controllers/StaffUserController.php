@@ -10,17 +10,19 @@ class StaffUserController extends BaseController
 			->orWhere ('expire', -1)
 			->orderBy ($order);
 		$usersCount = $usersQ->count ();
-		$users = $usersQ->get ();
+		$users = $usersQ->paginate ();
 		
+		Paginator::setPageName ('expired_page');
 		$expiredQ = User::where ('expire', '<=', $now)
 			->where ('expire', '>', -1)
 			->orderBy ($order);
 		$expiredCount = $expiredQ->count ();
-		$expired = $expiredQ->get ();
+		$expired = $expiredQ->paginate ();
 		
+		Paginator::setPageName ('pending_page');
 		$pendingQ = UserInfo::where ('validated', 0);
 		$pendingCount = $pendingQ->count ();
-		$pending = $pendingQ->get ();
+		$pending = $pendingQ->paginate ();
 
 		$url = action ('StaffUserController@index');
 		

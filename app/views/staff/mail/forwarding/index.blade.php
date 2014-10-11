@@ -5,6 +5,7 @@ Doorstuuradressen &bull; Staff
 @endsection
 
 @section ('content')
+{{ $mFwds->links () }}
 <table>
 	<thead>
 		<tr>
@@ -35,6 +36,7 @@ Doorstuuradressen &bull; Staff
 		@endforeach
 	</tbody>
 </table>
+{{ $mFwds->links () }}
 <div class="right">
 	<a href="/staff/mail/forwarding/create" title="Toevoegen" class="button radius">
 		<img src="/img/icons/add.png" alt="Toevoegen" />

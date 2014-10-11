@@ -4,7 +4,7 @@ class StaffVHostController extends BaseController
 {
 	public function index ()
 	{
-		$vhosts = ApacheVhostVirtual::all ();
+		$vhosts = ApacheVhostVirtual::paginate ();
 		
 		return View::make ('staff.website.vhost.index', compact ('vhosts'));
 	}

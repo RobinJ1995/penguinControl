@@ -75,6 +75,9 @@ class VHostController extends BaseController
 	{
 		$user = Auth::user ();
 		
+		if ($vhost->uid !== $user->uid)
+			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze vHost!', 'alert')));
+		
 		$insideHomedir = substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir;
 		
 		if ($vhost->locked)
@@ -86,6 +89,9 @@ class VHostController extends BaseController
 	public function update ($vhost)
 	{
 		$user = Auth::user ();
+		
+		if ($vhost->uid !== $user->uid)
+			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze vHost!', 'alert')));
 		
 		$validator = Validator::make
 		(

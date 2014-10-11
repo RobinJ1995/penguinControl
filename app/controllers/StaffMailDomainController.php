@@ -4,7 +4,7 @@ class StaffMailDomainController extends BaseController
 {
 	public function index ()
 	{
-		$domains = MailDomainVirtual::all ();
+		$domains = MailDomainVirtual::paginate ();
 		
 		return View::make ('staff.mail.domain.index', compact ('domains'));
 	}

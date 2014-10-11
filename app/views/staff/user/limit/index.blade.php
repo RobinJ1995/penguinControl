@@ -41,6 +41,7 @@ Gebruikerslimieten &bull; Staff
 
 <fieldset>
 	<legend>Uitzonderingen</legend>
+	{{ $limits->links () }}
 	<table>
 		<thead>
 			<tr>
@@ -93,6 +94,7 @@ Gebruikerslimieten &bull; Staff
 			@endforeach
 		</tbody>
 	</table>
+	{{ $limits->links () }}
 	<div class="right">
 		<a href="/staff/user/limit/create" title="Toevoegen" class="button radius">
 			<img src="/img/icons/add.png" alt="Toevoegen" />

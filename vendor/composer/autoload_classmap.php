@@ -703,6 +703,7 @@ return array(
     'PHPParser_Unserializer_XML' => $vendorDir . '/nikic/php-parser/lib/PHPParser/Unserializer/XML.php',
     'Page' => $baseDir . '/app/models/Page.php',
     'PageController' => $baseDir . '/app/controllers/PageController.php',
+    'PaginationPresenter' => $baseDir . '/app/libraries/PaginationPresenter.php',
     'Patchwork\\PHP\\Shim\\Iconv' => $vendorDir . '/patchwork/utf8/class/Patchwork/PHP/Shim/Iconv.php',
     'Patchwork\\PHP\\Shim\\Intl' => $vendorDir . '/patchwork/utf8/class/Patchwork/PHP/Shim/Intl.php',
     'Patchwork\\PHP\\Shim\\Mbstring' => $vendorDir . '/patchwork/utf8/class/Patchwork/PHP/Shim/Mbstring.php',
