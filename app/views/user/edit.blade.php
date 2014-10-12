@@ -33,12 +33,15 @@ Gegevens wijzigen
 		</div>
 	</div>
 	<div class="row">
+		<p>isLoggedInWithToken:{{Session::get('isLoggedInWithToken')?'true':'false'}}</p>
+		@if(!Session::get('isLoggedInWithToken'))
 		<div class="large-4 medium-12 small-12 column">
 			<label>Huidige wachtwoord:
 				<input type="password" name="currentPass" required />
 			</label>
 			<small class="error">Geef uw huidige wachtwoord in.</small>
 		</div>
+		@endif
 		<div class="large-4 medium-6 small-12 column">
 			<label>Nieuwe wachtwoord:
 				<input type="password" id="newPass" name="newPass" />
