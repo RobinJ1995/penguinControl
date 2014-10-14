@@ -3,12 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/mail/forwarding/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/ftp/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/website/vhost/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/user/limit/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/mail/user/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/mail/domain/index.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/user/edit.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/UserController.php</file>
         </group>
     </open-files>
 </project-private>

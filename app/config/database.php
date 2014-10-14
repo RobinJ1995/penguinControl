@@ -1,7 +1,5 @@
 <?php
 
-$devHosts = array ('pingwing', 'pingu', 'penguino');
-
 return array (
 	/*
 	  |--------------------------------------------------------------------------
