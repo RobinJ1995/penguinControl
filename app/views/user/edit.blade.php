@@ -35,7 +35,7 @@ Gegevens wijzigen
 	<div class="row">
 		<div class="large-4 medium-12 small-12 column">
 			<label>Huidige wachtwoord:
-				<input type="password" name="currentPass" required />
+				<input type="password" name="currentPass" {{ Session::get ('isLoggedInWithToken') === true ? 'disabled' : 'required' }} />
 			</label>
 			<small class="error">Geef uw huidige wachtwoord in.</small>
 		</div>
