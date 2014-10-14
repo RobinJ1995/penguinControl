@@ -19,3 +19,5 @@
 * Integrate documentation on Git server
 * Sysadmin/Dev-only toolbar with debug information, ability to disable certain validators, etc. (Robin)
 * staff/*: Search (Robin)
+* Billing
+* Statistics
