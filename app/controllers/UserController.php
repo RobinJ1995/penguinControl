@@ -475,7 +475,7 @@ class UserController extends BaseController
 			Session::put ('isLoggedInWithToken', true);
 
 			$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', 'success');
-			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken.', 'info');
+			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken. Indien gewenst kunt u uw wachtwoord wijzigen via <a href="/user/edit">Gebruiker &raquo; Gegevens wijzigen</a>.', 'info');
 			
 			Log::info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
