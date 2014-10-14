@@ -6,7 +6,6 @@ Start
 
 @section ('content')
 <div class="large-6 small-12 column">
-	<p>isLoggedInWithToken:{{Session::get('isLoggedInWithToken')?'true':'false'}}</p>
 	<table>
 		<caption>Gebruikersgegevens</caption>
 		<tr>

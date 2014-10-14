@@ -93,15 +93,8 @@ class UserController extends BaseController
 	{
 		$user = Auth::user ();
 		$alerts = array ();
-		$currentPassInput = '';
-		$currentPassValidator = '';
-		$isLoggedInWithToken = Session::get('isLoggedInWithToken');
 		
-		if(!$isLoggedInWithToken)
-		{
-			$currentPassInput = Input::get ('currentPass');
-			$currentPassValidator = 'required';
-		}
+		$isLoggedInWithToken = Session::get ('isLoggedInWithToken');
 		
 		$validator = Validator::make
 		(
@@ -109,7 +102,7 @@ class UserController extends BaseController
 			(
 				'Shell' => Input::get ('shell'),
 				'E-mailadres' => Input::get ('email'),
-				'Huidige wachtwoord' => $currentPassInput,
+				'Huidige wachtwoord' => Input::get ('currentPass'),
 				'Nieuwe wachtwoord' => Input::get ('newPass'),
 				'Nieuwe wachtwoord (bevestiging)' => Input::get ('newPassConfirm')
 			),
@@ -117,8 +110,8 @@ class UserController extends BaseController
 			(
 				'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
 				'E-mailadres' => array ('required', 'email'),
-				'Huidige wachtwoord' => $currentPassValidator,
-				'Nieuwe wachtwoord' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', 'different:Huidige wachtwoord',  'required_with:Nieuwe wachtwoord (bevestiging)'),
+				'Huidige wachtwoord' => ($isLoggedInWithToken === true ? '' : array ('required')),
+				'Nieuwe wachtwoord' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', ($isLoggedInWithToken === true ? '' : 'different:Huidige wachtwoord'),  'required_with:Nieuwe wachtwoord (bevestiging)'),
 				'Nieuwe wachtwoord (bevestiging)' => array ('same:Nieuwe wachtwoord', 'required_with:Nieuwe wachtwoord')
 			)
 		);
@@ -126,9 +119,12 @@ class UserController extends BaseController
 		if ($validator->fails ())
 			return Redirect::to ('/user/edit')->with ('user', $user)->withErrors ($validator);
 		
-		$hashedPass = crypt (Input::get ('currentPass'), $user->crypt);
-		if ($hashedPass !== $user->crypt && !$isLoggedInWithToken)
-			return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
+		if ($isLoggedInWithToken !== true)
+		{
+			$hashedPass = crypt (Input::get ('currentPass'), $user->crypt);
+			if ($hashedPass !== $user->crypt && !$isLoggedInWithToken)
+				return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
+		}
 		
 		$userInfo = $user->getUserInfo ();
 		$userInfo->email = Input::get ('email');
@@ -158,7 +154,6 @@ class UserController extends BaseController
 		$user->save ();
 		
 		$alerts[] = new Alert ('Gegevens bijgewerkt', 'success');
-		Session::put('isLoggedInWithToken',false);
 		return Redirect::to ('/user/start')->with ('alerts', $alerts);
 	}
 	
@@ -477,7 +472,7 @@ class UserController extends BaseController
 			
 			Auth::login ($user);
 			
-			Session::put('isLoggedInWithToken', true);
+			Session::put ('isLoggedInWithToken', true);
 
 			$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', 'success');
 			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken.', 'info');
