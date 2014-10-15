@@ -110,7 +110,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 		$file = str_replace ('{:sslcert:}', self::SSLCERT, $file);
 		$file = str_replace ('{:sslkey:}', self::SSLKEY, $file);
 		$file = str_replace ('{:basedir:}', empty ($this->basedir) ? '' : ':' . $this->basedir, $file);
-		$file = str_replace ('{:overrides:}', 'FileInfo Indexes Limit', $file);
+		$file = str_replace ('{:overrides:}', 'FileInfo Indexes Limit AuthConfig Options', $file);
 		
 		@unlink (self::VHOSTDIRAVAILABLE . $filename);
 		@unlink (self::VHOSTDIRENABLED . $filename);
