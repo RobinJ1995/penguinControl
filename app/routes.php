@@ -174,6 +174,7 @@ Route::get ('staff/website/vhost/{vhost}/remove', 'StaffVHostController@remove')
 
 // Staff // FTP //
 Route::get ('staff/ftp', 'StaffFtpController@index');
+Route::get ('staff/ftp/search', 'StaffFtpController@search');
 Route::get ('staff/ftp/create', 'StaffFtpController@create');
 Route::post ('staff/ftp/create', 'StaffFtpController@store');
 Route::get ('staff/ftp/{ftp}/edit', 'StaffFtpController@edit');

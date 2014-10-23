@@ -38,7 +38,8 @@ class StaffUserController extends BaseController
 		$email = Input::get ('email');
 		$schoolnr = Input::get ('schoolnr');
 		
-		$query = UserInfo::where ('username', 'LIKE', '%' . $username . '%')
+		$query = UserInfo::where ('validated', '1')
+			->where ('username', 'LIKE', '%' . $username . '%')
 			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
 			->where ('email', 'LIKE', '%' . $email . '%')
 			->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
