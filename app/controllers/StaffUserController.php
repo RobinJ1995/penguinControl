@@ -26,8 +26,28 @@ class StaffUserController extends BaseController
 		$pending = $pendingQ->paginate ();
 
 		$url = action ('StaffUserController@index');
+		$searchUrl = action ('StaffUserController@search');
 		
-		return View::make ('staff.user.user.index', compact ('usersCount', 'users', 'expiredCount', 'expired', 'pendingCount', 'pending', 'url'));
+		return View::make ('staff.user.user.index', compact ('usersCount', 'users', 'expiredCount', 'expired', 'pendingCount', 'pending', 'url', 'searchUrl'));
+	}
+	
+	public function search ()
+	{
+		$username = Input::get ('username');
+		$name = Input::get ('name');
+		$email = Input::get ('email');
+		$schoolnr = Input::get ('schoolnr');
+		
+		$query = UserInfo::where ('username', 'LIKE', '%' . $username . '%')
+			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
+			->where ('email', 'LIKE', '%' . $email . '%')
+			->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
+		$count = $query->count ();
+		$results = $query->paginate ();
+		
+		$searchUrl = action ('StaffUserController@search');
+		
+		return View::make ('staff.user.user.search', compact ('count', 'results', 'searchUrl'));
 	}
 	
 	public function create ()

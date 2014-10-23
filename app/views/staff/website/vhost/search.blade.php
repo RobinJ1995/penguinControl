@@ -46,12 +46,6 @@ vHosts &bull; Staff
 		@endforeach
 	</tbody>
 </table>
-{{ $vhosts->links () }}
-<div class="right">
-	<a href="/staff/website/vhost/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
-	</a>
-</div>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
 	<h2>Zoeken</h2>

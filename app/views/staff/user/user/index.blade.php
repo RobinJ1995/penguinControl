@@ -170,4 +170,27 @@ Gebruikers &bull; Staff
 	</table>
 	{{ $pending->links () }}
 </fieldset>
+
+<div id="modalSearch" class="reveal-modal" data-reveal>
+	<h2>Zoeken</h2>
+	
+	<form action="{{ $searchUrl }}" method="GET">
+		<label>Gebruikersnaam:
+			<input type="text" name="username" />
+		</label>
+		<label>Naam:
+			<input type="text" name="name" />
+		</label>
+		<label>E-mailadres:
+			<input type="text" name="email" />
+		</label>
+		<label>Studentnummer:
+			<input type="text" name="schoolnr" />
+		</label>
+		
+		<button>Zoeken</button>
+	</form>
+	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
 @endsection

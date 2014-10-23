@@ -113,6 +113,11 @@ ul.pagination li.current a:hover
 	opacity: 0.9;
 }
 
+.button.search
+{
+	height: 52px;
+}
+
 #editor
 {
 	position: relative;

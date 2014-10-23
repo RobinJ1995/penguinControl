@@ -3,9 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/public_html/css/stylesheet.css</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffUserController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffVHostController.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/models/ApacheVhostVirtual.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/layout/master.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/user/user/index.blade.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/user/edit.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/user/user/search.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/website/vhost/index.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/routes.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/UserController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/website/vhost/search.blade.php</file>
         </group>
     </open-files>
 </project-private>
