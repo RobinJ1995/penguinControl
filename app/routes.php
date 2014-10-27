@@ -189,6 +189,9 @@ Route::get ('staff/mail/domain/{mDomain}/edit', 'StaffMailDomainController@edit'
 Route::post ('staff/mail/domain/{mDomain}/edit', 'StaffMailDomainController@update');
 Route::get ('staff/mail/domain/{mDomain}/remove', 'StaffMailDomainController@remove');
 
+// Staff // Mail //
+Route::get ('staff/mail/search', 'StaffMailController@search');
+
 // Staff // Mail // User //
 Route::get ('staff/mail/user', 'StaffMailUserController@index');
 Route::get ('staff/mail/user/create', 'StaffMailUserController@create');

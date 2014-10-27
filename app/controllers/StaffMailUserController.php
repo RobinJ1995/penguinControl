@@ -6,7 +6,9 @@ class StaffMailUserController extends BaseController
 	{
 		$mUsers = MailUserVirtual::paginate ();
 		
-		return View::make ('staff.mail.user.index', compact ('mUsers'));
+		$searchUrl = action ('StaffMailController@search');
+		
+		return View::make ('staff.mail.user.index', compact ('mUsers', 'searchUrl'));
 	}
 	
 	public function create ()
