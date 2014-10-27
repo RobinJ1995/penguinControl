@@ -40,4 +40,6 @@ E-mailaccounts &bull; Staff
 		<img src="/img/icons/add.png" alt="Toevoegen" />
 	</a>
 </div>
+
+@include ('staff.mail.search_part')
 @endsection

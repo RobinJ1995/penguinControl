@@ -6,7 +6,41 @@ class StaffFtpController extends BaseController
 	{
 		$ftps = FtpUserVirtual::paginate ();
 		
-		return View::make ('staff.ftp.index', compact ('ftps'));
+		$searchUrl = action ('StaffFtpController@search');
+		
+		return View::make ('staff.ftp.index', compact ('ftps', 'searchUrl'));
+	}
+	
+	public function search ()
+	{
+		$user = Input::get ('user');
+		$dir = Input::get ('dir');
+		$username = Input::get ('username');
+		
+		$query = FtpUserVirtual::where ('dir', 'LIKE', '%' . $dir . '%')
+			->where ('user', 'LIKE', '%' . $user . '%');
+		
+		if (! empty ($username))
+		{
+			$uid = '';
+			
+			$users = UserInfo::where ('username', $username);
+
+			$user = $users->first ();
+			if (! empty ($user))
+			{
+				$user = $user->getUser ();
+				$uid = $user->uid;
+			}
+			$query = $query->where ('uid', $uid);
+		}
+		
+		$count = $query->count ();
+		$ftps = $query->paginate ();
+		
+		$searchUrl = action ('StaffFtpController@search');
+		
+		return View::make ('staff.ftp.search', compact ('count', 'ftps', 'searchUrl'));
 	}
 	
 	public function create ()

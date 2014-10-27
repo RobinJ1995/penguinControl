@@ -6,7 +6,9 @@ class StaffMailDomainController extends BaseController
 	{
 		$domains = MailDomainVirtual::paginate ();
 		
-		return View::make ('staff.mail.domain.index', compact ('domains'));
+		$searchUrl = action ('StaffMailController@search');
+		
+		return View::make ('staff.mail.domain.index', compact ('domains', 'searchUrl'));
 	}
 	
 	public function create ()

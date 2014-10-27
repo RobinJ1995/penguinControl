@@ -25,6 +25,7 @@
 		<script src="/js/foundation/foundation.equalizer.js"></script>
 		<script src="/js/foundation/foundation.alert.js"></script>
 		<script src="/js/foundation/foundation.magellan.js"></script>
+		<script src="/js/foundation/foundation.reveal.js"></script>
 		<script src="/js/browserUpdate.js"></script>
 		<script src="/js/a29uYW1p.js"></script>
 		<script>
@@ -80,6 +81,13 @@
 			<div class="large-9 columns">
 				<ul class="right button-group">
 					@section ('topMenu')
+					@if (! empty ($searchUrl))
+					<li>
+						<a href="#" class="button tiny search" data-reveal-id="modalSearch">
+							<img src="/img/icons/search.png" alt="Zoeken" />
+						</a>
+					</li>
+					@endif
 					<li>
 						<a href="/home" class="button">Home</a>
 					</li>

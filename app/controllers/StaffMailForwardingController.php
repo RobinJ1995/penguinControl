@@ -6,7 +6,9 @@ class StaffMailForwardingController extends BaseController
 	{
 		$mFwds = MailForwardingVirtual::paginate ();
 		
-		return View::make ('staff.mail.forwarding.index', compact ('mFwds'));
+		$searchUrl = action ('StaffMailController@search');
+		
+		return View::make ('staff.mail.forwarding.index', compact ('mFwds', 'searchUrl'));
 	}
 	
 	public function create ()

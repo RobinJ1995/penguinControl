@@ -130,6 +130,7 @@ Route::get ('database', 'DatabaseController@show');
 
 // Staff // User // User //
 Route::get ('staff/user/user', 'StaffUserController@index');
+Route::get ('staff/user/user/search', 'StaffUserController@search');
 Route::get ('staff/user/user/order/{order}', 'StaffUserController@index');
 Route::get ('staff/user/user/create', 'StaffUserController@create');
 Route::post ('staff/user/user/create', 'StaffUserController@store');
@@ -164,6 +165,7 @@ Route::post ('staff/user/abuse/multi', 'StaffAbuseController@multi');
 
 // Staff // Website // vHost //
 Route::get ('staff/website/vhost', 'StaffVHostController@index');
+Route::get ('staff/website/vhost/search', 'StaffVHostController@search');
 Route::get ('staff/website/vhost/create', 'StaffVHostController@create');
 Route::post ('staff/website/vhost/create', 'StaffVHostController@store');
 Route::get ('staff/website/vhost/{vhost}/edit', 'StaffVHostController@edit');
@@ -172,6 +174,7 @@ Route::get ('staff/website/vhost/{vhost}/remove', 'StaffVHostController@remove')
 
 // Staff // FTP //
 Route::get ('staff/ftp', 'StaffFtpController@index');
+Route::get ('staff/ftp/search', 'StaffFtpController@search');
 Route::get ('staff/ftp/create', 'StaffFtpController@create');
 Route::post ('staff/ftp/create', 'StaffFtpController@store');
 Route::get ('staff/ftp/{ftp}/edit', 'StaffFtpController@edit');
@@ -185,6 +188,9 @@ Route::post ('staff/mail/domain/create', 'StaffMailDomainController@store');
 Route::get ('staff/mail/domain/{mDomain}/edit', 'StaffMailDomainController@edit');
 Route::post ('staff/mail/domain/{mDomain}/edit', 'StaffMailDomainController@update');
 Route::get ('staff/mail/domain/{mDomain}/remove', 'StaffMailDomainController@remove');
+
+// Staff // Mail //
+Route::get ('staff/mail/search', 'StaffMailController@search');
 
 // Staff // Mail // User //
 Route::get ('staff/mail/user', 'StaffMailUserController@index');
