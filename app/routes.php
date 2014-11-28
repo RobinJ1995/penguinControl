@@ -163,6 +163,15 @@ Route::get ('staff/user/group/{user}/remove', 'StaffGroupController@remove');
 Route::get ('staff/user/abuse', 'StaffAbuseController@index');
 Route::post ('staff/user/abuse/multi', 'StaffAbuseController@multi');
 
+// Staff // User // UserLog //
+Route::get ('staff/user/log', 'StaffUserLogController@index');
+Route::get ('staff/user/log/search', 'StaffUserLogController@search');
+Route::get ('staff/user/log/create', 'StaffUserLogController@create');
+Route::post ('staff/user/log/create', 'StaffUserLogController@store');
+Route::get ('staff/user/log/{userlog}/edit', 'StaffUserLogController@edit');
+Route::post ('staff/user/log/{userlog}/edit', 'StaffUserLogController@update');
+Route::get ('staff/user/log/{userlog}/remove', 'StaffUserLogController@remove');
+
 // Staff // Website // vHost //
 Route::get ('staff/website/vhost', 'StaffVHostController@index');
 Route::get ('staff/website/vhost/search', 'StaffVHostController@search');
