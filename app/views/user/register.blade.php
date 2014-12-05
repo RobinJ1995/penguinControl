@@ -89,7 +89,7 @@ Registreren
 		</fieldset>
 		<fieldset>
 			<legend>Voorwaarden</legend>
-			<input type="checkbox" name="termsAgree" value="yes" /> Ik ga akkoord met <a href="/etc/algemene_gebruiksvoorwaarden.pdf">de algemene gebruiksvoorwaarden</a> en <a href="/etc/huishoudelijk_reglement.pdf">het huishoudelijk reglement</a>..
+			<input type="checkbox" name="termsAgree" value="yes" /> Ik ga akkoord met <a href="/etc/algemene_gebruiksvoorwaarden.pdf">de algemene gebruiksvoorwaarden</a> en <a href="/etc/huishoudelijk_reglement.pdf">het huishoudelijk reglement</a>.
 		</fieldset>
 		<div>
 			{{ Form::token () }}
