@@ -14,12 +14,7 @@ Facturatie bewerken &bull; Staff
 					{{ Form::select
 						(
 							'boekhouding',
-							array
-							(
-								'-1'=>'Niet te factureren',
-								'0'=>'Nog te factureren',
-								'1'=>'Gefactureerd'
-							),
+							$boekhoudingBetekenis,
 							$userlog->boekhouding
 						)
 					}}

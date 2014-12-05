@@ -8,62 +8,93 @@
 @section ('pageTitle')
 Facturatie &bull; Staff
 @endsection
-
+@section ('js')
+<script type="text/javascript">
+    $(document).ready() {
+        $('#selectAllUserLog').change( function () {
+            $('input[name="userLogId[]"]').prop('checked', $(this).prop("checked"));
+        });
+        
+        $('input[name="userLogId[]"]').change( function () {
+            $('#selectAllUserLog').prop('checked', false);
+        });
+    });
+</script>
+@endsection
 @section ('content')
 
 	<p>{{ $count }} zoekresultaten</p>
+        <form action="/staff/user/log/edit/checked" method="post">
+            {{ $paginationOn ? $userlogs->links () : '' }}
+            <table>
+                    <thead>
+                            <tr>
+                                    <th></th>
+                                    <th>
+                                            Gebruikersnaam
+                                    </th>
+                                    <th>
+                                            r-nummer
+                                    </th>
+                                    <th>
+                                            Datum/Tijd
+                                    </th>
+                                    <th>
+                                            Nieuw
+                                    </th>
+                                    <th>
+                                            Facturatiestatus
+                                    </th>
+                                    <th>
+                                            Primaire groep
+                                    </th>
+                                    <th>
+                                        <input type="checkbox" id="selectAllUserLog" value="true">
+                                    </th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                            @foreach ($userlogs as $userlog)
+                            <tr>
+                                    <td>
+                                            <div class="button-group radius">
+                                                    <a href="/staff/user/log/{{ $userlog->id }}/edit" title="Bewerken" class="button tiny">
+                                                            <img src="/img/icons/edit.png" alt="Bewerken" />
+                                                    </a><a href="/staff/user/log/{{ $userlog->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
+                                                            <img src="/img/icons/remove.png" alt="Verwijderen" />
+                                                    </a>
+                                            </div>
+                                    </td>
+                                    <td>{{ $userlog->user_info->username }}</td>
+                                    <td>{{ $userlog->user_info->schoolnr }}</td>
+                                    <td>{{ $userlog->time }}</td>
+                                    <td><img src="/img/icons/{{ $userlog->nieuw?'validate.png':'reject.png'; }}" alt="" /></td>
+                                    <td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
+                                    <td>
+                                            <span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" name="userLogId[]" value="{{$userlog->id}}">
+                                    </td>
+                            </tr>
+                            @endforeach
+                    </tbody>
+            </table>
+            {{ $paginationOn ? $userlogs->links () : '' }}
+            <div class="right">
+                    <label>Gefactureerd:
+                            {{ Form::select
+                                    (
+                                            'boekhouding',
+                                            $boekhoudingBetekenis,
+                                            0
+                                    )
+                            }}
+                    </label>
+                    <input type="submit" name="submit" value="Verander facturatiestatus" class="button radius"/>
 
-	{{ $paginationOn ? $userlogs->links () : '' }}
-	<table>
-		<thead>
-			<tr>
-				<th></th>
-				<th>
-					Gebruikersnaam
-				</th>
-				<th>
-					r-nummer
-				</th>
-				<th>
-					Datum/Tijd
-				</th>
-				<th>
-					Nieuw
-				</th>
-				<th>
-					Facturatiestatus
-				</th>
-				<th>
-					Primaire groep
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach ($userlogs as $userlog)
-			<tr>
-				<td>
-					<div class="button-group radius">
-						<a href="/staff/user/log/{{ $userlog->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/user/log/{{ $userlog->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
-						</a>
-					</div>
-				</td>
-				<td>{{ $userlog->user_info->username }}</td>
-				<td>{{ $userlog->user_info->schoolnr }}</td>
-				<td>{{ $userlog->time }}</td>
-				<td><img src="/img/icons/{{ $userlog->nieuw?'validate.png':'reject.png'; }}" alt="" /></td>
-				<td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
-				<td>
-					<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
-				</td>
-			</tr>
-			@endforeach
-		</tbody>
-	</table>
-	{{ $paginationOn ? $userlogs->links () : '' }}
-
+            </div>
+        </form>
 <div id="modalSearch" class="reveal-modal" data-reveal>
 	<h2>Zoeken</h2>
 

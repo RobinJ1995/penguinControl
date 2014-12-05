@@ -65,26 +65,28 @@ class DatabaseCredentials
 			. "ON *.* "
 			. "TO '$dbUsername'@'%';"
 		);*/
+		if (! App::isLocal ())
+		{
+			$pdo->exec
+			(
+				"GRANT ALL PRIVILEGES "
+				. "ON `$username`.* "
+				. "TO '$dbUsername'@'%';"
+			);
 
-		$pdo->exec
-		(
-			"GRANT ALL PRIVILEGES "
-			. "ON `$username`.* "
-			. "TO '$dbUsername'@'%';"
-		);
+			$pdo->exec
+			(
+				"GRANT ALL PRIVILEGES "
+				. "ON `" . $username . "\_%`.* "
+				. "TO '$dbUsername'@'%';"
+			);
 
-		$pdo->exec
-		(
-			"GRANT ALL PRIVILEGES "
-			. "ON `" . $username . "\_%`.* "
-			. "TO '$dbUsername'@'%';"
-		);
-		
-		$pdo->exec
-		(
-			"SET PASSWORD "
-			. "FOR '$dbUsername'@'%' = '$hash';"
-		);
+			$pdo->exec
+			(
+				"SET PASSWORD "
+				. "FOR '$dbUsername'@'%' = '$hash';"
+			);
+		}
 	}
 	
 	public static function getHash ($password)

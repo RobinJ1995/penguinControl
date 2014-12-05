@@ -25,7 +25,7 @@ $app = new Illuminate\Foundation\Application;
  */
 
 $env = $app->detectEnvironment (array (
-    'local' => array ('pingwing', 'pingu', 'penguino', 'Runesmacher','sincontroldev'),
+    'local' => array ('pingwing', 'pingu', 'penguino', 'Runesmacher','sincontroldev', 'karlos-ubuntu', 'KARLOS-WIN81'),
 	));
 
 /*

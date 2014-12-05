@@ -2,6 +2,14 @@
 
 class StaffUserLogController extends BaseController
 {
+	private $boekhoudingBetekenis = array
+	(
+	    -1 => 'Niet te factureren',
+	    0 => 'Nog te factureren',
+	    1 => 'Gefactureerd'
+	);
+
+
 	public function index ()
 	{
 		Paginator::setPageName ('userlog_page');
@@ -11,9 +19,8 @@ class StaffUserLogController extends BaseController
 		    ->paginate ();
 		
 		$searchUrl = action ('StaffUserLogController@search');
-		$boekhoudingBetekenis = array("-1"=>"Niet te factureren","0"=>"Nog te factureren","1"=>"Gefactureerd");
-		
-		return View::make ('staff.user.log.index', compact ('userlogs','searchUrl', 'boekhoudingBetekenis'));
+		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
+		return View::make ('staff.user.log.index', compact ('userlogs', 'searchUrl', 'boekhoudingBetekenis'));
 		
 	}
 	
@@ -75,7 +82,7 @@ class StaffUserLogController extends BaseController
 		}
 		
 		$searchUrl = action ('StaffUserLogController@search');
-		$boekhoudingBetekenis = array('-1'=>'Niet te factureren','0'=>'Nog te factureren','1'=>'Gefactureerd');
+		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
 		
 		return View::make ('staff.user.log.search', compact ('count', 'userlogs', 'searchUrl' , 'boekhoudingBetekenis' , 'paginationOn'));
 		
@@ -89,8 +96,9 @@ class StaffUserLogController extends BaseController
 		{
 			$users[$userInfo->id] = $userInfo->username . ' (' . $userInfo->getFullName () . ', ' . $userInfo->schoolnr . ')';
 		}
+		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
 		
-		return View::make ('staff.user.log.create', compact ('users'));
+		return View::make ('staff.user.log.create', compact ('users', 'boekhoudingBetekenis'));
 	}
 
 	public function store ()
@@ -171,4 +179,13 @@ class StaffUserLogController extends BaseController
 		$userlog->delete();
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Userlog verwijderd', 'success')));
 	}
+        
+        public function editChecked ()
+        {
+                $userLogsIds = Input::get ('userLogId');
+                $boekhouding = Input::get ('boekhouding');
+                
+                UserLog::whereIn ('id', $userLogsIds)->update (array('boekhouding' => $boekhouding));
+                return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Userlog(s) aangepast', 'success')));
+        }
 }
