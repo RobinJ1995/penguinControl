@@ -5,9 +5,9 @@ class StaffUserLogController extends BaseController
 
 	private $boekhoudingBetekenis = array
 	(
-	    -1 => 'Niet te factureren',
-	    0 => 'Nog te factureren',
-	    1 => 'Gefactureerd'
+		-1 => 'Niet te factureren',
+		0 => 'Nog te factureren',
+		1 => 'Gefactureerd'
 	);
 
 	public function index ()
@@ -126,7 +126,7 @@ class StaffUserLogController extends BaseController
 
 		$userLog->save ();
 
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Userlog toegevoegd', 'success')));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie toegevoegd', 'success')));
 	}
 
 	public function edit ($userlogid)
@@ -157,7 +157,7 @@ class StaffUserLogController extends BaseController
 		$userLog->boekhouding = Input::get ('boekhouding');
 		$userLog->save ();
 
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Userlog bijgewerkt', 'success')));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie bijgewerkt', 'success')));
 	}
 
 	public function remove ($userlogid)
@@ -165,7 +165,7 @@ class StaffUserLogController extends BaseController
 		$userlog = UserLog::find ($userlogid);
 		$userlog->delete ();
 		
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Userlog verwijderd', 'success')));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie verwijderd', 'success')));
 	}
 
 	public function editChecked ()
@@ -175,7 +175,7 @@ class StaffUserLogController extends BaseController
 
 		UserLog::whereIn ('id', $userLogsIds)->update (array ('boekhouding' => $boekhouding));
 		
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Userlog(s) aangepast', 'success')));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie(s) aangepast', 'success')));
 	}
 
 }
