@@ -24,6 +24,7 @@ Route::model ('mFwd', 'MailForwardingVirtual');
 
 Route::model ('user', 'User');
 Route::model ('userInfo', 'UserInfo');
+
 Route::model ('group', 'Group');
 Route::model ('limit', 'UserLimit');
 Route::model ('systemTask', 'SystemTask');
@@ -168,9 +169,10 @@ Route::get ('staff/user/log', 'StaffUserLogController@index');
 Route::get ('staff/user/log/search', 'StaffUserLogController@search');
 Route::get ('staff/user/log/create', 'StaffUserLogController@create');
 Route::post ('staff/user/log/create', 'StaffUserLogController@store');
-Route::get ('staff/user/log/{userlog}/edit', 'StaffUserLogController@edit');
-Route::post ('staff/user/log/{userlog}/edit', 'StaffUserLogController@update');
-Route::get ('staff/user/log/{userlog}/remove', 'StaffUserLogController@remove');
+Route::get ('staff/user/log/{userLog}/edit', 'StaffUserLogController@edit');
+Route::post ('staff/user/log/{userLog}/edit', 'StaffUserLogController@update');
+Route::get ('staff/user/log/{userLog}/remove', 'StaffUserLogController@remove');
+Route::post ('staff/user/log/edit/checked', 'StaffUserLogController@editChecked');
 
 // Staff // Website // vHost //
 Route::get ('staff/website/vhost', 'StaffVHostController@index');
