@@ -53,7 +53,9 @@ Facturatie &bull; Staff
 			<td><img src="/img/icons/{{ $userlog->nieuw ? 'validate.png' : 'reject.png' }}" alt="" /></td>
 			<td>{{ $boekhoudingBetekenis[$userlog->boekhouding] }}</td>
 			<td>
+				@if (! empty ($userlog->user_info->user))
 				<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
+				@endif
 			</td>
 		</tr>
 		@endforeach
