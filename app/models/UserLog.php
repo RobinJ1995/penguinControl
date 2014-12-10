@@ -1,11 +1,12 @@
 <?php
 
-class UserLog extends UserOwnedModel
+class UserLog extends Eloquent
 {
 	protected $table = 'user_log';
 	public $timestamps = false;
 	
-	public function user_info(){
+	public function user_info ()
+	{
 		return $this->belongsTo ('UserInfo');
 	}
 }

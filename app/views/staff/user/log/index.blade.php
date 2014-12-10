@@ -2,7 +2,6 @@
 
 @section ('css')
 @parent
-<!--<link rel="stylesheet" href="/css/print.css" />-->
 <link rel="stylesheet" media="print" href="/css/print.css" />
 @endsection
 
@@ -11,9 +10,6 @@ Facturatie &bull; Staff
 @endsection
 
 @section ('content')
-<fieldset>
-	<legend id="users">Gebruikers (Facturatie)</legend>
-	<?php Paginator::setPageName ('userlog_page'); ?>
 	{{ $userlogs->links () }}
 	<table>
 		<thead>
@@ -32,45 +28,43 @@ Facturatie &bull; Staff
 					Nieuw
 				</th>
 				<th>
-					Facturatiestatus
-				</th>
-				<th>
-					Primaire groep
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach ($userlogs as $userlog)
-			<tr>
-				<td>
-					<div class="button-group radius">
-						<a href="/staff/user/log/{{ $userlog->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/user/log/{{ $userlog->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
-						</a>
-					</div>
-				</td>
-				<td>{{ $userlog->user_info->username }}</td>
-				<td>{{ $userlog->user_info->schoolnr }}</td>
-				<td>{{ $userlog->time }}</td>
-				<td><img src="/img/icons/{{ $userlog->nieuw?'validate.png':'reject.png'; }}" alt="" /></td>
-				<td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
-				<td>
-					<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
-				</td>
-			</tr>
-			@endforeach
-		</tbody>
-	</table>
-	{{ $userlogs->links () }}
-	<div class="right">
-		<a href="/staff/user/log/create" title="Toevoegen" class="button radius">
-			<img src="/img/icons/add.png" alt="Toevoegen" />
-		</a>
-	</div>
-</fieldset>
-
+				Facturatiestatus
+			</th>
+			<th>
+				Primaire groep
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach ($userlogs as $userlog)
+		<tr>
+			<td>
+				<div class="button-group radius">
+					<a href="/staff/user/log/{{ $userlog->id }}/edit" title="Bewerken" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Bewerken" />
+					</a><a href="/staff/user/log/{{ $userlog->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
+						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					</a>
+				</div>
+			</td>
+			<td>{{ $userlog->user_info->username }}</td>
+			<td>{{ $userlog->user_info->schoolnr }}</td>
+			<td>{{ $userlog->time }}</td>
+			<td><img src="/img/icons/{{ $userlog->nieuw ? 'validate.png' : 'reject.png' }}" alt="" /></td>
+			<td>{{ $boekhoudingBetekenis[$userlog->boekhouding] }}</td>
+			<td>
+				<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
+			</td>
+		</tr>
+		@endforeach
+	</tbody>
+</table>
+{{ $userlogs->links () }}
+<div class="right">
+	<a href="/staff/user/log/create" title="Toevoegen" class="button radius">
+		<img src="/img/icons/add.png" alt="Toevoegen" />
+	</a>
+</div>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
 	<div class="row">

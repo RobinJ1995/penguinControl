@@ -2,7 +2,6 @@
 
 @section ('css')
 @parent
-<!--<link rel="stylesheet" href="/css/print.css" />-->
 <link rel="stylesheet" media="print" href="/css/print.css" />
 @endsection
 
@@ -27,7 +26,6 @@ Facturatie &bull; Staff
 @section ('content')
 <p>{{ $count }} zoekresultaten</p>
 <form action="/staff/user/log/edit/checked" method="post">
-	{{ $paginationOn ? $userlogs->links () : '' }}
 	<table>
 		<thead>
 			<tr>
@@ -73,7 +71,7 @@ Facturatie &bull; Staff
 				<td><img src="/img/icons/{{ $userlog->nieuw?'validate.png':'reject.png'; }}" alt="" /></td>
 				<td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
 				<td>
-					<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
+					<span class="{{ $userlog->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->getUser ()->getGroup ()->name) }}</span>
 				</td>
 				<td>
                                         <input type="checkbox" name="userLogId[]" value="{{$userlog->id}}">
