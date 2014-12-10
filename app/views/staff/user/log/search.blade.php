@@ -27,6 +27,7 @@ Facturatie &bull; Staff
 <fieldset>
 	<legend>{{ $count }} zoekresultaten</legend>
 	
+	{{ $paginationOn ? $userlogs->links () : '' }}
 	<form action="/staff/user/log/edit/checked" method="post">
 		<table>
 			<thead>
@@ -85,6 +86,7 @@ Facturatie &bull; Staff
 			</tbody>
 		</table>
 		{{ $paginationOn ? $userlogs->links () : '' }}
+		
 		<div class="right">
 			<label>Gefactureerd:
 				{{ Form::select
@@ -96,7 +98,6 @@ Facturatie &bull; Staff
 				}}
 			</label>
 			<input type="submit" name="submit" value="Verander facturatiestatus" class="button radius"/>
-
 		</div>
 	</form>
 </fieldset>
