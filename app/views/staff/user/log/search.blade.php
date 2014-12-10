@@ -5,10 +5,13 @@
 <!--<link rel="stylesheet" href="/css/print.css" />-->
 <link rel="stylesheet" media="print" href="/css/print.css" />
 @endsection
+
 @section ('pageTitle')
 Facturatie &bull; Staff
 @endsection
+
 @section ('js')
+@parent
 <script type="text/javascript">
     $(document).ready() {
         $('#selectAllUserLog').change( function () {
@@ -21,6 +24,7 @@ Facturatie &bull; Staff
     });
 </script>
 @endsection
+
 @section ('content')
 
 	<p>{{ $count }} zoekresultaten</p>

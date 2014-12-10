@@ -5,6 +5,7 @@
 <!--<link rel="stylesheet" href="/css/print.css" />-->
 <link rel="stylesheet" media="print" href="/css/print.css" />
 @endsection
+
 @section ('pageTitle')
 Facturatie &bull; Staff
 @endsection
