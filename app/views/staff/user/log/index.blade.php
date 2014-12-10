@@ -73,59 +73,87 @@ Facturatie &bull; Staff
 
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
-	<h2>Zoeken</h2>
+	<div class="row">
+		<div class="large-12 column">
+			<h2>Zoeken</h2>
 
-	<form action="{{ $searchUrl }}" method="GET">
-		<label>Gebruikersnaam:
-			<input type="text" name="username" />
-		</label>
-		<label>Naam:
-			<input type="text" name="name" />
-		</label>
-		<label>E-mailadres:
-			<input type="text" name="email" />
-		</label>
-		<label>Studentnummer:
-			<input type="text" name="schoolnr" />
-		</label>
-		<label>Van:
-			<input type="date" name="time_van" />
-		</label>
-		<label>Tot:
-			<input type="date" name="time_tot" />
-		</label>
-		<label>Gefactureerd:
-			{{ Form::select
-				(
-					'boekhouding',
-					array
-					(
-						'all' => 'Alles',
-						'-1'=>'Niet te factureren',
-						'0'=>'Nog te factureren',
-						'1'=>'Gefactureerd'
-					)
-				)
-			}}
-		</label>
-		<label>Nieuw:
-			{{ Form::select
-				(
-					'nieuw',
-					array
-					(
-						'all' => 'Alles',
-						'0' => 'Nee',
-						'1' => 'Ja',
-					)
-				)
-			}}
-		</label>
-		<label>Pagination:
-			<input type="checkbox" name="pagination" value="true" checked="checked"/>
-		</label>
-		
-		<button>Zoeken</button>
+			<form action="{{ $searchUrl }}" method="GET">
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>Gebruikersnaam:
+							<input type="text" name="username" />
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>Naam:
+							<input type="text" name="name" />
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>E-mailadres:
+							<input type="text" name="email" />
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>Studentnummer:
+							<input type="text" name="schoolnr" />
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>Van:
+							<input type="date" name="time_van" />
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>Tot:
+							<input type="date" name="time_tot" />
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>Gefactureerd:
+							{{ Form::select
+								(
+									'boekhouding',
+									array
+									(
+										'all' => 'Alles',
+										'-1'=>'Niet te factureren',
+										'0'=>'Nog te factureren',
+										'1'=>'Gefactureerd'
+									)
+								)
+							}}
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>Nieuw:
+							{{ Form::select
+								(
+									'nieuw',
+									array
+									(
+										'all' => 'Alles',
+										'0' => 'Nee',
+										'1' => 'Ja',
+									)
+								)
+							}}
+						</label>
+					</div>
+				</div>
+				<label>
+					<input type="checkbox" name="pagination" value="true" checked="checked"/> Pagination
+				</label>
+
+				<button>Zoeken</button>
+			</div>
+		</div>
 	</form>
 
 	<a class="close-reveal-modal">&#215;</a>
