@@ -24,83 +24,81 @@ Facturatie &bull; Staff
 @endsection
 
 @section ('content')
-<fieldset>
-	<legend>{{ $count }} zoekresultaten</legend>
-	
+<p>{{ $count }} zoekresultaten</p>
+
+{{ $paginationOn ? $userlogs->links () : '' }}
+<form action="/staff/user/log/edit/checked" method="post">
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th>
+					Gebruikersnaam
+				</th>
+				<th>
+					r-nummer
+				</th>
+				<th>
+					Datum/Tijd
+				</th>
+				<th>
+					Nieuw
+				</th>
+				<th>
+					Facturatiestatus
+				</th>
+				<th>
+					Primaire groep
+				</th>
+				<th>
+					<input type="checkbox" id="selectAllUserLog" value="true">
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach ($userlogs as $userlog)
+			<tr>
+				<td>
+					<div class="button-group radius">
+						<a href="/staff/user/log/{{ $userlog->id }}/edit" title="Bewerken" class="button tiny">
+							<img src="/img/icons/edit.png" alt="Bewerken" />
+						</a><a href="/staff/user/log/{{ $userlog->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
+							<img src="/img/icons/remove.png" alt="Verwijderen" />
+						</a>
+					</div>
+				</td>
+				<td>{{ $userlog->user_info->username }}</td>
+				<td>{{ $userlog->user_info->schoolnr }}</td>
+				<td>{{ $userlog->time }}</td>
+				<td><img src="/img/icons/{{ $userlog->nieuw?'validate.png':'reject.png'; }}" alt="" /></td>
+				<td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
+				<td>
+					@if (! empty ($userlog->user_info->user))
+					<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
+					@endif
+				</td>
+				<td>
+					<input type="checkbox" name="userLogId[]" value="{{$userlog->id}}">
+				</td>
+			</tr>
+			@endforeach
+		</tbody>
+	</table>
 	{{ $paginationOn ? $userlogs->links () : '' }}
-	<form action="/staff/user/log/edit/checked" method="post">
-		<table>
-			<thead>
-				<tr>
-					<th></th>
-					<th>
-						Gebruikersnaam
-					</th>
-					<th>
-						r-nummer
-					</th>
-					<th>
-						Datum/Tijd
-					</th>
-					<th>
-						Nieuw
-					</th>
-					<th>
-						Facturatiestatus
-					</th>
-					<th>
-						Primaire groep
-					</th>
-					<th>
-						<input type="checkbox" id="selectAllUserLog" value="true">
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach ($userlogs as $userlog)
-				<tr>
-					<td>
-						<div class="button-group radius">
-							<a href="/staff/user/log/{{ $userlog->id }}/edit" title="Bewerken" class="button tiny">
-								<img src="/img/icons/edit.png" alt="Bewerken" />
-							</a><a href="/staff/user/log/{{ $userlog->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
-								<img src="/img/icons/remove.png" alt="Verwijderen" />
-							</a>
-						</div>
-					</td>
-					<td>{{ $userlog->user_info->username }}</td>
-					<td>{{ $userlog->user_info->schoolnr }}</td>
-					<td>{{ $userlog->time }}</td>
-					<td><img src="/img/icons/{{ $userlog->nieuw?'validate.png':'reject.png'; }}" alt="" /></td>
-					<td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
-					<td>
-						@if (! empty ($userlog->user_info->user))
-						<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
-						@endif
-					</td>
-					<td>
-						<input type="checkbox" name="userLogId[]" value="{{$userlog->id}}">
-					</td>
-				</tr>
-				@endforeach
-			</tbody>
-		</table>
-		{{ $paginationOn ? $userlogs->links () : '' }}
-		
-		<div class="right">
-			<label>Gefactureerd:
-				{{ Form::select
-					    (
-						    'boekhouding',
-						    $boekhoudingBetekenis,
-						    0
-					    )
-				}}
-			</label>
-			<input type="submit" name="submit" value="Verander facturatiestatus" class="button radius"/>
-		</div>
-	</form>
-</fieldset>
+
+	<div class="right">
+		<label>Gefactureerd:
+			{{ Form::select
+				    (
+					    'boekhouding',
+					    $boekhoudingBetekenis,
+					    0
+				    )
+			}}
+		</label>
+		<input type="submit" name="submit" value="Verander facturatiestatus" class="button radius"/>
+	</div>
+</form>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
 	<div class="row">
