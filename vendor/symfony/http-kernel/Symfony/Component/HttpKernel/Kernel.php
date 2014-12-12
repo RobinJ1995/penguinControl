@@ -59,18 +59,18 @@ abstract class Kernel implements KernelInterface, TerminableInterface
     protected $startTime;
     protected $loadClassCache;
 
-    const VERSION         = '2.5.5';
-    const VERSION_ID      = '20505';
-    const MAJOR_VERSION   = '2';
-    const MINOR_VERSION   = '5';
-    const RELEASE_VERSION = '5';
-    const EXTRA_VERSION   = '';
+    const VERSION = '2.5.8';
+    const VERSION_ID = '20508';
+    const MAJOR_VERSION = '2';
+    const MINOR_VERSION = '5';
+    const RELEASE_VERSION = '8';
+    const EXTRA_VERSION = '';
 
     /**
      * Constructor.
      *
-     * @param string  $environment The environment
-     * @param bool    $debug       Whether to enable debugging or not
+     * @param string $environment The environment
+     * @param bool   $debug       Whether to enable debugging or not
      *
      * @api
      */
@@ -258,9 +258,9 @@ abstract class Kernel implements KernelInterface, TerminableInterface
      *
      * before looking in the bundle resource folder.
      *
-     * @param string  $name  A resource name to locate
-     * @param string  $dir   A directory where to look for the resource first
-     * @param bool    $first Whether to return the first path or paths for all matching bundles
+     * @param string $name  A resource name to locate
+     * @param string $dir   A directory where to look for the resource first
+     * @param bool   $first Whether to return the first path or paths for all matching bundles
      *
      * @return string|array The absolute path of the resource or an array if $first is false
      *
@@ -584,14 +584,14 @@ abstract class Kernel implements KernelInterface, TerminableInterface
 
         return array_merge(
             array(
-                'kernel.root_dir'        => $this->rootDir,
-                'kernel.environment'     => $this->environment,
-                'kernel.debug'           => $this->debug,
-                'kernel.name'            => $this->name,
-                'kernel.cache_dir'       => $this->getCacheDir(),
-                'kernel.logs_dir'        => $this->getLogDir(),
-                'kernel.bundles'         => $bundles,
-                'kernel.charset'         => $this->getCharset(),
+                'kernel.root_dir' => $this->rootDir,
+                'kernel.environment' => $this->environment,
+                'kernel.debug' => $this->debug,
+                'kernel.name' => $this->name,
+                'kernel.cache_dir' => $this->getCacheDir(),
+                'kernel.logs_dir' => $this->getLogDir(),
+                'kernel.bundles' => $bundles,
+                'kernel.charset' => $this->getCharset(),
                 'kernel.container_class' => $this->getContainerClass(),
             ),
             $this->getEnvParameters()
@@ -708,7 +708,7 @@ abstract class Kernel implements KernelInterface, TerminableInterface
             $dumper->setProxyDumper(new ProxyDumper());
         }
 
-        $content = $dumper->dump(array('class' => $class, 'base_class' => $baseClass));
+        $content = $dumper->dump(array('class' => $class, 'base_class' => $baseClass, 'file' => (string) $cache));
         if (!$this->debug) {
             $content = static::stripComments($content);
         }
