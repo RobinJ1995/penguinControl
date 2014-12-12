@@ -238,3 +238,6 @@ Route::get ('staff/systemtask', 'StaffSystemTaskController@index');
 Route::get ('staff/systemtask/create', 'StaffSystemTaskController@create');
 Route::post ('staff/systemtask/create', 'StaffSystemTaskController@store');
 Route::get ('staff/systemtask/{systemTask}/remove', 'StaffSystemTaskController@remove');
+
+// Staff // Virtualisation //
+Route::get ('staff/virtualisation', 'StaffVirtualisationController@index');
