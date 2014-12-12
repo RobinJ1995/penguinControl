@@ -144,6 +144,9 @@ class StaffMaintenanceController extends BaseController
 				if ($nUserLogs < 1)
 					$alerts[] = new Alert ('Gebruiker heeft geen gelogde facturaties: ' . $user->id, 'secondary');
 				*/
+				
+				if (! is_dir ($user->homedir))
+					$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory niet: ' . $user->id, 'alert');
 			}
 			
 			$userInfos = UserInfo::all ();
