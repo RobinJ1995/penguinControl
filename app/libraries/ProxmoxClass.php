@@ -4,20 +4,48 @@ class ProxmoxClass
 {
 	const API = 'https://127.0.0.1:8006/api2/json/';
 	
-	protected function get ($url)
+	protected $token;
+	protected $ticket;
+	
+	protected function authenticate ($username, $password)
 	{
-		$options = array
-		(
-			'ssl' => array
-			(
-				'verify_peer' => false,
-				'verify_peer_name' => false
-			)
-		);
+		$data = $this->get ('access/ticket', 'username=' . urlencode ($username) . '&password=' . urlencode ($password));
 		
-		$json = file_get_contents (self::API . $url, false,  stream_context_create ($options));
-		$data = json_decode ($json);
+		$this->token = $data->CSRFPreventionToken;
+		$this->ticket = $data->ticket;
+	}
+	
+	protected function get ($url, $postFields = null)
+	{
+		$curl = curl_init ();
 		
-		return $data->data;
+		curl_setopt ($curl, CURLOPT_URL, self::API . $url);
+		curl_setopt ($curl, CURLOPT_POST, true);
+		if (! empty ($postFields))
+			curl_setopt ($curl, CURLOPT_POSTFIELDS, $postFields);
+		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt ($curl, CURLOPT_COOKIEFILE, '../app/storage/proxmox_cookies');
+		curl_setopt ($curl, CURLOPT_COOKIEJAR, '../app/storage/proxmox_cookies');
+		curl_setopt ($curl, CURLOPT_HTTPHEADER, array ('PVEAuthCookie: ' . $this->ticket, 'CSRFPreventionToken: ' . $this->token));
+		
+		$json = curl_exec ($curl);
+		$error = curl_error ($curl);
+		
+		curl_close ($curl);
+		
+		if (empty ($error))
+		{
+			$data = json_decode ($json);
+			
+			if (empty ($data))
+				return $data;
+			else
+				return $data->data;
+		}
+		else
+		{
+			throw new Exception ($error);
+		}
 	}
 }
