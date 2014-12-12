@@ -2,6 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffMaintenanceController.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/models/UserInfo.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/user/user/search.blade.php</file>
+            <file>file:/home/robin/NetBeansProjects/sincontrol/app/routes.php</file>
+        </group>
     </open-files>
 </project-private>

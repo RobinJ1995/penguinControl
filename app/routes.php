@@ -223,6 +223,7 @@ Route::get ('staff/mail/forwarding/{mFwd}/remove', 'StaffMailForwardingControlle
 Route::get ('staff/maintenance/vhost/generate', 'StaffMaintenanceController@generateVHosts');
 Route::get ('staff/maintenance/vhost/save/all', 'StaffMaintenanceController@saveAllVHosts');
 Route::get ('staff/maintenance/service/generate', 'StaffMaintenanceController@generateServiceData');
+Route::get ('staff/maintenance/system/check', 'StaffMaintenanceController@systemCheck');
 
 // Staff // Page //
 Route::get ('staff/page', 'StaffPageController@index');
