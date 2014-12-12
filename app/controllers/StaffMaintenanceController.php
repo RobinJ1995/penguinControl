@@ -139,9 +139,11 @@ class StaffMaintenanceController extends BaseController
 					break;
 				}
 				
+				/*
 				$nUserLogs = UserLog::where ('user_info_id', $userInfo->id)->count ();
 				if ($nUserLogs < 1)
 					$alerts[] = new Alert ('Gebruiker heeft geen gelogde facturaties: ' . $user->id, 'secondary');
+				*/
 			}
 			
 			$userInfos = UserInfo::all ();
