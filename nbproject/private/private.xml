@@ -7,10 +7,7 @@
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/controllers/StaffVirtualisationController.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/libraries/ProxmoxClass.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/libraries/ProxmoxNode.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/views/staff/virtualisation/index.blade.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/libraries/ProxmoxNodeVM.php</file>
             <file>file:/home/robin/NetBeansProjects/sincontrol/app/libraries/Proxmox.php</file>
-            <file>file:/home/robin/NetBeansProjects/sincontrol/app/routes.php</file>
         </group>
     </open-files>
 </project-private>
