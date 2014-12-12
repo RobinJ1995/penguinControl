@@ -7,7 +7,13 @@ Virtualisatiecluster &bull; Staff
 @section ('content')
 <ul>
 	@foreach ($nodes as $node)
-	<li>{{ $node->getName () }}</li>
+	<li>{{ $node->getName () }}
+		<ul>
+			@foreach ($node->getVMs () as $vm)
+			<li>[{{ $vm->getId () }}] {{ $vm->getName () }}</li>
+			@endforeach
+		</ul>
+	</li>
 	@endforeach
 </ul>
 @endsection

@@ -10,9 +10,9 @@ class Proxmox extends ProxmoxClass
 	public function getNodes ()
 	{
 		$nodes = array ();
-
+		
 		foreach ($this->get ('nodes') as $nodeData)
-			$nodes[] = new ProxmoxNode (substr ($nodeData['id'], 5));
+			$nodes[] = new ProxmoxNode ($this, substr ($nodeData->id, 5));
 
 		return $nodes;
 	}

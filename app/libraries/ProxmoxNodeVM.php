@@ -1,13 +1,15 @@
 <?php
 
-class ProxmoxNodeService extends ProxmoxClass
+class ProxmoxNodeVM extends ProxmoxClass
 {
 	private $node;
-	private $vmId;
-	private $vmName;
+	private $id;
+	private $name;
 	
 	function __construct ($node, $data)
 	{
+		$node->passAuthentication ($this);
+		
 		$this->node = $node;
 		
 		$this->id = $data->vmid;
@@ -64,10 +66,10 @@ class ProxmoxNodeService extends ProxmoxClass
 		return $this->get ('suspend');
 	}
 	
-	private function get ($url)
+	protected function get ($url, $postFields = null)
 	{
 		$url = 'nodes/' . $this->node->getName () . '/qemu/' . $this->id . '/' . $url;
 		
-		return parent::get ($url);
+		return parent::get ($url, $postFields);
 	}
 }

@@ -15,19 +15,31 @@ class ProxmoxClass
 		$this->ticket = $data->ticket;
 	}
 	
+	public function passAuthentication (ProxmoxClass $api)
+	{
+		$api->receiveAuthentication ($this->token, $this->ticket);
+	}
+	
+	public function receiveAuthentication ($token, $ticket)
+	{
+		$this->token = $token;
+		$this->ticket = $ticket;
+	}
+	
 	protected function get ($url, $postFields = null)
 	{
 		$curl = curl_init ();
 		
 		curl_setopt ($curl, CURLOPT_URL, self::API . $url);
-		curl_setopt ($curl, CURLOPT_POST, true);
 		if (! empty ($postFields))
+		{
+			curl_setopt ($curl, CURLOPT_POST, true);
 			curl_setopt ($curl, CURLOPT_POSTFIELDS, $postFields);
+		}
 		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt ($curl, CURLOPT_COOKIEFILE, '../app/storage/proxmox_cookies');
-		curl_setopt ($curl, CURLOPT_COOKIEJAR, '../app/storage/proxmox_cookies');
-		curl_setopt ($curl, CURLOPT_HTTPHEADER, array ('PVEAuthCookie: ' . $this->ticket, 'CSRFPreventionToken: ' . $this->token));
+		curl_setopt ($curl, CURLOPT_HTTPHEADER, array ('CSRFPreventionToken: ' . $this->token));
+		curl_setopt ($curl, CURLOPT_COOKIE, 'PVEAuthCookie=' . $this->ticket);
 		
 		$json = curl_exec ($curl);
 		$error = curl_error ($curl);

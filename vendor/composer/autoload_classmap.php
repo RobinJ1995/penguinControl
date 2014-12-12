@@ -981,6 +981,7 @@ return array(
     'ProxmoxClass' => $baseDir . '/app/libraries/ProxmoxClass.php',
     'ProxmoxNode' => $baseDir . '/app/libraries/ProxmoxNode.php',
     'ProxmoxNodeService' => $baseDir . '/app/libraries/ProxmoxNodeService.php',
+    'ProxmoxNodeVM' => $baseDir . '/app/libraries/ProxmoxNodeVM.php',
     'Psr\\Log\\AbstractLogger' => $vendorDir . '/psr/log/Psr/Log/AbstractLogger.php',
     'Psr\\Log\\InvalidArgumentException' => $vendorDir . '/psr/log/Psr/Log/InvalidArgumentException.php',
     'Psr\\Log\\LogLevel' => $vendorDir . '/psr/log/Psr/Log/LogLevel.php',

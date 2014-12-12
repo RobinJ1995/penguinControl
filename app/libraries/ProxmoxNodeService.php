@@ -8,8 +8,10 @@ class ProxmoxNodeService extends ProxmoxClass
 	private $description;
 	private $state;
 	
-	function __construct ($node, $data)
+	function __construct ($api, $node, $data)
 	{
+		$api->passAuthentication ($this);
+		
 		$this->node = $node;
 		
 		$this->serviceName = $data->service;
@@ -63,10 +65,10 @@ class ProxmoxNodeService extends ProxmoxClass
 		return $this->get ('stop');
 	}
 	
-	private function get ($url)
+	protected function get ($url, $postFields = null)
 	{
 		$url = 'nodes/' . $this->node->getName () . '/services/' . $this->serviceName . '/' . $url;
 		
-		return parent::get ($url);
+		return parent::get ($url, $postFields);
 	}
 }

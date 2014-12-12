@@ -4,8 +4,10 @@ class ProxmoxNode extends ProxmoxClass
 {
 	private $nodeName;
 	
-	function __construct ($nodeName)
+	function __construct ($api, $nodeName)
 	{
+		$api->passAuthentication ($this);
+		
 		$this->nodeName = $nodeName;
 	}
 	
@@ -59,10 +61,10 @@ class ProxmoxNode extends ProxmoxClass
 		return $vms;
 	}
 	
-	private function get ($url)
+	protected function get ($url, $postFields = null)
 	{
 		$url = 'nodes/' . $this->nodeName . '/' . $url;
 		
-		return parent::get ($url);
+		return parent::get ($url, $postFields);
 	}
 }
