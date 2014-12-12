@@ -12,7 +12,9 @@ class MailUserController extends BaseController
 		
 		$mUsers = MailUserVirtual::where ('uid', $user->uid)->get ();
 		
-		return View::make ('mail.user.index', compact ('user', 'userInfo', 'mUsers'));
+		$alerts = array (new Alert ('Er zijn momenteel wat problemen met onze mailserver waardoor aangemaakte e-mailaccounts mogelijk niet of niet goed werken. Doorstuuradressen zouden echter wel moeten werken.', 'info'));
+		
+		return View::make ('mail.user.index', compact ('user', 'userInfo', 'mUsers', 'alerts'));
 	}
 	
 	public function create ()

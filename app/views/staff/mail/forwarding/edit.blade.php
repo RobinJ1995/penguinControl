@@ -31,7 +31,7 @@ Doorstuuradres bewerken &bull; Staff
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Bestemming:
-					<input type="email" name="destination" value="{{ Input::old ('destination', $mFwd->source) }}" required />
+					<input type="email" name="destination" value="{{ Input::old ('destination', $mFwd->destination) }}" required />
 				</label>
 				<small class="error">Geef een geldig e-mailadres in</small>
 			</div>
