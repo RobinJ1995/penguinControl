@@ -220,15 +220,14 @@ class StaffUserLogController extends BaseController
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie toegevoegd', 'success')));
 	}
 
-	public function edit ($userlogid)
+	public function edit ($userlog)
 	{
-		$userlog = UserLog::find ($userlogid);
 		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
 		
 		return View::make ('staff.user.log.edit', compact ('userlog', 'boekhoudingBetekenis'));
 	}
 
-	public function update ($userlogid)
+	public function update ($userlog)
 	{
 		$validator = Validator::make
 		(
@@ -243,18 +242,16 @@ class StaffUserLogController extends BaseController
 		);
 
 		if ($validator->fails ())
-			return Redirect::to ('/staff/user/log/' . $userlogid . '/edit')->withInput ()->withErrors ($validator);
-
-		$userLog = UserLog::find ($userlogid);
-		$userLog->boekhouding = Input::get ('boekhouding');
-		$userLog->save ();
+			return Redirect::to ('/staff/user/log/' . $userlog->id . '/edit')->withInput ()->withErrors ($validator);
+		
+		$userlog->boekhouding = Input::get ('boekhouding');
+		$userlog->save ();
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie bijgewerkt', 'success')));
 	}
 
-	public function remove ($userlogid)
+	public function remove ($userlog)
 	{
-		$userlog = UserLog::find ($userlogid);
 		$userlog->delete ();
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie verwijderd', 'success')));

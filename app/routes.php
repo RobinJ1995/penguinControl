@@ -24,7 +24,7 @@ Route::model ('mFwd', 'MailForwardingVirtual');
 
 Route::model ('user', 'User');
 Route::model ('userInfo', 'UserInfo');
-
+Route::model ('userLog', 'UserLog');
 Route::model ('group', 'Group');
 Route::model ('limit', 'UserLimit');
 Route::model ('systemTask', 'SystemTask');
@@ -50,6 +50,7 @@ Route::pattern ('mFwd', '[0-9]+');
 
 Route::pattern ('user', '[0-9]+');
 Route::pattern ('userInfo', '[0-9]+');
+Route::pattern ('userLog', '[0-9]+');
 Route::pattern ('group', '[0-9]+');
 Route::pattern ('limit', '[0-9]+');
 Route::pattern ('systemTask', '[0-9]+');

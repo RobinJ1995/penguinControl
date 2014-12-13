@@ -9,8 +9,8 @@ Facturatie bewerken &bull; Staff
 	<fieldset>
 		<legend>Gebruikerlog bewerken</legend>
 		<div class="row">
-			<div class="large-4 medium-4 small-12 column">
-				<label>Gefactureerd:
+			<div class="large-12 medium-12 small-12 column">
+				<label>Status:
 					{{ Form::select
 						(
 							'boekhouding',
