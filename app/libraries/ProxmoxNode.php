@@ -3,12 +3,26 @@
 class ProxmoxNode extends ProxmoxClass
 {
 	private $nodeName;
-	
-	function __construct ($api, $nodeName)
+	private $disk;
+	private $cpu;
+	private $maxDisk;
+	private $maxMem;
+	private $maxCPU;
+	private $uptime;
+	private $mem;
+
+	function __construct ($api, $data)
 	{
 		$api->passAuthentication ($this);
 		
-		$this->nodeName = $nodeName;
+		$this->nodeName = $data->node;
+		$this->disk = $data->disk;
+		$this->cpu = $data->cpu;
+		$this->maxDisk = $data->maxdisk;
+		$this->maxMem = $data->maxmem;
+		$this->maxCPU = $data->maxcpu;
+		$this->uptime = $data->uptime;
+		$this->mem = $data->mem;
 	}
 	
 	public function getSysLog ()
@@ -34,6 +48,61 @@ class ProxmoxNode extends ProxmoxClass
 	public function getName ()
 	{
 		return $this->nodeName;
+	}
+	
+	public function getDisk ()
+	{
+		return $this->disk;
+	}
+
+	public function getCPU ()
+	{
+		return $this->cpu;
+	}
+
+	public function getMaxDisk ()
+	{
+		return $this->maxDisk;
+	}
+
+	public function getMaxMem ()
+	{
+		return $this->maxMem;
+	}
+
+	public function getMaxCPU ()
+	{
+		return $this->maxCPU;
+	}
+
+	public function getUptime ()
+	{
+		return $this->uptime;
+	}
+	
+	public function getUptimeDays ()
+	{
+		return round ($this->uptime / 60 / 60 / 24, 0);
+	}
+
+	public function getMem ()
+	{
+		return $this->mem;
+	}
+	
+	public function getCPUUsage ()
+	{
+		return round ($this->getCPU () / $this->getMaxCPU () * 1000, 2);
+	}
+	
+	public function getMemoryUsage ()
+	{
+		return round ($this->getMem () / $this->getMaxMem () * 100, 2);
+	}
+	
+	public function getDiskUsage ()
+	{
+		return round ($this->getDisk () / $this->getMaxDisk () * 100, 2);
 	}
 	
 	public function getServices ()

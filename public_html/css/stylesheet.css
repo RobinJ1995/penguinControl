@@ -125,6 +125,17 @@ ul.pagination li.current a:hover
 	height: 500px;
 }
 
+.virt .pricing-table .bullet-item
+{
+	text-align: left;
+}
+
+.virt .virt-vm
+{
+	text-align: center;
+	margin-top: 4px;
+}
+
 .weDontLikeSpamBots
 {
 	display: none;
