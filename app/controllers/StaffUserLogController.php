@@ -4,10 +4,10 @@ class StaffUserLogController extends BaseController
 {
 
 	private $boekhoudingBetekenis = array
-	    (
-	    -1 => 'Niet te factureren',
-	    0 => 'Nog te factureren',
-	    1 => 'Gefactureerd'
+	(
+		-1 => 'Niet te factureren',
+		0 => 'Nog te factureren',
+		1 => 'Gefactureerd'
 	);
 
 	public function index ()
@@ -35,26 +35,27 @@ class StaffUserLogController extends BaseController
 		$pagination = Input::get ('pagination');
 
 		$query = UserLog::with ('user_info.user')
-		    ->whereHas ('user_info', function ($q) use ($username, $name, $email, $schoolnr)
-		{
-			$q->where ('validated', '1')
-			->where ('username', 'LIKE', '%' . $username . '%')
-			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
-			->where ('email', 'LIKE', '%' . $email . '%')
-			->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
-		}
-		);
+			->whereHas ('user_info',
+				function ($q) use ($username, $name, $email, $schoolnr)
+				{
+					$q->where ('validated', '1')
+					->where ('username', 'LIKE', '%' . $username . '%')
+					->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
+					->where ('email', 'LIKE', '%' . $email . '%')
+					->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
+				}
+			);
 
-		if (!empty ($time_van) && !empty ($time_tot))
+		if (! empty ($time_van) && !empty ($time_tot))
 		{
 			$query->whereBetween ('time', array ($time_van, $time_tot));
 		}
 		else
 		{
-			if (!empty ($time_van))
+			if (! empty ($time_van))
 				$query->where ('time', '>', $time_van);
 
-			if (!empty ($time_tot))
+			if (! empty ($time_tot))
 				$query->where ('time', '<', $time_tot);
 		}
 
@@ -175,31 +176,32 @@ class StaffUserLogController extends BaseController
 	public function create ()
 	{
 		$users = array ();
-
+		
 		foreach (UserInfo::orderBy ('username')->get () as $userInfo)
 			$users[$userInfo->id] = $userInfo->username . ' (' . $userInfo->getFullName () . ', ' . $userInfo->schoolnr . ')';
-
+		
 		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
-
+		
 		return View::make ('staff.user.log.create', compact ('users', 'boekhoudingBetekenis'));
 	}
 
 	public function store ()
 	{
 		$validator = Validator::make
-			(
+		(
 			array
 			(
-			'user_info_id' => Input::get ('user_info_id'),
-			'Datum/tijd' => Input::get ('time'),
-			'Nieuw' => Input::get ('nieuw'),
-			'Gefactureerd' => Input::get ('boekhouding')
-			), array
+				'user_info_id' => Input::get ('user_info_id'),
+				'Datum/tijd' => Input::get ('time'),
+				'Nieuw' => Input::get ('nieuw'),
+				'Gefactureerd' => Input::get ('boekhouding')
+			),
+			array
 			(
-			'user_info_id' => array ('required', 'numeric'),
-			'Datum/tijd' => array ('required'),
-			'Nieuw' => array ('required'),
-			'Gefactureerd' => array ('required')
+				'user_info_id' => array ('required', 'numeric'),
+				'Datum/tijd' => array ('required'),
+				'Nieuw' => array ('required'),
+				'Gefactureerd' => array ('required')
 			)
 		);
 
@@ -229,13 +231,14 @@ class StaffUserLogController extends BaseController
 	public function update ($userlogid)
 	{
 		$validator = Validator::make
-			(
+		(
 			array
 			(
-			'Gefactureerd' => Input::get ('boekhouding')
-			), array
+				'Gefactureerd' => Input::get ('boekhouding')
+			),
+			array
 			(
-			'Gefactureerd' => array ('required')
+				'Gefactureerd' => array ('required')
 			)
 		);
 
