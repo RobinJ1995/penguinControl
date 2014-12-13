@@ -93,11 +93,11 @@ class StaffUserLogController extends BaseController
 
 			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 			
-			$alert = 'Facturatie(s) werden aangepast';
+			$alert = 'Facturatie(s) gewijzigd';
 		}
 		else
 		{
-			$alert = 'Er werd niks aangepast';
+			$alert = 'Geen wijzigingen doorgevoerd';
 		}
 
 		if (! empty (Input::get ('action')) && isset ($userLogs))

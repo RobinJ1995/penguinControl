@@ -134,7 +134,7 @@ Facturatie &bull; Staff
 					@endif
 				</td>
 				<td>
-					<input type="checkbox" name="userLogId[]" value="{{$userlog->id}}">
+					<input type="checkbox" name="userLogId[]" value="{{ $userlog->id }}">
 				</td>
 			</tr>
 			@endforeach
@@ -143,19 +143,20 @@ Facturatie &bull; Staff
 	{{ $paginationOn ? $userlogs->links () : '' }}
 
 	<div class="right">
-		<label>Gefactureerd:
-			{{ Form::select
-				    (
-					    'boekhouding',
-					    $boekhoudingBetekenis,
-					    0
-				    )
+		<label>
+			{{
+				Form::select
+				(
+					'boekhouding',
+					$boekhoudingBetekenis,
+					0
+				)
 			}}
 		</label>
-		<input type="submit" name="submit" value="Verander facturatiestatus" class="button radius"/>
+		<input type="submit" name="submit" value="Wijzig facturatiestatus" class="button"/>
 		<input type="hidden" name="action" value="facturatie"/>
 		<input type="hidden" name="exportBoekhouding" value="" />
-		<input type="button" value="Exporteer" data-reveal-id="modalExportSettings" class="button radius"/>
+		<input type="button" value="Exporteren" data-reveal-id="modalExportSettings" class="button"/>
 	</div>
 </form>
 
@@ -239,52 +240,55 @@ Facturatie &bull; Staff
 				</label>
 
 				<button>Zoeken</button>
+			</form>
 		</div>
 	</div>
-</form>
-
-<a class="close-reveal-modal">&#215;</a>
+	
+	<a class="close-reveal-modal">&#215;</a>
+	</div>
 </div>
 
 <div id="modalExportSettings" class="reveal-modal" data-reveal>
 	<div class="row">
 		<div class="large-12 column">
-			<h2>Exporteer</h2>
+			<h2>Exporteren</h2>
 			<form id="export" action="#" method="post">
 				<div class="row">
 					<div class="large-6 medium-12 column">
 						<label>
-							<input type="checkbox" name="exportFields[]" value="user_info.schoolnr" checked="checked"/> r-nummer
+							<input type="checkbox" name="exportFields[]" value="user_info.fname" checked="checked"/> Voornaam
 						</label>
 					</div>
 					<div class="large-6 medium-12 column">
 						<label>
-							<input type="checkbox" name="exportFields[]" value="user_info.fname" checked="checked"/> voornaam
-						</label>
-					</div>
-					<div class="large-6 medium-12 column">
-						<label>
-							<input type="checkbox" name="exportFields[]" value="user_info.lname" checked="checked"/> achternaam
-						</label>
-					</div>
-					<div class="large-6 medium-12 column">
-						<label>
-							<input type="checkbox" name="exportFields[]" value="user_info.username"/> username
-						</label>
-					</div>
-					<div class="large-6 medium-12 column">
-						<label>
-							<input type="checkbox" name="exportFields[]" value="user_info.email"/> E-Mail
+							<input type="checkbox" name="exportFields[]" value="user_info.lname" checked="checked"/> Achternaam
 						</label>
 					</div>
 					
 					<div class="large-6 medium-12 column">
 						<label>
-							<input type="checkbox" name="exportFields[]" value="user_log.time"/> datum/tijd
+							<input type="checkbox" name="exportFields[]" value="user_info.schoolnr" checked="checked"/> R-nummer
 						</label>
 					</div>
 					<div class="large-6 medium-12 column">
-						<label>Boekhouding status:
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.email"/> E-mailadres
+						</label>
+					</div>
+					
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.username"/> Gebruikersnaam
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_log.time"/> Datum/tijd
+						</label>
+					</div>
+					
+					<div class="large-6 medium-12 column">
+						<label>Facturatiestatus van geselecteerde items instellen:
 							{{ Form::select
 								(
 									'exportBoekhouding',
@@ -296,15 +300,18 @@ Facturatie &bull; Staff
 					</div>
 					<div class="large-6 medium-12 column">
 						<label>
-							<input type="submit" name="export" value="Exporteer" class="button radius"/>
+							<input type="submit" name="export" value="Exporteren" class="button"/>
 						</label>
-					</div>					
+					</div>				
 					<div class="large-6 medium-12 column">
 						<small id="exportError" class="error"></small>
 					</div>
 				</div>
 			</form>
 		</div>
+	</div>
+	
+	<a class="close-reveal-modal">&#215;</a>
 	</div>
 </div>
 @endsection
