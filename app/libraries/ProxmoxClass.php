@@ -2,7 +2,7 @@
 
 class ProxmoxClass
 {
-	const API = 'https://127.0.0.1:8006/api2/json/';
+	const API = 'https://192.168.80.21:8006/api2/json/';
 	
 	protected $token;
 	protected $ticket;
