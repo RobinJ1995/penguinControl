@@ -12,13 +12,69 @@ Facturatie &bull; Staff
 @section ('js')
 @parent
 <script type="text/javascript">
-	$(document).ready() {
-	$('#selectAllUserLog').change(function () {
-		$('input[name="userLogId[]"]').prop('checked', $(this).prop("checked"));
-	});
+	function clearExtraFields(tmpSubmitVal)
+	{
+		$('#log input[name="exportFields[]"]').remove();
+		$('form#log input[name="exportBoekhouding"]').val ();
+		$('#log input[name="action"]').val(tmpSubmitVal);
+		$('#log').removeAttr('target');
+		$('#exportError').hide();
+		$('#exportError').html();
+	}
+
+	$(document).ready(function () {
+		$('#exportError').hide();
+		$('#selectAllUserLog').change(function () {
+			$('input[name="userLogId[]"]').prop('checked', $(this).prop("checked"));
+		});
+
 		$('input[name="userLogId[]"]').change(function () {
-		$('#selectAllUserLog').prop('checked', false);
-	});
+			$('#selectAllUserLog').prop('checked', false);
+		});
+		
+		$(document).on('closed.fndtn.reveal', '[data-reveal]', function () {
+			clearExtraFields('facturatie');
+		      });
+
+		$('#export').submit(function (event) {
+			event.preventDefault();
+
+			clearExtraFields('facturatie');
+			if ($('#log input[name="userLogId[]"]:checked').length > 0)
+			{
+				$('#exportError').hide();
+				$('#exportError').html();
+				$.each($('#export input[name="exportFields[]"]'), function (i, val) {
+					if ($(this).prop('checked')) {
+						$('#log').append('<input name="exportFields[]" type="hidden" value="' + $(this).val() + '"/>');
+					}
+				});
+
+				var tmpSubmitVal = $('#log input[name="action"]').val();
+				$('#log input[name="action"]').val('export');
+				$('#log').attr('target', '_blank');
+
+				$('#modalExportSettings').foundation('reveal', 'close');
+
+				var exportBoekhouding = $('form#export select[name="exportBoekhouding"]').val ();
+				$('form#log input[name="exportBoekhouding"]').val (exportBoekhouding);
+
+				//submit form
+				$('form#log input[name="submit"]').click();
+
+
+				clearExtraFields(tmpSubmitVal);
+				$('#log input[name="action"]').val(tmpSubmitVal);
+				$('#log').removeAttr('target');
+				location.reload();
+			}
+			else
+			{
+				$('#exportError').html('Selecteer ten minste één gebruiker!');
+				$('#exportError').show();
+			}
+			
+		});
 	});
 </script>
 @endsection
@@ -27,7 +83,7 @@ Facturatie &bull; Staff
 <p>{{ $count }} zoekresultaten</p>
 
 {{ $paginationOn ? $userlogs->links () : '' }}
-<form action="/staff/user/log/edit/checked" method="post">
+<form id="log" action="/staff/user/log/edit/checked" method="post">
 	<table>
 		<thead>
 			<tr>
@@ -78,7 +134,7 @@ Facturatie &bull; Staff
 					@endif
 				</td>
 				<td>
-					<input type="checkbox" name="userLogId[]" value="{{$userlog->id}}">
+					<input type="checkbox" name="userLogId[]" value="{{ $userlog->id }}">
 				</td>
 			</tr>
 			@endforeach
@@ -87,16 +143,20 @@ Facturatie &bull; Staff
 	{{ $paginationOn ? $userlogs->links () : '' }}
 
 	<div class="right">
-		<label>Gefactureerd:
-			{{ Form::select
-				    (
-					    'boekhouding',
-					    $boekhoudingBetekenis,
-					    0
-				    )
+		<label>
+			{{
+				Form::select
+				(
+					'boekhouding',
+					$boekhoudingBetekenis,
+					0
+				)
 			}}
 		</label>
-		<input type="submit" name="submit" value="Verander facturatiestatus" class="button radius"/>
+		<input type="submit" name="submit" value="Wijzig facturatiestatus" class="button"/>
+		<input type="hidden" name="action" value="facturatie"/>
+		<input type="hidden" name="exportBoekhouding" value="" />
+		<input type="button" value="Exporteren" data-reveal-id="modalExportSettings" class="button"/>
 	</div>
 </form>
 
@@ -180,10 +240,78 @@ Facturatie &bull; Staff
 				</label>
 
 				<button>Zoeken</button>
-			</div>
+			</form>
 		</div>
-	</form>
-
+	</div>
+	
 	<a class="close-reveal-modal">&#215;</a>
+	</div>
+</div>
+
+<div id="modalExportSettings" class="reveal-modal" data-reveal>
+	<div class="row">
+		<div class="large-12 column">
+			<h2>Exporteren</h2>
+			<form id="export" action="#" method="post">
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.fname" checked="checked"/> Voornaam
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.lname" checked="checked"/> Achternaam
+						</label>
+					</div>
+					
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.schoolnr" checked="checked"/> R-nummer
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.email"/> E-mailadres
+						</label>
+					</div>
+					
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_info.username"/> Gebruikersnaam
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="checkbox" name="exportFields[]" value="user_log.time"/> Datum/tijd
+						</label>
+					</div>
+					
+					<div class="large-6 medium-12 column">
+						<label>Facturatiestatus van geselecteerde items instellen:
+							{{ Form::select
+								(
+									'exportBoekhouding',
+									array ( 'unchanged' => 'Ongewijzigd laten' ) + $boekhoudingBetekenis,
+									'unchanged'
+								)
+							}}
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<input type="submit" name="export" value="Exporteren" class="button"/>
+						</label>
+					</div>				
+					<div class="large-6 medium-12 column">
+						<small id="exportError" class="error"></small>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<a class="close-reveal-modal">&#215;</a>
+	</div>
 </div>
 @endsection
