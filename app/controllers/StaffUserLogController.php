@@ -89,88 +89,118 @@ class StaffUserLogController extends BaseController
 		{
 			$userLogsIds = Input::get ('userLogId');
 			$boekhouding = Input::get ('boekhouding');
-			$exportBoekhouding = Input::get ('exportBoekhouding');
-
-			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 			
-			$alert = 'Facturatie(s) gewijzigd';
+			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 		}
 		else
-		{
 			$alert = 'Geen wijzigingen doorgevoerd';
-		}
 
-		if (! empty (Input::get ('action')) && isset ($userLogs))
+		if (isset ($userLogs))
 		{
-			$csvHeader = array
-				(
-					'user_info.id'=>'id',
-					'user_info.username'=>'gebruikersnaam',
-					'user_info.fname'=>'voornaam',
-					'user_info.lname'=>'achternaam',
-					'user_info.email'=>'e-mail',
-					'user_info.schoolnr'=>'r-nummer',
-					'user_info.lastchange'=>'lastchange',
-					'user_info.validated'=>'validated',
-					'user_log.id'=>'user_log_id',
-					'user_log.time'=>'datum/tijd',
-					'user_log.nieuw'=>'nieuw',
-					'user_log.boekhouding'=>'boekhouding'
-				);
-			
-			if (Input::get ('action') == 'export')
-			{
-				$fields = Input::get ('exportFields');
-				
-				$output = array ();
-				$userLogsUserInfo = $userLogs->with ('user_info')->get ();
-				
-				$headers = array (
-				    'Content-Type' => 'text/csv',
-				    'Content-Disposition' => 'attachment; filename="sin_facturatie_'.date('Y_m_d_H_i_s').'.csv"',
-				);
-				
-				if ($exportBoekhouding != 'unchanged')
-				{
-					$userLogs->update (array ('boekhouding' => $exportBoekhouding));
-				}
-				
-				foreach ($fields as $field)
-				{
-					$userOutput[]= $csvHeader[$field];
-				}
-				$output[]= implode(',', $userOutput);
-				
-				
-				foreach ($userLogsUserInfo as $user_log)
-				{
-					$userOutput = array ();
-					$user_info = $user_log->user_info;
-					
-					foreach ($fields as $field)
-					{
-						if ( array_key_exists ($field, $csvHeader))
-						{
-							$arr =  explode('.', $field);
-							$table = $arr[0];
-							$tableField = $arr[1];
-							// escape values with double quotes
-							$userOutput[] = '"'.${$table}->{$tableField}.'"';
-						}
-					}
-					
-				
-					$output[]= implode(',', $userOutput);
-				}
-				
-				return Response::make (rtrim (implode (PHP_EOL, $output), "\n"), 200, $headers);
-			}
-			else
+			if(! empty (Input::get ('facturatie')))
 			{
 				$userLogs->update (array ('boekhouding' => $boekhouding));
+				$alert = 'Facturatie(s) gewijzigd';
+			}
+			
+			if(! empty (Input::get ('export')))
+			{
+				$boekhoudingBetekenis = $this->boekhoudingBetekenis;
+				return View::make ('staff.user.log.export', compact ('userLogsIds', 'boekhoudingBetekenis'));
 			}
 		}
+		
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ($alert, 'success')));
+		
+	}
+	
+	public function export ()
+	{
+		if (! empty (Input::get ('userLogId')))
+		{
+			$userLogsIds = json_decode (Input::get ('userLogId'));
+			$userLogs = UserLog::whereIn ('id', $userLogsIds);
+		}
+		
+		$boekhouding = Input::get ('boekhouding');
+		$exportSeperator = Input::get ('seperator');
+		
+		$csvHeader = array
+			(
+				'user_info.id'=>'id',
+				'user_info.username'=>'gebruikersnaam',
+				'user_info.fname'=>'voornaam',
+				'user_info.lname'=>'achternaam',
+				'user_info.email'=>'e-mail',
+				'user_info.schoolnr'=>'r-nummer',
+				'user_info.lastchange'=>'lastchange',
+				'user_info.validated'=>'validated',
+				'user_log.id'=>'user_log_id',
+				'user_log.time'=>'datum/tijd',
+				'user_log.nieuw'=>'nieuw',
+				'user_log.boekhouding'=>'boekhouding'
+			);
+		
+		
+		$fields = Input::get ('exportFields');
+
+		$output = array ();
+		$userLogsUserInfo = $userLogs->with ('user_info')->get ();
+
+		if ($boekhouding != 'unchanged')
+			$userLogs->update (array ('boekhouding' => $boekhouding));
+		
+		switch ($exportSeperator)
+		{
+			case 0:
+				$seperator = ',';
+				break;
+			case 1:
+				$seperator = ';';
+				break;
+			default :
+				$seperator = '';
+				break;
+		}
+
+		foreach ($fields as $field)
+			$userOutput[]= $csvHeader[$field];
+		
+		$output[]= implode($seperator, $userOutput);
+
+		foreach ($userLogsUserInfo as $user_log)
+		{
+			$userOutput = array ();
+			$user_info = $user_log->user_info;
+
+			foreach ($fields as $field)
+			{
+				if ( array_key_exists ($field, $csvHeader))
+				{
+					$arr =  explode('.', $field);
+					$table = $arr[0];
+					$tableField = $arr[1];
+					// escape values with double quotes
+					$userOutput[] = '"'.${$table}->{$tableField}.'"';
+				}
+			}
+
+			$output[]= implode($seperator, $userOutput);
+		}
+
+		$csvOutput = rtrim (implode (PHP_EOL, $output), "\n");
+		$fileName = 'export/sin_facturatie_'.date('Y_m_d_H_i_s').'.csv';
+		$fileHandle = fopen($fileName, 'w');
+		fwrite($fileHandle, $csvOutput);
+		fclose($fileHandle);
+		$fileLink='<a href="/'.$fileName.'" target="_blank">'.$fileName.'</a>';
+		$alert = 'Facturatie(s) gewijzigd en ge&euml;xporteerd';
+		
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (
+		    new Alert ($alert, 'success'),
+		    new Alert ($fileLink, 'info')
+		    ));
+			
 	}
 
 	public function create ()

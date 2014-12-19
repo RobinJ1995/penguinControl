@@ -174,6 +174,7 @@ Route::get ('staff/user/log/{userLog}/edit', 'StaffUserLogController@edit');
 Route::post ('staff/user/log/{userLog}/edit', 'StaffUserLogController@update');
 Route::get ('staff/user/log/{userLog}/remove', 'StaffUserLogController@remove');
 Route::post ('staff/user/log/edit/checked', 'StaffUserLogController@editChecked');
+Route::post ('staff/user/log/export', 'StaffUserLogController@export');
 
 // Staff // Website // vHost //
 Route::get ('staff/website/vhost', 'StaffVHostController@index');
