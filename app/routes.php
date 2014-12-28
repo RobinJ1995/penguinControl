@@ -146,6 +146,7 @@ Route::get ('staff/user/user/{userInfo}/validate', 'StaffUserController@getValid
 Route::post ('staff/user/user/{userInfo}/validate', 'StaffUserController@validate');
 Route::get ('staff/user/user/{userInfo}/reject', 'StaffUserController@reject');
 Route::get ('staff/user/user/{user}/more', 'StaffUserController@more');
+Route::get ('staff/user/user/{user}/more/loginToken', 'StaffUserController@generateLoginToken');
 
 // Staff // User // Limit //
 Route::get ('staff/user/limit', 'StaffUserLimitController@index');

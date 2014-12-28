@@ -796,4 +796,14 @@ class StaffUserController extends BaseController
 		
 		return View::make ('staff.user.user.more', compact ('user', 'userInfo', 'groups', 'userMailEnabledPretty', 'cryptAlgorithmPretty'));
 	}
+	
+	public function generateLoginToken ($user)
+	{
+		$userInfo = $user->getUserInfo ();
+		
+		$userInfo->logintoken = md5 (time ());
+		$userInfo->save ();
+		
+		return Redirect::to ('staff/user/user/' . $user->id . '/more')->with ('alerts', array (new Alert ('Eenmalige login token gegenereerd. Deze kan doorgegeven worden aan de gebruiker in kwestie zodat deze zelf via <em>Gebruiker</em> -> <em>Gegevens wijzigen</em> een nieuw wachtwoord kan instellen voor zijn/haar account.<br />Deze link zal automatisch vervallen wanneer deze gebruikt wordt.', 'info')));
+	}
 }
