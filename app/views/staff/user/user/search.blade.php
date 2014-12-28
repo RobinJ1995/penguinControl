@@ -36,14 +36,12 @@ Gebruikers &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/user/user/{{ $user->id }}/login" title="Aanmelden als gebruiker" class="button tiny">
-							<img src="/img/icons/login.png" alt="Login" />
-						</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button tiny {{ $user->hasExpired () ? 'alert' : '' }}">
+						<a href="/staff/user/user/{{ $user->id }}/more" title="Meer..." class="button tiny">
+							<img src="/img/icons/more.png" alt="Meer..." />
+						</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button tiny">
 							<img src="/img/icons/expire.png" alt="Expire" />
 						</a><a href="/staff/user/user/{{ $user->id }}/edit" title="Bewerken" class="button tiny">
 							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/user/user/{{ $user->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
 						</a>
 					</div>
 				</td>
