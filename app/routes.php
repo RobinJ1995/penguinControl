@@ -145,6 +145,7 @@ Route::post ('staff/user/user/{user}/expire', 'StaffUserController@expire');
 Route::get ('staff/user/user/{userInfo}/validate', 'StaffUserController@getValidate');
 Route::post ('staff/user/user/{userInfo}/validate', 'StaffUserController@validate');
 Route::get ('staff/user/user/{userInfo}/reject', 'StaffUserController@reject');
+Route::get ('staff/user/user/{user}/more', 'StaffUserController@more');
 
 // Staff // User // Limit //
 Route::get ('staff/user/limit', 'StaffUserLimitController@index');

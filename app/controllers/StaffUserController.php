@@ -753,4 +753,47 @@ class StaffUserController extends BaseController
 		
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Validatie geweigerd: ' . $userInfo->username . PHP_EOL . '</br />Gebruikersinformatie verwijderd.<br />Let op: Er is <strong>geen</strong> geautomatiseerde e-mail verstuurd naar de gebruiker in kwestie. Gelieve (indien het om een gebruiker ging, en geen bot o.i.d.) zelf even een e-mail naar de gebruiker in kwestie te sturen en er ook duidelijk bij te zeggen <strong>waarom</strong> zijn registratie geweigerd is.')));
 	}
+	
+	public function more ($user)
+	{
+		$userInfo = $user->getUserInfo ();
+		$groups = Group::all ();
+		
+		try
+		{
+			$userMailEnabledMap = array
+			(
+				'0' => 'Uit',
+				'1' => 'Aan',
+				'-1' => 'Blokkeren'
+			);
+			$userMailEnabledPretty = $userMailEnabledMap[$user->mailEnabled] . ' (' . $user->mailEnabled . ')';
+		}
+		catch (Exception $ex)
+		{
+			$userMailEnabledPretty = $user->mailEnabled;
+		}
+		
+		$cryptAlgorithm = explode ('$', $user->crypt)[1];
+		switch ($cryptAlgorithm)
+		{
+			case '1':
+				$cryptAlgorithmPretty = 'MD5';
+				break;
+			case '2a':
+				$cryptAlgorithmPretty = 'Blowfish';
+				break;
+			case '5':
+				$cryptAlgorithmPretty = 'SHA-256';
+				break;
+			case '6':
+				$cryptAlgorithmPretty = 'SHA-512';
+				break;
+			default:
+				$cryptAlgorithmPretty = 'Onbekend';
+		}
+		$cryptAlgorithmPretty .= ' ($' . $cryptAlgorithm . '$)';
+		
+		return View::make ('staff.user.user.more', compact ('user', 'userInfo', 'groups', 'userMailEnabledPretty', 'cryptAlgorithmPretty'));
+	}
 }
