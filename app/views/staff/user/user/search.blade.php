@@ -38,7 +38,7 @@ Gebruikers &bull; Staff
 					<div class="button-group radius">
 						<a href="/staff/user/user/{{ $user->id }}/more" title="Meer..." class="button tiny">
 							<img src="/img/icons/more.png" alt="Meer..." />
-						</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button tiny">
+						</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button tiny {{ $user->hasExpired () ? 'alert' : '' }}">
 							<img src="/img/icons/expire.png" alt="Expire" />
 						</a><a href="/staff/user/user/{{ $user->id }}/edit" title="Bewerken" class="button tiny">
 							<img src="/img/icons/edit.png" alt="Bewerken" />
