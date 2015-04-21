@@ -242,7 +242,19 @@ class UserController extends BaseController
 				. 'E-mailadres: '  . $userInfo->email . PHP_EOL
 				. 'r-nummer: ' . $userInfo->schoolnr . PHP_EOL;
 		
-		 mail ('sin@sinners.be', 'Gebruiker wacht op validatie', $mailMessage, 'Content-type: text/plain');
+		$mailSubject = 'Gebruiker wacht op validatie';
+		
+		$mailHeaders = array
+			(
+				"MIME-Version: 1.0",
+				"Content-type: text/plain; charset=iso-8859-1",
+				"From: SINControl <sincontrol@sinners.be>",
+				"Reply-To: SINControl <sincontrol@sinners.be>",
+				"Subject: ".$mailSubject,
+				"X-Mailer: PHP/".phpversion()
+			);
+		
+		mail ('sin@sinners.be', $mailSubject, $mailMessage, implode ("\r\n", $mailHeaders));
 		
 		return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('Uw registratie is opgeslagen. Uw gegevens zullen door onze medewerkers worden nagekeken om te verifi&euml;ren dat uw wel degelijk een student bent aan Thomas More, waarna u een e-mail zal ontvangen op het opgegeven e-mailadres met verdere instructies voor het activeren van uw account. Dit zal normaalgesproken binnen 24 uur gebeuren. Indien u de e-mail in kwestie niet kan vinden, vergeet dan ook zeker uw spam-folder niet na te kijken. Bij problemen, of indien u na 3 dagen nog steeds geen e-mail van ons heeft ontvangen, <a href="/page/contact">neem gerust contact met ons op</a>.', 'success')));
 	}
