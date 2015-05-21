@@ -1,0 +1,83 @@
+.TH "GitLab" 3 "Thu May 21 2015" "SINControl" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+GitLab \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBcreateUser\fP ($email, $password, $username, $name, $admin=false)"
+.br
+.ti -1c
+.RI "\fBgetUser\fP ($id)"
+.br
+.ti -1c
+.RI "\fBgetUsers\fP ()"
+.br
+.ti -1c
+.RI "\fBchangePassword\fP ($id, $password)"
+.br
+.ti -1c
+.RI "\fBchangeName\fP ($id, $name)"
+.br
+.ti -1c
+.RI "\fBchangeEmail\fP ($id, $email)"
+.br
+.ti -1c
+.RI "\fBchangeAdmin\fP ($id, $admin)"
+.br
+.in -1c
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "const \fBAPI\fP = 'http://192\&.168\&.40\&.113/api/v3/'"
+.br
+.ti -1c
+.RI "const \fBPRIVATE_TOKEN\fP = 'ZtutV8V7QSxf5kjQLdan'"
+.br
+.in -1c
+.SS "Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBupdateUser\fP ($id, $type, $value)"
+.br
+.ti -1c
+.RI "\fBserializePost\fP ($fields)"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "changeAdmin ( $id,  $admin)"
+
+.SS "changeEmail ( $id,  $email)"
+
+.SS "changeName ( $id,  $name)"
+
+.SS "changePassword ( $id,  $password)"
+
+.SS "createUser ( $email,  $password,  $username,  $name,  $admin = \fCfalse\fP)"
+
+.SS "getUser ( $id)"
+
+.SS "getUsers ()"
+
+.SS "serializePost ( $fields)\fC [private]\fP"
+
+.SS "updateUser ( $id,  $type,  $value)\fC [private]\fP"
+
+.SH "Field Documentation"
+.PP 
+.SS "const API = 'http://192\&.168\&.40\&.113/api/v3/'"
+
+.SS "const PRIVATE_TOKEN = 'ZtutV8V7QSxf5kjQLdan'"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SINControl from the source code\&.

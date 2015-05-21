@@ -1,0 +1,88 @@
+\hypertarget{cron_8php}{}\section{/home/robin/\+Netbeans\+Projects/sincontrol/scripts/cron.php File Reference}
+\label{cron_8php}\index{/home/robin/\+Netbeans\+Projects/sincontrol/scripts/cron.\+php@{/home/robin/\+Netbeans\+Projects/sincontrol/scripts/cron.\+php}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+foreach(\$tasks as \$task) \hyperlink{cron_8php_ac8beca3d1eb1e13d938367de0d716cda}{apache\+Reload} ()
+\item 
+\hyperlink{cron_8php_a88f3d62889286e3f542ba1616df7e6a8}{homedir\+\_\+prepare} (\$user, \$group, \$homedir)
+\item 
+\hyperlink{cron_8php_a37d53ce9ff36677bd4254c0d3746533c}{nuke\+Expired\+V\+Hosts} (\$db)
+\item 
+\hyperlink{cron_8php_a4dc82717593f1a350082e63516634311}{run\+Command} (\$command)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{cron_8php_a1fa3127fc82f96b1436d871ef02be319}{\$db}
+\item 
+\hyperlink{cron_8php_af1d5ccdee975b8f4d20aaffc5b28557c}{\$now} = time ()
+\item 
+\hyperlink{cron_8php_aebdff6d420d3918695f9e95bc01a4d38}{\$tasks} = \hyperlink{class_system_task_aebdfa979f8604b14742945bb8b157abb}{System\+Task\+::get} (\$db)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{cron_8php_ac8beca3d1eb1e13d938367de0d716cda}{}\index{cron.\+php@{cron.\+php}!apache\+Reload@{apache\+Reload}}
+\index{apache\+Reload@{apache\+Reload}!cron.\+php@{cron.\+php}}
+\subsubsection[{apache\+Reload}]{\setlength{\rightskip}{0pt plus 5cm}foreach (\$tasks as \$task) apache\+Reload (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{cron_8php_ac8beca3d1eb1e13d938367de0d716cda}
+\hypertarget{cron_8php_a88f3d62889286e3f542ba1616df7e6a8}{}\index{cron.\+php@{cron.\+php}!homedir\+\_\+prepare@{homedir\+\_\+prepare}}
+\index{homedir\+\_\+prepare@{homedir\+\_\+prepare}!cron.\+php@{cron.\+php}}
+\subsubsection[{homedir\+\_\+prepare}]{\setlength{\rightskip}{0pt plus 5cm}homedir\+\_\+prepare (
+\begin{DoxyParamCaption}
+\item[{}]{\$user, }
+\item[{}]{\$group, }
+\item[{}]{\$homedir}
+\end{DoxyParamCaption}
+)}\label{cron_8php_a88f3d62889286e3f542ba1616df7e6a8}
+\hypertarget{cron_8php_a37d53ce9ff36677bd4254c0d3746533c}{}\index{cron.\+php@{cron.\+php}!nuke\+Expired\+V\+Hosts@{nuke\+Expired\+V\+Hosts}}
+\index{nuke\+Expired\+V\+Hosts@{nuke\+Expired\+V\+Hosts}!cron.\+php@{cron.\+php}}
+\subsubsection[{nuke\+Expired\+V\+Hosts}]{\setlength{\rightskip}{0pt plus 5cm}nuke\+Expired\+V\+Hosts (
+\begin{DoxyParamCaption}
+\item[{}]{\$db}
+\end{DoxyParamCaption}
+)}\label{cron_8php_a37d53ce9ff36677bd4254c0d3746533c}
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=338pt]{cron_8php_a37d53ce9ff36677bd4254c0d3746533c_cgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{cron_8php_a4dc82717593f1a350082e63516634311}{}\index{cron.\+php@{cron.\+php}!run\+Command@{run\+Command}}
+\index{run\+Command@{run\+Command}!cron.\+php@{cron.\+php}}
+\subsubsection[{run\+Command}]{\setlength{\rightskip}{0pt plus 5cm}run\+Command (
+\begin{DoxyParamCaption}
+\item[{}]{\$command}
+\end{DoxyParamCaption}
+)}\label{cron_8php_a4dc82717593f1a350082e63516634311}
+
+
+\subsection{Variable Documentation}
+\hypertarget{cron_8php_a1fa3127fc82f96b1436d871ef02be319}{}\index{cron.\+php@{cron.\+php}!\$db@{\$db}}
+\index{\$db@{\$db}!cron.\+php@{cron.\+php}}
+\subsubsection[{\$db}]{\setlength{\rightskip}{0pt plus 5cm}\$db}\label{cron_8php_a1fa3127fc82f96b1436d871ef02be319}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \textcolor{keyword}{new} PDO
+(
+    \textcolor{stringliteral}{'mysql:host=192.168.20.101;dbname=control\_new'},
+    \textcolor{stringliteral}{'control\_dev'},
+    \textcolor{stringliteral}{'***REMOVED***'}
+)
+\end{DoxyCode}
+\hypertarget{cron_8php_af1d5ccdee975b8f4d20aaffc5b28557c}{}\index{cron.\+php@{cron.\+php}!\$now@{\$now}}
+\index{\$now@{\$now}!cron.\+php@{cron.\+php}}
+\subsubsection[{\$now}]{\setlength{\rightskip}{0pt plus 5cm}\$now = time ()}\label{cron_8php_af1d5ccdee975b8f4d20aaffc5b28557c}
+\hypertarget{cron_8php_aebdff6d420d3918695f9e95bc01a4d38}{}\index{cron.\+php@{cron.\+php}!\$tasks@{\$tasks}}
+\index{\$tasks@{\$tasks}!cron.\+php@{cron.\+php}}
+\subsubsection[{\$tasks}]{\setlength{\rightskip}{0pt plus 5cm}\$tasks = {\bf System\+Task\+::get} (\$db)}\label{cron_8php_aebdff6d420d3918695f9e95bc01a4d38}

@@ -1,0 +1,67 @@
+.TH "/home/robin/NetbeansProjects/sincontrol/scripts/cron.php" 3 "Thu May 21 2015" "SINControl" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/robin/NetbeansProjects/sincontrol/scripts/cron.php \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "foreach($tasks as $task) \fBapacheReload\fP ()"
+.br
+.ti -1c
+.RI "\fBhomedir_prepare\fP ($user, $group, $homedir)"
+.br
+.ti -1c
+.RI "\fBnukeExpiredVHosts\fP ($db)"
+.br
+.ti -1c
+.RI "\fBrunCommand\fP ($command)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fB$db\fP"
+.br
+.ti -1c
+.RI "\fB$now\fP = time ()"
+.br
+.ti -1c
+.RI "\fB$tasks\fP = \fBSystemTask::get\fP ($db)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "foreach ($tasks as $task) apacheReload ()"
+
+.SS "homedir_prepare ( $user,  $group,  $homedir)"
+
+.SS "nukeExpiredVHosts ( $db)"
+
+.SS "runCommand ( $command)"
+
+.SH "Variable Documentation"
+.PP 
+.SS "$db"
+\fBInitial value:\fP
+.PP
+.nf
+= new PDO
+(
+    'mysql:host=192\&.168\&.20\&.101;dbname=control_new',
+    'control_dev',
+    '***REMOVED***'
+)
+.fi
+.SS "$now = time ()"
+
+.SS "$tasks = \fBSystemTask::get\fP ($db)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SINControl from the source code\&.

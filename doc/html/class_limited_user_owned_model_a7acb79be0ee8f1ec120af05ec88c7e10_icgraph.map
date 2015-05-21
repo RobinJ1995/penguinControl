@@ -1,0 +1,12 @@
+<map id="allowNew" name="allowNew">
+<area shape="rect" id="node2" href="$class_ftp_controller.html#a435e7d7525d4bcd0ed5e34a469f3adf6" title="FtpController\\create" alt="" coords="143,5,279,32"/>
+<area shape="rect" id="node3" href="$class_ftp_controller.html#a98e4b7b7529a9a5f6d7e96909cba8bfe" title="FtpController\\store" alt="" coords="147,56,276,83"/>
+<area shape="rect" id="node4" href="$class_mail_domain_controller.html#a435e7d7525d4bcd0ed5e34a469f3adf6" title="MailDomainController\l\\create" alt="" coords="139,107,284,149"/>
+<area shape="rect" id="node5" href="$class_mail_domain_controller.html#a98e4b7b7529a9a5f6d7e96909cba8bfe" title="MailDomainController\l\\store" alt="" coords="139,173,284,214"/>
+<area shape="rect" id="node6" href="$class_mail_forwarding_controller.html#a435e7d7525d4bcd0ed5e34a469f3adf6" title="MailForwardingController\l\\create" alt="" coords="129,238,293,279"/>
+<area shape="rect" id="node7" href="$class_mail_forwarding_controller.html#a98e4b7b7529a9a5f6d7e96909cba8bfe" title="MailForwardingController\l\\store" alt="" coords="129,303,293,345"/>
+<area shape="rect" id="node8" href="$class_mail_user_controller.html#a435e7d7525d4bcd0ed5e34a469f3adf6" title="MailUserController\l\\create" alt="" coords="147,369,275,410"/>
+<area shape="rect" id="node9" href="$class_mail_user_controller.html#a98e4b7b7529a9a5f6d7e96909cba8bfe" title="MailUserController\l\\store" alt="" coords="147,434,275,475"/>
+<area shape="rect" id="node10" href="$class_v_host_controller.html#a435e7d7525d4bcd0ed5e34a469f3adf6" title="VHostController\\create" alt="" coords="135,500,288,527"/>
+<area shape="rect" id="node11" href="$class_v_host_controller.html#a98e4b7b7529a9a5f6d7e96909cba8bfe" title="VHostController\\store" alt="" coords="138,551,285,577"/>
+</map>

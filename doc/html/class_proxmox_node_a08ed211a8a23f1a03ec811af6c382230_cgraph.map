@@ -1,0 +1,4 @@
+<map id="getDiskUsage" name="getDiskUsage">
+<area shape="rect" id="node2" href="$class_proxmox_node.html#a16938d200befaaa1c1c97cdd2221b774" title="getDisk" alt="" coords="168,5,235,32"/>
+<area shape="rect" id="node3" href="$class_proxmox_node.html#a8af01aab0c52dd578e357f9ba6496c13" title="getMaxDisk" alt="" coords="156,56,247,83"/>
+</map>
