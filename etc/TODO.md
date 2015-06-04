@@ -8,7 +8,6 @@
 
 ## Bugs
 
-* staff/mail/forwarding/*/edit: Wrong value shown in destination field
 * staff/user/user/*/edit: User has `user` as primary group. Firebug is required to set primary group to something else and enable `user` as a secondary group.
 
 ## New features
@@ -18,6 +17,4 @@
 * DNS management
 * Integrate documentation on Git server
 * Sysadmin/Dev-only toolbar with debug information, ability to disable certain validators, etc. (Robin)
-* staff/*: Search (Robin)
-* Billing
 * Statistics
