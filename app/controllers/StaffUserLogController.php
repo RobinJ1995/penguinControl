@@ -13,7 +13,7 @@ class StaffUserLogController extends BaseController
 	public function index ()
 	{
 		$userlogs = UserLog::orderBy ('time')
-		    ->with ('user_info.user')
+		    ->with ('userInfo.user')
 		    ->paginate ();
 
 		$searchUrl = action ('StaffUserLogController@search');
@@ -34,8 +34,8 @@ class StaffUserLogController extends BaseController
 		$boekhouding = Input::get ('boekhouding');
 		$pagination = Input::get ('pagination');
 
-		$query = UserLog::with ('user_info.user')
-			->whereHas ('user_info',
+		$query = UserLog::with ('userInfo.user')
+			->whereHas ('userInfo',
 				function ($q) use ($username, $name, $email, $schoolnr)
 				{
 					$q->where ('validated', '1')
@@ -127,25 +127,25 @@ class StaffUserLogController extends BaseController
 		
 		$csvHeader = array
 			(
-				'user_info.id'=>'id',
-				'user_info.username'=>'gebruikersnaam',
-				'user_info.fname'=>'voornaam',
-				'user_info.lname'=>'achternaam',
-				'user_info.email'=>'e-mail',
-				'user_info.schoolnr'=>'r-nummer',
-				'user_info.lastchange'=>'lastchange',
-				'user_info.validated'=>'validated',
-				'user_log.id'=>'user_log_id',
-				'user_log.time'=>'datum/tijd',
-				'user_log.nieuw'=>'nieuw',
-				'user_log.boekhouding'=>'boekhouding'
+				'userInfo.id'=>'id',
+				'userInfo.username'=>'gebruikersnaam',
+				'userInfo.fname'=>'voornaam',
+				'userInfo.lname'=>'achternaam',
+				'userInfo.email'=>'e-mail',
+				'userInfo.schoolnr'=>'r-nummer',
+				'userInfo.lastchange'=>'lastchange',
+				'userInfo.validated'=>'validated',
+				'userLog.id'=>'user_log_id',
+				'userLog.time'=>'datum/tijd',
+				'userLog.nieuw'=>'nieuw',
+				'userLog.boekhouding'=>'boekhouding'
 			);
 		
 		
 		$fields = Input::get ('exportFields');
 
 		$output = array ();
-		$userLogsUserInfo = $userLogs->with ('user_info')->get ();
+		$userLogsUserInfo = $userLogs->with ('userInfo')->get ();
 
 		if ($boekhouding != 'unchanged')
 			$userLogs->update (array ('boekhouding' => $boekhouding));
@@ -171,7 +171,7 @@ class StaffUserLogController extends BaseController
 		foreach ($userLogsUserInfo as $user_log)
 		{
 			$userOutput = array ();
-			$user_info = $user_log->user_info;
+			$userInfo = $user_log->userInfo;
 
 			foreach ($fields as $field)
 			{
@@ -191,14 +191,14 @@ class StaffUserLogController extends BaseController
 		$csvOutput = rtrim (implode (PHP_EOL, $output), "\n");
 		$fileName = 'export/sin_facturatie_'.date('Y_m_d_H_i_s').'.csv';
 		$fileHandle = fopen($fileName, 'w');
-		fwrite($fileHandle, $csvOutput);
-		fclose($fileHandle);
-		$fileLink='<a href="/'.$fileName.'" target="_blank">'.$fileName.'</a>';
+		fwrite ($fileHandle, $csvOutput);
+		fclose ($fileHandle);
+		$fileLink = '<a href="/'.$fileName.'" target="_blank">'.$fileName.'</a>';
 		$alert = 'Facturatie(s) gewijzigd en ge&euml;xporteerd';
 		
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (
 		    new Alert ($alert, 'success'),
-		    new Alert ($fileLink, 'info')
+		    new Alert ('CSV-bestand kan hier worden gedownload: ' . $fileLink, 'info')
 		    ));
 			
 	}

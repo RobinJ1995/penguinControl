@@ -24,7 +24,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 		return UserInfo::find ($this->user_info_id);
 	}
 	
-	public function user_info ()
+	public function userInfo ()
 	{
 		return $this->belongsTo ('UserInfo');
 	}

@@ -17,7 +17,7 @@ class UserInfo extends Eloquent
 		return (User::where ('user_info_id', $this->id)->count () > 0);
 	}
 	
-	public function user_log ()
+	public function userLog ()
 	{
 		return $this->hasMany ('UserLog');
 	}

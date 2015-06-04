@@ -13,34 +13,34 @@ Facturatie bewerken &bull; Staff
 				<input type="hidden" name="userLogId" value='{{json_encode ($userLogsIds)}}'/>
 				<div class="large-6 medium-12 column">
 					<label>
-						<input type="checkbox" name="exportFields[]" value="user_info.fname" checked="checked"/> Voornaam
+						<input type="checkbox" name="exportFields[]" value="userInfo.fname" checked="checked"/> Voornaam
 					</label>
 				</div>
 				<div class="large-6 medium-12 column">
 					<label>
-						<input type="checkbox" name="exportFields[]" value="user_info.lname" checked="checked"/> Achternaam
-					</label>
-				</div>
-
-				<div class="large-6 medium-12 column">
-					<label>
-						<input type="checkbox" name="exportFields[]" value="user_info.schoolnr" checked="checked"/> R-nummer
-					</label>
-				</div>
-				<div class="large-6 medium-12 column">
-					<label>
-						<input type="checkbox" name="exportFields[]" value="user_info.email"/> E-mailadres
+						<input type="checkbox" name="exportFields[]" value="userInfo.lname" checked="checked"/> Achternaam
 					</label>
 				</div>
 
 				<div class="large-6 medium-12 column">
 					<label>
-						<input type="checkbox" name="exportFields[]" value="user_info.username"/> Gebruikersnaam
+						<input type="checkbox" name="exportFields[]" value="userInfo.schoolnr" checked="checked"/> R-nummer
 					</label>
 				</div>
 				<div class="large-6 medium-12 column">
 					<label>
-						<input type="checkbox" name="exportFields[]" value="user_log.time"/> Datum/tijd
+						<input type="checkbox" name="exportFields[]" value="userInfo.email"/> E-mailadres
+					</label>
+				</div>
+
+				<div class="large-6 medium-12 column">
+					<label>
+						<input type="checkbox" name="exportFields[]" value="userInfo.username"/> Gebruikersnaam
+					</label>
+				</div>
+				<div class="large-6 medium-12 column">
+					<label>
+						<input type="checkbox" name="exportFields[]" value="userLog.time"/> Datum/tijd
 					</label>
 				</div>
 
