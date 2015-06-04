@@ -61,6 +61,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 		
 		return ($this->expire <= $now && $this->expire != -1);
 	}
+	
+	public function vhosts ()
+	{
+		return $this->hasMany ('ApacheVhostVirtual', 'uid', 'uid');
+	}
 
 	/**
 	 * The attributes excluded from the model's JSON form.

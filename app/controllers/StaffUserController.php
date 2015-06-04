@@ -537,6 +537,14 @@ class StaffUserController extends BaseController
 		$user->expire = $newExpireDays;
 		$user->save ();
 		
+		/*
+		 * Alle vHosts voor gebruiker ophalen en en terug opslaan aangezien
+		 * in ApacheVhostVirtual->save () de check gebeurt of de gebruiker expired
+		 * en of dus de expired document root moet worden ingesteld of de echte document root.
+		 */
+		foreach ($user->vhosts as $vhost)
+			$vhost->save ();
+		
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->getUserInfo ()->username . ' (' . $user->getUserInfo ()->getFullName () . ') ingesteld: ' . $newExpireDate)));
 	}
 	
