@@ -183,6 +183,12 @@ Gebruikers &bull; Staff
 		<label>Studentnummer:
 			<input type="text" name="schoolnr" />
 		</label>
+		<label>
+			<input type="checkbox" name="validationcode" /> Heeft ongebruikte validatiecode voor verlenging
+		</label>
+		<label>
+			<input type="checkbox" name="logintoken" /> Heeft ongebruikte eenmalige loginlink
+		</label>
 		
 		<button>Zoeken</button>
 	</form>

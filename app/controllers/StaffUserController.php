@@ -37,12 +37,19 @@ class StaffUserController extends BaseController
 		$name = Input::get ('name');
 		$email = Input::get ('email');
 		$schoolnr = Input::get ('schoolnr');
+		$unusedValidationCode = Input::get ('validationcode');
+		$unusedLoginToken = Input::get ('logintoken');
 		
 		$query = UserInfo::where ('validated', '1')
 			->where ('username', 'LIKE', '%' . $username . '%')
 			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
 			->where ('email', 'LIKE', '%' . $email . '%')
 			->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
+		if (! empty ($unusedValidationCode))
+			$query = $query->whereNotNull ('validationcode');
+		if (! empty ($unusedLoginToken))
+			$query = $query->whereNotNull ('logintoken');
+		
 		$count = $query->count ();
 		$results = $query->paginate ();
 		
