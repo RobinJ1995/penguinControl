@@ -5,7 +5,7 @@ class FtpController extends BaseController
 	public function index ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		$ftps = FtpUserVirtual::where ('uid', $user->uid)->get ();
 		
 		return View::make ('ftp.index', compact ('user', 'userInfo', 'ftps'));
@@ -14,7 +14,7 @@ class FtpController extends BaseController
 	public function create ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if (! FtpUserVirtual::allowNew ($user))
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('U mag maximaal ' . FtpUserVirtual::getLimit ($user) . ' FTP-accounts aanmaken. Indien u er meer nodig heeft, neem dan contact met ons op.', 'alert')));
@@ -52,7 +52,7 @@ class FtpController extends BaseController
 		
 		$ftp = new FtpUserVirtual ();
 		$ftp->uid = $user->uid;
-		$ftp->user = $user->getUserInfo ()->username . '_' . Input::get ('user');
+		$ftp->user = $user->userInfo->username . '_' . Input::get ('user');
 		$ftp->setPassword (Input::get ('passwd'));
 		$ftp->dir = $user->homedir . '/' . Input::get ('dir');
 		
@@ -64,7 +64,7 @@ class FtpController extends BaseController
 	public function edit ($ftp)
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if ($ftp->uid !== $user->uid)
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze FTP-account!', 'alert')));
@@ -113,11 +113,11 @@ class FtpController extends BaseController
 		if ($ftp->locked)
 			return Redirect::to ('/ftp/' . $ftp->id . '/edit')->withInput ()->with ('alerts', array (new Alert ('U kan deze FTP-account niet zelf bewerken. Indien u hier toch graag iets aan zou willen wijzigen, neem dan contact met ons op.', 'alert')));
 		
-		$ftp->user = $user->getUserInfo ()->username . '_' . Input::get ('user');
+		$ftp->user = $user->userInfo->username . '_' . Input::get ('user');
 		$ftp->dir = $user->homedir . '/' . Input::get ('dir');
 		if (! empty (Input::get ('passwd')))
 		{
-			Log::info ('FTP password change: ' . $user->getUserInfo ()->username . ' (' . $ftp->user . ') from ' . $_SERVER['REMOTE_ADDR']);
+			Log::info ('FTP password change: ' . $user->userInfo->username . ' (' . $ftp->user . ') from ' . $_SERVER['REMOTE_ADDR']);
 			
 			$ftp->setPassword (Input::get ('passwd'));
 		}

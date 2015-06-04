@@ -107,7 +107,7 @@ class DatabaseCredentials
 	
 	public static function forUser (User $user)
 	{
-		$username = $user->getUserInfo ()->username;
+		$username = $user->userInfo->username;
 		$password = self::generatePassword ();
 		$dbUsername = 'sin_u' . $user->uid;
 		

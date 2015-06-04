@@ -23,10 +23,10 @@ FTP-account bewerken &bull; Staff
 			<label>Gebruikersnaam:
 				<div class="row collapse">
 					<div class="large-4 medium-6 small-12 column">
-						<span class="prefix">{{ $ftp->getUser ()->getUserInfo ()->username }}_</span>
+						<span class="prefix">{{ $ftp->getUser ()->userInfo->username }}_</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="user" value="{{ Input::old ('user', substr ($ftp->user, strlen ($ftp->getUser ()->getUserInfo ()->username) + 1)) }}" />
+						<input type="text" name="user" value="{{ Input::old ('user', substr ($ftp->user, strlen ($ftp->getUser ()->userInfo->username) + 1)) }}" />
 					</div>
 				</div>
 			</label>

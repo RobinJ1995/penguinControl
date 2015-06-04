@@ -5,7 +5,7 @@ class UserController extends BaseController
 	public function start ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		return View::make ('user.start', compact ('user', 'userInfo'));
 	}
@@ -84,7 +84,7 @@ class UserController extends BaseController
 	public function edit ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		return View::make ('user.edit', compact ('user', 'userInfo'))->with ('alerts', array (new Alert ('Laat de velden om een nieuw wachtwoord in te stellen leeg indien u uw huidige wachtwoord niet wenst te wijzigen.', 'info')));
 	}
@@ -126,7 +126,7 @@ class UserController extends BaseController
 				return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
 		}
 		
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		$userInfo->email = Input::get ('email');
 		
 		if (! empty (Input::get ('newPass')))
@@ -339,7 +339,7 @@ class UserController extends BaseController
 	
 	public function renew ($user, $validationcode)
 	{
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if ($validationcode == $userInfo->validationcode && (! empty ($userInfo->validationcode)))
 		{
@@ -471,7 +471,7 @@ class UserController extends BaseController
 	
 	public function loginWithToken ($user, $logintoken)
 	{
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if ($logintoken == $userInfo->logintoken && (! empty ($userInfo->logintoken)))
 		{

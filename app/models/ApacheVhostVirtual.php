@@ -17,7 +17,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	{
 		// Input should be sanitised in VHostController //
 		$user = User::where ('uid', $this->uid)->first ();
-		$username = $user->getUserInfo ()->username;
+		$username = $user->userInfo->username;
 		$homedir = $user->homedir;
 		$group = Group::where ('gid', $user->gid)->first ()->name;
 		
@@ -129,7 +129,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	public function delete ()
 	{
 		$user = User::where ('uid', $this->uid)->first ();
-		$username = $user->getUserInfo ()->username;
+		$username = $user->userInfo->username;
 		
 		$identification = 'VHOST_' . $username . '_' . $this->servername;
 		$filename = $identification . '.conf';

@@ -27,7 +27,7 @@ Gegevens wijzigen
 		</div>
 		<div class="large-6 medium-6 small-12 column">
 			<label>E-mailadres:
-				<input type="email" name="email" required value="{{ Input::old ('email', $user->getUserInfo ()->email) }}" />
+				<input type="email" name="email" required value="{{ Input::old ('email', $user->userInfo->email) }}" />
 			</label>
 			<small class="error">Ongeldige waarde</small>
 		</div>

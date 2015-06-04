@@ -5,7 +5,7 @@ class MailDomainController extends BaseController
 	public function index ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
@@ -18,7 +18,7 @@ class MailDomainController extends BaseController
 	public function create ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if (! MailDomainVirtual::allowNew ($user))
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('U mag maximaal ' . MailDomainVirtual::getLimit ($user) . ' e-maildomeinen aanmaken. Indien u er meer nodig heeft, neem dan contact met ons op.', 'alert')));
@@ -63,7 +63,7 @@ class MailDomainController extends BaseController
 	public function edit ($domain)
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if ($domain->uid !== $user->uid)
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('U bent niet de eigenaar van dit e-maildomein!', 'alert')));

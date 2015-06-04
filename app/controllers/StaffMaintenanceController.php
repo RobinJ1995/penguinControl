@@ -17,7 +17,7 @@ class StaffMaintenanceController extends BaseController
 			}
 			
 			$user = Auth::user ();
-			$userInfo = $user->getUserInfo ();
+			$userInfo = $user->userInfo;
 
 			return View::make ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
@@ -42,7 +42,7 @@ class StaffMaintenanceController extends BaseController
 			}
 			
 			$user = Auth::user ();
-			$userInfo = $user->getUserInfo ();
+			$userInfo = $user->userInfo;
 			
 			return View::make ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
@@ -64,7 +64,7 @@ class StaffMaintenanceController extends BaseController
 			
 			foreach ($users as $user)
 			{
-				$userInfo = $user->getUserInfo ();
+				$userInfo = $user->userInfo;
 				
 				$vhost = new ApacheVhostVirtual (); // User's default vHost //
 				$vhost->uid = $user->uid;
@@ -130,7 +130,7 @@ class StaffMaintenanceController extends BaseController
 					$alerts[] = new Alert ('Gebruiker heeft ontbrekende velden: ' . $user->id, 'warning');
 				}
 				
-				$userInfo = $user->getUserInfo ();
+				$userInfo = $user->userInfo;
 				
 				if (empty ($userInfo))
 				{

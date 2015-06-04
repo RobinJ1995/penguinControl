@@ -85,7 +85,7 @@ class StaffFtpController extends BaseController
 		
 		$ftp = new FtpUserVirtual ();
 		$ftp->uid = Input::get ('uid');
-		$userInfo = $ftp->getUser ()->getUserInfo ();
+		$userInfo = $ftp->getUser ()->userInfo;
 		$ftp->user = (empty (Input::get ('user')) ? $userInfo->username : $userInfo->username . '_' . Input::get ('user'));
 		$ftp->setPassword (Input::get ('passwd'));
 		$ftp->dir = Input::get ('dir');
@@ -137,7 +137,7 @@ class StaffFtpController extends BaseController
 				->withErrors ($validator);
 		
 		$ftp->uid = Input::get ('uid');
-		$userInfo = $ftp->getUser ()->getUserInfo ();
+		$userInfo = $ftp->getUser ()->userInfo;
 		$ftp->user = (empty (Input::get ('user')) ? $userInfo->username : $userInfo->username . '_' . Input::get ('user'));
 		$ftp->dir = Input::get ('dir');
 		if (! empty (Input::get ('passwd')))

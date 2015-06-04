@@ -5,7 +5,7 @@ class VHostController extends BaseController
 	public function index ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		$vhosts = ApacheVhostVirtual::where ('uid', $user->uid)->get ();
 		
 		return View::make ('website.vhost.index', compact ('user', 'userInfo', 'vhosts'));
@@ -14,7 +14,7 @@ class VHostController extends BaseController
 	public function create ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if (! ApacheVhostVirtual::allowNew ($user))
 			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('U mag maximaal ' . ApacheVhostVirtual::getLimit ($user) . ' vHosts aanmaken. Indien u er meer nodig heeft, neem dan contact met ons op.', 'alert')));
@@ -42,9 +42,9 @@ class VHostController extends BaseController
 			),
 			array
 			(
-				'Host' => array ('required', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->getUserInfo ()->username),
+				'Host' => array ('required', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
 				'Beheerder' => array ('required', 'email'),
-				'Alias' => array ('different:Host', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->getUserInfo ()->username),
+				'Alias' => array ('different:Host', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
 				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')
@@ -105,7 +105,7 @@ class VHostController extends BaseController
 			array
 			(
 				'Beheerder' => array ('required', 'email'),
-				'Alias' => array ('unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->getUserInfo ()->username),
+				'Alias' => array ('unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')
 			)

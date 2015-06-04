@@ -28,7 +28,7 @@ E-mailaccounts &bull; Staff
 			</td>
 			<td>{{ $mUser->email }}</td>
 			<td>
-				<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->getUserInfo ()->username }}</span>
+				<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->userInfo->username }}</span>
 			</td>
 		</tr>
 		@endforeach

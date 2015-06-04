@@ -31,7 +31,7 @@ E-maildomeinen en -adressen &bull; Staff
 				</td>
 				<td>{{ $mUser->email }}</td>
 				<td>
-					<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->getUserInfo ()->username }}</span>
+					<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->userInfo->username }}</span>
 				</td>
 			</tr>
 			@endforeach
@@ -68,7 +68,7 @@ E-maildomeinen en -adressen &bull; Staff
 				<td>{{ $mFwd->source }}</td>
 				<td>{{ $mFwd->destination }}</td>
 				<td>
-					<span class="{{ $mFwd->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->getUser ()->getUserInfo ()->username }}</span>
+					<span class="{{ $mFwd->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->getUser ()->userInfo->username }}</span>
 				</td>
 			</tr>
 			@endforeach
@@ -103,7 +103,7 @@ E-maildomeinen en -adressen &bull; Staff
 				</td>
 				<td>{{ $domain->domain }}</td>
 				<td>
-					<span class="{{ $domain->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->getUser ()->getUserInfo ()->username }}</span>
+					<span class="{{ $domain->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->getUser ()->userInfo->username }}</span>
 				</td>
 			</tr>
 			@endforeach

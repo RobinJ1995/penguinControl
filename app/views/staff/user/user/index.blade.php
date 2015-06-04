@@ -59,9 +59,9 @@ Gebruikers &bull; Staff
 					</div>
 				</td>	
 				<td>{{ $user->uid }}</td>
-				<td>{{ $user->getUserInfo ()->username }}</td>
-				<td>{{ $user->getUserInfo ()->getFullName () }}</td>
-				<td>{{ $user->getUserInfo ()->schoolnr }}</td>
+				<td>{{ $user->userInfo->username }}</td>
+				<td>{{ $user->userInfo->getFullName () }}</td>
+				<td>{{ $user->userInfo->schoolnr }}</td>
 				<td>
 					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->getGroup ()->name) }}</span>
 				</td>
@@ -117,9 +117,9 @@ Gebruikers &bull; Staff
 					</div>
 				</td>
 				<td>{{ $user->uid }}</td>
-				<td>{{ $user->getUserInfo ()->username }}</td>
-				<td>{{ $user->getUserInfo ()->getFullName () }}</td>
-				<td>{{ $user->getUserInfo ()->schoolnr }}</td>
+				<td>{{ $user->userInfo->username }}</td>
+				<td>{{ $user->userInfo->getFullName () }}</td>
+				<td>{{ $user->userInfo->schoolnr }}</td>
 				<td>
 					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->getGroup ()->name) }}</span>
 				</td>

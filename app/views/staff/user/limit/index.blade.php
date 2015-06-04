@@ -82,7 +82,7 @@ Gebruikerslimieten &bull; Staff
 					</div>
 				</td>
 				<td>
-					<span class="{{ $limit->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $limit->getUser ()->getUserInfo ()->username }}</span>
+					<span class="{{ $limit->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $limit->getUser ()->userInfo->username }}</span>
 				</td>
 				<td>{{ $limit->ftp_user_virtual }}</td>
 				<td>{{ $limit->apache_vhost_virtual }}</td>

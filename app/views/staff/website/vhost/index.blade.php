@@ -40,7 +40,7 @@ vHosts &bull; Staff
 			<td>{{ $vhost->serveradmin }}</td>
 			<td>{{ $vhost->serveralias }}</td>
 			<td>
-				<span class="{{ $vhost->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $vhost->getUser ()->getUserInfo ()->username }}</span>
+				<span class="{{ $vhost->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $vhost->getUser ()->userInfo->username }}</span>
 			</td>
 		</tr>
 		@endforeach

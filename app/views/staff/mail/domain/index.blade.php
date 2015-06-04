@@ -28,7 +28,7 @@ E-maildomeinen &bull; Staff
 			</td>
 			<td>{{ $domain->domain }}</td>
 			<td>
-				<span class="{{ $domain->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->getUser ()->getUserInfo ()->username }}</span>
+				<span class="{{ $domain->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->getUser ()->userInfo->username }}</span>
 			</td>
 		</tr>
 		@endforeach

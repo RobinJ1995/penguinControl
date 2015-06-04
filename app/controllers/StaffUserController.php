@@ -257,7 +257,7 @@ class StaffUserController extends BaseController
 	
 	public function edit ($user)
 	{
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		$groups = Group::all ();
 		
 		return View::make ('staff.user.user.edit', compact ('user', 'userInfo', 'groups'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', 'info')));
@@ -318,7 +318,7 @@ class StaffUserController extends BaseController
 			$user->shell = Input::get ('shell');
 			$user->mailEnabled = Input::get ('mailEnabled');
 
-			$userInfo = $user->getUserInfo ();
+			$userInfo = $user->userInfo;
 			$userInfo->fname = Input::get ('fname');
 			$userInfo->lname = Input::get ('lname');
 			$userInfo->email = Input::get ('email');
@@ -391,7 +391,7 @@ class StaffUserController extends BaseController
 				DB::beginTransaction ();
 
 				$alerts = array ();
-				$userInfo = $user->getUserInfo ();
+				$userInfo = $user->userInfo;
 
 				/*
 				 * Andere dingen verwijderen gebeurt normaalgesproken al via de CASCADE DELETE in de database.
@@ -454,7 +454,7 @@ class StaffUserController extends BaseController
 
 	public function login ($user)
 	{
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		Auth::login ($user);
 		
@@ -545,7 +545,7 @@ class StaffUserController extends BaseController
 		foreach ($user->vhosts as $vhost)
 			$vhost->save ();
 		
-		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->getUserInfo ()->username . ' (' . $user->getUserInfo ()->getFullName () . ') ingesteld: ' . $newExpireDate)));
+		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->userInfo->username . ' (' . $user->userInfo->getFullName () . ') ingesteld: ' . $newExpireDate)));
 	}
 	
 	public function getValidate ($userInfo)
@@ -771,7 +771,7 @@ class StaffUserController extends BaseController
 	
 	public function more ($user)
 	{
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		$groups = Group::all ();
 		
 		try
@@ -814,7 +814,7 @@ class StaffUserController extends BaseController
 	
 	public function generateLoginToken ($user)
 	{
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		$userInfo->logintoken = md5 (time ());
 		$userInfo->save ();

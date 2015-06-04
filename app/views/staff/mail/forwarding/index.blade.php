@@ -30,7 +30,7 @@ Doorstuuradressen &bull; Staff
 			<td>{{ $mFwd->source }}</td>
 			<td>{{ $mFwd->destination }}</td>
 			<td>
-				<span class="{{ $mFwd->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->getUser ()->getUserInfo ()->username }}</span>
+				<span class="{{ $mFwd->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->getUser ()->userInfo->username }}</span>
 			</td>
 		</tr>
 		@endforeach

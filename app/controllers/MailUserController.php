@@ -5,7 +5,7 @@ class MailUserController extends BaseController
 	public function index ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
@@ -20,7 +20,7 @@ class MailUserController extends BaseController
 	public function create ()
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if (! MailUserVirtual::allowNew ($user))
 			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('U mag maximaal ' . MailUserVirtual::getLimit ($user) . ' e-mailaccounts aanmaken. Indien u er meer nodig heeft, neem dan contact met ons op.', 'alert')));
@@ -80,7 +80,7 @@ class MailUserController extends BaseController
 	public function edit ($mUser)
 	{
 		$user = Auth::user ();
-		$userInfo = $user->getUserInfo ();
+		$userInfo = $user->userInfo;
 		
 		if ($mUser->uid !== $user->uid)
 			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
