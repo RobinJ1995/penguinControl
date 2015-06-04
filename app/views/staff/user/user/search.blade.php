@@ -35,7 +35,8 @@ Gebruikers &bull; Staff
 			<?php $user = $userInfo->user; ?>
 			@if (empty ($user))
 			<tr>
-				<td colspan="2">Geen bijhorende gebruiker<br />
+				<td colspan="2">
+					Geen bijhorende gebruiker<br />
 					(<kbd>user_info#{{ $userInfo->id }}</kbd>)</td>
 				<td>{{ $userInfo->username }}</td>
 				<td>{{ $userInfo->getFullName () }}</td>
