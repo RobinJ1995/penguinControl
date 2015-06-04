@@ -1,0 +1,20 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$class_user.html" title="User" alt="" coords="229,31,279,57"/>
+<area shape="rect" id="node5" href="$class_abuse_main.html" title="AbuseMain" alt="" coords="211,81,297,108"/>
+<area shape="rect" id="node6" href="$class_group.html" title="Group" alt="" coords="225,132,283,159"/>
+<area shape="rect" id="node7" href="$class_menu_item.html" title="MenuItem" alt="" coords="215,183,293,209"/>
+<area shape="rect" id="node8" href="$class_page.html" title="Page" alt="" coords="228,233,280,260"/>
+<area shape="rect" id="node9" href="$class_session.html" title="Session" alt="" coords="219,284,289,311"/>
+<area shape="rect" id="node10" href="$class_system_task.html" title="SystemTask" alt="" coords="207,335,301,361"/>
+<area shape="rect" id="node11" href="$class_user_group.html" title="UserGroup" alt="" coords="212,385,296,412"/>
+<area shape="rect" id="node12" href="$class_user_info.html" title="UserInfo" alt="" coords="219,436,289,463"/>
+<area shape="rect" id="node13" href="$class_user_log.html" title="UserLog" alt="" coords="219,487,289,513"/>
+<area shape="rect" id="node14" href="$class_user_owned_model.html" title="UserOwnedModel" alt="" coords="192,537,316,564"/>
+<area shape="rect" id="node15" href="$class_limited_user_owned_model.html" title="LimitedUserOwnedModel" alt="" coords="364,512,531,539"/>
+<area shape="rect" id="node21" href="$class_user_limit.html" title="UserLimit" alt="" coords="409,563,486,589"/>
+<area shape="rect" id="node16" href="$class_apache_vhost_virtual.html" title="ApacheVhostVirtual" alt="" coords="583,411,721,437"/>
+<area shape="rect" id="node17" href="$class_ftp_user_virtual.html" title="FtpUserVirtual" alt="" coords="599,461,705,488"/>
+<area shape="rect" id="node18" href="$class_mail_domain_virtual.html" title="MailDomainVirtual" alt="" coords="589,512,715,539"/>
+<area shape="rect" id="node19" href="$class_mail_forwarding_virtual.html" title="MailForwardingVirtual" alt="" coords="579,563,725,589"/>
+<area shape="rect" id="node20" href="$class_mail_user_virtual.html" title="MailUserVirtual" alt="" coords="597,613,707,640"/>
+</map>

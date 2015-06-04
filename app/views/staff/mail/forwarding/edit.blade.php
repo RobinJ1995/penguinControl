@@ -21,7 +21,7 @@ Doorstuuradres bewerken &bull; Staff
 						(
 							'domain',
 							$domains,
-							Input::old ('domain', substr ($mFwd->source, strpos ($mFwd->email, '@') + 1))
+							Input::old ('domain', substr ($mFwd->source, strpos ($mFwd->source, '@') + 1))
 						)
 					}}
 				</label>

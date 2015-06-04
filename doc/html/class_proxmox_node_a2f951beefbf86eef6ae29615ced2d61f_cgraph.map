@@ -1,0 +1,4 @@
+<map id="getCPUUsage" name="getCPUUsage">
+<area shape="rect" id="node2" href="$class_proxmox_node.html#a11390c027c03d78c3bda4e40ec384155" title="getCPU" alt="" coords="170,5,237,32"/>
+<area shape="rect" id="node3" href="$class_proxmox_node.html#ab4e4670092a2e4fe2e4a1d9c8aab9b8d" title="getMaxCPU" alt="" coords="157,56,249,83"/>
+</map>
