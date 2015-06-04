@@ -68,9 +68,9 @@
 		
 	</head>
 	<body>
-		<div class="row">
+		{{--<div class="row">
 			<div class="alert-box info" data-alert>De nieuwe versie van SINControl is nog in testfase. Sommige dingen zullen dus nog niet helemaal werken. Bij problemen, <a href="/page/contact">contacteer ons</a>.</div>
-		</div>
+		</div>--}}
 		
 		<header class="row">
 			<div class="large-3 columns">
