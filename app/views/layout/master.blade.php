@@ -11,6 +11,7 @@
 		@section ('css')
 		<link rel="stylesheet" href="/css/foundation.css" />
 		<link rel="stylesheet" href="/css/stylesheet.css" />
+		<link rel="stylesheet" href="/foundation-icons/foundation-icons.css" />
 		@show
 		@section ('js')
 		<script src="/js/vendor/modernizr.js"></script>
@@ -83,8 +84,8 @@
 					@section ('topMenu')
 					@if (! empty ($searchUrl))
 					<li>
-						<a href="#" class="button tiny search" data-reveal-id="modalSearch">
-							<img src="/img/icons/search.png" alt="Zoeken" />
+						<a href="#" class="button" data-reveal-id="modalSearch">
+							<i class="fi-magnifying-glass"></i>
 						</a>
 					</li>
 					@endif
