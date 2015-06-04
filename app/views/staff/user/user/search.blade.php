@@ -32,7 +32,17 @@ Gebruikers &bull; Staff
 		</thead>
 		<tbody>
 			@foreach ($results as $userInfo)
-			<?php $user = $userInfo->getUser (); ?>
+			<?php $user = $userInfo->user; ?>
+			@if (empty ($user))
+			<tr>
+				<td colspan="2">Geen bijhorende gebruiker<br />
+					(<kbd>user_info#{{ $userInfo->id }}</kbd>)</td>
+				<td>{{ $userInfo->username }}</td>
+				<td>{{ $userInfo->getFullName () }}</td>
+				<td>{{ $userInfo->schoolnr }}</td>
+				<td></td>
+			</tr>
+			@else
 			<tr>
 				<td>
 					<div class="button-group radius">
@@ -53,6 +63,7 @@ Gebruikers &bull; Staff
 					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->getGroup ()->name) }}</span>
 				</td>
 			</tr>
+			@endif
 			@endforeach
 		</tbody>
 	</table>
