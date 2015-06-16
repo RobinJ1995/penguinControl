@@ -166,11 +166,15 @@ class UserController extends BaseController
 	
 	public function getRegister ()
 	{
+		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		
 		return View::make ('user.register');
 	}
 	
 	public function register ()
 	{
+		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		
 		$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 		$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
 		
@@ -261,6 +265,8 @@ class UserController extends BaseController
 	
 	public function getExpired ($user)
 	{
+		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		
 		$septemberYet = (idate ('n') >= 9);
 		$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
 		
@@ -269,6 +275,8 @@ class UserController extends BaseController
 	
 	public function expired ($user)
 	{
+		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		
 		$validator = Validator::make
 		(
 			array
@@ -339,6 +347,8 @@ class UserController extends BaseController
 	
 	public function renew ($user, $validationcode)
 	{
+		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		
 		$userInfo = $user->userInfo;
 		
 		if ($validationcode == $userInfo->validationcode && (! empty ($userInfo->validationcode)))
