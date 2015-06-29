@@ -16,6 +16,11 @@ class SystemTask
 				`end` >= :now
 				OR `end` IS NULL
 			)
+			AND
+			(
+				`lastRun` < :now - `interval`
+				OR `lastRun` IS NULL
+			)
 			AND `started` = 0;'
 		);
 		$q->bindValue (':now', time ());
@@ -25,12 +30,12 @@ class SystemTask
 		
 		$tasks = array ();
 		foreach ($r as $task)
-			$tasks[] = new SystemTask ($task['id'], $task['type'], $task['data'], $task['start'], $task['end'], $task['interval'], $task['exitcode'], $task['started']);
+			$tasks[] = new SystemTask ($task['id'], $task['type'], $task['data'], $task['start'], $task['end'], $task['interval'], $task['exitcode'], $task['started'], $task['lastRun']);
 		
 		return $tasks;
 	}
 	
-	public function __construct ($id, $type, $data, $start, $end, $interval, $exitcode, $started)
+	public function __construct ($id, $type, $data, $start, $end, $interval, $exitcode, $started, $lastRun)
 	{
 		$this->id = $id;
 		$this->type = $type;
@@ -40,6 +45,7 @@ class SystemTask
 		$this->interval = $interval;
 		$this->exitcode = $exitcode;
 		$this->started = $started;
+		$this->lastRun = $lastRun;
 	}
 	
 	public function __get ($property)
@@ -57,7 +63,7 @@ class SystemTask
 		$q = $db->prepare
 		(
 			'UPDATE system_task
-			SET `type` = :type, `data` = :data, `start` = :start, `end` = :end, `interval` = :interval, `exitcode` = :exitcode, `started` = :started
+			SET `type` = :type, `data` = :data, `start` = :start, `end` = :end, `interval` = :interval, `exitcode` = :exitcode, `started` = :started, `lastRun` = :lastRun
 			WHERE id = :id;'
 		);
 		$q->bindValue (':type', $this->type);
@@ -67,6 +73,7 @@ class SystemTask
 		$q->bindValue (':interval', $this->interval);
 		$q->bindValue (':exitcode', $this->exitcode);
 		$q->bindValue (':started', $this->started);
+		$q->bindValue (':lastRun', $this->lastRun);
 		$q->bindValue (':id', $this->id);
 		
 		$q->execute ();
