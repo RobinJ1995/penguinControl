@@ -21,7 +21,7 @@ E-mailaccount bewerken
 						(
 							'domain',
 							$domains,
-							Input::old ('domain', substr ($mUser->email, strpos ($mUser->email, '@')))
+							Input::old ('domain', $mUser->mail_domain_virtual_id)
 						)
 					}}
 				</label>

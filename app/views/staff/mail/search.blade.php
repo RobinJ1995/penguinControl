@@ -29,7 +29,13 @@ E-maildomeinen en -adressen &bull; Staff
 						</a>
 					</div>
 				</td>
-				<td>{{ $mUser->email }}</td>
+				<td>
+					@if($mUser->mailDomainVirtual)
+						{{ $mUser->email . '@' . $mUser->mailDomainVirtual->domain }}
+					@else
+						{{ $mUser->email }} 
+					@endif
+				</td>
 				<td>
 					<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->userInfo->username }}</span>
 				</td>
@@ -65,7 +71,13 @@ E-maildomeinen en -adressen &bull; Staff
 						</a>
 					</div>
 				</td>
-				<td>{{ $mFwd->source }}</td>
+				<td>
+					@if ($mFwd->mailDomainVirtual)
+						{{$mFwd->source . '@' . $mFwd->mailDomainVirtual->domain}}
+					@else
+						{{ $mFwd->source }}
+					@endif
+				</td>
 				<td>{{ $mFwd->destination }}</td>
 				<td>
 					<span class="{{ $mFwd->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->getUser ()->userInfo->username }}</span>

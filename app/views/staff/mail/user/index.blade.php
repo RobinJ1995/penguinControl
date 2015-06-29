@@ -26,7 +26,13 @@ E-mailaccounts &bull; Staff
 					</a>
 				</div>
 			</td>
-			<td>{{ $mUser->email }}</td>
+			<td>
+				@if($mUser->mailDomainVirtual)
+					{{ $mUser->email. '@' . $mUser->mailDomainVirtual->domain }}
+				@else
+					{{ $mUser->email }} 
+				@endif
+			</td>
 			<td>
 				<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->userInfo->username }}</span>
 			</td>

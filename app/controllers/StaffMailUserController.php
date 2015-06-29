@@ -4,7 +4,8 @@ class StaffMailUserController extends BaseController
 {
 	public function index ()
 	{
-		$mUsers = MailUserVirtual::paginate ();
+		$mUsers = MailUserVirtual::with ('mailDomainVirtual')
+			->paginate ();
 		
 		$searchUrl = action ('StaffMailController@search');
 		
@@ -21,7 +22,7 @@ class StaffMailUserController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('staff.mail.user.create', compact ('domains', 'user'));
 	}
@@ -32,15 +33,16 @@ class StaffMailUserController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('email'),
 				'E-maildomein' => Input::get ('domain'),
 				'Wachtwoord' => Input::get ('password'),
 				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain,uid,' . $user->uid),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),
 				'Wachtwoord' => array ('required', 'min:8'),
 				'Wachtwoord (bevestiging)' => 'same:Wachtwoord'
 			)
@@ -53,7 +55,8 @@ class StaffMailUserController extends BaseController
 		
 		$mUser = new MailUserVirtual ();
 		$mUser->uid = $domain->uid;
-		$mUser->email = Input::get ('email') . '@' . Input::get ('domain');
+		$mUser->email = Input::get ('email');
+		$mUser->mail_domain_virtual_id = Input::get ('domain');
 		$mUser->setPassword (Input::get ('password'));
 		
 		$mUser->save ();
@@ -69,7 +72,7 @@ class StaffMailUserController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('staff.mail.user.edit', compact ('mUser', 'domains'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', 'info')));
 	}
@@ -82,15 +85,15 @@ class StaffMailUserController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('email'),
 				'E-maildomein' => Input::get ('domain'),
 				'Wachtwoord' => Input::get ('password'),
 				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email,' . $mUser->id, 'unique:mail_forwarding_virtual,source', 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain'),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email,' . $mUser->id, 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id'),
 				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
 				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord')
 			)
@@ -103,7 +106,8 @@ class StaffMailUserController extends BaseController
 		
 		$domain = MailDomainVirtual::where ('domain', Input::get ('domain'))->firstOrFail ();
 		
-		$mUser->email = Input::get ('email') . '@' . Input::get ('domain');
+		$mUser->email = Input::get ('email');
+		$mUser->mail_domain_virtual_id = Input::get ('domain');
 		$mUser->uid = $domain->uid;
 		if (! empty (Input::get ('password')))
 			$mUser->setPassword (Input::get ('password'));

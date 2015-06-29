@@ -25,7 +25,13 @@ Doorstuuradressen
 					</a>
 				</div>
 			</td>
-			<td>{{ $mFwd->source }}</td>
+			<td>
+				@if ($mFwd->mailDomainVirtual)
+					{{$mFwd->source . '@' . $mFwd->mailDomainVirtual->domain}}
+				@else
+					{{ $mFwd->source }}
+				@endif
+			</td>
 			<td>{{ $mFwd->destination }}</td>
 		</tr>
 		@endforeach

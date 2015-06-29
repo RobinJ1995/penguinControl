@@ -24,7 +24,13 @@ E-mailaccounts
 					</a>
 				</div>
 			</td>
-			<td>{{ $mUser->email }}</td>
+			<td>
+				@if($mUser->mailDomainVirtual)
+					{{ $mUser->email . '@' . $mUser->mailDomainVirtual->domain }}
+				@else
+					{{ $mUser->email }} 
+				@endif
+			</td>
 		</tr>
 		@endforeach
 	</tbody>

@@ -4,7 +4,8 @@ class StaffMailForwardingController extends BaseController
 {
 	public function index ()
 	{
-		$mFwds = MailForwardingVirtual::paginate ();
+		$mFwds = MailForwardingVirtual::with ('mailDomainVirtual')
+			->paginate ();
 		
 		$searchUrl = action ('StaffMailController@search');
 		
@@ -20,9 +21,8 @@ class StaffMailForwardingController extends BaseController
 		(
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
-		
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 
 		return View::make ('staff.mail.forwarding.create', compact ('domains', 'user'));
 	}
@@ -33,14 +33,15 @@ class StaffMailForwardingController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('source') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('source'),
 				'E-maildomein' => Input::get ('domain'),
 				'Bestemming' => Input::get ('destination')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain'),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id'),
 				'Bestemming' => array ('required', 'email')
 			)
 		);
@@ -52,7 +53,8 @@ class StaffMailForwardingController extends BaseController
 		
 		$mFwd = new MailForwardingVirtual ();
 		$mFwd->uid = $domain->uid;
-		$mFwd->source = Input::get ('source') . '@' . Input::get ('domain');
+		$mFwd->source = Input::get ('source');
+		$mFwd->mail_domain_virtual_id = Input::get ('domain');
 		$mFwd->destination = Input::get ('destination');
 		
 		$mFwd->save ();
@@ -68,7 +70,7 @@ class StaffMailForwardingController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('staff.mail.forwarding.edit', compact ('mFwd', 'domains'));
 	}
@@ -79,14 +81,15 @@ class StaffMailForwardingController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('source') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('source'),
 				'E-maildomein' => Input::get ('domain'),
 				'Bestemming' => Input::get ('destination')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source,' . $mFwd->id, 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain'),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source,' . $mFwd->id, 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id'),
 				'Bestemming' => array ('required', 'email')
 			)
 		);
