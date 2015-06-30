@@ -17,14 +17,22 @@ E-mailaccounts
 		<tr>
 			<td>
 				<div class="button-group radius">
+					@if($mUser->uid === $mUser->mailDomainVirtual->uid)
 					<a href="/mail/user/{{ $mUser->id }}/edit" title="Bewerken" class="button tiny">
 						<img src="/img/icons/edit.png" alt="Bewerken" />
 					</a><a href="/mail/user/{{ $mUser->id }}/remove" title="Verwijderen" class="button tiny alert remove">
 						<img src="/img/icons/remove.png" alt="Verwijderen" />
 					</a>
+					@endif
 				</div>
 			</td>
-			<td>{{ $mUser->email }}</td>
+			<td>
+				@if($mUser->mailDomainVirtual)
+					{{ $mUser->email . '@' . $mUser->mailDomainVirtual->domain }}
+				@else
+					{{ $mUser->email }} 
+				@endif
+			</td>
 		</tr>
 		@endforeach
 	</tbody>

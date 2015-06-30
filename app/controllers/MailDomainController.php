@@ -118,6 +118,14 @@ class MailDomainController extends BaseController
 		if ($domain->uid !== $user->uid)
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('U bent niet de eigenaar van dit e-maildomein!', 'alert')));
 		
+		$mUsersCount = MailUserVirtual::where('mail_domain_virtual_id', $domain->id)
+			->count();
+		$mFwdsCount = MailForwardingVirtual::where('mail_domain_virtual_id', $domain->id)
+			->count();
+		
+		if ($mUsersCount > 0 || $mFwdsCount > 0)
+			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('U heeft nog E-mailadressen en/of doorstuuradressen die aan dit domein zijn gekoppeld.', 'alert')));
+		
 		$domain->delete ();
 		
 		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-maildomein verwijderd', 'success')));

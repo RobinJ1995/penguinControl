@@ -7,17 +7,25 @@ class StaffMailController extends BaseController
 		$term = Input::get ('term');
 		$username = Input::get ('username');
 		
-		$mUsersQuery = MailUserVirtual::where ('email', 'LIKE', '%' . $term . '%');
-		$mFwdsQuery = MailForwardingVirtual::where
-		(
-			function ($query) use ($term)
-			{
-				$query->where ('source', 'LIKE', '%' . $term . '%')
-					->orWhere ('destination', 'LIKE', '%' . $term . '%');
-			}
-		);
-		$domainsQuery = MailDomainVirtual::where ('domain', 'LIKE', '%' . $term . '%');
+		$mUsersQuery = MailUserVirtual::with ('user');
+		$mFwdsQuery = MailForwardingVirtual::with ('user');
+		$domainsQuery = MailDomainVirtual::with ('user');
 		
+		if (! empty ($term))
+		{
+			$mUsersQuery->where ('email', 'LIKE', '%' . $term . '%')
+				->orWhereHas ('mailDomainVirtual', function( $query)use ($term){
+					$query->where ('domain', 'LIKE' , '%' . $term . '%');
+				});
+
+			$mFwdsQuery->where ('source', 'LIKE', '%' . $term . '%')
+				->orWhere ('destination', 'LIKE', '%' . $term . '%')
+				->orWhereHas ('mailDomainVirtual', function( $query)use ($term){
+					$query->where ('domain', 'LIKE' , '%' . $term . '%');
+				});
+
+			$domainsQuery->where('domain', 'LIKE', '%' . $term . '%');
+		}
 		
 		if (! empty ($username))
 		{
@@ -32,9 +40,9 @@ class StaffMailController extends BaseController
 				$uid = $user->uid;
 			}
 			
-			$mUsersQuery = $mUsersQuery->where ('uid', $uid);
-			$mFwdsQuery = $mFwdsQuery->where ('uid', $uid);
-			$domainsQuery = $domainsQuery->where ('uid', $uid);
+			$mUsersQuery->where ('uid', $uid);
+			$mFwdsQuery->where ('uid', $uid);
+			$domainsQuery->where ('uid', $uid);
 		}
 		
 		$mUsersCount = $mUsersQuery->count ();

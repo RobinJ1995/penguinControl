@@ -18,14 +18,22 @@ Doorstuuradressen
 		<tr>
 			<td>
 				<div class="button-group radius">
+					@if($mFwd->uid === $mFwd->mailDomainVirtual->uid)
 					<a href="/mail/forwarding/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
 						<img src="/img/icons/edit.png" alt="Bewerken" />
 					</a><a href="/mail/forwarding/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
 						<img src="/img/icons/remove.png" alt="Verwijderen" />
 					</a>
+					@endif
 				</div>
 			</td>
-			<td>{{ $mFwd->source }}</td>
+			<td>
+				@if ($mFwd->mailDomainVirtual)
+					{{$mFwd->source . '@' . $mFwd->mailDomainVirtual->domain}}
+				@else
+					{{ $mFwd->source }}
+				@endif
+			</td>
 			<td>{{ $mFwd->destination }}</td>
 		</tr>
 		@endforeach
