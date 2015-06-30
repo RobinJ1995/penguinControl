@@ -5,6 +5,7 @@ class StaffMailUserController extends BaseController
 	public function index ()
 	{
 		$mUsers = MailUserVirtual::with ('mailDomainVirtual')
+			->with ('user')
 			->paginate ();
 		
 		$searchUrl = action ('StaffMailController@search');

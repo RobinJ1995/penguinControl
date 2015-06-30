@@ -26,7 +26,12 @@ E-maildomeinen &bull; Staff
 					</a>
 				</div>
 			</td>
-			<td>{{ $domain->domain }}</td>
+			<td>
+				@if ($domain->user->hasExpired ())
+					<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+				@endif
+				{{ $domain->domain }}
+			</td>
 			<td>
 				<span class="{{ $domain->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->getUser ()->userInfo->username }}</span>
 			</td>

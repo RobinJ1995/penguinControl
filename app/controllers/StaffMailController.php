@@ -7,9 +7,9 @@ class StaffMailController extends BaseController
 		$term = Input::get ('term');
 		$username = Input::get ('username');
 		
-		$mUsersQuery = MailUserVirtual::query ();
-		$mFwdsQuery = MailForwardingVirtual::query ();
-		$domainsQuery = MailDomainVirtual::query ();
+		$mUsersQuery = MailUserVirtual::with ('user');
+		$mFwdsQuery = MailForwardingVirtual::with ('user');
+		$domainsQuery = MailDomainVirtual::with ('user');
 		
 		if (! empty ($term))
 		{

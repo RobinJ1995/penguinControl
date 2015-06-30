@@ -27,6 +27,14 @@ E-mailaccounts &bull; Staff
 				</div>
 			</td>
 			<td>
+				@if ($mUser->mailDomainVirtual)
+					@if ($mUser->uid !== $mUser->mailDomainVirtual->uid)
+						<img src="/img/icons/locked.png" alt="[Locked]" />
+					@endif
+				@endif
+				@if ($mUser->user->hasExpired ())
+					<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+				@endif
 				@if($mUser->mailDomainVirtual)
 					{{ $mUser->email. '@' . $mUser->mailDomainVirtual->domain }}
 				@else

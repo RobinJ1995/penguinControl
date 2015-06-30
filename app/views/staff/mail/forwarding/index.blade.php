@@ -29,10 +29,18 @@ Doorstuuradressen &bull; Staff
 			</td>
 			<td>
 				@if ($mFwd->mailDomainVirtual)
-						{{$mFwd->source . '@' . $mFwd->mailDomainVirtual->domain}}
-					@else
-						{{ $mFwd->source }}
+					@if ($mFwd->uid !== $mFwd->mailDomainVirtual->uid)
+						<img src="/img/icons/locked.png" alt="[Locked]" />
 					@endif
+				@endif
+				@if ($mFwd->user->hasExpired ())
+					<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+				@endif
+				@if ($mFwd->mailDomainVirtual)
+					{{$mFwd->source . '@' . $mFwd->mailDomainVirtual->domain}}
+				@else
+					{{ $mFwd->source }}
+				@endif
 			</td>
 			<td>{{ $mFwd->destination }}</td>
 			<td>

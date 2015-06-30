@@ -30,6 +30,14 @@ E-maildomeinen en -adressen &bull; Staff
 					</div>
 				</td>
 				<td>
+					@if ($mUser->mailDomainVirtual)
+						@if ($mUser->uid !== $mUser->mailDomainVirtual->uid)
+							<img src="/img/icons/locked.png" alt="[Locked]" />
+						@endif
+					@endif
+					@if ($mUser->user->hasExpired ())
+						<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+					@endif
 					@if($mUser->mailDomainVirtual)
 						{{ $mUser->email . '@' . $mUser->mailDomainVirtual->domain }}
 					@else
@@ -37,7 +45,7 @@ E-maildomeinen en -adressen &bull; Staff
 					@endif
 				</td>
 				<td>
-					<span class="{{ $mUser->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->getUser ()->userInfo->username }}</span>
+					<span class="{{ $mUser->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mUser->user->userInfo->username }}</span>
 				</td>
 			</tr>
 			@endforeach
@@ -73,6 +81,14 @@ E-maildomeinen en -adressen &bull; Staff
 				</td>
 				<td>
 					@if ($mFwd->mailDomainVirtual)
+						@if ($mFwd->uid !== $mFwd->mailDomainVirtual->uid)
+							<img src="/img/icons/locked.png" alt="[Locked]" />
+						@endif
+					@endif
+					@if ($mFwd->user->hasExpired ())
+						<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+					@endif
+					@if ($mFwd->mailDomainVirtual)
 						{{$mFwd->source . '@' . $mFwd->mailDomainVirtual->domain}}
 					@else
 						{{ $mFwd->source }}
@@ -80,7 +96,7 @@ E-maildomeinen en -adressen &bull; Staff
 				</td>
 				<td>{{ $mFwd->destination }}</td>
 				<td>
-					<span class="{{ $mFwd->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->getUser ()->userInfo->username }}</span>
+					<span class="{{ $mFwd->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $mFwd->user->userInfo->username }}</span>
 				</td>
 			</tr>
 			@endforeach
@@ -113,9 +129,14 @@ E-maildomeinen en -adressen &bull; Staff
 						</a>
 					</div>
 				</td>
-				<td>{{ $domain->domain }}</td>
 				<td>
-					<span class="{{ $domain->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->getUser ()->userInfo->username }}</span>
+					@if ($domain->user->hasExpired ())
+						<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+					@endif
+					{{ $domain->domain }}
+				</td>
+				<td>
+					<span class="{{ $domain->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $domain->user->userInfo->username }}</span>
 				</td>
 			</tr>
 			@endforeach

@@ -5,6 +5,7 @@ class StaffMailForwardingController extends BaseController
 	public function index ()
 	{
 		$mFwds = MailForwardingVirtual::with ('mailDomainVirtual')
+			->with ('user')
 			->paginate ();
 		
 		$searchUrl = action ('StaffMailController@search');
