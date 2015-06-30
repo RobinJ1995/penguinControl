@@ -19,7 +19,6 @@ foreach ($tasks as $task)
 {
 	$task->started = 1;
 	$task->save ($db);
-	
 	$status;
 	
 	$data = $task->data;
@@ -48,6 +47,7 @@ foreach ($tasks as $task)
 	$data['output'] = $status['output'];
 	$task->data = json_encode ($data);
 	$task->started = 0;
+	$task->lastRun = time();
 	
 	$task->save ($db);
 }

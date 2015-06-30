@@ -29,6 +29,21 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 		return $this->belongsTo ('UserInfo');
 	}
 	
+	public function mailDomainVirtual ()
+	{
+		return $this->hasMany ('MailDomainVirtual');
+	}
+	
+	public function mailForwardingVirtual ()
+	{
+		return $this->hasMany ('MailForwardingVirtual');
+	}
+	
+	public function mailUserVirtual ()
+	{
+		return $this->hasMany ('MailUserVirtual');
+	}
+	
 	public function getGroup ()
 	{
 		return Group::where ('gid', $this->gid)->first ();

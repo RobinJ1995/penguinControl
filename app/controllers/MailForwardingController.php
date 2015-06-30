@@ -10,7 +10,9 @@ class MailForwardingController extends BaseController
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
-		$mFwds = MailForwardingVirtual::where ('uid', $user->uid)->get ();
+		$mFwds = MailForwardingVirtual::where ('uid', $user->uid)
+			->with ('mailDomainVirtual')
+			->get ();
 		
 		return View::make ('mail.forwarding.index', compact ('user', 'userInfo', 'mFwds'));
 	}
@@ -32,7 +34,7 @@ class MailForwardingController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('mail.forwarding.create', compact ('user', 'userInfo', 'domains'));
 	}
@@ -48,14 +50,15 @@ class MailForwardingController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('source') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('source'),
 				'E-maildomein' => Input::get ('domain'),
 				'Bestemming' => Input::get ('destination')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'mail_for_uid:' . $user->uid),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain,uid,' . $user->uid),	
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),	
 				'Bestemming' => array ('required', 'email')
 			)
 		);
@@ -65,7 +68,8 @@ class MailForwardingController extends BaseController
 		
 		$mFwd = new MailForwardingVirtual ();
 		$mFwd->uid = $user->uid;
-		$mFwd->source = Input::get ('source') . '@' . Input::get ('domain');
+		$mFwd->source = Input::get ('source');
+		$mFwd->mail_domain_virtual_id = Input::get ('domain');
 		$mFwd->destination = Input::get ('destination');
 		
 		$mFwd->save ();
@@ -90,7 +94,7 @@ class MailForwardingController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('mail.forwarding.edit', compact ('user', 'userInfo', 'mFwd', 'domains'));
 	}
@@ -106,14 +110,15 @@ class MailForwardingController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('source') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('source'),
 				'E-maildomein' => Input::get ('domain'),
 				'Bestemming' => Input::get ('destination')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source,' . $mFwd->id, 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'mail_for_uid:' . $user->uid),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain,uid,' . $user->uid),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source,' . $mFwd->id, 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),
 				'Bestemming' => array ('required', 'email')
 			)
 		);
@@ -129,7 +134,8 @@ class MailForwardingController extends BaseController
 				->with ('alerts', array (new Alert ('U bent niet de eigenaar van dit doorstuuradres!', 'alert')));
 		
 		
-		$mFwd->source = Input::get ('source') . '@' . Input::get ('domain');
+		$mFwd->source = Input::get ('source');
+		$mFwd->mail_domain_virtual_id = Input::get ('domain');
 		$mFwd->destination = Input::get ('destination');
 		
 		$mFwd->save ();

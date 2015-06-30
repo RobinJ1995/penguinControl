@@ -11,7 +11,7 @@ Doorstuuradres bewerken
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mailadres:
-					<input type="text" name="source" value="{{ Input::old ('source', substr ($mFwd->source, 0, strpos ($mFwd->source, '@'))) }}" required />
+					<input type="text" name="source" value="{{ Input::old ('source', $mFwd->source) }}" required />
 				</label>
 				<small class="error">Verplicht veld</small>
 			</div>

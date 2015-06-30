@@ -10,7 +10,9 @@ class MailUserController extends BaseController
 		if (! $user->mailEnabled)
 			return Redirect::to ('/mail');
 		
-		$mUsers = MailUserVirtual::where ('uid', $user->uid)->get ();
+		$mUsers = MailUserVirtual::where ('uid', $user->uid)
+			->with ('mailDomainVirtual')
+			->get ();
 		
 		$alerts = array (new Alert ('Er zijn momenteel wat problemen met onze mailserver waardoor aangemaakte e-mailaccounts mogelijk niet of niet goed werken. Doorstuuradressen zouden echter wel moeten werken.', 'info'));
 		
@@ -34,7 +36,7 @@ class MailUserController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('mail.user.create', compact ('user', 'userInfo', 'domains'));
 	}
@@ -50,15 +52,16 @@ class MailUserController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('email'),
 				'E-maildomein' => Input::get ('domain'),
 				'Wachtwoord' => Input::get ('password'),
 				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'mail_for_uid:' . $user->uid),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain,uid,' . $user->uid),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),
 				'Wachtwoord' => array ('required', 'min:8'),
 				'Wachtwoord (bevestiging)' => 'same:Wachtwoord'
 			)
@@ -69,7 +72,8 @@ class MailUserController extends BaseController
 		
 		$mUser = new MailUserVirtual ();
 		$mUser->uid = $user->uid;
-		$mUser->email = Input::get ('email') . '@' . Input::get ('domain');
+		$mUser->email = Input::get ('email');
+		$mUser->mail_domain_virtual_id = Input::get ('domain');
 		$mUser->setPassword (Input::get ('password'));
 		
 		$mUser->save ();
@@ -94,7 +98,7 @@ class MailUserController extends BaseController
 			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
-			$domains[$objDomain->domain] = '@' . $objDomain->domain;
+			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
 		return View::make ('mail.user.edit', compact ('user', 'userInfo', 'mUser', 'domains'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', 'info')));
 	}
@@ -110,15 +114,16 @@ class MailUserController extends BaseController
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email') . '@' . Input::get ('domain'),
+				'E-mailadres' => Input::get ('email'),
 				'E-maildomein' => Input::get ('domain'),
 				'Wachtwoord' => Input::get ('password'),
 				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email,' . $mUser->id, 'unique:mail_forwarding_virtual,source', 'email', 'regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'mail_for_uid:' . $user->uid),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,domain,uid,' . $user->uid),
+				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email,' . $mUser->id, 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
+				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),
 				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
 				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord')
 			)
@@ -135,7 +140,8 @@ class MailUserController extends BaseController
 				->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
 		
 		
-		$mUser->email = Input::get ('email') . '@' . Input::get ('domain');
+		$mUser->email = Input::get ('email');
+		$mUser->mail_domain_virtual_id = Input::get ('domain');
 		if (! empty (Input::get ('password')))
 			$mUser->setPassword (Input::get ('password'));
 		
