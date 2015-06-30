@@ -14,12 +14,11 @@ $db->setAttribute (PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $now = time ();
 
 $tasks = SystemTask::get ($db);
-echo 'voor foreach'.PHP_EOL;
+
 foreach ($tasks as $task)
 {
 	$task->started = 1;
 	$task->save ($db);
-	echo 'system task:'.$task->id.PHP_EOL;
 	$status;
 	
 	$data = $task->data;
@@ -52,7 +51,7 @@ foreach ($tasks as $task)
 	
 	$task->save ($db);
 }
-echo 'na foreach'.PHP_EOL;
+
 function apacheReload ()
 {
 	$apache = new ServiceApache ();
