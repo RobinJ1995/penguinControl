@@ -4,18 +4,30 @@ include '../app/libraries/GitLab.php';
 
 $git = new GitLab();
 
-$email='karlos.van.hest3ss@gmail.com';
+//$user = $git->blockUser(14);
+//echo "<pre>",print_r($user),"<pre>";
+//$user2 = $git->getUser(14);
+//echo "<pre>",print_r($user2),"<pre>";
+
+//$user = $git->deleteUser ();
+
+// toon users
+$users = $git->getUsers ();
+//echo "<pre>",print_r($users),"<pre>";
+
+//$git->changeAdmin(14, true);
+
+
+$email='karlos@vanhest.be';
 $password = 'karlostest';
-$username = 'karlostest3';
+$username = 'karlostest1';
 $name = 'Karlos van Hest';
 
 
 //$user = $git->createUser($email, $password, $username, $name);
 
-//$user = $git->getUser('5');
+//$user = $git->getUser(13);
 
 //$user = $git->getUsers();
 
-$user = $git->changePassword('5','ThomasMore');
-
-echo '<pre>',  var_dump($user),'</pre>';
+//$user = $git->changePassword('13','ThomasMore');
