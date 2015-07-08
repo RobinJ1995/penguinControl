@@ -13,21 +13,21 @@ $git = new GitLab();
 
 // toon users
 $users = $git->getUsers ();
-//echo "<pre>",print_r($users),"<pre>";
+echo "<pre>",print_r($users),"<pre>";
 
-//$git->changeAdmin(14, true);
+//$git->changeAdmin(3, true);
 
 
-$email='karlos@vanhest.be';
+$email='karlos2@vanhest.be';
 $password = 'karlostest';
-$username = 'karlostest1';
-$name = 'Karlos van Hest';
+$username = 'karlostest2';
+$name = 'Karlos van Hest 2';
 
 
 //$user = $git->createUser($email, $password, $username, $name);
 
 //$user = $git->getUser(13);
 
-//$user = $git->getUsers();
 
-//$user = $git->changePassword('13','ThomasMore');
+
+//$user = $git->changePassword('14','ThomasMore');

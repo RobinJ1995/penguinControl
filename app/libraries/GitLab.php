@@ -24,6 +24,7 @@ class GitLab
 			'extern_uid' => $username,
 			'admin' => ($admin === true ? 'true' : 'false'),
 			'can_create_group' => 'true',
+			'confirm' => false
 		);
 		
 		//$strFields = $this->serializePost ($fields);
