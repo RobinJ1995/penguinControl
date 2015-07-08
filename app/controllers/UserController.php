@@ -76,6 +76,18 @@ class UserController extends BaseController
 		if ($expiresIn <= 14 && $user->expire != -1)
 			$alerts[] = new Alert ('Waarschuwing: Uw account zal over ' . $expiresIn . ' dagen vervallen. <a href="/user/' . $user->id . '/expired">Klik hier</a> om uw account te verlengen.', 'warning');
 		
+		// Checken of gebruiker een GitLab account heeft
+		// indien niet => maak er één aan
+		if ($user->gitLabId == null)
+		{
+			$git = new GitLab();
+			
+			$gitLabUser = $git->createUser($user->user_info->email, Input::get ('password'), $user->user_info->username, $user->user_info->fname . " " . $user->user_info->lname);
+			
+			$user->gitLabId = $gitLabUser->id;
+			$user->save();
+		}
+			
 		Log::info ('Login: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 		
 		return Redirect::to ('/user/start')->with ('alerts', $alerts);
@@ -126,12 +138,16 @@ class UserController extends BaseController
 				return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('Het ingevoerde huidige wachtwoord is onjuist', 'alert')));
 		}
 		
+		$git = new GitLab();
+		
 		$userInfo = $user->userInfo;
 		$userInfo->email = Input::get ('email');
+		$git->changeEmail($user->gitLabId, Input::get ('email'));
 		
 		if (! empty (Input::get ('newPass')))
 		{
 			$user->setPassword (Input::get ('newPass'));
+			$git->changePassword($user->gitLabId, Input::get ('newPass'));
 			DatabaseCredentials::forUserPrimary($userInfo->username, Input::get ('newPass'));
 			
 			$ftp = FtpUserVirtual::where ('user', $userInfo->username)->where ('locked', '1')->first ();

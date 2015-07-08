@@ -12,19 +12,21 @@ $git = new GitLab();
 //$user = $git->deleteUser ();
 
 // toon users
-$users = $git->getUsers ();
-echo "<pre>",print_r($users),"<pre>";
+//$users = $git->getUsers ();
+//echo "<pre>",print_r($users),"<pre>";
 
 //$git->changeAdmin(3, true);
 
 
-$email='karlos2@vanhest.be';
+$email='karlos3@vanhest.be';
 $password = 'karlostest';
-$username = 'karlostest2';
-$name = 'Karlos van Hest 2';
+$username = 'karlostest3';
+$name = 'Karlos van Hest 3';
 
 
 //$user = $git->createUser($email, $password, $username, $name);
+//echo "<pre>",print_r($user),"<pre>";
+
 
 //$user = $git->getUser(13);
 
