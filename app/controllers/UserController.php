@@ -182,14 +182,14 @@ class UserController extends BaseController
 	
 	public function getRegister ()
 	{
-		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		//return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
 		
 		return View::make ('user.register');
 	}
 	
 	public function register ()
 	{
-		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		//return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
 		
 		$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 		$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
@@ -256,32 +256,19 @@ class UserController extends BaseController
 		$userInfo->save ();
 		
 		Log::info ('Account registration: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
-
-		$mailMessage = 'Gebruikersnaam: ' . $userInfo->username . PHP_EOL
-				. 'Naam: ' . $userInfo->fname . ' ' . $userInfo->lname . PHP_EOL
-				. 'E-mailadres: '  . $userInfo->email . PHP_EOL
-				. 'r-nummer: ' . $userInfo->schoolnr . PHP_EOL;
 		
-		$mailSubject = 'Gebruiker wacht op validatie';
-		
-		$mailHeaders = array
-			(
-				"MIME-Version: 1.0",
-				"Content-type: text/plain; charset=iso-8859-1",
-				"From: SINControl <sincontrol@sinners.be>",
-				"Reply-To: SINControl <sincontrol@sinners.be>",
-				"Subject: ".$mailSubject,
-				"X-Mailer: PHP/".phpversion()
-			);
-		
-		mail ('sin@sinners.be', $mailSubject, $mailMessage, implode ("\r\n", $mailHeaders));
+		Mail::send ('email.staff.user.awaiting_activation', compact ('userInfo'), function ($msg) use ($userInfo)
+			{
+				$msg->to ('sin@sinners.be', 'SIN')->subject ('Gebruiker wacht op validatie');
+			}
+		);
 		
 		return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('Uw registratie is opgeslagen. Uw gegevens zullen door onze medewerkers worden nagekeken om te verifi&euml;ren dat uw wel degelijk een student bent aan Thomas More, waarna u een e-mail zal ontvangen op het opgegeven e-mailadres met verdere instructies voor het activeren van uw account. Dit zal normaalgesproken binnen 24 uur gebeuren. Indien u de e-mail in kwestie niet kan vinden, vergeet dan ook zeker uw spam-folder niet na te kijken. Bij problemen, of indien u na 3 dagen nog steeds geen e-mail van ons heeft ontvangen, <a href="/page/contact">neem gerust contact met ons op</a>.', 'success')));
 	}
 	
 	public function getExpired ($user)
 	{
-		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		//return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
 		
 		$septemberYet = (idate ('n') >= 9);
 		$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
@@ -291,7 +278,7 @@ class UserController extends BaseController
 	
 	public function expired ($user)
 	{
-		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		//return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
 		
 		$validator = Validator::make
 		(
@@ -363,7 +350,7 @@ class UserController extends BaseController
 	
 	public function renew ($user, $validationcode)
 	{
-		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
+		//return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Registraties en verlengingen voor het academiejaar 2014-2015 zijn gesloten.', 'alert')));
 		
 		$userInfo = $user->userInfo;
 		
@@ -456,18 +443,11 @@ class UserController extends BaseController
 			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
 			$user->save ();
 			
-			$message = '<p>Beste ' . $userInfo->getFullName () . '</p>' . PHP_EOL
-			. '<p>Er is zojuist een aanvraag ingediend om uw inloggegevens door te geven en/of te wijzigen. Indien u deze aanvraag niet heeft ingediend kunt u deze e-mail best negeren. Indien u e-mails zoals deze regelmatig ontvangt zonder deze zelf aangevraagd te hebben, dan kan het zijn dat iemand misbruik probeert te maken van uw SIN-account. <a href="https://sinners.be/page/contact">Contacteer ons</a> zeker in dit geval!</p>' . PHP_EOL
-			. '<p>Wij hebben uw wachtwoord tijdelijk ingesteld op <kbd>' . $random . '</kbd>. U kunt dit wachtwoord gebruiken in combinatie met uw gebruikersnaam (<kbd>' . $userInfo->username . '</kbd>) om in te loggen op onze website en uw account (die vervallen is) te verlengen.<br />'. PHP_EOL
-			. 'Wanneer uw account verlengt is dient u zelf een nieuw wachtwoord in te stellen via <em>Gebruiker -> Gegevens wijzigen</em>. Zolang u zelf geen nieuw wachtwoord heeft ingesteld zult u geen gebruik kunnen maken van sommige andere diensten zoals FTP.</p>' . PHP_EOL
-			. '<p>Wij horen het graag indien u verdere vragen of problemen heeft.</p>' . PHP_EOL
-			. '<p>Met vriendelijke groeten<br />' . PHP_EOL
-			. 'Het SIN-team</p>';
-		
-			$headers = 'From: sin@sinners.be' . "\r\n"
-				. 'Content-type: text/html'. "\r\n";
-
-			mail ($userInfo->email, 'Inloggegevens SIN-account', $message, $headers);
+			Mail::send ('email.user.amnesia_expired', compact ('userInfo'), function ($msg) use ($userInfo)
+				{
+					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Inloggegevens SIN-account');
+				}
+			);
 			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
 		}
@@ -477,18 +457,11 @@ class UserController extends BaseController
 		
 		$url = 'https://sinners.be/user/' . $user->id . '/amnesia/login/' . $userInfo->logintoken;
 		
-		$message = '<p>Beste ' . $userInfo->getFullName () . '</p>' . PHP_EOL
-			. '<p>Er is zojuist een aanvraag ingediend om uw inloggegevens door te geven en/of te wijzigen. Indien u deze aanvraag niet heeft ingediend kunt u deze e-mail best negeren. Indien u e-mails zoals deze regelmatig ontvangt zonder deze zelf aangevraagd te hebben, dan kan het zijn dat iemand misbruik probeert te maken van uw SIN-account. <a href="https://sinners.be/page/contact">Contacteer ons</a> zeker in dit geval!</p>' . PHP_EOL
-			. '<p>U kunt de volgende link eenmalig gebruiken om in te loggen op uw SIN-account: <a href="' . $url . '">' . $url . '</a><br />'. PHP_EOL
-			. 'U kunt vervolgens indien gewenst uw wachtwoord wijzigen via <em>Gebruiker -> Gegevens wijzigen</em>.</p>' . PHP_EOL
-			. '<p>Wij horen het graag indien u verdere vragen of problemen heeft.</p>' . PHP_EOL
-			. '<p>Met vriendelijke groeten<br />' . PHP_EOL
-			. 'Het SIN-team</p>';
-		
-		$headers = 'From: sin@sinners.be' . "\r\n"
-			. 'Content-type: text/html'. "\r\n";
-		
-		mail ($userInfo->email, 'Inloggegevens SIN-account', $message, $headers);
+		Mail::send ('email.user.amnesia', compact ('userInfo', 'url'), function ($msg) use ($userInfo)
+			{
+				$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Inloggegevens SIN-account');
+			}
+		);
 		
 		Log::info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
 		

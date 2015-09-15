@@ -742,15 +742,11 @@ class StaffUserController extends BaseController
 			
 			DB::commit ();
 			
-			$mailMessage = 'Beste ' . $userInfo->getFullName () . PHP_EOL
-				. PHP_EOL
-				. 'Je SIN-account is goedgekeurd en geactiveerd. Je zou je nu moeten kunnen aanmelden op sinners.be en op onze andere diensten.' . PHP_EOL
-				. 'SIN is in de loop van de zomervakantie van de grond opnieuw opgebouwd. Omdat alles nog nieuw is, kan het zijn dat er zich nog onvoorziene problemen voordoen. Als dit gebeurt, gelieve dan contact met ons op te nemen.' . PHP_EOL
-				. PHP_EOL
-				. 'Met vriendelijke groeten' . PHP_EOL
-				. 'Het SIN-team' . PHP_EOL;
-				
-			mail ($userInfo->email, 'Uw SIN-account is geactiveerd', $mailMessage, 'Content-type: text/plain');
+			Mail::send ('email.user.activated', compact ('userInfo'), function ($msg) use ($userInfo)
+				{
+					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Uw SIN-account is geactiveerd');
+				}
+			);
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}

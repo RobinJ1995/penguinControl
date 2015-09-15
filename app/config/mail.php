@@ -14,7 +14,7 @@ return array (
       |
      */
 
-    'driver' => 'smtp',
+    'driver' => 'mailgun',
     /*
       |--------------------------------------------------------------------------
       | SMTP Host Address
@@ -47,7 +47,7 @@ return array (
       | used globally for all e-mails that are sent by your application.
       |
      */
-    'from' => array ('address' => null, 'name' => null),
+    'from' => array ('address' => 'sin@sinners.be', 'name' => 'SIN'),
     /*
       |--------------------------------------------------------------------------
       | E-Mail Encryption Protocol
@@ -69,7 +69,7 @@ return array (
       | connection. You may also set the "password" value below this one.
       |
      */
-    'username' => null,
+    'username' => 'postmaster@mg.sinners.be',
     /*
       |--------------------------------------------------------------------------
       | SMTP Server Password
@@ -80,7 +80,7 @@ return array (
       | connection so that the application will be able to send messages.
       |
      */
-    'password' => null,
+    'password' => 'f949fb93e400bb90ee9fba5886fb4fd4',
     /*
       |--------------------------------------------------------------------------
       | Sendmail System Path
