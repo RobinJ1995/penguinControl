@@ -3,12 +3,12 @@
 class GitLab
 {
 	// Productie
-	//const API = 'http://192.168.20.107/api/v3/';
-	//const PRIVATE_TOKEN = '***REMOVED***';
+	const API = 'http://192.168.20.107/api/v3/';
+	const PRIVATE_TOKEN = '***REMOVED***';
 	
 	// Testing
-	const API = 'http://git.sinners.be/api/v3/';
-	const PRIVATE_TOKEN = '***REMOVED***';
+	//const API = 'http://git.sinners.be/api/v3/';
+	//const PRIVATE_TOKEN = '***REMOVED***';
 	
 	public function createUser ($email, $password, $username, $name, $admin = false)
 	{
