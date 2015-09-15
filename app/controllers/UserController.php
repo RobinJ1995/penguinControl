@@ -259,7 +259,7 @@ class UserController extends BaseController
 		
 		Mail::send ('email.staff.user.awaiting_activation', compact ('userInfo'), function ($msg) use ($userInfo)
 			{
-				$msg->to ('sin@sinners.be', 'SIN')->subject ('Gebruiker wacht op validatie');
+				$msg->to ('sinnersstaff@gmail.com', 'SIN')->subject ('Gebruiker wacht op validatie');
 			}
 		);
 		
