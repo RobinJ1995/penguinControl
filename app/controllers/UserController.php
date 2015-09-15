@@ -217,7 +217,7 @@ class UserController extends BaseController
 				'Wachtwoord (bevestiging)' => Input::get ('password_confirm'),
 				'Voornaam' => Input::get ('fname'),
 				'Achternaam' => Input::get ('lname'),
-				'E-mailadres' => Input::get ('email'),
+				'E-mailadres' => $email, //Input::get ('email'),
 				'r-nummer' => Input::get ('rnummer'),
 				'Voorwaarden' => Input::get ('termsAgree')
 			),
