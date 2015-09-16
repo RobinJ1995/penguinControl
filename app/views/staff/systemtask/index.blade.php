@@ -48,11 +48,14 @@ Systeemopdrachten &bull; Staff
 				?>
 			</td>
 			<td>
-				{{ date ('j-n-Y', $task->start) }}<br />
-				{{ date ('g:i:s A', $task->start) }}
+				{{ date ('d/n/Y', $task->start) }}<br />
+				{{ date ('H:i:s', $task->start) }}
 			</td>
 			<td>
-				{{ ! empty ($task->end) ? date ('j-n-Y', $task->end) .  '<br />' . PHP_EOL . date ('g:i:s A', $task->end) : '' }}
+				{{ ! empty ($task->end) ? date ('d/n/Y', $task->end) .  '<br />' . PHP_EOL . date ('H:i:s', $task->end) : '' }}
+			</td>
+			<td>
+				{{ ! empty ($task->lastRun) ? date ('d/n/Y', $task->lastRun) .  '<br />' . PHP_EOL . date ('H:i:s', $task->lastRun) : '' }}
 			</td>
 			<td>
 				<?php

@@ -115,7 +115,7 @@ class ApacheVhostVirtual
 			return array
 			(
 				'exitcode' => 1,
-				'output' => 'Kan niet geen symlink schrijven naar `' . self::VHOSTDIRENABLED . $filename . '`'
+				'output' => 'Kan geen symlink schrijven naar `' . self::VHOSTDIRENABLED . $filename . '`'
 			);
 	}
 }
