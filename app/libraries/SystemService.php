@@ -8,7 +8,7 @@ abstract class SystemService
 	protected $ssh; //EXAMPLE// squid // app/config/remote.php //
 	protected $needsSudo = false; // Of sudo voor het commando moet worden gezet //
 	
-	const INIT = 'sysvinit';
+	const INIT = 'systemd';
 	
 	public function status ()
 	{
