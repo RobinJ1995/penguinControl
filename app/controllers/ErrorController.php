@@ -20,16 +20,10 @@ class ErrorController extends BaseController
 			$message = 'SINControl just crashed!' . PHP_EOL
 				. 'Fix it, monkey! Fix it!' . PHP_EOL
 				. PHP_EOL
-				. $ex . PHP_EOL
-				. PHP_EOL
 				. 'Messages the user got to see: ' . PHP_EOL
 				. $strAlerts;
-
-			$headers = 'From: sin@sinners.be' . "\r\n" .
-				   'Content-type: text/plain'. "\r\n" .
-    				   'CC: r0446734@student.thomasmore.be' . "\r\n";
-
-			$mailSent = mail ('sin@sinners.be', 'Danger! Mayday! Error!' , $message, $headers);
+			    
+			$mailSent = error_send_data ('Danger! Mayday! Error!', $message, $ex);
 		}
 		
 		return View::make ('layout.error', compact ('ex', 'alerts', 'mailSent'));

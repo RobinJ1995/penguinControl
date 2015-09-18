@@ -10,6 +10,8 @@ class GitLab
 	//const API = 'http://git.sinners.be/api/v3/';
 	//const PRIVATE_TOKEN = '***REMOVED***';
 	
+	private $lastCurlInfo = NULL;
+	
 	public function createUser ($email, $password, $username, $name, $admin = false)
 	{
 		$url = self::API . 'users';
@@ -28,7 +30,7 @@ class GitLab
 		);
 		
 		//$strFields = $this->serializePost ($fields);
-		$strFields = http_build_query($fields);
+		$strFields = http_build_query ($fields);
 		
 		$curl = curl_init ();
 		
@@ -38,6 +40,8 @@ class GitLab
 		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, true);
 		
 		$result = curl_exec ($curl);
+		
+		$this->lastCurlInfo = curl_getinfo ($curl);
 		
 		curl_close ($curl);
 		
@@ -55,6 +59,8 @@ class GitLab
 		
 		$result = curl_exec ($curl);
 		
+		$this->lastCurlInfo = curl_getinfo ($curl);
+		
 		curl_close ($curl);
 		
 		return json_decode ($result);
@@ -70,6 +76,8 @@ class GitLab
 		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, true);
 		
 		$result = curl_exec ($curl);
+		
+		$this->lastCurlInfo = curl_getinfo ($curl);
 		
 		curl_close ($curl);
 		
@@ -115,6 +123,8 @@ class GitLab
 		    ));
 		
 		$result = curl_exec ($curl);
+		
+		$this->lastCurlInfo = curl_getinfo ($curl);
 		
 		curl_close ($curl);
 		
@@ -183,9 +193,16 @@ class GitLab
 		
 		$result = curl_exec ($curl);
 		
+		$this->lastCurlInfo = curl_getinfo ($curl);
+		
 		curl_close ($curl);
 		
 		return json_decode ($result);
+	}
+	
+	public function getLastCurlInfo ()
+	{
+		return $this->lastCurlInfo;
 	}
 
 	private function serializePost ($fields)
