@@ -2,7 +2,7 @@
 
 class ServiceApache
 {
-	const INIT = 'sysvinit';
+	const INIT = 'systemd';
 	
 	public function reload ()
 	{
