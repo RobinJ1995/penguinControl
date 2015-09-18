@@ -12,4 +12,5 @@ return array(
     $vendorDir . '/guzzlehttp/streams/src/functions.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
     $vendorDir . '/guzzlehttp/guzzle/src/functions.php',
+    $baseDir . '/app/helpers.php',
 );
