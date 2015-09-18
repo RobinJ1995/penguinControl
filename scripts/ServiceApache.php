@@ -24,7 +24,7 @@ class ServiceApache
 		$cmd = str_replace ('{:service:}', 'apache2', $cmdFormat);
 		$cmd = str_replace ('{:cmd:}', 'reload', $cmd);
 		
-		exec ('service apache2 reload 2>&1', $output, $exitStatus);
+		exec ($cmd . ' 2>&1', $output, $exitStatus);
 		
 		return array
 		(
