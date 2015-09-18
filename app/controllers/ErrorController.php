@@ -23,7 +23,7 @@ class ErrorController extends BaseController
 				. 'Messages the user got to see: ' . PHP_EOL
 				. $strAlerts;
 			    
-			$mailSent = error_send_data ('Danger! Mayday! Error!', $message, $ex);
+			$mailSent = error_send_data ('Danger! Mayday! Error!', $message, array ($ex, Auth::user ()));
 		}
 		
 		return View::make ('layout.error', compact ('ex', 'alerts', 'mailSent'));
