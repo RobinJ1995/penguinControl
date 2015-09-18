@@ -5,7 +5,7 @@ class UserInfo extends Eloquent
 
 	protected $table = 'user_info';
 	public $timestamps = false;
-	protected $hidden = array ('etc');
+	protected $hidden = array ('validationcode', 'logintoken', 'etc');
 	
 	public function getUser ()
 	{

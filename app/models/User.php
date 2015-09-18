@@ -14,6 +14,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	protected $table = 'user';
 	public $timestamps = false;
 	
+	protected $hidden = array ('crypt', 'smb_lm', 'smb_nt', 'remember_token');
+	
 	public function setPassword ($password)
 	{
 		$this->crypt = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
