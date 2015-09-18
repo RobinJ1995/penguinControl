@@ -80,10 +80,12 @@ class UserController extends BaseController
 		// indien niet => maak er één aan
 		if ($user->gitLabId == null)
 		{
-			$git = new GitLab ();
+			$git = NULL;
+			$gitlabUser = NULL;
 			
 			try
 			{
+				$git = new GitLab ();
 				$gitlabUser = $git->createUser ($user->userInfo->email, Input::get ('password'), $user->userInfo->username, $user->userInfo->getFullName ());
 
 				$user->gitLabId = $gitlabUser->id;
@@ -93,7 +95,7 @@ class UserController extends BaseController
 			{
 				$alerts[] = new Alert ('Er is iets misgegaan bij de communicatie met onze Git-server. U zal mogelijk uw account nog niet kunnen gebruiken op <a href="http://git.sinners.be/">onze Git-server</a>. We zullen zo snel mogelijk dit probleem proberen te verhelpen.', 'alert');
 				
-				error_send_data ('Fout bij aanmaken Git-account', 'Kan geen Git-account aanmaken voor ' . $userInfo->username . '.', $git->getLastCurlInfo ());
+				error_send_data ('Fout bij aanmaken Git-account', 'Kan geen Git-account aanmaken voor ' . $userInfo->username . '.', array ($git->getLastCurlInfo (), $gitlabUser));
 			}
 		}
 			
