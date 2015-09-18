@@ -13,7 +13,12 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	 */
 	protected $table = 'user';
 	public $timestamps = false;
-	
+
+	/**
+	 * The attributes excluded from the model's JSON form.
+	 *
+	 * @var array
+	 */
 	protected $hidden = array ('crypt', 'smb_lm', 'smb_nt', 'remember_token');
 	
 	public function setPassword ($password)
@@ -83,13 +88,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	{
 		return $this->hasMany ('ApacheVhostVirtual', 'uid', 'uid');
 	}
-
-	/**
-	 * The attributes excluded from the model's JSON form.
-	 *
-	 * @var array
-	 */
-	protected $hidden = array ('crypt');
 
 	/**
 	 * Get the unique identifier for the user.
