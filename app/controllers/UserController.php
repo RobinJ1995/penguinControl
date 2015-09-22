@@ -454,7 +454,7 @@ class UserController extends BaseController
 			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
 			$user->save ();
 			
-			Mail::send ('email.user.amnesia_expired', compact ('userInfo'), function ($msg) use ($userInfo)
+			Mail::send ('email.user.amnesia_expired', compact ('userInfo', 'random'), function ($msg) use ($userInfo)
 				{
 					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Inloggegevens SIN-account');
 				}
