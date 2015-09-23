@@ -240,7 +240,7 @@ class UserController extends BaseController
 				'Voornaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 				'Achternaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 				'E-mailadres' => array ('required', 'email'),
-				'r-nummer' => array ('required', 'regex:/^r\d\d\d\d\d\d\d$/', 'unique:user_info,schoolnr'),
+				'r-nummer' => array ('required', 'regex:/^(r\d\d\d\d\d\d\d)|(c10\d\d\d\d\d)$/', 'unique:user_info,schoolnr'),
 				'Voorwaarden' => array ('required', 'accepted')
 			)
 		);
