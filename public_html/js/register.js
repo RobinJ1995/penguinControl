@@ -5,7 +5,12 @@ $(document).ready
 		$('#veld_rnummer').on ('input',
 			function ()
 			{
-				$('#veld_email').val ($(this).val () + '@student.thomasmore.be');
+			    var nummer = $(this).val ();
+                
+			    if (nummer.startsWith ('c10'))
+			        $('#veld_email').val (nummer + '@hik.be');
+			    else
+                    $('#veld_email').val (nummer + '@student.thomasmore.be');
 			}
 		);
 	}
