@@ -12,10 +12,10 @@ class ServiceApache
 		{
 			case 'sysvinit': // Falls through //
 			case 'upstart':
-				$cmdFormat = 'service {:service:} {:cmd:}';
+				$cmdFormat = '/usr/sbin/service {:service:} {:cmd:}';
 				break;
 			case 'systemd':
-				$cmdFormat = 'systemctl {:cmd:} {:service:}';
+				$cmdFormat = '/usr/sbin/systemctl {:cmd:} {:service:}';
 				break;
 		}
 		

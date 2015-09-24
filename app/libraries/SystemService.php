@@ -26,10 +26,10 @@ abstract class SystemService
 		{
 			case 'sysvinit': // Falls through //
 			case 'upstart':
-				$cmdFormat = '{:sudo:}service {:service:} {:cmd:}';
+				$cmdFormat = '{:sudo:}/usr/sbin/service {:service:} {:cmd:}';
 				break;
 			case 'systemd':
-				$cmdFormat = '{:sudo:}systemctl {:cmd:} {:service:}';
+				$cmdFormat = '{:sudo:}/usr/sbin/systemctl {:cmd:} {:service:}';
 				break;
 		}
 		
