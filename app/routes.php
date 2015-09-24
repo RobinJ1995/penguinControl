@@ -161,7 +161,7 @@ Route::get ('staff/user/limit/{limit}/remove', 'StaffUserLimitController@remove'
 Route::get ('staff/user/group', 'StaffGroupController@index');
 Route::get ('staff/user/group/create', 'StaffGroupController@create');
 Route::post ('staff/user/group/create', 'StaffGroupController@store');
-Route::get ('staff/user/group/{user}/remove', 'StaffGroupController@remove');
+Route::get ('staff/user/group/{group}/remove', 'StaffGroupController@remove');
 
 // Staff // User // Abuse //
 Route::get ('staff/user/abuse', 'StaffAbuseController@index');
