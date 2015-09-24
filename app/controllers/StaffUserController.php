@@ -486,7 +486,7 @@ class StaffUserController extends BaseController
 			-1 => 'Vervalt nooit'
 		);
 		
-		if ($user->expire === -1)
+		if ($user->expire == -1)
 		{
 			$validUntilDate = 'Altijd';
 			$validUntilUnix = 'Niet van toepassing';
