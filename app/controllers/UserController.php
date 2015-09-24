@@ -76,27 +76,34 @@ class UserController extends BaseController
 		if ($expiresIn <= 14 && $user->expire != -1)
 			$alerts[] = new Alert ('Waarschuwing: Uw account zal over ' . $expiresIn . ' dagen vervallen. <a href="/user/' . $user->id . '/expired">Klik hier</a> om uw account te verlengen.', 'warning');
 		
-		// Checken of gebruiker een GitLab account heeft
-		// indien niet => maak er één aan
-		if ($user->gitLabId == null)
+		if (! App::environment ('local'))
 		{
-			$git = NULL;
-			$gitlabUser = NULL;
-			
-			try
+			// Checken of gebruiker een GitLab account heeft
+			// indien niet => maak er één aan
+			if ($user->gitLabId == null)
 			{
-				$git = new GitLab ();
-				$gitlabUser = $git->createUser ($user->userInfo->email, Input::get ('password'), $user->userInfo->username, $user->userInfo->getFullName ());
+				$git = NULL;
+				$gitlabUser = NULL;
 
-				$user->gitLabId = $gitlabUser->id;
-				$user->save();
+				try
+				{
+					$git = new GitLab ();
+					$gitlabUser = $git->createUser ($user->userInfo->email, Input::get ('password'), $user->userInfo->username, $user->userInfo->getFullName ());
+
+					$user->gitLabId = $gitlabUser->id;
+					$user->save();
+				}
+				catch (Exception $ex)
+				{
+					$alerts[] = new Alert ('Er is iets misgegaan bij de communicatie met onze Git-server. U zal mogelijk uw account nog niet kunnen gebruiken op <a href="http://git.sinners.be/">onze Git-server</a>. We zullen zo snel mogelijk dit probleem proberen te verhelpen.', 'alert');
+
+					error_send_data ('Fout bij aanmaken Git-account', 'Kan geen Git-account aanmaken voor ' . $userInfo->username . '.', array ($git->getLastCurlInfo (), $gitlabUser));
+				}
 			}
-			catch (Exception $ex)
-			{
-				$alerts[] = new Alert ('Er is iets misgegaan bij de communicatie met onze Git-server. U zal mogelijk uw account nog niet kunnen gebruiken op <a href="http://git.sinners.be/">onze Git-server</a>. We zullen zo snel mogelijk dit probleem proberen te verhelpen.', 'alert');
-				
-				error_send_data ('Fout bij aanmaken Git-account', 'Kan geen Git-account aanmaken voor ' . $userInfo->username . '.', array ($git->getLastCurlInfo (), $gitlabUser));
-			}
+		}
+		else
+		{
+			$alerts[] = new Alert ('Git-integratie overgeslagen omdat SINControl niet in productieomgeving draait.', 'warn');
 		}
 			
 		Log::info ('Login: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
