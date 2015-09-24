@@ -24,14 +24,12 @@ abstract class SystemService
 		
 		switch (self::INIT)
 		{
-			case 'sysvinit':
+			case 'sysvinit': // Falls through //
+			case 'upstart':
 				$cmdFormat = '{:sudo:}service {:service:} {:cmd:}';
 				break;
 			case 'systemd':
 				$cmdFormat = '{:sudo:}systemctl {:cmd:} {:service:}';
-				break;
-			case 'upstart':
-				$cmdFormat = '{:sudo:}service {:service:} {:cmd:}';
 				break;
 		}
 		

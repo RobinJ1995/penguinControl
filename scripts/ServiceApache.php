@@ -10,14 +10,12 @@ class ServiceApache
 		
 		switch (self::INIT)
 		{
-			case 'sysvinit':
+			case 'sysvinit': // Falls through //
+			case 'upstart':
 				$cmdFormat = 'service {:service:} {:cmd:}';
 				break;
 			case 'systemd':
 				$cmdFormat = 'systemctl {:cmd:} {:service:}';
-				break;
-			case 'upstart':
-				$cmdFormat = 'service {:service:} {:cmd:}';
 				break;
 		}
 		
