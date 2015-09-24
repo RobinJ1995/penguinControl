@@ -483,10 +483,10 @@ class StaffUserController extends BaseController
 			$validUntilUnix => 'Huidig: ' . $validUntilDate,
 			$next1OctUnix => 'Volgende 1 oktober: ' . $next1OctDate,
 			$nowUnix => 'Nu: ' . $nowDate,
-			-1 => 'Vervalt nooit'
+			-1 * 24 * 60 * 60 => 'Vervalt nooit'
 		);
 		
-		if ($user->expire == -1)
+		if ($user->expire === -1)
 		{
 			$validUntilDate = 'Altijd';
 			$validUntilUnix = 'Niet van toepassing';
