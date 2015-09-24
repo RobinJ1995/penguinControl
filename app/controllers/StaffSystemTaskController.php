@@ -75,6 +75,11 @@ class StaffSystemTaskController extends BaseController
 		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', 'success')));
 	}
 	
+	public function show ($task)
+	{
+		return View::make ('staff.systemtask.show', compact ('task'));
+	}
+	
 	public function remove ($task)
 	{
 		$task->delete ();

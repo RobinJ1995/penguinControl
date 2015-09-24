@@ -19,18 +19,24 @@ Systeemopdrachten &bull; Staff
 	</thead>
 	<tbody>
 		@foreach ($tasks as $task)
+		<?php
+			$data = json_decode ($task->data, true);
+		?>
 		<tr>
 			<td>
 				<div class="button-group radius">
 					<a href="/staff/systemtask/{{ $task->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
 						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					</a><!-- // Anders staat er spatie tussen de knoppen //
+					-->@if (! empty ($data))<!--
+					--><a href="/staff/systemtask/{{ $task->id }}/show" title="Weergeven" class="button tiny">
+						<img src="/img/icons/show.png" alt="Weergeven" />
 					</a>
+					@endif
 				</div>
 			</td>
 			<td>
 				<?php
-				$data = json_decode ($task->data, true);
-				
 				switch ($task->type)
 				{
 					case 'apache_reload':
