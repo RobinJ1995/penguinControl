@@ -28,7 +28,9 @@ Logs &bull; Staff
 				</div>--}}
 			</td>
 			<td>
+				@if ($log->user != NULL)
 				<span class="{{ $log->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $log->user->userInfo->username }}</span>
+				@endif
 			</td>
 			<td>
 				{{ $log->message }}
