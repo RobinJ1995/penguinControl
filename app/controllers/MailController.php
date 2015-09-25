@@ -23,6 +23,8 @@ class MailController extends BaseController
 		
 		$user->save ();
 		
+		SinLog::log ('E-mail ' . ($user->mailEnabled ? 'in' : 'uit') . 'geschakeld');
+		
 		return Redirect::to ('/mail')->with ('alerts', array (new Alert ('E-mail ' . ($user->mailEnabled ? 'in' : 'uit') . 'geschakeld', 'success')));
 	}
 }

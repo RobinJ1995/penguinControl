@@ -5,7 +5,7 @@ Systeemopdracht toevoegen &bull; Staff
 @endsection
 
 @section ('content')
-<form action="/staff/systemtask/create" method="POST" data-abide>
+<form action="/staff/system/systemtask/create" method="POST" data-abide>
 	<fieldset>
 		<legend>Systeemopdracht toevoegen</legend>
 		<div class="row">

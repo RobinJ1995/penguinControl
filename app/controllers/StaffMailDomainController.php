@@ -52,6 +52,8 @@ class StaffMailDomainController extends BaseController
 		
 		$domain->save ();
 		
+		SinLog::log ('E-maildomein aangemaakt', $domain);
+		
 		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-maildomein toegevoegd', 'success')));
 	}
 	
@@ -96,6 +98,8 @@ class StaffMailDomainController extends BaseController
 		
 		$domain->save ();
 		
+		SinLog::log ('E-maildomein bijgewerkt', $domain);
+		
 		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-maildomein bijgewerkt', 'success')));
 	}
 	
@@ -110,6 +114,8 @@ class StaffMailDomainController extends BaseController
 			return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('U heeft nog E-mailadressen en/of doorstuuradressen die aan dit domein zijn gekoppeld.', 'alert')));
 		
 		$domain->delete ();
+		
+		SinLog::log ('E-maildomein verwijderd', $domain);
 		
 		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-maildomein verwijderd', 'success')));
 	}

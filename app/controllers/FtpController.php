@@ -58,6 +58,8 @@ class FtpController extends BaseController
 		
 		$ftp->save ();
 		
+		SinLog::log ('FTP-account aangemaakt', $ftp);
+		
 		return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('FTP-account toegevoegd', 'success')));
 	}
 	
@@ -124,6 +126,8 @@ class FtpController extends BaseController
 		
 		$ftp->save ();
 		
+		SinLog::log ('FTP-account bijgewerkt', $ftp);
+		
 		return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('FTP-account bijgewerkt', 'success')));
 	}
 	
@@ -135,6 +139,8 @@ class FtpController extends BaseController
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze FTP-account!', 'alert')));
 		
 		$ftp->delete ();
+		
+		SinLog::log ('FTP-account verwijderd', $ftp);
 		
 		return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('FTP-account verwijderd', 'success')));
 	}

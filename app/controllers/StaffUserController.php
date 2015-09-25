@@ -245,6 +245,8 @@ class StaffUserController extends BaseController
 			
 			DB::commit ();
 			
+			SinLog::log ('Gebruiker aangemaakt', $user, $userInfo, $userLog);
+			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
 		catch (Exception $ex) // ->with ('ex', $ex) kan blijkbaar niet // Serialization of 'Closure' is not allowed //
@@ -370,6 +372,8 @@ class StaffUserController extends BaseController
 			
 			DB::commit ();
 			
+			SinLog::log ('Gebruiker bijgewerkt', $user, $userInfo);
+			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
 		catch (Exception $ex)
@@ -436,6 +440,8 @@ class StaffUserController extends BaseController
 				$alerts[] = new Alert ('Gebruiker verwijderd: ' . $userInfo->username, 'success');
 
 				DB::commit ();
+				
+				SinLog::log ('Gebruiker verwijderd', $user, $userInfo);
 
 				return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 			}
@@ -455,6 +461,8 @@ class StaffUserController extends BaseController
 	public function login ($user)
 	{
 		$userInfo = $user->userInfo;
+		
+		SinLog::log ('Ingelogd als gebruiker', $user); // Hier moet de log vóór de effectieve actie gebeuren, anders klopt de user_id in de log entry niet //
 		
 		Auth::login ($user);
 		
@@ -544,6 +552,8 @@ class StaffUserController extends BaseController
 		 */
 		foreach ($user->vhosts as $vhost)
 			$vhost->save ();
+		
+		SinLog::log ('Vervaltdatum bijgewerkt', $user);
 		
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->userInfo->username . ' (' . $user->userInfo->getFullName () . ') ingesteld: ' . $newExpireDate)));
 	}
@@ -748,6 +758,8 @@ class StaffUserController extends BaseController
 				}
 			);
 			
+			SinLog::log ('Gebruiker gevalideerd', $user, $userInfo);
+			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
 		catch (Exception $ex)
@@ -761,6 +773,8 @@ class StaffUserController extends BaseController
 	public function reject ($userInfo)
 	{
 		$userInfo->delete ();
+		
+		SinLog::log ('Gebruikersregistratie geweigerd', $userInfo);
 		
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Validatie geweigerd: ' . $userInfo->username . PHP_EOL . '</br />Gebruikersinformatie verwijderd.<br />Let op: Er is <strong>geen</strong> geautomatiseerde e-mail verstuurd naar de gebruiker in kwestie. Gelieve (indien het om een gebruiker ging, en geen bot o.i.d.) zelf even een e-mail naar de gebruiker in kwestie te sturen en er ook duidelijk bij te zeggen <strong>waarom</strong> zijn registratie geweigerd is.')));
 	}
@@ -814,6 +828,8 @@ class StaffUserController extends BaseController
 		
 		$userInfo->logintoken = md5 (time ());
 		$userInfo->save ();
+		
+		SinLog::log ('Eenmalige login token gegenereerd', $user, $userInfo);
 		
 		return Redirect::to ('staff/user/user/' . $user->id . '/more')->with ('alerts', array (new Alert ('Eenmalige login token gegenereerd. Deze kan doorgegeven worden aan de gebruiker in kwestie zodat deze zelf via <em>Gebruiker</em> -> <em>Gegevens wijzigen</em> een nieuw wachtwoord kan instellen voor zijn/haar account.<br />Deze link zal automatisch vervallen wanneer deze gebruikt wordt.', 'info')));
 	}

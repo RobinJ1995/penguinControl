@@ -92,6 +92,8 @@ class StaffFtpController extends BaseController
 		
 		$ftp->save ();
 		
+		SinLog::log ('FTP-account aangemaakt', $ftp);
+		
 		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP-account toegevoegd', 'success')));
 	}
 	
@@ -145,12 +147,16 @@ class StaffFtpController extends BaseController
 		
 		$ftp->save ();
 		
+		SinLog::log ('FTP-account bijgewerkt', $ftp);
+		
 		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP-account bijgewerkt', 'success')));
 	}
 	
 	public function remove ($ftp)
 	{
 		$ftp->delete ();
+		
+		SinLog::log ('FTP-account verwijderd', $ftp);
 		
 		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP-account verwijderd', 'success')));
 	}

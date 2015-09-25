@@ -112,6 +112,8 @@ class StaffVHostController extends BaseController
 		
 		$vhost->save ();
 		
+		SinLog::log ('vHost aangemaakt', $vhost);
+		
 		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost toegevoegd', 'success')));
 	}
 	
@@ -135,10 +137,6 @@ class StaffVHostController extends BaseController
 	
 	public function update ($vhost)
 	{
-		$user = Auth::user ();
-		
-		$ownerUser = User::where ('uid', Input::get ('uid'))->firstOrFail ();
-		
 		$validator = Validator::make
 		(
 			array
@@ -178,12 +176,16 @@ class StaffVHostController extends BaseController
 		
 		$vhost->save ();
 		
+		SinLog::log ('vHost bijgewerkt', $vhost);
+		
 		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost bijgewerkt', 'success')));
 	}
 	
 	public function remove ($vhost)
 	{
 		$vhost->delete ();
+		
+		SinLog::log ('vHost verwijderd', $vhost);
 		
 		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost verwijderd', 'success')));
 	}

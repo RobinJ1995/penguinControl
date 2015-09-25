@@ -78,6 +78,8 @@ class MailUserController extends BaseController
 		
 		$mUser->save ();
 		
+		SinLog::log ('E-mailadres aangemaakt', $mUser);
+		
 		return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('E-mailaccount toegevoegd', 'success')));
 	}
 	
@@ -147,6 +149,8 @@ class MailUserController extends BaseController
 		
 		$mUser->save ();
 		
+		SinLog::log ('E-mailadres bijgewerkt', $mUser);
+		
 		return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('E-mailaccount bijgewerkt', 'success')));
 	}
 	
@@ -158,6 +162,8 @@ class MailUserController extends BaseController
 			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
 		
 		$mUser->delete ();
+		
+		SinLog::log ('E-mailadres verwijderd', $mUser);
 		
 		return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('E-mailaccount verwijderd', 'success')));
 	}

@@ -1,0 +1,42 @@
+@extends ('layout.master')
+
+@section ('pageTitle')
+Logs &bull; Staff
+@endsection
+
+@section ('content')
+<table>
+	<thead>
+		<tr>
+			<th></th>
+			<th>Gebruiker</th>
+			<th>Gebeurtenis</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach ($logs as $log)
+		<?php
+			$data = json_decode ($log->data, true);
+		?>
+		<tr>
+			<td>
+				{{--<div class="button-group radius">
+					<a href="/staff/system/log/{{ $log->id }}/show" title="Weergeven" class="button tiny">
+						<img src="/img/icons/show.png" alt="Weergeven" />
+					</a>
+					@endif
+				</div>--}}
+			</td>
+			<td>
+				<span class="{{ $log->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $log->user->userInfo->username }}</span>
+			</td>
+			<td>
+				{{ $log->message }}
+			</td>
+		</tr>
+		@endforeach
+	</tbody>
+</table>
+
+{{ $logs->links () }}
+@endsection

@@ -4,10 +4,10 @@ class StaffUserLogController extends BaseController
 {
 
 	private $boekhoudingBetekenis = array
-	    (
-	    -1 => 'Niet te factureren',
-	    0 => 'Nog te factureren',
-	    1 => 'Gefactureerd'
+	(
+		-1 => 'Niet te factureren',
+		0 => 'Nog te factureren',
+		1 => 'Gefactureerd'
 	);
 
 	public function index ()
@@ -109,6 +109,8 @@ class StaffUserLogController extends BaseController
 				$boekhoudingBetekenis = $this->boekhoudingBetekenis;
 				return View::make ('staff.user.log.export', compact ('userLogsIds', 'boekhoudingBetekenis'));
 			}
+			
+			SinLog::log ('Facturaties bijgewerkt', $userLogs);
 		}
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ($alert, 'success')));
@@ -195,6 +197,8 @@ class StaffUserLogController extends BaseController
 		fclose ($fileHandle);
 		$fileLink = '<a href="/' . $fileName . '" target="_blank">' . $fileName . '</a>';
 		$alert = 'Facturatie(s) gewijzigd en ge&euml;xporteerd';
+		
+		SinLog::log ('Facturaties geëxporteerd', $userLogsUserInfo, $fileName);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array
 			(
@@ -246,6 +250,8 @@ class StaffUserLogController extends BaseController
 		$userLog->boekhouding = Input::get ('boekhouding');
 
 		$userLog->save ();
+		
+		SinLog::log ('Facturatie aangemaakt', $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie toegevoegd', 'success')));
 	}
@@ -257,7 +263,7 @@ class StaffUserLogController extends BaseController
 		return View::make ('staff.user.log.edit', compact ('userlog', 'boekhoudingBetekenis'));
 	}
 
-	public function update ($userlog)
+	public function update ($userLog)
 	{
 		$validator = Validator::make
 		(
@@ -272,17 +278,21 @@ class StaffUserLogController extends BaseController
 		);
 
 		if ($validator->fails ())
-			return Redirect::to ('/staff/user/log/' . $userlog->id . '/edit')->withInput ()->withErrors ($validator);
+			return Redirect::to ('/staff/user/log/' . $userLog->id . '/edit')->withInput ()->withErrors ($validator);
 
-		$userlog->boekhouding = Input::get ('boekhouding');
-		$userlog->save ();
+		$userLog->boekhouding = Input::get ('boekhouding');
+		$userLog->save ();
+		
+		SinLog::log ('Facturatie bijgewerkt', $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie bijgewerkt', 'success')));
 	}
 
-	public function remove ($userlog)
+	public function remove ($userLog)
 	{
-		$userlog->delete ();
+		$userLog->delete ();
+		
+		SinLog::log ('Facturatie verwijderd', $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie verwijderd', 'success')));
 	}

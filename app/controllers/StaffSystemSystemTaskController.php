@@ -1,17 +1,17 @@
 <?php
 
-class StaffSystemTaskController extends BaseController
+class StaffSystemSystemTaskController extends BaseController
 {
 	public function index ()
 	{
 		$tasks = SystemTask::all ();
 		
-		return View::make ('staff.systemtask.index', compact ('tasks'));
+		return View::make ('staff.system.systemtask.index', compact ('tasks'));
 	}
 	
 	public function create ()
 	{
-		return View::make ('staff.systemtask.create');
+		return View::make ('staff.system.systemtask.create');
 	}
 
 	public function store ()
@@ -72,17 +72,21 @@ class StaffSystemTaskController extends BaseController
 		
 		$task->save ();
 		
+		SinLog::log ('Systeemtaak aangemaakt', $task);
+		
 		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', 'success')));
 	}
 	
 	public function show ($task)
 	{
-		return View::make ('staff.systemtask.show', compact ('task'));
+		return View::make ('staff.system.systemtask.show', compact ('task'));
 	}
 	
 	public function remove ($task)
 	{
 		$task->delete ();
+		
+		SinLog::log ('Systeemtaak verwijderd', $task);
 		
 		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht verwijderd', 'success')));
 	}

@@ -28,6 +28,7 @@ Route::model ('userLog', 'UserLog');
 Route::model ('group', 'Group');
 Route::model ('limit', 'UserLimit');
 Route::model ('systemTask', 'SystemTask');
+Route::model ('log', 'SinLog');
 
 Route::bind ('page',
 	function ($value, $route)
@@ -54,6 +55,7 @@ Route::pattern ('userLog', '[0-9]+');
 Route::pattern ('group', '[0-9]+');
 Route::pattern ('limit', '[0-9]+');
 Route::pattern ('systemTask', '[0-9]+');
+Route::pattern ('log', '[0-9]+');
 
 Route::pattern ('order', '[a-zA-Z\_]+');
 
@@ -237,12 +239,15 @@ Route::get ('staff/page/{page}/edit', 'StaffPageController@edit');
 Route::post ('staff/page/{page}/edit', 'StaffPageController@update');
 Route::get ('staff/page/{page}/remove', 'StaffPageController@remove');
 
-// Staff // SystemTask //
-Route::get ('staff/systemtask', 'StaffSystemTaskController@index');
-Route::get ('staff/systemtask/create', 'StaffSystemTaskController@create');
-Route::post ('staff/systemtask/create', 'StaffSystemTaskController@store');
-Route::get ('staff/systemtask/{systemTask}/show', 'StaffSystemTaskController@show');
-Route::get ('staff/systemtask/{systemTask}/remove', 'StaffSystemTaskController@remove');
+// Staff // System // SystemTask //
+Route::get ('staff/system/systemtask', 'StaffSystemSystemTaskController@index');
+Route::get ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@create');
+Route::post ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@store');
+Route::get ('staff/system/systemtask/{systemTask}/show', 'StaffSystemSystemTaskController@show');
+Route::get ('staff/system/systemtask/{systemTask}/remove', 'StaffSystemSystemTaskController@remove');
+
+// Staff // System // Log //
+Route::get ('staff/system/log', 'StaffSystemLogController@index');
 
 // Staff // Virtualisation //
 Route::get ('staff/virtualisation', 'StaffVirtualisationController@index');

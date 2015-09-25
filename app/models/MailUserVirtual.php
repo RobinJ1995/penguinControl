@@ -4,6 +4,8 @@ class MailUserVirtual extends LimitedUserOwnedModel
 {
 	protected $table = 'mail_user_virtual';
 	public $timestamps = false;
+	
+	protected $hidden = array ('password');
 
 	public function setPassword ($password)
 	{

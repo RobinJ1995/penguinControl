@@ -18,6 +18,8 @@ class StaffMaintenanceController extends BaseController
 			
 			$user = Auth::user ();
 			$userInfo = $user->userInfo;
+			
+			SinLog::log ('vHosts opnieuw gegenereerd');
 
 			return View::make ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
@@ -27,7 +29,7 @@ class StaffMaintenanceController extends BaseController
 		}
 	}
 	
-	public function saveAllVHosts ()
+	public function saveAllVHosts () // Er... waarom bestaat deze functie? Tenzij ik blind ben vanavond doet die exact hetzelfde als generateVHosts ()? //
 	{
 		try
 		{
@@ -43,6 +45,8 @@ class StaffMaintenanceController extends BaseController
 			
 			$user = Auth::user ();
 			$userInfo = $user->userInfo;
+			
+			SinLog::log ('vHosts opnieuw opgeslagen');
 			
 			return View::make ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
@@ -91,6 +95,8 @@ class StaffMaintenanceController extends BaseController
 			}
 			
 			DB::commit ();
+			
+			SinLog::log ('Service data gegenereerd');
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
@@ -280,6 +286,8 @@ class StaffMaintenanceController extends BaseController
 			DB::commit ();
 			
 			$alerts[] = new Alert ('Systeemcheck succesvol beëindigd', 'success');
+			
+			SinLog::log ('Systeemcheck uitgevoerd', $alerts);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}

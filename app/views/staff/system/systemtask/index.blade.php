@@ -25,11 +25,11 @@ Systeemopdrachten &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/systemtask/{{ $task->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
+					<a href="/staff/system/systemtask/{{ $task->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
 						<img src="/img/icons/remove.png" alt="Verwijderen" />
 					</a><!-- // Anders staat er spatie tussen de knoppen //
 					-->@if (! empty ($data))<!--
-					--><a href="/staff/systemtask/{{ $task->id }}/show" title="Weergeven" class="button tiny">
+					--><a href="/staff/system/systemtask/{{ $task->id }}/show" title="Weergeven" class="button tiny">
 						<img src="/img/icons/show.png" alt="Weergeven" />
 					</a>
 					@endif
@@ -164,7 +164,7 @@ Systeemopdrachten &bull; Staff
 	</tbody>
 </table>
 <div class="right">
-	<a href="/staff/systemtask/create" title="Toevoegen" class="button radius">
+	<a href="/staff/system/systemtask/create" title="Toevoegen" class="button radius">
 		<img src="/img/icons/add.png" alt="Toevoegen" />
 	</a>
 </div>

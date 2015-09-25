@@ -61,12 +61,16 @@ class StaffGroupController extends BaseController
 		
 		$group->save ();
 		
+		SinLog::log ('Gebruikersgroep aangemaakt', $group);
+		
 		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep aangemaakt: ' . $group->name, 'success')));
 	}
 	
 	public function remove ($group)
 	{
 		$group->delete ();
+		
+		SinLog::log ('Gebruikersgroep verwijderd', $group);
 		
 		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep verwijderd: ' . $group->name, 'success')));
 	}

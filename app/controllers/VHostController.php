@@ -65,8 +65,10 @@ class VHostController extends BaseController
 		
 		$vhost->save ();
 		
-		$apache2 = new ServiceApache ();
-		$apache2->reload ();
+		//$apache2 = new ServiceApache ();
+		//$apache2->reload ();
+		
+		SinLog::log ('vHost aangemaakt', $vhost);
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost toegevoegd', 'success')));
 	}
@@ -134,8 +136,10 @@ class VHostController extends BaseController
 		
 		$vhost->save ();
 		
-		$apache2 = new ServiceApache ();
-		$apache2->reload ();
+		//$apache2 = new ServiceApache ();
+		//$apache2->reload ();
+		
+		SinLog::log ('vHost bijgewerkt', $vhost);
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost bijgewerkt', 'success')));
 	}
@@ -148,6 +152,8 @@ class VHostController extends BaseController
 			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze vHost!', 'alert')));
 		
 		$vhost->delete ();
+		
+		SinLog::log ('vHost verwijderd', $vhost);
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost verwijderd', 'success')));
 	}

@@ -52,6 +52,8 @@ class UserController extends BaseController
 		{
 			Log::info ('Login attempt with wrong password: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 			
+			SinLog::log ('Foute inlogpoging', $user, $_SERVER['REMOTE_ADDR']);
+			
 			return View::make ('user.login')
 				->withInput (Input::only ('username'))
 				->with ('alerts', array (new Alert ('Ongeldig wachtwoord voor gebruiker ' . $userInfo->username, 'alert')));
@@ -92,6 +94,8 @@ class UserController extends BaseController
 
 					$user->gitLabId = $gitlabUser->id;
 					$user->save();
+					
+					SinLog::log ('GitLab-account aangemaakt bij login', $gitlabUser, $user);
 				}
 				catch (Exception $ex)
 				{
@@ -104,9 +108,13 @@ class UserController extends BaseController
 		else
 		{
 			$alerts[] = new Alert ('Git-integratie overgeslagen omdat SINControl niet in productieomgeving draait.', 'warn');
+			
+			SinLog::log ('Git-integratie bij login overgeslagen omdat SINControl in lokale ontwikkelomgeving draait', App::environment ());
 		}
 			
 		Log::info ('Login: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+		
+		SinLog::log ('Gebruiker ingelogd', $user, $_SERVER['REMOTE_ADDR']);
 		
 		return Redirect::to ('/user/start')->with ('alerts', $alerts);
 	}
@@ -160,7 +168,7 @@ class UserController extends BaseController
 		
 		$userInfo = $user->userInfo;
 		$userInfo->email = Input::get ('email');
-		$git->changeEmail($user->gitLabId, Input::get ('email'));
+		$git->changeEmail ($user->gitLabId, Input::get ('email'));
 		
 		if (! empty (Input::get ('newPass')))
 		{
@@ -187,12 +195,16 @@ class UserController extends BaseController
 		$userInfo->save ();
 		$user->save ();
 		
+		SinLog::log ('Gebruiker heeft zijn eigen gegevens bijgewerkt', $user, $userInfo, $isLoggedInWithToken);
+		
 		$alerts[] = new Alert ('Gegevens bijgewerkt', 'success');
 		return Redirect::to ('/user/start')->with ('alerts', $alerts);
 	}
 	
 	public function logout ()
 	{
+		SinLog::log ('Gebruiker uitgelogd');
+		
 		Auth::logout ();
 		
 		return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('U bent uitgelogd')));
@@ -281,6 +293,8 @@ class UserController extends BaseController
 			}
 		);
 		
+		SinLog::log ('Gebruikersregistratie', $userInfo);
+		
 		return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('Uw registratie is opgeslagen. Uw gegevens zullen door onze medewerkers worden nagekeken om te verifi&euml;ren dat uw wel degelijk een student bent aan Thomas More, waarna u een e-mail zal ontvangen op het opgegeven e-mailadres met verdere instructies voor het activeren van uw account. Dit zal normaalgesproken binnen 24 uur gebeuren. Indien u de e-mail in kwestie niet kan vinden, vergeet dan ook zeker uw spam-folder niet na te kijken. Bij problemen, of indien u na 3 dagen nog steeds geen e-mail van ons heeft ontvangen, <a href="/page/contact">neem gerust contact met ons op</a>.', 'success')));
 	}
 	
@@ -334,6 +348,8 @@ class UserController extends BaseController
 		
 		if (empty ($userInfo->schoolnr) && empty ($userInfo->email))
 		{
+			SinLog::log ('Accountverlenging aangevraagd maar mislukt omdat r-nummer of e-mailadres ontbreekt', $userInfo);
+			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Geen r-nummer of e-mailadres bekend voor uw account. <a href="/page/contact">Contacteer ons</a>.', 'alert')));
 		}
 		else
@@ -356,11 +372,15 @@ class UserController extends BaseController
 					   'Content-type: text/html'. "\r\n";
 
 				mail ($userInfo->email, 'Verlenging SIN-account', $message, $headers);
+				
+				SinLog::log ('Accountverlenging aangevraagd', $userInfo);
 
 				return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies om uw verlenging te bevestigen. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
 			}
 			else
 			{
+				SinLog::log ('Accountverlenging aangevraagd maar mislukt omdat accountgegevens ontbreken', $userInfo);
+				
 				return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er ontbreken gegevens voor uw account. Mogelijk is er iets misgegaan bij uw oorspronkelijke registratie. <a href="/page/contact">Contacteer ons</a>. Wij excuseren ons voor het ongemak.', 'alert')));
 			}
 		}
@@ -403,10 +423,14 @@ class UserController extends BaseController
 			
 			Log::info ('Account renewal: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 			
+			SinLog::log ('Account verlengd', $userInfo, $userLog);
+			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Uw SIN-account is verlengd tot 1 oktober 20' . $nextYear . '!', 'success')));
 		}
 		else
 		{
+			SinLog::log ('Bevestigingscode voor accountverlenging geweigerd', $user, $validationcode, $_SERVER['REMOTE_ADDR']);
+			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgegeven link is ongeldig voor gebruiker ' . $userInfo->username, 'alert')));
 		}
 	}
@@ -467,6 +491,8 @@ class UserController extends BaseController
 				}
 			);
 			
+			SinLog::log ('Wachtwoord vergeten -- Tijdelijk wachtwoord verstuurd', $user, $_SERVER['REMOTE_ADDR']);
+			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
 		}
 		
@@ -482,6 +508,8 @@ class UserController extends BaseController
 		);
 		
 		Log::info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
+		
+		SinLog::log ('Wachtwoord vergeten -- Eenmalige loginlink verstuurd', $user, $_SERVER['REMOTE_ADDR']);
 		
 		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
 	}
@@ -507,12 +535,16 @@ class UserController extends BaseController
 			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken. Indien gewenst kunt u uw wachtwoord wijzigen via <a href="/user/edit">Gebruiker &raquo; Gegevens wijzigen</a>.', 'info');
 			
 			Log::info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			
+			SinLog::log ('Gebruiker ingelogd met eenmalige loginlink', $user);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}
 		else
 		{
 			Log::info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			
+			SinLog::log ('Eenmalige login token geweigerd', $userInfo, $logintoken, $_SERVER['REMOTE_ADDR']);
 			
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgegeven link is ongeldig voor gebruiker ' . $userInfo->username, 'alert')));
 		}

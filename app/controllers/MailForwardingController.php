@@ -74,6 +74,8 @@ class MailForwardingController extends BaseController
 		
 		$mFwd->save ();
 		
+		SinLog::log ('Doorstuuradres aangemaakt', $mFwd);
+		
 		return Redirect::to ('/mail/forwarding')->with ('alerts', array (new Alert ('Doorstuuradres toegevoegd', 'success')));
 	}
 	
@@ -140,6 +142,8 @@ class MailForwardingController extends BaseController
 		
 		$mFwd->save ();
 		
+		SinLog::log ('Doorstuuradres bijgewerkt', $mFwd);
+		
 		return Redirect::to ('/mail/forwarding')->with ('alerts', array (new Alert ('Doorstuuradres bijgewerkt', 'success')));
 	}
 	
@@ -151,6 +155,8 @@ class MailForwardingController extends BaseController
 			return Redirect::to ('/mail/forwarding')->with ('alerts', array (new Alert ('U bent niet de eigenaar van deze e-mailaccount!', 'alert')));
 		
 		$mFwd->delete ();
+		
+		SinLog::log ('Doorstuuradres verwijderd', $mFwd);
 		
 		return Redirect::to ('/mail/forwarding')->with ('alerts', array (new Alert ('Doorstuuradres verwijderd', 'success')));
 	}

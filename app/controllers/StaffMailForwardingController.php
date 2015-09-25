@@ -60,6 +60,8 @@ class StaffMailForwardingController extends BaseController
 		
 		$mFwd->save ();
 		
+		SinLog::log ('Doorstuuradres aangemaakt', $mFwd);
+		
 		return Redirect::to ('/staff/mail/forwarding')->with ('alerts', array (new Alert ('Doorstuuradres toegevoegd', 'success')));
 	}
 	
@@ -113,12 +115,16 @@ class StaffMailForwardingController extends BaseController
 		
 		$mFwd->save ();
 		
+		SinLog::log ('Doorstuuradres bijgewerkt', $mFwd);
+		
 		return Redirect::to ('/staff/mail/forwarding')->with ('alerts', array (new Alert ('Doorstuuradres bijgewerkt', 'success')));
 	}
 	
 	public function remove ($mFwd)
 	{
 		$mFwd->delete ();
+		
+		SinLog::log ('Doorstuuradres verwijderd', $mFwd);
 		
 		return Redirect::to ('/staff/mail/forwarding')->with ('alerts', array (new Alert ('Doorstuuradres verwijderd', 'success')));
 	}
