@@ -236,7 +236,11 @@ class UserController extends BaseController
 		
 		$strReservedUsers = implode (',', $reservedUsers);
 		
-		$email = Input::get ('rnummer') . '@student.thomasmore.be';
+		$rnummer = Input::get ('rnummer');
+		if (starts_with ($rnummer, 'c10'))
+			$email = $rnummer . '@hik.be';
+		else
+			$email = $rnummer . '@student.thomasmore.be';
 		
 		$validator = Validator::make
 		(
