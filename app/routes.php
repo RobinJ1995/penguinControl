@@ -66,8 +66,16 @@ Route::get ('/page/{page}', 'PageController@show');
 Route::get ('/error', 'ErrorController@show');
 
 // User // Public //
-Route::get ('user/start', 'UserController@start');
 Route::get ('user/login', 'UserController@getLogin');
+Route::post ('user/login', 'UserController@login');
+Route::get ('user/{user}/expired/renew/{validationcode}', 'UserController@renew');
+Route::get ('user/register', 'UserController@getRegister');
+Route::post ('user/register', 'UserController@register');
+Route::get ('user/amnesia', 'UserController@getAmnesia');
+Route::post ('user/amnesia', 'UserController@amnesia');
+Route::get ('user/{user}/amnesia/login/{logintoken}', 'UserController@loginWithToken');
+Route::get ('user/{user}/expired', 'UserController@getExpired');
+Route::post ('user/{user}/expired', 'UserController@expired');
 
 // Afscherming van routes met Route Filters // http://laravel.com/docs/routing#route-filters //
 // Filters worden gedefinieerd in app/filters.php //
@@ -80,18 +88,10 @@ Route::group
 	function ()
 	{
 		// User //
-		Route::post ('user/login', 'UserController@login');
-		Route::get ('user/{user}/expired', 'UserController@getExpired');
-		Route::post ('user/{user}/expired', 'UserController@expired');
-		Route::get ('user/{user}/expired/renew/{validationcode}', 'UserController@renew');
-		Route::get ('user/register', 'UserController@getRegister');
-		Route::post ('user/register', 'UserController@register');
+		Route::get ('user/start', 'UserController@start');
 		Route::get ('user/edit', 'UserController@edit');
 		Route::post ('user/edit', 'UserController@update');
 		Route::get ('user/logout', 'UserController@logout');
-		Route::get ('user/amnesia', 'UserController@getAmnesia');
-		Route::post ('user/amnesia', 'UserController@amnesia');
-		Route::get ('user/{user}/amnesia/login/{logintoken}', 'UserController@loginWithToken');
 
 		// vHost //
 		Route::get ('website/vhost', 'VHostController@index');
