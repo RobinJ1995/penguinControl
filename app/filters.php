@@ -39,6 +39,7 @@ Route::filter ('staff',
 		if (! Auth::check ())
 			return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('U bent niet ingelogd.', 'alert')));
 
+		$user = Auth::user ();
 		$staffGid = Group::where ('name', 'staff')->firstOrFail ()->gid;
 		$userGid = $user->getLowestGid ();
 
