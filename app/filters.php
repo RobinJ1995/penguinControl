@@ -36,9 +36,7 @@ App::after (function($request, $response)
 Route::filter ('staff',
 	function ()
 	{
-		$user = Auth::user ();
-
-		if (empty ($user))
+		if (! Auth::check ())
 			return Redirect::to ('/user/login')->with ('alerts', array (new Alert ('U bent niet ingelogd.', 'alert')));
 
 		$staffGid = Group::where ('name', 'staff')->firstOrFail ()->gid;
@@ -52,9 +50,7 @@ Route::filter ('staff',
 Route::filter ('user',
 	function ()
 	{
-		$user = Auth::user ();
-
-		if (empty ($user))
+		if (! Auth::check ())
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('U bent niet ingelogd.', 'alert')));
 	}
 );
