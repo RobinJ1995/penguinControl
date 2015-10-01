@@ -153,6 +153,13 @@ class StaffMaintenanceController extends BaseController
 				
 				if (! is_dir ($user->homedir))
 					$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory niet: ' . $user->id, 'alert');
+				
+				if (is_dir ($user->homedir)){
+					if (fileowner ($user->homedir) != $user->uid)
+						$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory heeft niet de juiste eigenaar: ' . $user->id, 'alert');
+				}
+				
+				
 			}
 			
 			$userInfos = UserInfo::all ();
@@ -295,7 +302,7 @@ class StaffMaintenanceController extends BaseController
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Systeemcheck mislukt. Als dat ondertussen al fatsoeinlijk werkt zouden alle databasetransacties moeten zijn teruggerold.', 'alert')));
+			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Systeemcheck mislukt. Als dat ondertussen al fatsoenlijk werkt zouden alle databasetransacties moeten zijn teruggerold.', 'alert')));
 		}
 	}
 }
