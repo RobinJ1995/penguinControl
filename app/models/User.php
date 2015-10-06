@@ -26,7 +26,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 		$this->crypt = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
 	}
 	
-	public function getUserInfo ()
+	public function getUserInfo () // Should be replaced by $user->userInfo everywhere //
 	{
 		return UserInfo::find ($this->user_info_id);
 	}
@@ -59,6 +59,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	public function getGroups ()
 	{
 		return UserGroup::where ('uid', $this->uid)->get ();
+	}
+	
+	public function primaryGroup ()
+	{
+		return $this->hasOne ('Group', 'gid', 'gid');
 	}
 	
 	public function isGroupMember ($group)

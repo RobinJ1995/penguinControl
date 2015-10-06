@@ -4,7 +4,8 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class VhostApacheReloadCommand extends Command {
+class VhostApacheReloadCommand extends Command
+{
 
 	/**
 	 * The console command name.
@@ -25,9 +26,9 @@ class VhostApacheReloadCommand extends Command {
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct ()
 	{
-		parent::__construct();
+		parent::__construct ();
 	}
 
 	/**
@@ -35,10 +36,10 @@ class VhostApacheReloadCommand extends Command {
 	 *
 	 * @return mixed
 	 */
-	public function fire()
+	public function fire ()
 	{
 		$apache = new ServiceApache ();
-		
+
 		return $apache->reload ();
 	}
 
@@ -47,7 +48,7 @@ class VhostApacheReloadCommand extends Command {
 	 *
 	 * @return array
 	 */
-	protected function getArguments()
+	protected function getArguments ()
 	{
 		return array ();
 	}
@@ -57,7 +58,7 @@ class VhostApacheReloadCommand extends Command {
 	 *
 	 * @return array
 	 */
-	protected function getOptions()
+	protected function getOptions ()
 	{
 		return array ();
 	}

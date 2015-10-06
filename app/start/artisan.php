@@ -12,4 +12,5 @@
 */
 
 Artisan::add (new VhostNukeExpiredCommand ());
-Artisan::add (new ApacheReloadCommand ());
+Artisan::add (new VhostApacheReloadCommand ());
+Artisan::add (new UserPrepareHomedirCommand ());
