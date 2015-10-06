@@ -4,21 +4,21 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class VhostNukeExpiredCommand extends Command {
+class VhostApacheReloadCommand extends Command {
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'vhost:nukeExpired';
+	protected $name = 'vhost:apacheReload';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Disables vHosts belonging to expired users.';
+	protected $description = 'Reload Apache web server to make changes to vHosts go into effect.';
 
 	/**
 	 * Create a new command instance.
@@ -37,9 +37,9 @@ class VhostNukeExpiredCommand extends Command {
 	 */
 	public function fire()
 	{
-		ApacheVhostVirtual::nukeExpired ();
+		$apache = new ServiceApache ();
 		
-		return $this->call ('vhost:apacheReload');
+		return $apache->reload ();
 	}
 
 	/**

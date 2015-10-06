@@ -144,4 +144,19 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 		
 		return parent::delete ();
 	}
+	
+	public static function nukeExpired ()
+	{
+		$now = time () / 60 / 60 / 24;
+		
+		$expiredUsers = User::where ('expire', '<=', $now)
+			->where ('expire', '>', -1)
+			->get ();
+		
+		foreach ($expiredUsers as $user)
+		{
+			foreach ($user->vhost as $vhost)
+				$vhost->save ();
+		}
+	}
 }
