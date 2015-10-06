@@ -4,7 +4,8 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class VhostNukeExpiredCommand extends Command {
+class VhostNukeExpiredCommand extends Command
+{
 
 	/**
 	 * The console command name.
@@ -25,9 +26,9 @@ class VhostNukeExpiredCommand extends Command {
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct ()
 	{
-		parent::__construct();
+		parent::__construct ();
 	}
 
 	/**
@@ -35,10 +36,10 @@ class VhostNukeExpiredCommand extends Command {
 	 *
 	 * @return mixed
 	 */
-	public function fire()
+	public function fire ()
 	{
 		ApacheVhostVirtual::nukeExpired ();
-		
+
 		return $this->call ('vhost:apacheReload');
 	}
 
@@ -47,7 +48,7 @@ class VhostNukeExpiredCommand extends Command {
 	 *
 	 * @return array
 	 */
-	protected function getArguments()
+	protected function getArguments ()
 	{
 		return array ();
 	}
@@ -57,7 +58,7 @@ class VhostNukeExpiredCommand extends Command {
 	 *
 	 * @return array
 	 */
-	protected function getOptions()
+	protected function getOptions ()
 	{
 		return array ();
 	}
