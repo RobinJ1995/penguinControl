@@ -84,7 +84,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 		return ($this->expire <= $now && $this->expire != -1);
 	}
 	
-	public function vhosts ()
+	public function vhost ()
 	{
 		return $this->hasMany ('ApacheVhostVirtual', 'uid', 'uid');
 	}

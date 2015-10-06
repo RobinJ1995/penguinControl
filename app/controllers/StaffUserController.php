@@ -550,7 +550,7 @@ class StaffUserController extends BaseController
 		 * in ApacheVhostVirtual->save () de check gebeurt of de gebruiker expired
 		 * en of dus de expired document root moet worden ingesteld of de echte document root.
 		 */
-		foreach ($user->vhosts as $vhost)
+		foreach ($user->vhost as $vhost)
 			$vhost->save ();
 		
 		SinLog::log ('Vervaltdatum bijgewerkt', $user);
