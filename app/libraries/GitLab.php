@@ -9,6 +9,8 @@ class GitLab
 	// Testing
 	//const API = 'http://git.sinners.be/api/v3/';
 	//const PRIVATE_TOKEN = '***REMOVED***';
+	//const API = 'http://127.0.0.1:8081/api/v3/';
+	//const PRIVATE_TOKEN = '***REMOVED***';
 	
 	private $lastCurlInfo = NULL;
 	
@@ -24,6 +26,7 @@ class GitLab
 			'username' => $username,
 			'name' => $name,
 			'extern_uid' => $username,
+			'provider' => 'sincontrol',
 			'admin' => ($admin === true ? 'true' : 'false'),
 			'can_create_group' => 'true',
 			'confirm' => false
