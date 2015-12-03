@@ -5,7 +5,7 @@ Meer opties voor gebruiker &bull; Staff
 @endsection
 
 @section ('content')
-<ul class="button-group radius stack-for-small">
+<ul class="button-group even-2 staffUserMore">
 	<li>
 		<a href="/staff/user/user/{{ $user->id }}/login" title="Aanmelden als gebruiker" class="button">
 			<img src="/img/icons/login.png" alt="" /> Aanmelden als {{ $userInfo->username }}
@@ -19,6 +19,11 @@ Meer opties voor gebruiker &bull; Staff
 	<li>
 		<a href="/staff/user/user/{{ $user->id }}/edit" title="Bewerken" class="button">
 			<img src="/img/icons/edit.png" alt="" /> Bewerken
+		</a>
+	</li>
+	<li>
+		<a href="/staff/system/log/search?userId={{ $user->id }}" title="Logs" class="button">
+			<img src="/img/icons/logs.png" alt="" /> Logs
 		</a>
 	</li>
 	<li>

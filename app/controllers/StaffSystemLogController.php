@@ -8,4 +8,13 @@ class StaffSystemLogController extends BaseController
 		
 		return View::make ('staff.system.log.index', compact ('logs'));
 	}
+	
+	public function search ()
+	{
+		$userId = Input::get ('userId');
+		
+		$logs = SinLog::where ('user_id', $userId)->paginate ();
+		
+		return View::make ('staff.system.log.index', compact ('logs'));
+	}
 }

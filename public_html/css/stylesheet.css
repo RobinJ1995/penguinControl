@@ -140,3 +140,8 @@ ul.pagination li.current a:hover
 {
 	width: 100% !important;
 }
+
+.staffUserMore .button
+{
+	margin-bottom: 1px;
+}
