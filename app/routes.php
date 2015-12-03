@@ -267,6 +267,7 @@ Route::group
 		// Staff // System // Log //
 		Route::get ('staff/system/log', 'StaffSystemLogController@index');
 		Route::get ('staff/system/log/search', 'StaffSystemLogController@search');
+		Route::get ('staff/system/log/{log}/show', 'StaffSystemLogController@show');
 
 		// Staff // Virtualisation //
 		Route::get ('staff/virtualisation', 'StaffVirtualisationController@index');

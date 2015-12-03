@@ -20,12 +20,11 @@ Logs &bull; Staff
 		?>
 		<tr>
 			<td>
-				{{--<div class="button-group radius">
+				<div class="button-group radius">
 					<a href="/staff/system/log/{{ $log->id }}/show" title="Weergeven" class="button tiny">
 						<img src="/img/icons/show.png" alt="Weergeven" />
 					</a>
-					@endif
-				</div>--}}
+				</div>
 			</td>
 			<td>
 				@if ($log->user != NULL)

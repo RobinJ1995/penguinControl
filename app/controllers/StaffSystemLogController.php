@@ -17,4 +17,12 @@ class StaffSystemLogController extends BaseController
 		
 		return View::make ('staff.system.log.index', compact ('logs'));
 	}
+	
+	public function show ($log)
+	{
+		$data = json_decode ($log->data, true);
+		$hLevel = 1;
+		
+		return View::make ('staff.system.log.show', compact ('log', 'data', 'hLevel'));
+	}
 }
