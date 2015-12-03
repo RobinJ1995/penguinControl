@@ -5,17 +5,28 @@ Meer opties voor gebruiker &bull; Staff
 @endsection
 
 @section ('content')
-<div class="button-group radius even-3 stack-for-small">
-	<a href="/staff/user/user/{{ $user->id }}/login" title="Aanmelden als gebruiker" class="button">
-		<img src="/img/icons/login.png" alt="" /> Aanmelden als {{ $userInfo->username }}
-	</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button">
-		<img src="/img/icons/expire.png" alt="" /> Vervaldatum wijzigen
-	</a><a href="/staff/user/user/{{ $user->id }}/edit" title="Bewerken" class="button">
-		<img src="/img/icons/edit.png" alt="" /> Bewerken
-	</a><a href="/staff/user/user/{{ $user->id }}/remove" title="Verwijderen" class="button alert remove confirm">
-		<img src="/img/icons/remove.png" alt="" /> Gebruiker verwijderen
-	</a>
-</div>
+<ul class="button-group radius stack-for-small">
+	<li>
+		<a href="/staff/user/user/{{ $user->id }}/login" title="Aanmelden als gebruiker" class="button">
+			<img src="/img/icons/login.png" alt="" /> Aanmelden als {{ $userInfo->username }}
+		</a>
+	</li>
+	<li>
+		<a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button">
+			<img src="/img/icons/expire.png" alt="" /> Vervaldatum wijzigen
+		</a>
+	</li>
+	<li>
+		<a href="/staff/user/user/{{ $user->id }}/edit" title="Bewerken" class="button">
+			<img src="/img/icons/edit.png" alt="" /> Bewerken
+		</a>
+	</li>
+	<li>
+		<a href="/staff/user/user/{{ $user->id }}/remove" title="Verwijderen" class="button alert remove confirm">
+			<img src="/img/icons/remove.png" alt="" /> Gebruiker verwijderen
+		</a>
+	</li>
+</ul>
 
 <fieldset>
 	<legend>Informatie</legend>
