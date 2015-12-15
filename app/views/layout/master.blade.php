@@ -12,6 +12,16 @@
 		<link rel="stylesheet" href="/css/foundation.css" />
 		<link rel="stylesheet" href="/css/stylesheet.css" />
 		<link rel="stylesheet" href="/foundation-icons/foundation-icons.css" />
+		<style type="text/css">
+			body
+			{
+				background: url('/img/christmas-bg-tile.gif');
+			}
+			body > div.row, body > footer.row
+			{
+				background: white;
+			}
+		</style>
 		@show
 		@section ('js')
 		<script src="/js/vendor/modernizr.js"></script>
@@ -29,6 +39,24 @@
 		<script src="/js/foundation/foundation.reveal.js"></script>
 		<script src="/js/browserUpdate.js"></script>
 		<script src="/js/a29uYW1p.js"></script>
+		<script src="/js/snowfall.jquery.js"></script>
+		<script type="text/javascript">
+			$(document).ready
+			(
+				function ()
+				{
+					$(document).snowfall
+					(
+						{
+							round: true,
+							minSize: 2,
+							maxSize: 8,
+							flakeCount: 128
+						}
+					);
+				}		
+			);
+		</script>
 		<script>
 			$(document).ready
 			(
