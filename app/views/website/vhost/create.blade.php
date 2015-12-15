@@ -10,21 +10,16 @@ vHost toevoegen
 		<legend>vHost toevoegen</legend>
 		<div>
 			<label>Host:
-				<input type="text" name="servername" value="{{ Input::old ('servername') }}" required />
+				<div class="row collapse">
+					<div class="large-4 medium-6 small-12 column">
+						<input type="text" name="servername" value="{{ Input::old ('servername') }}" required />
+					</div>
+					<div class="large-8 medium-6 small-12 column">
+						<span class="postfix">.{{ $userInfo->username }}.sinners.be</span>
+					</div>
+				</div>
+				<small class="error">Verplicht veld</small>
 			</label>
-			<small class="error">Verplicht veld</small>
-		</div>
-		<div>
-			<label>Beheerder:
-				<input type="email" name="serveradmin" value="{{ Input::old ('serveradmin', $userInfo->username . '@sinners.be') }}" required />
-			</label>
-			<small class="error">Verplicht veld</small>
-		</div>
-		<div>
-			<label>Alias:
-				<input type="text" name="serveralias" value="{{ Input::old ('serveralias') }}" />
-			</label>
-			<small class="error">Ongeldige waarde</small>
 		</div>
 		<div>
 			<label>Document root:

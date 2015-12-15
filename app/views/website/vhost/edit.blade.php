@@ -8,23 +8,25 @@ vHost bewerken
 <form action="/website/vhost/{{ $vhost->id }}/edit" method="POST" data-abide>
 	<fieldset>
 		<legend>vHost bewerken</legend>
-		<div>
-			<label>Host:
-				<input type="text" name="servername" value="{{ Input::old ('servername', $vhost->servername) }}" required disabled/>
-			</label>
-			<small class="error">Verplicht veld</small>
+		<div class="row">
+			<div class="large-6 medium-6 small-12 column">
+				<label>Host:
+					<input type="text" name="servername" value="{{ Input::old ('servername', $vhost->servername) }}" required disabled/>
+				</label>
+				<small class="error">Verplicht veld</small>
+			</div>
+			<div class="large-6 medium-6 small-12 column">
+				<label>Alias:
+					<input type="text" name="serveralias" value="{{ Input::old ('serveralias', $vhost->serveralias) }}" disabled />
+				</label>
+				<small class="error">Ongeldige waarde</small>
+			</div>
 		</div>
 		<div>
 			<label>Beheerder:
-				<input type="email" name="serveradmin" value="{{ Input::old ('serveradmin', $vhost->serveradmin) }}" required />
+				<input type="email" name="serveradmin" value="{{ Input::old ('serveradmin', $vhost->serveradmin) }}" required disabled />
 			</label>
 			<small class="error">Verplicht veld</small>
-		</div>
-		<div>
-			<label>Alias:
-				<input type="text" name="serveralias" value="{{ Input::old ('serveralias', $vhost->serveralias) }}" />
-			</label>
-			<small class="error">Ongeldige waarde</small>
 		</div>
 		<div>
 			<label>Document root:

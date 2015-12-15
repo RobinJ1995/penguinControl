@@ -29,13 +29,15 @@ class VHostController extends BaseController
 		if (! ApacheVhostVirtual::allowNew ($user))
 			return Redirect::to ('/website/vhost/create')->withInput ()->with ('alerts', array (new Alert ('U mag maximaal ' . ApacheVhostVirtual::getLimit ($user) . ' vHosts aanmaken. Indien u er meer nodig heeft, neem dan contact met ons op.', 'alert')));
 		
+		$serverName = Input::get ('servername') . '.' . $user->userInfo->username . '.sinners.be';
+		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Host' => Input::get ('servername'),
-				'Beheerder' => Input::get ('serveradmin'),
-				'Alias' => Input::get ('serveralias'),
+				'Host' => $serverName,
+				//'Beheerder' => Input::get ('serveradmin'),
+				//'Alias' => Input::get ('serveralias'),
 				'Document root' => Input::get ('docroot'),
 				'Protocol' => Input::get ('ssl'),
 				'CGI' => Input::get ('cgi')
@@ -43,8 +45,8 @@ class VHostController extends BaseController
 			array
 			(
 				'Host' => array ('required', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
-				'Beheerder' => array ('required', 'email'),
-				'Alias' => array ('different:Host', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
+				//'Beheerder' => array ('required', 'email'),
+				//'Alias' => array ('different:Host', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
 				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')
@@ -57,16 +59,13 @@ class VHostController extends BaseController
 		$vhost = new ApacheVhostVirtual ();
 		$vhost->uid = $user->uid;
 		$vhost->docroot = $user->homedir . '/' . Input::get ('docroot');
-		$vhost->servername = Input::get ('servername');
-		$vhost->serveralias = Input::get ('serveralias');
-		$vhost->serveradmin = Input::get ('serveradmin');
+		$vhost->servername = $serverName;
+		$vhost->serveralias = 'www.' . $serverName;
+		$vhost->serveradmin = $user->userInfo->username . '@sinners.be';
 		$vhost->ssl = (int) Input::get ('ssl');
 		$vhost->cgi = (bool) Input::get ('cgi');
 		
 		$vhost->save ();
-		
-		//$apache2 = new ServiceApache ();
-		//$apache2->reload ();
 		
 		SinLog::log ('vHost aangemaakt', $vhost);
 		
@@ -99,15 +98,13 @@ class VHostController extends BaseController
 		(
 			array
 			(
-				'Beheerder' => Input::get ('serveradmin'),
-				'Alias' => Input::get ('serveralias'),
+				'Document root' => Input::get ('docroot'),
 				'Protocol' => Input::get ('ssl'),
 				'CGI' => Input::get ('cgi')
 			),
 			array
 			(
-				'Beheerder' => array ('required', 'email'),
-				'Alias' => array ('unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
+				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')
 			)
@@ -129,15 +126,10 @@ class VHostController extends BaseController
 		$insideHomedir = (Input::get ('outsideHomedir') !== 'true');
 		
 		$vhost->docroot = ($insideHomedir ? $user->homedir : '') . '/' . Input::get ('docroot');
-		$vhost->serveralias = Input::get ('serveralias');
-		$vhost->serveradmin = Input::get ('serveradmin');
 		$vhost->ssl = (int) Input::get ('ssl');
 		$vhost->cgi = (bool) Input::get ('cgi');
 		
 		$vhost->save ();
-		
-		//$apache2 = new ServiceApache ();
-		//$apache2->reload ();
 		
 		SinLog::log ('vHost bijgewerkt', $vhost);
 		
