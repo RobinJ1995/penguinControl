@@ -5,7 +5,7 @@ vHosts
 @endsection
 
 @section ('content')
-<p>Virtual hosts (vHosts) kunnen gebruikt worden om subdomeinen aan te maken. Standaard kan u een subdomein volgens het patroon <em>*.{{ $user->userInfo->username }}.sinners.be</em> aanmaken. Als u een ander domein in uw bezit heeft en de DNS-records voor uw domein juist staan ingesteld kunt u eveneens uw webruimte op SIN koppelen aan uw domein door middel van een vHost. Let op dat wijzigingen aan uw vHosts niet onmiddelijk van toepassing zijn. Hiervoor moet de webserver opnieuw geladen worden. Dit gebeurt normaalgesproken elke 24 uur.</p>
+<p>Virtual hosts (vHosts) kunnen gebruikt worden om subdomeinen aan te maken. Standaard kan u een subdomein volgens het patroon <em>*.{{ $user->userInfo->username }}.sinners.be</em> aanmaken. Als u een ander domein in uw bezit heeft en de DNS-records voor uw domein juist staan ingesteld kunt u eveneens uw webruimte op SIN koppelen aan uw domein door middel van een vHost. Let op dat wijzigingen aan uw vHosts niet onmiddellijk van toepassing zijn. Hiervoor moet de webserver zijn configuratie opnieuw inlezen, wat volgens de huidige systeeminstellingen elke {{ SystemTask::friendlyInterval ($apacheReloadInterval) }} gebeurt.</p>
 <table>
 	<thead>
 		<tr>

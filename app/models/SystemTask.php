@@ -4,4 +4,36 @@ class SystemTask extends Eloquent
 {
 	protected $table = 'system_task';
 	public $timestamps = false;
+	
+	const TYPE_APACHE_RELOAD = 'apache_reload';
+	const TYPE_NUKE_EXPIRED_VHOSTS = 'nuke_expired_vhosts';
+	
+	public function interval ()
+	{
+		return SystemTask::friendlyInterval ($this->interval);
+	}
+	
+	public static function friendlyInterval ($interval)
+	{
+		$secs = floor ($interval % 60);
+		$mins = floor (($interval % 3600) / 60);
+		$hours = floor (($interval % 86400) / 3600);
+		$days = floor (($interval % 2592000) / 86400);
+		$weeks = floor (($interval % 41944000) / 2592000);
+
+		$str = '';
+
+		if (! empty ($weeks))
+			$str .= $weeks . ' weken';
+		if (! empty ($days))
+			$str .= $days . ' dagen';
+		if (! empty ($hours))
+			$str .= $hours . ' uur';
+		if (! empty ($mins))
+			$str .= $mins . ' minuten';
+		if (! empty ($secs))
+			$str .= $secs . ' seconden';
+
+		return $str;
+	}
 }

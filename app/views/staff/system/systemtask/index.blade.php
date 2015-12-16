@@ -65,33 +65,9 @@ Systeemopdrachten &bull; Staff
 				{{ ! empty ($task->lastRun) ? date ('d/m/Y', $task->lastRun) .  '<br />' . PHP_EOL . date ('H:i:s', $task->lastRun) : '' }}
 			</td>
 			<td>
-				<?php
-				if (! empty ($task->interval))
-				{
-					$interval = $task->interval;
-					
-					$secs = floor ($interval % 60);
-					$mins = floor (($interval % 3600) / 60);
-					$hours = floor (($interval % 86400) / 3600);
-					$days = floor (($interval % 2592000) / 86400);
-					$weeks = floor (($interval % 41944000) / 2592000);
-					
-					$str = '';
-					
-					if (! empty ($weeks))
-						$str .= $weeks . ' weken<br />';
-					if (! empty ($days))
-						$str .= $days . ' dagen<br />';
-					if (! empty ($hours))
-						$str .= $hours . ' uur<br />';
-					if (! empty ($mins))
-						$str .= $mins . ' minuten<br />';
-					if (! empty ($secs))
-						$str .= $secs . ' seconden<br />';
-					
-					echo $str;
-				}
-				?>
+				@if (! empty ($task->interval))
+				{{ $task->interval () }}
+				@endif
 			</td>
 			<td>
 				<?php

@@ -8,7 +8,17 @@ class VHostController extends BaseController
 		$userInfo = $user->userInfo;
 		$vhosts = ApacheVhostVirtual::where ('uid', $user->uid)->get ();
 		
-		return View::make ('website.vhost.index', compact ('user', 'userInfo', 'vhosts'));
+		$apacheReloadInterval = SystemTask::where ('type', SystemTask::TYPE_APACHE_RELOAD)
+			->where
+			(
+				function ($query)
+				{
+					$query->where ('end', '>', time ())
+						->orWhereNull ('end');
+				}
+			)->min ('interval');
+		
+		return View::make ('website.vhost.index', compact ('user', 'userInfo', 'vhosts', 'apacheReloadInterval'));
 	}
 	
 	public function create ()
