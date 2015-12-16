@@ -43,10 +43,11 @@ class UserInfo extends Eloquent
 	public function link ()
 	{
 		$url = $this->url ();
+		$caption = get_class () . '#' . $this->id . ' (' . $this->username . ')';
 		
 		if ($url == NULL)
-			return get_class () . '#' . $this->id;
+			return $caption;
 		
-		return '<a href="' . $url . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $url . '">' . $caption . '</a>';
 	}
 }

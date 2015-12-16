@@ -101,7 +101,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . ($this->userInfo != NULL ? ' (' . $this->userInfo->username . ')' : '') . '</a>';
 	}
 
 	/**
