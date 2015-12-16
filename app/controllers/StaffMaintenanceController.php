@@ -133,14 +133,14 @@ class StaffMaintenanceController extends BaseController
 					|| empty ($user->expire)
 				)
 				{
-					$alerts[] = new Alert ('Gebruiker heeft ontbrekende velden: ' . $user->id, 'warning');
+					$alerts[] = new Alert ('Gebruiker heeft ontbrekende velden: ' . $user->link (), 'warning');
 				}
 				
 				$userInfo = $user->userInfo;
 				
 				if (empty ($userInfo))
 				{
-					$alerts[] = new Alert ('Gebruiker heeft geen geassociëerde rij in de <kbd>user_info</kbd>-tabel: ' . $user->id, 'alert');
+					$alerts[] = new Alert ('Gebruiker heeft geen geassociëerde rij in de <kbd>user_info</kbd>-tabel: ' . $user->link (), 'alert');
 					
 					break;
 				}
@@ -152,11 +152,11 @@ class StaffMaintenanceController extends BaseController
 				*/
 				
 				if (! is_dir ($user->homedir))
-					$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory niet: ' . $user->id, 'alert');
+					$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory niet: ' . $user->link (), 'alert');
 				
 				if (is_dir ($user->homedir)){
 					if (fileowner ($user->homedir) != $user->uid)
-						$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory heeft niet de juiste eigenaar: ' . $user->id, 'alert');
+						$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory heeft niet de juiste eigenaar: ' . $user->link (), 'alert');
 				}
 				
 				
@@ -174,14 +174,14 @@ class StaffMaintenanceController extends BaseController
 					|| empty ($userInfo->email)
 				)
 				{
-					$alerts[] = new Alert ('Gebruikersinformatie heeft ontbrekende velden: ' . $userInfo->id, 'warning');
+					$alerts[] = new Alert ('Gebruikersinformatie heeft ontbrekende velden: ' . $userInfo->link (), 'warning');
 				}
 				
 				if (empty ($userInfo->schoolnr)) // Komt vaak voor, dus minder kritieke melding //
-					$alerts[] = new Alert ('Gebruikersinformatie mist r-nummer: ' . $userInfo->id, 'secondary');
+					$alerts[] = new Alert ('Gebruikersinformatie mist r-nummer: ' . $userInfo->link (), 'secondary');
 				
 				if ($userInfo->validated == 1 && ( !$userInfo->userExists ()))
-					$alerts[] = new Alert ('Gebruikersinformatie zegt dat gebruiker gevalideerd is, maar er is geen rij aanwezig in de <kbd>user</kbd>-tabel voor de gebruiker in kwestie: ' . $userInfo->id, 'alert');
+					$alerts[] = new Alert ('Gebruikersinformatie zegt dat gebruiker gevalideerd is, maar er is geen rij aanwezig in de <kbd>user</kbd>-tabel voor de gebruiker in kwestie: ' . $userInfo->link (), 'alert');
 			}
 			
 			$groups = Group::all ();
@@ -195,7 +195,7 @@ class StaffMaintenanceController extends BaseController
 					|| $group->passwd == 'x'
 				)
 				{
-					$alerts[] = new Alert ('Gebruikersgroep heeft ontbrekende velden: ' . $group->id, 'warning');
+					$alerts[] = new Alert ('Gebruikersgroep heeft ontbrekende velden: ' . $group->link (), 'warning');
 				}
 			}
 			
@@ -211,7 +211,7 @@ class StaffMaintenanceController extends BaseController
 					|| empty ($ftp->dir)
 				)
 				{
-					$alerts[] = new Alert ('FTP-account heeft ontbrekende velden: ' . $ftp->id, 'warning');
+					$alerts[] = new Alert ('FTP-account heeft ontbrekende velden: ' . $ftp->link (), 'warning');
 				}
 			}
 			
@@ -225,7 +225,7 @@ class StaffMaintenanceController extends BaseController
 					|| empty ($domain->domain)
 				)
 				{
-					$alerts[] = new Alert ('E-maildomein heeft ontbrekende velden: ' . $domain->id, 'warning');
+					$alerts[] = new Alert ('E-maildomein heeft ontbrekende velden: ' . $domain->link (), 'warning');
 				}
 			}
 			
@@ -240,7 +240,7 @@ class StaffMaintenanceController extends BaseController
 				    	|| empty ($mUser->password)
 				)
 				{
-					$alerts[] = new Alert ('E-mailgebruiker heeft ontbrekende velden: ' . $mUser->id, 'warning');
+					$alerts[] = new Alert ('E-mailgebruiker heeft ontbrekende velden: ' . $mUser->link (), 'warning');
 				}
 			}
 			
@@ -255,7 +255,7 @@ class StaffMaintenanceController extends BaseController
 				    	|| empty ($mFwd->destination)
 				)
 				{
-					$alerts[] = new Alert ('Doorstuurdadres heeft ontbrekende velden: ' . $mFwd->id, 'warning');
+					$alerts[] = new Alert ('Doorstuurdadres heeft ontbrekende velden: ' . $mFwd->link (), 'warning');
 				}
 			}
 			
@@ -270,7 +270,7 @@ class StaffMaintenanceController extends BaseController
 				    	|| empty ($page->content)
 				)
 				{
-					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->id, 'warning');
+					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->link (), 'warning');
 				}
 			}
 			
@@ -283,11 +283,11 @@ class StaffMaintenanceController extends BaseController
 					|| empty ($task->type)
 				)
 				{
-					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->id, 'warning');
+					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->link (), 'warning');
 				}
 				
 				if ($task->started == 1 && (time () + 5 > $task->start) && empty ($task->exitcode))
-					$alerts[] = new Alert ('Systeemtaak zou gestart moeten zijn maar heeft geen exit code: ' . $task->id, 'warning');
+					$alerts[] = new Alert ('Systeemtaak zou gestart moeten zijn maar heeft geen exit code: ' . $task->link (), 'warning');
 			}
 			
 			DB::commit ();

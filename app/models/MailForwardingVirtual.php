@@ -10,5 +10,15 @@ class MailForwardingVirtual extends LimitedUserOwnedModel
 	{
 		return $this->belongsTo('MailDomainVirtual');
 	}
+	
+	public function url ()
+	{
+		return action ('StaffMailForwardingController@edit', $this->id);
+	}
+	
+	public function link ()
+	{
+		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+	}
 
 }

@@ -31,4 +31,22 @@ class UserInfo extends Eloquent
 	{
 		return $this->fname . ' ' . $this->lname;
 	}
+	
+	public function url ()
+	{
+		if ($this->user != NULL)
+			return action ('StaffUserController@more', $this->user->id);
+		
+		return NULL;
+	}
+	
+	public function link ()
+	{
+		$url = $this->url ();
+		
+		if ($url == NULL)
+			return get_class () . '#' . $this->id;
+		
+		return '<a href="' . $url . '">' . get_class () . '#' . $this->id . '</a>';
+	}
 }

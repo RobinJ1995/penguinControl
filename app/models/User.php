@@ -93,6 +93,16 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	{
 		return $this->hasMany ('ApacheVhostVirtual', 'uid', 'uid');
 	}
+	
+	public function url ()
+	{
+		return action ('StaffUserController@more', $this->id);
+	}
+	
+	public function link ()
+	{
+		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+	}
 
 	/**
 	 * Get the unique identifier for the user.

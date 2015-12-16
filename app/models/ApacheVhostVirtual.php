@@ -159,4 +159,14 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 				$vhost->save ();
 		}
 	}
+	
+	public function url ()
+	{
+		return action ('StaffVHostController@edit', $this->id);
+	}
+	
+	public function link ()
+	{
+		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+	}
 }

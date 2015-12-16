@@ -17,5 +17,13 @@ class MailUserVirtual extends LimitedUserOwnedModel
 		return $this->belongsTo('MailDomainVirtual');
 	}
 	
+	public function url ()
+	{
+		return action ('StaffMailUserController@edit', $this->id);
+	}
 	
+	public function link ()
+	{
+		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+	}
 }

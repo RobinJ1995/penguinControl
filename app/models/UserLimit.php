@@ -18,4 +18,14 @@ class UserLimit extends UserOwnedModel
 	{
 		return UserLimit::whereNull ('uid')->pluck ($property);
 	}
+	
+	public function url ()
+	{
+		return action ('StaffUserLimitController@edit', $this->id);
+	}
+	
+	public function link ()
+	{
+		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+	}
 }
