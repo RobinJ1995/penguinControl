@@ -9,6 +9,7 @@ Logs &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
+			<th>Datum/Tijd</th>
 			<th>Gebruiker</th>
 			<th>Gebeurtenis</th>
 		</tr>
@@ -25,6 +26,9 @@ Logs &bull; Staff
 						<img src="/img/icons/show.png" alt="Weergeven" />
 					</a>
 				</div>
+			</td>
+			<td>
+				{{ $log->created_at }}
 			</td>
 			<td>
 				@if ($log->user != NULL)
