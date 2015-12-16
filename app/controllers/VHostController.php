@@ -77,7 +77,7 @@ class VHostController extends BaseController
 		
 		$vhost->save ();
 		
-		SinLog::log ('vHost aangemaakt', $vhost);
+		SinLog::log ('vHost aangemaakt', NULL, $vhost);
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost toegevoegd', 'success')));
 	}
@@ -141,7 +141,7 @@ class VHostController extends BaseController
 		
 		$vhost->save ();
 		
-		SinLog::log ('vHost bijgewerkt', $vhost);
+		SinLog::log ('vHost bijgewerkt', NULL, $vhost);
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost bijgewerkt', 'success')));
 	}
@@ -155,7 +155,7 @@ class VHostController extends BaseController
 		
 		$vhost->delete ();
 		
-		SinLog::log ('vHost verwijderd', $vhost);
+		SinLog::log ('vHost verwijderd', NULL, $vhost);
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost verwijderd', 'success')));
 	}

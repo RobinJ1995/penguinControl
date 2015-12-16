@@ -294,7 +294,7 @@ class StaffMaintenanceController extends BaseController
 			
 			$alerts[] = new Alert ('Systeemcheck succesvol beëindigd', 'success');
 			
-			SinLog::log ('Systeemcheck uitgevoerd', $alerts);
+			SinLog::log ('Systeemcheck uitgevoerd', NULL, $alerts);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}

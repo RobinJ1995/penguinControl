@@ -110,7 +110,7 @@ class StaffUserLogController extends BaseController
 				return View::make ('staff.user.log.export', compact ('userLogsIds', 'boekhoudingBetekenis'));
 			}
 			
-			SinLog::log ('Facturaties bijgewerkt', $userLogs);
+			SinLog::log ('Facturaties bijgewerkt', NULL, $userLogs);
 		}
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ($alert, 'success')));
@@ -198,7 +198,7 @@ class StaffUserLogController extends BaseController
 		$fileLink = '<a href="/' . $fileName . '" target="_blank">' . $fileName . '</a>';
 		$alert = 'Facturatie(s) gewijzigd en ge&euml;xporteerd';
 		
-		SinLog::log ('Facturaties geëxporteerd', $userLogsUserInfo, $fileName);
+		SinLog::log ('Facturaties geëxporteerd', NULL, $userLogsUserInfo, $fileName);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array
 			(
@@ -251,7 +251,7 @@ class StaffUserLogController extends BaseController
 
 		$userLog->save ();
 		
-		SinLog::log ('Facturatie aangemaakt', $userLog);
+		SinLog::log ('Facturatie aangemaakt', NULL, $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie toegevoegd', 'success')));
 	}
@@ -283,7 +283,7 @@ class StaffUserLogController extends BaseController
 		$userLog->boekhouding = Input::get ('boekhouding');
 		$userLog->save ();
 		
-		SinLog::log ('Facturatie bijgewerkt', $userLog);
+		SinLog::log ('Facturatie bijgewerkt', NULL, $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie bijgewerkt', 'success')));
 	}
@@ -292,7 +292,7 @@ class StaffUserLogController extends BaseController
 	{
 		$userLog->delete ();
 		
-		SinLog::log ('Facturatie verwijderd', $userLog);
+		SinLog::log ('Facturatie verwijderd', NULL, $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie verwijderd', 'success')));
 	}

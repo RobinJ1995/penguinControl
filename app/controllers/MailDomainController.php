@@ -57,7 +57,7 @@ class MailDomainController extends BaseController
 		
 		$domain->save ();
 		
-		SinLog::log ('E-maildomein aangemaakt', $domain);
+		SinLog::log ('E-maildomein aangemaakt', NULL, $domain);
 		
 		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-maildomein toegevoegd', 'success')));
 	}
@@ -110,7 +110,7 @@ class MailDomainController extends BaseController
 		
 		$domain->save ();
 		
-		SinLog::log ('E-maildomein bijgewerkt', $domain);
+		SinLog::log ('E-maildomein bijgewerkt', NULL, $domain);
 		
 		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-maildomein bijgewerkt', 'success')));
 	}
@@ -132,7 +132,7 @@ class MailDomainController extends BaseController
 		
 		$domain->delete ();
 		
-		SinLog::log ('E-maildomein verwijderd', $domain);
+		SinLog::log ('E-maildomein verwijderd', NULL, $domain);
 		
 		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-maildomein verwijderd', 'success')));
 	}

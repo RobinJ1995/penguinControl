@@ -72,7 +72,7 @@ class StaffSystemSystemTaskController extends BaseController
 		
 		$task->save ();
 		
-		SinLog::log ('Systeemtaak aangemaakt', $task);
+		SinLog::log ('Systeemtaak aangemaakt', NULL, $task);
 		
 		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', 'success')));
 	}
@@ -86,7 +86,7 @@ class StaffSystemSystemTaskController extends BaseController
 	{
 		$task->delete ();
 		
-		SinLog::log ('Systeemtaak verwijderd', $task);
+		SinLog::log ('Systeemtaak verwijderd', NULL, $task);
 		
 		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht verwijderd', 'success')));
 	}

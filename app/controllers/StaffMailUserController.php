@@ -62,7 +62,7 @@ class StaffMailUserController extends BaseController
 		
 		$mUser->save ();
 		
-		SinLog::log ('E-mailadres aangemaakt', $mUser);
+		SinLog::log ('E-mailadres aangemaakt', NULL, $mUser);
 		
 		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount toegevoegd', 'success')));
 	}
@@ -117,7 +117,7 @@ class StaffMailUserController extends BaseController
 		
 		$mUser->save ();
 		
-		SinLog::log ('E-mailadres bijgewerkt', $mUser);
+		SinLog::log ('E-mailadres bijgewerkt', NULL, $mUser);
 		
 		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount bijgewerkt', 'success')));
 	}
@@ -126,7 +126,7 @@ class StaffMailUserController extends BaseController
 	{
 		$mUser->delete ();
 		
-		SinLog::log ('E-mailadres verwijderd', $mUser);
+		SinLog::log ('E-mailadres verwijderd', NULL, $mUser);
 		
 		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount verwijderd', 'success')));
 	}

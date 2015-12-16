@@ -245,7 +245,7 @@ class StaffUserController extends BaseController
 			
 			DB::commit ();
 			
-			SinLog::log ('Gebruiker aangemaakt', $user, $userInfo, $userLog);
+			SinLog::log ('Gebruiker aangemaakt', NULL, $user, $userInfo, $userLog);
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
@@ -372,7 +372,7 @@ class StaffUserController extends BaseController
 			
 			DB::commit ();
 			
-			SinLog::log ('Gebruiker bijgewerkt', $user, $userInfo);
+			SinLog::log ('Gebruiker bijgewerkt', NULL, $user, $userInfo);
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
@@ -441,7 +441,7 @@ class StaffUserController extends BaseController
 
 				DB::commit ();
 				
-				SinLog::log ('Gebruiker verwijderd', $user, $userInfo);
+				SinLog::log ('Gebruiker verwijderd', NULL, $user, $userInfo);
 
 				return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 			}
@@ -462,7 +462,7 @@ class StaffUserController extends BaseController
 	{
 		$userInfo = $user->userInfo;
 		
-		SinLog::log ('Ingelogd als gebruiker', $user); // Hier moet de log vóór de effectieve actie gebeuren, anders klopt de user_id in de log entry niet //
+		SinLog::log ('Ingelogd als gebruiker', NULL, $user); // Hier moet de log vóór de effectieve actie gebeuren, anders klopt de user_id in de log entry niet //
 		
 		Auth::login ($user);
 		
@@ -553,7 +553,7 @@ class StaffUserController extends BaseController
 		foreach ($user->vhost as $vhost)
 			$vhost->save ();
 		
-		SinLog::log ('Vervaltdatum bijgewerkt', $user);
+		SinLog::log ('Vervaltdatum bijgewerkt', NULL, $user);
 		
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->userInfo->username . ' (' . $user->userInfo->getFullName () . ') ingesteld: ' . $newExpireDate)));
 	}
@@ -758,7 +758,7 @@ class StaffUserController extends BaseController
 				}
 			);
 			
-			SinLog::log ('Gebruiker gevalideerd', $user, $userInfo);
+			SinLog::log ('Gebruiker gevalideerd', NULL, $user, $userInfo);
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
@@ -774,7 +774,7 @@ class StaffUserController extends BaseController
 	{
 		$userInfo->delete ();
 		
-		SinLog::log ('Gebruikersregistratie geweigerd', $userInfo);
+		SinLog::log ('Gebruikersregistratie geweigerd', NULL, $userInfo);
 		
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Validatie geweigerd: ' . $userInfo->username . PHP_EOL . '</br />Gebruikersinformatie verwijderd.<br />Let op: Er is <strong>geen</strong> geautomatiseerde e-mail verstuurd naar de gebruiker in kwestie. Gelieve (indien het om een gebruiker ging, en geen bot o.i.d.) zelf even een e-mail naar de gebruiker in kwestie te sturen en er ook duidelijk bij te zeggen <strong>waarom</strong> zijn registratie geweigerd is.')));
 	}
@@ -829,7 +829,7 @@ class StaffUserController extends BaseController
 		$userInfo->logintoken = md5 (time ());
 		$userInfo->save ();
 		
-		SinLog::log ('Eenmalige login token gegenereerd', $user, $userInfo);
+		SinLog::log ('Eenmalige login token gegenereerd', NULL, $user, $userInfo);
 		
 		return Redirect::to ('staff/user/user/' . $user->id . '/more')->with ('alerts', array (new Alert ('Eenmalige login token gegenereerd. Deze kan doorgegeven worden aan de gebruiker in kwestie zodat deze zelf via <em>Gebruiker</em> -> <em>Gegevens wijzigen</em> een nieuw wachtwoord kan instellen voor zijn/haar account.<br />Deze link zal automatisch vervallen wanneer deze gebruikt wordt.', 'info')));
 	}

@@ -61,7 +61,7 @@ class StaffGroupController extends BaseController
 		
 		$group->save ();
 		
-		SinLog::log ('Gebruikersgroep aangemaakt', $group);
+		SinLog::log ('Gebruikersgroep aangemaakt', NULL, $group);
 		
 		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep aangemaakt: ' . $group->name, 'success')));
 	}
@@ -70,7 +70,7 @@ class StaffGroupController extends BaseController
 	{
 		$group->delete ();
 		
-		SinLog::log ('Gebruikersgroep verwijderd', $group);
+		SinLog::log ('Gebruikersgroep verwijderd', NULL, $group);
 		
 		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep verwijderd: ' . $group->name, 'success')));
 	}

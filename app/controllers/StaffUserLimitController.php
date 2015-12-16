@@ -66,7 +66,7 @@ class StaffUserLimitController extends BaseController
 		$limit->diskusage = Input::get ('diskusage');
 		$limit->save ();
 		
-		SinLog::log ('Gebruikerslimiet aangemaakt', $limit);
+		SinLog::log ('Gebruikerslimiet aangemaakt', NULL, $limit);
 		
 		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Uitzondering toegevoegd', 'success')));
 	}
@@ -120,7 +120,7 @@ class StaffUserLimitController extends BaseController
 		$limit->diskusage = Input::get ('diskusage');
 		$limit->save ();
 		
-		SinLog::log ('Gebruikerslimiet bijgewerkt', $limit);
+		SinLog::log ('Gebruikerslimiet bijgewerkt', NULL, $limit);
 		
 		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Uitzondering bijgewerkt', 'success')));
 	}
@@ -129,7 +129,7 @@ class StaffUserLimitController extends BaseController
 	{
 		$limit->delete ();
 		
-		SinLog::log ('Gebruiker verwijderd', $limit);
+		SinLog::log ('Gebruiker verwijderd', NULL, $limit);
 		
 		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Uitzondering verwijderd', 'success')));
 	}

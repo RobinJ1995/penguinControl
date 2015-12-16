@@ -5,14 +5,21 @@ class SinLog extends Eloquent // Log is een bestaande class in Laravel //
 	protected $table = 'log';
 	public $timestamps = true;
 	
-	public static function log ($message, ...$data)
+	public static function log ($message, $userId = NULL, ...$data)
 	{
 		$log = new SinLog ();
 		$log->message = $message;
 		
-		$user = Auth::user ();
-		if ($user != null)
-			$log->user_id = $user->id;
+		if ($userId == NULL)
+		{
+			$user = Auth::user ();
+			if ($user != null)
+				$log->user_id = $user->id;
+		}
+		else
+		{
+			$log->user_id = $userId;
+		}
 		
 		if (! empty ($data))
 			$log->data = json_encode ($data);

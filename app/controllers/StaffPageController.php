@@ -50,7 +50,7 @@ class StaffPageController extends BaseController
 		
 		$page->save ();
 		
-		SinLog::log ('Pagina aangemaakt', $page);
+		SinLog::log ('Pagina aangemaakt', NULL, $page);
 		
 		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina toegevoegd', 'success')));
 	}
@@ -87,7 +87,7 @@ class StaffPageController extends BaseController
 		
 		$page->save ();
 		
-		SinLog::log ('Pagina bijgewerkt', $page);
+		SinLog::log ('Pagina bijgewerkt', NULL, $page);
 		
 		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina bijgewerkt', 'success')));
 	}
@@ -96,7 +96,7 @@ class StaffPageController extends BaseController
 	{
 		$page->delete ();
 		
-		SinLog::log ('Pagina verwijderd', $page);
+		SinLog::log ('Pagina verwijderd', NULL, $page);
 		
 		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina verwijderd', 'success')));
 	}
