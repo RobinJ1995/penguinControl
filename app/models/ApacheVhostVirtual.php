@@ -5,10 +5,10 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	protected $table = 'apache_vhost_virtual';
 	public $timestamps = false;
 	
-	const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Eindigen met een `/` //
-	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
-	//DEV// const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Eindigen met een `/` //
-	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
+	//const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Eindigen met een `/` //
+	//const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
+	const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Eindigen met een `/` //
+	const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
 	const SSLCERT = '/etc/apache2/ssl/wildcard.sinners.be.cert';
 	const SSLKEY = '/etc/apache2/ssl/wildcard.sinners.be.key';
 	const EXPIRED_DOCROOT = '/var/www/expired/';
@@ -21,8 +21,8 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 		$homedir = $user->homedir;
 		$group = Group::where ('gid', $user->gid)->first ()->name;
 		
-		$identification = 'VHOST_' . $username . '_' . $this->servername;
-		$filename = $identification . '.conf';
+		$identification = $this->identification ();
+		$filename = $this->filename ();
 		
 		$now = ceil (time () / 60 / 60 / 24);
 		$expired = false;
@@ -128,11 +128,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	
 	public function delete ()
 	{
-		$user = User::where ('uid', $this->uid)->first ();
-		$username = $user->userInfo->username;
-		
-		$identification = 'VHOST_' . $username . '_' . $this->servername;
-		$filename = $identification . '.conf';
+		$filename = $this->filename ();
 		
 		$ok1 = unlink (self::VHOSTDIRAVAILABLE . $filename);
 		$ok2 = unlink (self::VHOSTDIRENABLED . $filename);
@@ -168,5 +164,20 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	public function link ()
 	{
 		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+	}
+	
+	public function identification ()
+	{
+		return 'VHOST_' . User::where ('uid', $this->uid)->firstOrFail ()->userInfo->username . '_' . $this->servername . '.conf';
+	}
+	
+	public function filename ()
+	{
+		return $this->identification () . '.conf';
+	}
+	
+	public function path ()
+	{
+		return self::VHOSTDIRENABLED . $this->filename ();
 	}
 }

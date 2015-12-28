@@ -92,6 +92,11 @@ Route::group
 		Route::get ('user/edit', 'UserController@edit');
 		Route::post ('user/edit', 'UserController@update');
 		Route::get ('user/logout', 'UserController@logout');
+		
+		// Problem solver //
+		Route::get ('sudo-fix-problem', 'ProblemSolverController@start');
+		Route::get ('problem-solver', 'ProblemSolverController@start');
+		Route::get ('problem-solver/scan', 'ProblemSolverController@scan');
 
 		// vHost //
 		Route::get ('website/vhost', 'VHostController@index');
