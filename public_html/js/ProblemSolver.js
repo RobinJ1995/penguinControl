@@ -16,6 +16,7 @@ ProblemSolver =
 						'/problem-solver/scan?userId=' + userId,
 						function (data)
 						{
+							alert (data);
 							$('#problemSolverContainer').html ('Gevonden problemen: ');
 							
 							for (var i = 0; i < data.length; i++)

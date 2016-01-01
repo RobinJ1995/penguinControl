@@ -55,13 +55,13 @@ class ProblemSolverController extends BaseController
 			{
 				if (! file_exists ($vhost->path ()))
 				{
-					$problems[] = $knownProblems['VHOST_FILE_ABSENT'];
+					$problems[] = array ('VHOST_FILE_ABSENT', 'vHost-configuratiebestand weggeschreven', $vhost->filename ());
 					
 					$vhost->save (); // vHost file zou geschreven moeten worden //
 				}
 				else if (preg_match ('#\s*DocumentRoot\s+expired#i', file_get_contents ($vhost->path ())))
 				{
-					$problems[] = $knownProblems['VHOST_NOT_RENEWED'];
+					$problems[] = array ('VHOST_NOT_RENEWED', 'vHost-configuratiebestand herschreven', $vhost->filename ());
 					
 					$vhost->save (); // vHost file zou opnieuw geschreven moeten worden //
 				}
@@ -71,25 +71,44 @@ class ProblemSolverController extends BaseController
 					$sinUser = UserInfo::where ('username', 'sin')->firstOrFail ()->user;
 					if (! (file_exists ($sinUser->homedir) && is_dir ($sinUser->homedir)))
 					{
-						$problems[] = $knownProblems['HOMEDIR_STORAGE_UNAVAILABLE']; // Problemen met de NAS? De home directories lijken niet beschikbaar te zijn... //
+						$problems[] = array ('HOMEDIR_STORAGE_UNAVAILABLE'); // Problemen met de NAS? De home directories lijken niet beschikbaar te zijn... //
 					}
 					else
 					{
-						$problems[] = $knownProblems['DOCROOT_ABSENT']; // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
+						$problems[] = array ('DOCROOT_ABSENT'); // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
 					}
 				}
 				
 				if (! (file_exists ($user->homedir . '/logs') && is_dir ($user->homedir . '/logs')))
 				{
-					$problems[] = $knownProblems['LOGS_FOLDER_ABSENT']; // Weer zo ene die zijne logs folder verwijderd heeft... Geen root-rechten -> Kan voorlopig nog niet door SINControl opgelost worden. //
+					$problems[] = array ('LOGS_FOLDER_ABSENT'); // Weer zo ene die zijne logs folder verwijderd heeft... Geen root-rechten -> Kan voorlopig nog niet door SINControl opgelost worden. //
 				}
 			}
 		}
 		else
 		{
-			$problems[] = $knownProblems['USER_EXPIRED'];
+			$problems[] = array ('USER_EXPIRED');
 		}
 		
-		return Response::json ($problems);
+		$data = array ();
+		foreach ($problems as $info)
+		{
+			if (! isset ($info[1]))
+				$info[1] = NULL;
+			if (! isset ($info[2]))
+				$info[2] = NULL;
+			
+			$data[] = array_merge
+			(
+				array
+				(
+					'fix' => $info[1],
+					'details' => $info[2]
+				),
+				$knownProblems[$info[0]]
+			);
+		}
+		
+		return Response::json ($data);
 	}
 }
