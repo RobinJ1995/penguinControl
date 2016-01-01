@@ -16,13 +16,34 @@ ProblemSolver =
 						'/problem-solver/scan?userId=' + userId,
 						function (data)
 						{
-							alert (data);
-							$('#problemSolverContainer').html ('Gevonden problemen: ');
+							var table;
 							
-							for (var i = 0; i < data.length; i++)
+							if (data.length === 0)
 							{
-								$('#problemSolverContainer').append (data[i].message + '<br />');
+								table = 'Geen problemen gevonden';
 							}
+							else
+							{
+								table = 'Gevonden problemen:\n\
+									<table>\n\
+										<thead>\n\
+											<tr>\n\
+												<th>Probleem</th>\n\
+												<th>Onderdeel</th>\n\
+												<th>Opgelost?</th>\n\
+											</tr>\n\
+										</thead>\n\
+										<tbody>\n';
+
+								for (var i = 0; i < data.length; i++)
+									table += '<tr>\n\
+										<td>' + data[i].message + '</td>\n\
+										<td>' + data[i].object + '</td>\n\
+										<td>' + (data[i].fix == void 0 ? 'Niet opgelost' : data[i].fix) + '</td>\n\
+										</tr>\n';
+							}
+							
+							$('#problemSolverContainer').html (table);
 						}
 					)
 				}

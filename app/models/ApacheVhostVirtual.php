@@ -180,4 +180,9 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	{
 		return self::VHOSTDIRENABLED . $this->filename ();
 	}
+	
+	public function __toString ()
+	{
+		return 'vHost: ' . $this->servername . ' (' . $this->filename () . ')';
+	}
 }

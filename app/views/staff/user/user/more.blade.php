@@ -27,6 +27,11 @@ Meer opties voor gebruiker &bull; Staff
 		</a>
 	</li>
 	<li>
+		<a href="/sudo-fix-problem/{{ $user->id }}" title="sudo fix-problem" class="button alert warning">
+			<img src="/img/icons/sin.png" alt="" /> Probleem oplossen (experimenteel)
+		</a>
+	</li>
+	<li>
 		<a href="/staff/user/user/{{ $user->id }}/remove" title="Verwijderen" class="button alert remove confirm">
 			<img src="/img/icons/remove.png" alt="" /> Gebruiker verwijderen
 		</a>

@@ -2,9 +2,11 @@
 
 class ProblemSolverController extends BaseController
 {
-	public function start ()
+	public function start ($user = NULL)
 	{
-		$userId = Auth::user ()->id;
+		if ($user == NULL)
+			$user = Auth::user ();
+		$userId = $user->id;
 		
 		return View::make ('problem-solver.start', compact ('userId'));
 	}
@@ -55,13 +57,13 @@ class ProblemSolverController extends BaseController
 			{
 				if (! file_exists ($vhost->path ()))
 				{
-					$problems[] = array ('VHOST_FILE_ABSENT', 'vHost-configuratiebestand weggeschreven', $vhost->filename ());
+					$problems[] = array ('VHOST_FILE_ABSENT', 'vHost-configuratiebestand weggeschreven', $vhost);
 					
 					$vhost->save (); // vHost file zou geschreven moeten worden //
 				}
 				else if (preg_match ('#\s*DocumentRoot\s+expired#i', file_get_contents ($vhost->path ())))
 				{
-					$problems[] = array ('VHOST_NOT_RENEWED', 'vHost-configuratiebestand herschreven', $vhost->filename ());
+					$problems[] = array ('VHOST_NOT_RENEWED', 'vHost-configuratiebestand herschreven', $vhost);
 					
 					$vhost->save (); // vHost file zou opnieuw geschreven moeten worden //
 				}
@@ -103,7 +105,7 @@ class ProblemSolverController extends BaseController
 				array
 				(
 					'fix' => $info[1],
-					'details' => $info[2]
+					'object' => (string) $info[2]
 				),
 				$knownProblems[$info[0]]
 			);
