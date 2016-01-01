@@ -168,7 +168,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	
 	public function identification ()
 	{
-		return 'VHOST_' . User::where ('uid', $this->uid)->firstOrFail ()->userInfo->username . '_' . $this->servername . '.conf';
+		return 'VHOST_' . User::where ('uid', $this->uid)->firstOrFail ()->userInfo->username . '_' . $this->servername;
 	}
 	
 	public function filename ()
