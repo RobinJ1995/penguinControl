@@ -826,7 +826,7 @@ class StaffUserController extends BaseController
 	{
 		$userInfo = $user->userInfo;
 		
-		$userInfo->logintoken = md5 (time ());
+		$userInfo->generateLoginToken ();
 		$userInfo->save ();
 		
 		SinLog::log ('Eenmalige login token gegenereerd', NULL, $user, $userInfo);

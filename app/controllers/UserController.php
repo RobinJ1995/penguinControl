@@ -360,7 +360,7 @@ class UserController extends BaseController
 		{
 			if (substr (strtolower ($userInfo->schoolnr), 0, 1) == 'r' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 's' || substr (strtolower ($userInfo->email), 0, 2) == 'r0' || substr (strtolower ($userInfo->email), 0, 2) == 's5' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 'p' || substr (strtolower ($userInfo->schoolnr), 0, 1) == 'q')
 			{
-				$userInfo->validationcode = md5 (time ());
+				$userInfo->generateValidationCode ();
 				$userInfo->save ();
 
 				$url = 'https://sinners.be/user/' . $user->id . '/expired/renew/' . $userInfo->validationcode;
@@ -500,7 +500,7 @@ class UserController extends BaseController
 			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Er is een e-mail gestuurd naar ' . $userInfo->email . ' met verdere instructies. Indien u de e-mail in kwestie niet kan terugvinden, vergeet dan zeker uw spam-folder niet na te kijken. Bij problemen, <a href="/page/contact">contacteer ons</a>.', 'info')));
 		}
 		
-		$userInfo->logintoken = md5 (time ());
+		$userInfo->generateLoginToken ();
 		$userInfo->save ();
 		
 		$url = 'https://sinners.be/user/' . $user->id . '/amnesia/login/' . $userInfo->logintoken;
