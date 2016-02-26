@@ -12,17 +12,23 @@ sudo php5enmod mcrypt
 
 sudo a2enmod rewrite
 
+
 # DB
 
-Maak in MySql een db aan met de naam, gebruikersnaam en wachtwoord zoals in app/config/database.php staat.
+
+Maak in MySql een db aan met de naam en met username waarvan de gebruikersnaam en het wachtwoord overeenkomt met de gebruikersnaam en het wachtwoord in app/config/database.php staat.
+
+Indien je iets aanpast in deze file, gelieve deze dan te excluden van de commit.
 
 Importeer in deze db de .sql file.
+
 
 # Extra vhost settings
 
 Binnen de <Directory> en </Directory> moet `AllowOverride all` staan.
 
 Reden: anders werkt de .htaccess file van SIN-Control niet.
+
 
 # Extra php.ini setings
 
@@ -31,6 +37,7 @@ Deze waarden moeten hoog genoeg staan zodat je de database (momenteel 3 à 4 MB)
 upload_max_filesize, memory_limit en post_max_size
 
 Het kan zijn dat de memory_limit en post_max_size groter moeten zijn dan de upload_max_filesize
+
 
 # Laravel settings (dev env)
 
