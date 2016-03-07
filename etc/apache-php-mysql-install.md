@@ -25,7 +25,7 @@ Importeer in deze db de .sql file.
 
 # Extra vhost settings
 
-Binnen de <Directory> en </Directory> moet `AllowOverride all` staan.
+Binnen de `<Directory>` en `</Directory>` moet `AllowOverride all` staan.
 
 Reden: anders werkt de .htaccess file van SIN-Control niet.
 
