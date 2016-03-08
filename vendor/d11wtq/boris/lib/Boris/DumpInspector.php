@@ -1,7 +1,5 @@
 <?php
 
-/* vim: set shiftwidth=2 expandtab softtabstop=2: */
-
 namespace Boris;
 
 /**
@@ -9,12 +7,10 @@ namespace Boris;
  */
 class DumpInspector implements Inspector
 {
-
-	public function inspect ($variable)
-	{
-		ob_start ();
-		var_dump ($variable);
-		return sprintf (" → %s", trim (ob_get_clean ()));
-	}
-
+    public function inspect($variable)
+    {
+        ob_start();
+        var_dump($variable);
+        return sprintf(" → %s", trim(ob_get_clean()));
+    }
 }

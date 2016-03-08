@@ -1,7 +1,5 @@
 <?php
 
-/* vim: set shiftwidth=2 expandtab softtabstop=2: */
-
 namespace Boris;
 
 /**
@@ -9,10 +7,8 @@ namespace Boris;
  */
 class ExportInspector implements Inspector
 {
-
-	public function inspect ($variable)
-	{
-		return sprintf (" → %s", var_export ($variable, true));
-	}
-
+    public function inspect($variable)
+    {
+        return sprintf(" → %s", var_export($variable, true));
+    }
 }

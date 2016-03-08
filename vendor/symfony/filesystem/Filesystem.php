@@ -115,6 +115,10 @@ class Filesystem
     public function exists($files)
     {
         foreach ($this->toIterator($files) as $file) {
+            if ('\\' === DIRECTORY_SEPARATOR && strlen($file) > 258) {
+                throw new IOException('Could not check if file exist because path length exceeds 258 characters.', 0, null, $file);
+            }
+
             if (!file_exists($file)) {
                 return false;
             }
@@ -154,7 +158,7 @@ class Filesystem
         $files = iterator_to_array($this->toIterator($files));
         $files = array_reverse($files);
         foreach ($files as $file) {
-            if (!file_exists($file) && !is_link($file)) {
+            if (!$this->exists($file) && !is_link($file)) {
                 continue;
             }
 
@@ -192,11 +196,11 @@ class Filesystem
     public function chmod($files, $mode, $umask = 0000, $recursive = false)
     {
         foreach ($this->toIterator($files) as $file) {
-            if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chmod(new \FilesystemIterator($file), $mode, $umask, true);
-            }
             if (true !== @chmod($file, $mode & ~$umask)) {
                 throw new IOException(sprintf('Failed to chmod file "%s".', $file), 0, null, $file);
+            }
+            if ($recursive && is_dir($file) && !is_link($file)) {
+                $this->chmod(new \FilesystemIterator($file), $mode, $umask, true);
             }
         }
     }
@@ -268,13 +272,29 @@ class Filesystem
     public function rename($origin, $target, $overwrite = false)
     {
         // we check that target does not exist
-        if (!$overwrite && is_readable($target)) {
+        if (!$overwrite && $this->isReadable($target)) {
             throw new IOException(sprintf('Cannot rename because the target "%s" already exists.', $target), 0, null, $target);
         }
 
         if (true !== @rename($origin, $target)) {
             throw new IOException(sprintf('Cannot rename "%s" to "%s".', $origin, $target), 0, null, $target);
         }
+    }
+
+    /**
+     * Tells whether a file exists and is readable.
+     *
+     * @param string $filename Path to the file.
+     *
+     * @throws IOException When windows path is longer than 258 characters
+     */
+    private function isReadable($filename)
+    {
+        if ('\\' === DIRECTORY_SEPARATOR && strlen($filename) > 258) {
+            throw new IOException('Could not check if file is readable because path length exceeds 258 characters.', 0, null, $filename);
+        }
+
+        return is_readable($filename);
     }
 
     /**
@@ -443,13 +463,13 @@ class Filesystem
      */
     public function isAbsolutePath($file)
     {
-        return (strspn($file, '/\\', 0, 1)
+        return strspn($file, '/\\', 0, 1)
             || (strlen($file) > 3 && ctype_alpha($file[0])
                 && substr($file, 1, 1) === ':'
-                && (strspn($file, '/\\', 2, 1))
+                && strspn($file, '/\\', 2, 1)
             )
             || null !== parse_url($file, PHP_URL_SCHEME)
-        );
+        ;
     }
 
     /**
@@ -530,14 +550,14 @@ class Filesystem
             throw new IOException(sprintf('Failed to write file "%s".', $filename), 0, null, $filename);
         }
 
-        $this->rename($tmpFile, $filename, true);
         if (null !== $mode) {
             if (func_num_args() > 2) {
                 @trigger_error('Support for modifying file permissions is deprecated since version 2.3.12 and will be removed in 3.0.', E_USER_DEPRECATED);
             }
 
-            $this->chmod($filename, $mode);
+            $this->chmod($tmpFile, $mode);
         }
+        $this->rename($tmpFile, $filename, true);
     }
 
     /**
