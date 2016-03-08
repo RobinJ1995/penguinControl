@@ -21,7 +21,6 @@ class StaffSystemSystemTaskController extends BaseController
 			array
 			(
 				'Type' => Input::get ('type'),
-				'Commando' => Input::get ('command'),
 				'Start' => Input::get ('start'),
 				'Interval' => Input::get ('interval'),
 				'Interval-eenheid' => Input::get ('interval_unit'),
@@ -29,8 +28,7 @@ class StaffSystemSystemTaskController extends BaseController
 			),
 			array
 			(
-				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts,custom'),
-				'Commando' => array ('required_if:type,custom'),
+				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts'),
 				'Start' => array ('date'),
 				'Interval' => array ('numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),
 				'Interval-eenheid' => array ('required_with:Interval', 'in:sec,min,hour,day,week'),
@@ -39,31 +37,21 @@ class StaffSystemSystemTaskController extends BaseController
 		);
 		
 		if ($validator->fails ())
-			return Redirect::to ('/staff/systemtask/create')->withInput ()->withErrors ($validator);
+			return Redirect::to ('/staff/system/systemtask/create')->withInput ()->withErrors ($validator);
 		
 		$task = new SystemTask ();
 		$task->type = Input::get ('type');
-		if (Input::get ('type') == 'custom')
-		{
-			$task->data = json_encode
-			(
-				array
-				(
-					'command' => Input::get ('command')
-				)
-			);
-		}
 		$task->start = (empty (Input::get ('start')) ? time () : strtotime (Input::get ('start')));
 		$factor = 1;
 		switch (Input::get ('interval_unit'))
 		{
 			case 'week': // Falls through //
 				$factor *= 7;
-			case 'day':
+			case 'day': // Falls through //
 				$factor *= 24;
-			case 'hour':
+			case 'hour': // Falls through //
 				$factor *= 60;
-			case 'min':
+			case 'min': // Falls through //
 				$factor *= 60;
 		}
 		if (! empty (Input::get ('interval')))
@@ -74,7 +62,7 @@ class StaffSystemSystemTaskController extends BaseController
 		
 		SinLog::log ('Systeemtaak aangemaakt', NULL, $task);
 		
-		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', 'success')));
+		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', 'success')));
 	}
 	
 	public function show ($task)
@@ -88,7 +76,7 @@ class StaffSystemSystemTaskController extends BaseController
 		
 		SinLog::log ('Systeemtaak verwijderd', NULL, $task);
 		
-		return Redirect::to ('/staff/systemtask')->with ('alerts', array (new Alert ('Opdracht verwijderd', 'success')));
+		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Opdracht verwijderd', 'success')));
 	}
 
 }

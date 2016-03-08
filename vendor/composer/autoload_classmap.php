@@ -1073,6 +1073,7 @@ return array(
     'Predis\\Session\\SessionHandler' => $vendorDir . '/predis/predis/lib/Predis/Session/SessionHandler.php',
     'Predis\\Transaction\\AbortedMultiExecException' => $vendorDir . '/predis/predis/lib/Predis/Transaction/AbortedMultiExecException.php',
     'Predis\\Transaction\\MultiExecContext' => $vendorDir . '/predis/predis/lib/Predis/Transaction/MultiExecContext.php',
+    'ProblemSolverController' => $baseDir . '/app/controllers/ProblemSolverController.php',
     'Proxmox' => $baseDir . '/app/libraries/Proxmox.php',
     'ProxmoxClass' => $baseDir . '/app/libraries/ProxmoxClass.php',
     'ProxmoxNode' => $baseDir . '/app/libraries/ProxmoxNode.php',

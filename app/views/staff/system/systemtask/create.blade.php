@@ -17,20 +17,11 @@ Systeemopdracht toevoegen &bull; Staff
 						array
 						(
 							'apache_reload' => 'Webserver opnieuw laden',
-							'nuke_expired_vhosts' => 'Websites van vervallen gebruikers uitschakelen',
-							'custom' => 'Commando'
+							'nuke_expired_vhosts' => 'Websites van vervallen gebruikers uitschakelen'
 						),
 						Input::old ('type')
 					)
 					}}
-				</label>
-				<small class="error">Ongeldige waarde</small>
-			</div>
-		</div>
-		<div class="row">
-			<div class="large-12 medium-12 small-12 column">
-				<label>Commando:
-					<input type="text" name="command" value="{{ Input::old ('command') }}" />
 				</label>
 				<small class="error">Ongeldige waarde</small>
 			</div>

@@ -48,9 +48,6 @@ Systeemopdrachten &bull; Staff
 					case 'nuke_expired_vhosts':
 						echo 'Websites van vervallen gebruikers uitschakelen';
 						break;
-					case 'custom':
-						echo 'Commando: <kbd>' . $data['command'] . '</kbd>';
-						break;
 				}
 				?>
 			</td>
