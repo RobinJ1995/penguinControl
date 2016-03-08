@@ -18,8 +18,12 @@ class StaffVHostController extends BaseController
 		$basedir = Input::get ('basedir');
 		$username = Input::get ('username');
 		
-		$query = ApacheVhostVirtual::where ('docroot', 'LIKE', '%' . $docroot . '%')
-		    	->where ('basedir', 'LIKE', '%' . $basedir . '%');
+		$query = ApacheVhostVirtual::where ('docroot', 'LIKE', '%' . $docroot . '%');
+		
+		if (empty ($basedir))
+			$query = $query->whereNull ('basedir');
+		else
+			$query = $query->where ('basedir', 'LIKE', '%' . $basedir . '%');
 		
 		if (! empty ($username))
 		{
