@@ -18,22 +18,47 @@ class StaffVHostController extends BaseController
 		$basedir = Input::get ('basedir');
 		$username = Input::get ('username');
 		
-		$query = ApacheVhostVirtual::where ('docroot', 'LIKE', '%' . $docroot . '%')
-		    	->where ('basedir', 'LIKE', '%' . $basedir . '%');
+		$query = ApacheVhostVirtual::where
+		(
+			function ($query) use ($host)
+			{
+				$query->where ('servername', 'LIKE', '%' . $host . '%')
+					->orWhere ('serveralias', 'LIKE', '%' . $host . '%');
+			}
+		)->where
+		(
+			function ($query) use ($docroot)
+			{
+				$query->where ('docroot', 'LIKE', '%'  . $docroot . '%');
+				if (empty ($docroot))
+					$query->orWhereNull ('docroot');
+			}
+		)->where
+		(
+			function ($query) use ($basedir)
+			{
+				$query->where ('basedir', 'LIKE', '%' . $basedir . '%');
+				if (empty ($basedir))
+					$query->orWhereNull ('basedir');
+			}
+		);
 		
 		if (! empty ($username))
 		{
 			$uid = '';
 			
-			$userInfo = UserInfo::where ('username', $username)->first ();
+			$userInfos = UserInfo::where ('username', 'LIKE', '%' . $username . '%')->get ();
+			$uids = array ();
 			
-			if (! empty ($userInfo))
+			foreach ($userInfos as $userInfo)
 			{
 				$user = $userInfo->user;
 				$uid = $user->uid;
+				
+				$uids[] = $uid;
 			}
 			
-			$query = $query->where ('uid', $uid);
+			$query = $query->whereIn ('uid', $uids);
 		}
 		
 		$count = $query->count ();
