@@ -10,24 +10,24 @@ Facturatie &bull; Staff
 @endsection
 
 @section ('content')
-	{{ $userlogs->links () }}
-	<table>
-		<thead>
-			<tr>
-				<th></th>
-				<th>
-					Gebruikersnaam
-				</th>
-				<th>
-					r-nummer
-				</th>
-				<th>
-					Datum/Tijd
-				</th>
-				<th>
-					Nieuw
-				</th>
-				<th>
+{{ $userlogs->links () }}
+<table>
+	<thead>
+		<tr>
+			<th></th>
+			<th>
+				Gebruikersnaam
+			</th>
+			<th>
+				r-nummer
+			</th>
+			<th>
+				Datum/Tijd
+			</th>
+			<th>
+				Nieuw
+			</th>
+			<th>
 				Facturatiestatus
 			</th>
 			<th>
@@ -143,9 +143,25 @@ Facturatie &bull; Staff
 						</label>
 					</div>
 				</div>
-				<label>
-					<input type="checkbox" name="pagination" value="true" checked="checked"/> Pagination
-				</label>
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>Primaire groep:
+							{{
+								Form::select
+								(
+									'gid',
+									array ('' => 'Alles') + Group::lists ('name', 'gid')
+								)
+							}}
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<br />
+							<input type="checkbox" name="pagination" value="true" checked="checked"/> Pagination
+						</label>
+					</div>
+				</div>
 
 				<button>Zoeken</button>
 			</div>
