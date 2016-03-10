@@ -45,7 +45,7 @@ class StaffUserLogController extends BaseController
 			}
 		);
 
-		if (!empty ($time_van) && !empty ($time_tot))
+		if (! empty ($time_van) && ! empty ($time_tot))
 		{
 			$query->whereBetween ('time', array ($time_van, $time_tot));
 		}

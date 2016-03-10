@@ -24,15 +24,18 @@ class StaffFtpController extends BaseController
 		{
 			$uid = '';
 			
-			$users = UserInfo::where ('username', $username);
-
-			$user = $users->first ();
-			if (! empty ($user))
+			$userInfos = UserInfo::where ('username', 'LIKE', '%' . $username . '%')->get ();
+			$uids = array ();
+			
+			foreach ($userInfos as $userInfo)
 			{
-				$user = $user->getUser ();
+				$user = $userInfo->user;
 				$uid = $user->uid;
+				
+				$uids[] = $uid;
 			}
-			$query = $query->where ('uid', $uid);
+			
+			$query = $query->whereIn ('uid', $uids);
 		}
 		
 		$count = $query->count ();
