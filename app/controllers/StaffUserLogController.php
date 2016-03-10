@@ -27,6 +27,7 @@ class StaffUserLogController extends BaseController
 		$name = Input::get ('name');
 		$email = Input::get ('email');
 		$schoolnr = Input::get ('schoolnr');
+		$gid = Input::get ('gid');
 
 		$time_van = Input::get ('time_van');
 		$time_tot = Input::get ('time_tot');
@@ -35,15 +36,30 @@ class StaffUserLogController extends BaseController
 		$pagination = Input::get ('pagination');
 
 		$query = UserLog::with ('userInfo.user')
-			->whereHas ('userInfo', function ($q) use ($username, $name, $email, $schoolnr)
-			{
-				$q->where ('validated', '1')
-					->where ('username', 'LIKE', '%' . $username . '%')
-					->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
-					->where ('email', 'LIKE', '%' . $email . '%')
-					->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
-			}
-		);
+			->whereHas
+			(
+				'userInfo',
+				function ($q) use ($username, $name, $email, $schoolnr, $gid)
+				{
+					$q->where ('validated', '1')
+						->where ('username', 'LIKE', '%' . $username . '%')
+						->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
+						->where ('email', 'LIKE', '%' . $email . '%')
+						->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
+					
+					if (! empty ($gid))
+					{
+						$q->whereHas
+						(
+							'user',
+							function ($q) use ($gid)
+							{
+								$q->where ('gid', $gid);
+							}
+						);
+					}
+				}
+			);
 
 		if (! empty ($time_van) && ! empty ($time_tot))
 		{
@@ -51,10 +67,10 @@ class StaffUserLogController extends BaseController
 		}
 		else
 		{
-			if (!empty ($time_van))
+			if (! empty ($time_van))
 				$query->where ('time', '>', $time_van);
 
-			if (!empty ($time_tot))
+			if (! empty ($time_tot))
 				$query->where ('time', '<', $time_tot);
 		}
 

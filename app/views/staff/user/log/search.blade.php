@@ -151,38 +151,54 @@ Facturatie &bull; Staff
 					<div class="large-6 medium-12 column">
 						<label>Gefactureerd:
 							{{ Form::select
+							(
+								'boekhouding',
+								array
 								(
-									'boekhouding',
-									array
-									(
-										'all' => 'Alles',
-										'-1'=>'Niet te factureren',
-										'0'=>'Nog te factureren',
-										'1'=>'Gefactureerd'
-									)
+									'all' => 'Alles',
+									'-1'=>'Niet te factureren',
+									'0'=>'Nog te factureren',
+									'1'=>'Gefactureerd'
 								)
+							)
 							}}
 						</label>
 					</div>
 					<div class="large-6 medium-12 column">
 						<label>Nieuw:
 							{{ Form::select
+							(
+								'nieuw',
+								array
 								(
-									'nieuw',
-									array
-									(
-										'all' => 'Alles',
-										'0' => 'Nee',
-										'1' => 'Ja',
-									)
+									'all' => 'Alles',
+									'0' => 'Nee',
+									'1' => 'Ja',
 								)
+							)
 							}}
 						</label>
 					</div>
 				</div>
-				<label>Pagination:
-					<input type="checkbox" name="pagination" value="true" checked="checked"/> Pagination
-				</label>
+				<div class="row">
+					<div class="large-6 medium-12 column">
+						<label>Primaire groep:
+							{{
+								Form::select
+								(
+									'gid',
+									array ('' => 'Alles') + Group::lists ('name', 'gid')
+								)
+							}}
+						</label>
+					</div>
+					<div class="large-6 medium-12 column">
+						<label>
+							<br />
+							<input type="checkbox" name="pagination" value="true" checked="checked"/> Pagination
+						</label>
+					</div>
+				</div>
 
 				<button>Zoeken</button>
 			</form>
