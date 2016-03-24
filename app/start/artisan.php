@@ -14,3 +14,5 @@
 Artisan::add (new VhostNukeExpiredCommand ());
 Artisan::add (new VhostApacheReloadCommand ());
 Artisan::add (new UserPrepareHomedirCommand ());
+Artisan::add (new ProblemSolverCommand ());
+Artisan::add (new CronCommand ());

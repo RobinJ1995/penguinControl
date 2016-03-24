@@ -5,10 +5,10 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	protected $table = 'apache_vhost_virtual';
 	public $timestamps = false;
 	
-	const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Eindigen met een `/` //
-	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
-	//DEV// const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Eindigen met een `/` //
-	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
+	//const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Eindigen met een `/` //
+	//const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
+	const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Eindigen met een `/` //
+	const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
 	const SSLCERT = '/etc/apache2/ssl/wildcard.sinners.be.cert';
 	const SSLKEY = '/etc/apache2/ssl/wildcard.sinners.be.key';
 	const EXPIRED_DOCROOT = '/var/www/expired/';

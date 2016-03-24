@@ -7,6 +7,8 @@ class SystemTask extends Eloquent
 	
 	const TYPE_APACHE_RELOAD = 'apache_reload';
 	const TYPE_NUKE_EXPIRED_VHOSTS = 'nuke_expired_vhosts';
+	const TYPE_HOMEDIR_PREPARE = 'homedir_prepare';
+	const TYPE_PROBLEM_SOLVER = 'problem_solver';
 	
 	public function interval ()
 	{

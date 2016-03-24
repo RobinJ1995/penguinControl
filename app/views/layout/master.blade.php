@@ -12,6 +12,20 @@
 		<link rel="stylesheet" href="/css/foundation.css" />
 		<link rel="stylesheet" href="/css/stylesheet.css" />
 		<link rel="stylesheet" href="/foundation-icons/foundation-icons.css" />
+		@if (App::environment ('local'))
+		<style type="text/css">
+			/*
+			 * Gewoon om verwarring te voorkomen en een duidelijke
+			 * indicatie te geven dat in deze tab de lokale versie
+			 * draait ;-)
+			 */
+			
+			h1 img
+			{
+				filter: invert(100%);
+			}
+		</style>
+		@endif
 		@show
 		@section ('js')
 		<script src="/js/vendor/modernizr.js"></script>
@@ -71,10 +85,6 @@
 		@show
 	</head>
 	<body>
-		{{--<div class="row">
-			<div class="alert-box info" data-alert>De nieuwe versie van SINControl is nog in testfase. Sommige dingen zullen dus nog niet helemaal werken. Bij problemen, <a href="/page/contact">contacteer ons</a>.</div>
-		</div>--}}
-		
 		<header class="row">
 			<div class="large-3 columns">
 				<h1>

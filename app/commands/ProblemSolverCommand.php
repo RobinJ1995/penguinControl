@@ -4,7 +4,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class UserPrepareHomedirCommand extends Command
+class ProblemSolverCommand extends Command
 {
 
 	/**
@@ -12,14 +12,14 @@ class UserPrepareHomedirCommand extends Command
 	 *
 	 * @var string
 	 */
-	protected $name = 'user:prepareHomedir';
+	protected $name = 'problemsolver:run';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Makes a copy of /etc/skel and changes ownership to give a new user a home directory.';
+	protected $description = 'Attempts to automatically fix common problems.';
 
 	/**
 	 * Create a new command instance.
@@ -41,26 +41,11 @@ class UserPrepareHomedirCommand extends Command
 		$username = $this->argument ('user');
 		
 		$userInfo = UserInfo::where ('username', $username)->firstOrFail ();
-		$group = $userInfo->user->primaryGroup;
-		$homedir = $userInfo->user->homedir;
+		$user = $userInfo->user;
 		
-		if ($userInfo == NULL || $group == NULL)
-			throw new Exception ('User or group unknown');
+		$problemSolver = new ProblemSolver ($user);
 		
-		$cmd1 = 'cp -R /etc/skel/ ' . escapeshellarg ($homedir) . ' 2>&1';
-		$cmd2 = 'chown ' . escapeshellarg ($username) . ':' . escapeshellarg ($group->name) . ' ' . escapeshellarg ($homedir) . ' -R 2>&1';
-		
-		$output = array ();
-		
-		exec ($cmd1, $output, $exitStatus1);
-		exec ($cmd2, $output, $exitStatus2);
-		
-		return array
-		(
-			'exitcode' => max ($exitStatus1, $exitStatus2),
-			'command' => array ($cmd1, $cmd2),
-			'output' => implode (PHP_EOL, $output)
-		);
+		return $problemSolver->run ();
 	}
 
 	/**
