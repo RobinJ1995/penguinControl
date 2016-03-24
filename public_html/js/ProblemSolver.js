@@ -40,6 +40,7 @@ ProblemSolver =
 					if (data.lastRun > 0)
 					{
 						var data = $.parseJSON (data.data);
+						
 						self.showResults (data.result);
 					}
 					else

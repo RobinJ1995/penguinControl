@@ -103,7 +103,7 @@ class ProblemSolver
 				
 				if (! (file_exists ($this->user->homedir . '/logs') && is_dir ($this->user->homedir . '/logs')))
 				{
-					$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '751');
+					$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '711');
 					
 					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $this->user); // Weer zo ene die zijne logs folder verwijderd heeft... //
 				}
