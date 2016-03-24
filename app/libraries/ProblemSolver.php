@@ -97,7 +97,7 @@ class ProblemSolver
 					{
 						$status = $this->createDirectory ($vhost->docroot, $this->user, '711');
 						
-						$problems[] = array ('DOCROOT_ABSENT', 'Document root aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $status); // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
+						$problems[] = array ('DOCROOT_ABSENT', 'Document root aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $vhost); // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
 					}
 				}
 				
@@ -105,7 +105,7 @@ class ProblemSolver
 				{
 					$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '751');
 					
-					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $status); // Weer zo ene die zijne logs folder verwijderd heeft... //
+					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $user); // Weer zo ene die zijne logs folder verwijderd heeft... //
 				}
 			}
 		}
