@@ -65,10 +65,10 @@ class ProblemSolver
 		{
 			$problems[] = array ('USER_NOT_VALIDATED');
 		}
-		/*else if (! file_exists ($this->user->homedir))
+		else if (! file_exists ($this->user->homedir))
 		{
 			$problems[] = array ('RETARDED_MEDEWERKER');
-		}*/
+		}
 		else
 		{
 			foreach ($this->user->vhost as $vhost)
