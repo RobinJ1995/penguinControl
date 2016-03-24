@@ -69,7 +69,7 @@ class ProblemSolver
 		{
 			$problems[] = array ('RETARDED_MEDEWERKER');
 		}
-		/*else
+		else
 		{
 			foreach ($this->user->vhost as $vhost)
 			{
@@ -108,7 +108,7 @@ class ProblemSolver
 					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $status); // Weer zo ene die zijne logs folder verwijderd heeft... //
 				}
 			}
-		}*/
+		}
 		
 		$data = array ();
 		foreach ($problems as $info)
