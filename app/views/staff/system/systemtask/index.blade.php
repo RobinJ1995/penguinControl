@@ -55,11 +55,16 @@ Systeemopdrachten &bull; Staff
 				?>
 			</td>
 			<td>
+				@if (! empty ($task->start))
 				{{ date ('d/m/Y', $task->start) }}<br />
 				{{ date ('H:i:s', $task->start) }}
+				@endif
 			</td>
 			<td>
-				{{ ! empty ($task->end) ? date ('d/m/Y', $task->end) .  '<br />' . PHP_EOL . date ('H:i:s', $task->end) : '' }}
+				@if (! empty ($task->end))
+				{{ date ('d/m/Y', $task->end) }}<br />
+				{{ date ('H:i:s', $task->end) }}
+				@endif
 			</td>
 			<td>
 				{{ ! empty ($task->lastRun) ? date ('d/m/Y', $task->lastRun) .  '<br />' . PHP_EOL . date ('H:i:s', $task->lastRun) : '' }}

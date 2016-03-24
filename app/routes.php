@@ -153,7 +153,8 @@ Route::group
 		// Problem solver //
 		Route::get ('sudo-fix-problem/{user?}', 'ProblemSolverController@start');
 		Route::get ('problem-solver/{user?}', 'ProblemSolverController@start');
-		Route::get ('problem-solver/scan', 'ProblemSolverController@scan');
+		Route::get ('problem-solver/schedule', 'ProblemSolverController@schedule');
+		Route::get ('problem-solver/result', 'ProblemSolverController@result');
 		
 		// Staff // User // User //
 		Route::get ('staff/user/user', 'StaffUserController@index');

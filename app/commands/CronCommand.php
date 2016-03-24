@@ -101,6 +101,11 @@ class CronCommand extends Command
 					$task->exitcode = $status['exitcode'];
 					unset ($status['exitcode']);
 				}
+				else
+				{
+					$task->exitcode = 0;
+				}
+				
 				$data = array_merge ($data, $status);
 			}
 			else if (is_string ($status))
@@ -114,7 +119,7 @@ class CronCommand extends Command
 			
 			$task->save ();
 			
-			SinLog ('SystemTask#' . $task->id . ' uitgevoerd', NULL, $task);
+			SinLog::log ('SystemTask#' . $task->id . ' uitgevoerd', NULL, $task);
 		}
 	}
 
