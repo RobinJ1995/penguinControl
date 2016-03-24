@@ -39,7 +39,7 @@ ProblemSolver =
 				{
 					if (data.lastRun > 0)
 					{
-						self.showResults (data);
+						self.showResults (data.result);
 					}
 					else
 					{

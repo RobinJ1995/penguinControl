@@ -90,7 +90,10 @@ class CronCommand extends Command
 					$user = User::find ($data['userId']);
 		
 					$problemSolver = new ProblemSolver ($user);
-					$status = $problemSolver->run ();
+					$status = array
+					(
+						'result' => $problemSolver->run ()
+					);
 					break;
 			}
 			

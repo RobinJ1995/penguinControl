@@ -164,5 +164,15 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	{
 		return $this->email;
 	}
+	
+	public function __toString ()
+	{
+		$name = '#' . $this->id;
+		
+		if ($this->userInfo != NULL)
+			$name = $this->userInfo->username;
+		
+		return 'Gebruiker: ' . $name;
+	}
 
 }
