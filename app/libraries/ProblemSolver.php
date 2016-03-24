@@ -105,7 +105,7 @@ class ProblemSolver
 				{
 					$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '751');
 					
-					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $user); // Weer zo ene die zijne logs folder verwijderd heeft... //
+					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $this->user); // Weer zo ene die zijne logs folder verwijderd heeft... //
 				}
 			}
 		}
