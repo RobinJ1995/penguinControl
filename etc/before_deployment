@@ -15,3 +15,8 @@ Zorg ervoor dat de volgende mappen bestaan in /home/users/;
 Zorg ervoor dat er een gebruiker sincontrol bestaat en dat deze NOPASSWD sudo access heeft tot de volgende commando's;
 service (of systemctl als Debian al overgeschakeld is op systemd), cp, chmod, chown
 Er is ook NOPASSWD sudo access nodig voor service (of systemctl) op elke server die services draait de SINControl moet kunnen beheren (zoals Apache).
+
+Let op
+======
+
+SINControl maakt gebruik van Laravel 4.2, wat niet meer volledig compatibel is met PHP 7.x. Specifiek is de error handling kapot, waardoor er geen nuttige foutmeldingen meer uit het systeem komen. Dit is het enige wat ik heb gevonden dat incompatibel is, maar mogelijk zijn er nog andere dingen. Om te ontwikkelen is het echter nogal lastig als er geen nuttige foutmeldingen meer uit het systeem komen. Daarom raad ik aan dat je PHP 5.6 gebruikt bij de ontwikkeling. Op Arch Linux kan dit doort de `php56` package te installeren uit de AUR, welke zich dan naast de up-to-date PHP 7-installatie installeert.

@@ -264,13 +264,6 @@ Route::group
 		Route::post ('staff/page/{page}/edit', 'StaffPageController@update');
 		Route::get ('staff/page/{page}/remove', 'StaffPageController@remove');
 
-		// Staff // System // SystemTask //
-		Route::get ('staff/system/systemtask', 'StaffSystemSystemTaskController@index');
-		Route::get ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@create');
-		Route::post ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@store');
-		Route::get ('staff/system/systemtask/{systemTask}/show', 'StaffSystemSystemTaskController@show');
-		Route::get ('staff/system/systemtask/{systemTask}/remove', 'StaffSystemSystemTaskController@remove');
-
 		// Staff // System //
 		Route::get ('staff/system/phpinfo', 'StaffSystemController@phpinfo');
 		
@@ -279,6 +272,13 @@ Route::group
 		Route::get ('staff/system/log/search', 'StaffSystemLogController@search');
 		Route::get ('staff/system/log/{log}/show', 'StaffSystemLogController@show');
 		Route::get ('staff/system/log/laravel', 'StaffSystemLogController@laravel');
+
+		// Staff // System // SystemTask //
+		Route::get ('staff/system/systemtask', 'StaffSystemSystemTaskController@index');
+		Route::get ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@create');
+		Route::post ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@store');
+		Route::get ('staff/system/systemtask/{systemTask}/show', 'StaffSystemSystemTaskController@show');
+		Route::get ('staff/system/systemtask/{systemTask}/remove', 'StaffSystemSystemTaskController@remove');
 
 		// Staff // Virtualisation //
 		Route::get ('staff/virtualisation', 'StaffVirtualisationController@index');
