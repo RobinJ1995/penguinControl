@@ -65,7 +65,7 @@ class ProblemSolver
 		{
 			$problems[] = array ('USER_NOT_VALIDATED');
 		}
-		else if (! file_exists ($this->user->homedir))
+		else if (! file_exists ($this->user->homedir) && ! App::environment ('local')) // In lokale dev environment gaat dit anders waarschijnlijk altijd triggeren //
 		{
 			$problems[] = array ('RETARDED_MEDEWERKER');
 		}

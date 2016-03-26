@@ -155,6 +155,7 @@ Route::group
 		Route::get ('problem-solver/{user?}', 'ProblemSolverController@start');
 		Route::get ('problem-solver/schedule', 'ProblemSolverController@schedule');
 		Route::get ('problem-solver/result', 'ProblemSolverController@result');
+		Route::get ('problem-solver/all/dry', 'ProblemSolverController@allDry');
 		
 		// Staff // User // User //
 		Route::get ('staff/user/user', 'StaffUserController@index');

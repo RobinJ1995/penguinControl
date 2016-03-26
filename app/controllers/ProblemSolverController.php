@@ -31,4 +31,32 @@ class ProblemSolverController extends BaseController
 		
 		return $task;
 	}
+	
+	public function allDry ()
+	{
+		$data = array ();
+		$now = ceil (time () / 60 / 60 / 24);
+		
+		$users = User::where ('expire', '>', $now)
+			->orWhere ('expire', '-1')
+			->whereHas
+			(
+				'UserInfo',
+				function ($q)
+				{
+					$q->where ('validated', 1);
+				}
+			)->get ();
+		
+		foreach ($users as $user)
+		{
+			$problemSolver = new ProblemSolver ($user);
+			$data[$user->userInfo->username] = $problemSolver->run (false);
+		}
+		
+		if (Request::ajax ())
+			return Response::json ($data);
+		else
+			return View::make ('problem-solver.allDry', compact ('data'));
+	}
 }
