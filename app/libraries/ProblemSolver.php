@@ -9,7 +9,7 @@ class ProblemSolver
 		$this->user = $user;
 	}
 	
-	public function run ()
+	public function run ($fix = true)
 	{
 		$knownProblems = array
 		(
@@ -75,15 +75,17 @@ class ProblemSolver
 			{
 				if (! file_exists ($vhost->path ()))
 				{
-					$problems[] = array ('VHOST_FILE_ABSENT', 'vHost-configuratiebestand weggeschreven', $vhost);
+					if ($fix)
+						$vhost->save (); // vHost file zou geschreven moeten worden //
 					
-					$vhost->save (); // vHost file zou geschreven moeten worden //
+					$problems[] = array ('VHOST_FILE_ABSENT', 'vHost-configuratiebestand weggeschreven', $vhost);
 				}
 				else if (preg_match ('#\s*DocumentRoot\s+expired#i', file_get_contents ($vhost->path ())))
 				{
-					$problems[] = array ('VHOST_NOT_RENEWED', 'vHost-configuratiebestand herschreven', $vhost);
+					if ($fix)
+						$vhost->save (); // vHost file zou opnieuw geschreven moeten worden //
 					
-					$vhost->save (); // vHost file zou opnieuw geschreven moeten worden //
+					$problems[] = array ('VHOST_NOT_RENEWED', 'vHost-configuratiebestand herschreven', $vhost);
 				}
 				
 				if (! (file_exists ($vhost->docroot) && is_dir ($vhost->docroot)))
@@ -95,17 +97,19 @@ class ProblemSolver
 					}
 					else
 					{
-						$status = $this->createDirectory ($vhost->docroot, $this->user, '711');
+						if ($fix)
+							$status = $this->createDirectory ($vhost->docroot, $this->user, '711');
 						
-						$problems[] = array ('DOCROOT_ABSENT', 'Document root aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $vhost); // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
+						$problems[] = array ('DOCROOT_ABSENT', 'Document root aangemaakt' . (isset ($status) && $status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $vhost); // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
 					}
 				}
 				
 				if (! (file_exists ($this->user->homedir . '/logs') && is_dir ($this->user->homedir . '/logs')))
 				{
-					$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '711');
+					if ($fix)
+						$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '711');
 					
-					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . ($status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $this->user); // Weer zo ene die zijne logs folder verwijderd heeft... //
+					$problems[] = array ('LOGS_FOLDER_ABSENT', 'Map met logbestanden aangemaakt' . (isset ($status) && $status['exitcode'] > 0 ? ' (mogelijk mislukt)' : ''), $this->user); // Weer zo ene die zijne logs folder verwijderd heeft... //
 				}
 			}
 		}
@@ -113,7 +117,7 @@ class ProblemSolver
 		$data = array ();
 		foreach ($problems as $info)
 		{
-			if (! isset ($info[1]))
+			if (! isset ($info[1]) || ! $fix)
 				$info[1] = NULL;
 			if (! isset ($info[2]))
 				$info[2] = NULL;
@@ -129,7 +133,7 @@ class ProblemSolver
 			);
 		}
 		
-		SinLog::log ('ProblemSolver uitgevoerd', NULL, $data);
+		SinLog::log ('ProblemSolver uitgevoerd' . (! $fix ? ' (dry run)' : ''), NULL, $data);
 		
 		return $data;
 	}

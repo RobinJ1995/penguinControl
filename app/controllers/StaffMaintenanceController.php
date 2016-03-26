@@ -1,4 +1,14 @@
 <?php
+/*
+ * Doe jezelf een groot plezier en roep deze methods niet aan als je niet 100%
+ * begrijpt wat ze doen. Er is een reden dat er geen gebruiksvriendelijke knop
+ * is in SINControl die toegang biedt tot deze functies. Deze ethods hebben
+ * allemaal een nut en kunnen op een eenvoudige manier veel problemen oplossen,
+ * maar kunnen nog veel makkelijker veel problemen veroorzaken wanneer ze
+ * verkeerd gebruikt worden.
+ * 
+ * -- Robin Jacobs (robinj1995)
+ */
 
 class StaffMaintenanceController extends BaseController
 {
@@ -115,6 +125,7 @@ class StaffMaintenanceController extends BaseController
 			DB::beginTransaction ();
 			
 			$alerts = array ();
+			$ignoreRNummers = Input::has ('ignorernummers');
 			
 			$users = User::all ();
 			foreach ($users as $user)
@@ -177,8 +188,11 @@ class StaffMaintenanceController extends BaseController
 					$alerts[] = new Alert ('Gebruikersinformatie heeft ontbrekende velden: ' . $userInfo->link (), 'warning');
 				}
 				
-				if (empty ($userInfo->schoolnr)) // Komt vaak voor, dus minder kritieke melding //
-					$alerts[] = new Alert ('Gebruikersinformatie mist r-nummer: ' . $userInfo->link (), 'secondary');
+				if (! $ignoreRNummers)
+				{
+					if (empty ($userInfo->schoolnr)) // Komt vaak voor, dus minder kritieke melding //
+						$alerts[] = new Alert ('Gebruikersinformatie mist r-nummer: ' . $userInfo->link (), 'secondary');
+				}
 				
 				if ($userInfo->validated == 1 && ( !$userInfo->userExists ()))
 					$alerts[] = new Alert ('Gebruikersinformatie zegt dat gebruiker gevalideerd is, maar er is geen rij aanwezig in de <kbd>user</kbd>-tabel voor de gebruiker in kwestie: ' . $userInfo->link (), 'alert');
