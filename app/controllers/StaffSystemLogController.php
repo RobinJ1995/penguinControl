@@ -25,4 +25,22 @@ class StaffSystemLogController extends BaseController
 		
 		return View::make ('staff.system.log.show', compact ('log', 'data', 'hLevel'));
 	}
+	
+	public function laravel ()
+	{
+		$laravelRaw = file_get_contents ('../app/storage/logs/laravel.log');
+		$laravelRaw = explode (PHP_EOL . '[', $laravelRaw);
+		$laravel = array ();
+		foreach ($laravelRaw as $i => $trace)
+		{
+			$boom = explode (PHP_EOL, $trace);
+			$title = $boom[0];
+			if (strpos ($title, '[') !== 0)
+				$title = '[' . $title;
+
+			$laravel[$title] = implode (PHP_EOL, array_splice ($boom, 1));
+		}
+		
+		return View::make ('staff.system.log.laravel', compact ('laravel'));
+	}
 }

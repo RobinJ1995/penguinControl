@@ -271,10 +271,14 @@ Route::group
 		Route::get ('staff/system/systemtask/{systemTask}/show', 'StaffSystemSystemTaskController@show');
 		Route::get ('staff/system/systemtask/{systemTask}/remove', 'StaffSystemSystemTaskController@remove');
 
+		// Staff // System //
+		Route::get ('staff/system/phpinfo', 'StaffSystemController@phpinfo');
+		
 		// Staff // System // Log //
 		Route::get ('staff/system/log', 'StaffSystemLogController@index');
 		Route::get ('staff/system/log/search', 'StaffSystemLogController@search');
 		Route::get ('staff/system/log/{log}/show', 'StaffSystemLogController@show');
+		Route::get ('staff/system/log/laravel', 'StaffSystemLogController@laravel');
 
 		// Staff // Virtualisation //
 		Route::get ('staff/virtualisation', 'StaffVirtualisationController@index');
