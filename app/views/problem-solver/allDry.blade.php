@@ -6,6 +6,7 @@ Probleemoplosser (overzicht)
 
 @section ('content')
 @foreach ($data as $username => $results)
+@if (! empty ($results))
 <div class="panel">
 	<h2>{{ $username }}</h2>
 	
@@ -22,5 +23,6 @@ Probleemoplosser (overzicht)
 		@endforeach
 	</table>
 </div>
+@endif
 @endforeach
 @endsection

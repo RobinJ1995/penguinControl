@@ -57,6 +57,6 @@ class ProblemSolverController extends BaseController
 		if (Request::ajax ())
 			return Response::json ($data);
 		else
-			return View::make ('problem-solver.allDry', compact ('data'));
+			return View::make ('problem-solver.allDry', compact ('data'))->with ('alerts', array (new Alert (count ($users) . ' gebruikers gescand op problemen', 'success')));
 	}
 }
