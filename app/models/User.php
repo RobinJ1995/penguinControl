@@ -103,6 +103,37 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	{
 		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . ($this->userInfo != NULL ? ' (' . $this->userInfo->username . ')' : '') . '</a>';
 	}
+	
+	public function calculateDiskUsage ($save = false)
+	{
+		$exitStatus = NULL;
+		$cmd = 'du -shbx ' . escapeshellarg ($this->homedir);
+		
+		$output = array ();
+		exec ($cmd, $output, $exitStatus);
+
+		if ($exitStatus == 0)
+		{
+			$usage = explode ("\t", implode (PHP_EOL, $output))[0];
+			
+			if ($save)
+			{
+				$this->diskusage = $usage;
+				
+				$this->save ();
+			}
+			
+			return $usage;
+		}
+	}
+	
+	public static function calculateAndSaveDiskUsage ()
+	{
+		$now = time () / 60 / 60 / 24;
+		
+		foreach (User::where ('expire', '>', $now)->orWhere ('expire', -1)->get () as $user)
+			$user->calculateDiskUsage (true);
+	}
 
 	/**
 	 * Get the unique identifier for the user.

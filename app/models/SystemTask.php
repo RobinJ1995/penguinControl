@@ -9,6 +9,7 @@ class SystemTask extends Eloquent
 	const TYPE_NUKE_EXPIRED_VHOSTS = 'nuke_expired_vhosts';
 	const TYPE_HOMEDIR_PREPARE = 'homedir_prepare';
 	const TYPE_PROBLEM_SOLVER = 'problem_solver';
+	const TYPE_CALCULATE_DISK_USAGE = 'calculate_disk_usage';
 	
 	public function interval ()
 	{

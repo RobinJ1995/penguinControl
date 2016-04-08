@@ -28,7 +28,7 @@ class StaffSystemSystemTaskController extends BaseController
 			),
 			array
 			(
-				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts'),
+				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts,calculate_disk_usage'),
 				'Start' => array ('date'),
 				'Interval' => array ('numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),
 				'Interval-eenheid' => array ('required_with:Interval', 'in:sec,min,hour,day,week'),

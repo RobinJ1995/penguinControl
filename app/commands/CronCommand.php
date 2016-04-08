@@ -95,6 +95,9 @@ class CronCommand extends Command
 						'result' => $problemSolver->run ()
 					);
 					break;
+				case SystemTask::TYPE_CALCULATE_DISK_USAGE:
+					User::calculateAndSaveDiskUsage ();
+					break;
 			}
 			
 			if (is_array ($status))

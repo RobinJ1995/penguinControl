@@ -16,8 +16,9 @@ Systeemopdracht toevoegen &bull; Staff
 						'type',
 						array
 						(
-							'apache_reload' => 'Webserver opnieuw laden',
-							'nuke_expired_vhosts' => 'Websites van vervallen gebruikers uitschakelen'
+							SystemTask::TYPE_APACHE_RELOAD => 'Webserver opnieuw laden',
+							SystemTask::TYPE_NUKE_EXPIRED_VHOSTS => 'Websites van vervallen gebruikers uitschakelen',
+							SystemTask::TYPE_CALCULATE_DISK_USAGE => 'Herbereken schijfuimtegebruik van gebruikers'
 						),
 						Input::old ('type')
 					)
