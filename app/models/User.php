@@ -107,7 +107,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 	public function calculateDiskUsage ($save = false)
 	{
 		$exitStatus = NULL;
-		$cmd = 'du -shbx ' . escapeshellarg ($this->homedir);
+		$cmd = 'du -shbxB 1048576 ' . escapeshellarg ($this->homedir);
 		
 		$output = array ();
 		exec ($cmd, $output, $exitStatus);
