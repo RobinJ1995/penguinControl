@@ -6,7 +6,7 @@ sudo add-apt-repository ppa:ondrej/php5-5.6
 
 sudo apt-get -y update
 
-sudo apt-get install apache2 php5 php5-cli phpmyadmin mysql-server phpmyadmin
+sudo apt-get install apache2 php5 php5-cli phpmyadmin mysql-server
 
 sudo php5enmod mcrypt
 
