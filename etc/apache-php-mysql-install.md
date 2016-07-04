@@ -30,7 +30,7 @@ Binnen de `<Directory>` en `</Directory>` moet `AllowOverride all` staan.
 Reden: anders werkt de .htaccess file van SIN-Control niet.
 
 
-# Extra php.ini setings
+# Extra php.ini settings
 
 Deze waarden moeten hoog genoeg staan zodat je de database (momenteel 3 à 4 MB) kan importeren.
 
