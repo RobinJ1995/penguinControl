@@ -39,6 +39,7 @@ return array (
       |
      */
     'files' => storage_path () . '/sessions',
+//    'files' => '/tmp/sincontrol/sessions',
     /*
       |--------------------------------------------------------------------------
       | Session Database Connection

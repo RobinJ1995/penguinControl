@@ -105,7 +105,10 @@
 						<a href="/home" class="button">Home</a>
 					</li>
 					<li>
-						<a href="https://cloud.sinners.be/" class="button">SIN Cloud</a>
+						<a href="https://cloud.sinners.be/" class="button">Cloud</a>
+					</li>
+					<li>
+						<a href="http://git.sinners.be/" class="button">Git</a>
 					</li>
 					@show
 				</ul>
