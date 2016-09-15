@@ -60,7 +60,7 @@ class ApacheVhostVirtual extends LimitedUserOwnedModel
 	ErrorLog "{:homedir:}/logs/error_log"
 	php_admin_value open_basedir "{:docroot:}:{:homedir:}/repos/:/tmp:/usr/share/php/{:basedir:}"
 
-	CustomLog "/var/log/apache2/vhosts/{:identification:}.log" combined
+	CustomLog "/var/log/apache2/vhost/{:identification:}.log" combined
 	SSLEngine On
 	SSLCertificateFile {:sslcert:}
 	SSLCertificateKeyFile {:sslkey:}
