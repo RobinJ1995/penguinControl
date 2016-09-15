@@ -719,7 +719,7 @@ class StaffUserController extends BaseController
 			/*exec ('sudo cp -R /etc/skel/ ' . escapeshellarg ($user->homedir) . '2>&1', $output, $exitStatus1);
 			exec ('sudo chown ' . $userInfo->username . ':' . $user->getGroup ()->name . ' ' . $user->homedir . ' -R 2>&1', $output, $exitStatus2);*/
 			
-			$cmd = 'php /home/users/s/sin/scripts/prepareUserHomedir.php ' . escapeshellarg ($userInfo->username) . ' ' . escapeshellarg ($user->homedir) . ' ' . escapeshellarg ($user->getGroup ()->name);
+			/*$cmd = 'php /home/users/s/sin/scripts/prepareUserHomedir.php ' . escapeshellarg ($userInfo->username) . ' ' . escapeshellarg ($user->homedir) . ' ' . escapeshellarg ($user->getGroup ()->name);
 			exec ($cmd, $o);
 			
 			try
@@ -749,7 +749,14 @@ class StaffUserController extends BaseController
                                         . 'chown ' . $userInfo->username . ':' . $user->getGroup ()->name . ' ' . $user->homedir . ' -R</pre>', 'alert');
 
                                 $alerts[] = new Alert ('$o:<br /><pre>' . json_encode ($o) . '</pre>', 'secondary');
-                        }
+                        }*/
+			
+			$task = new SystemTask ();
+			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
+			$task->data = json_encode (array ('userInfoId' => $userInfo->id, 'user' => $userInfo->username));
+			$task->save ();
+			
+			$alerts[] = new Alert ('Home directory zal bij de volgende SystemTask-uitvoeringscyclus aangemaakt worden. Vergeet de <a href="/staff/system/systemtask">status</a> niet in de gaten te houden.', 'warning');
 
 			DatabaseCredentials::forUserPrimary_hash ($userInfo->username, $etc['mysql_hash']);
 			
