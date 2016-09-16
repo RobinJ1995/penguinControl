@@ -364,18 +364,12 @@ class UserController extends BaseController
 				$userInfo->save ();
 
 				$url = 'https://sinners.be/user/' . $user->id . '/expired/renew/' . $userInfo->validationcode;
-
-				$message = '<p>Beste ' . $userInfo->getFullName () . '</p>' . PHP_EOL
-					. PHP_EOL
-					. '<p>Er is zojuist een verlenging aangevraagd voor uw SIN-account.<br />' . PHP_EOL
-					. 'Om deze verlenging te bevestigen, open de volgende link in uw webbrowser: <a href="' . $url . '">' . $url . '</a></p>' . PHP_EOL
-					. '<p>Met vriendelijke groeten<br />' . PHP_EOL
-					. 'Het SIN-team</p>';
-
-				$headers = 'From: sin@sinners.be' . "\r\n" .
-					   'Content-type: text/html'. "\r\n";
-
-				mail ($userInfo->email, 'Verlenging SIN-account', $message, $headers);
+				
+				Mail::send ('email.user.expired', compact ('userInfo', 'url'), function ($msg) use ($userInfo)
+					{
+						$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Verlenging SIN-account');
+					}
+				);
 				
 				SinLog::log ('Accountverlenging aangevraagd', $user->id, $userInfo);
 
