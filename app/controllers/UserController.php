@@ -419,6 +419,10 @@ class UserController extends BaseController
 			foreach ($vhosts as $vhost)
 				$vhost->save (); // In save () wordt nagekeken of user expired is //
 			
+			$task = new SystemTask ();
+			$task->type = SystemTask::TYPE_APACHE_RELOAD;
+			$task->save ();
+			
 			Log::info ('Account renewal: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 			
 			SinLog::log ('Account verlengd', $user->id, $userInfo, $userLog);
