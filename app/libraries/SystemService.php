@@ -29,7 +29,7 @@ abstract class SystemService
 				$cmdFormat = '{:sudo:}/usr/sbin/service {:service:} {:cmd:}';
 				break;
 			case 'systemd':
-				$cmdFormat = '{:sudo:}/bin/systemctl {:cmd:} {:service:}';
+				$cmdFormat = '{:sudo:}systemctl {:cmd:} {:service:}';
 				break;
 		}
 		
