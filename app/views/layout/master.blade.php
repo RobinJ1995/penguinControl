@@ -4,9 +4,9 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>@section ('pageTitle')
-			<!-)>
+			🐧
 			@show
-			&bull; SIN</title>
+			&bull; 🐧control</title>
 		<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
 		@section ('css')
 		<link rel="stylesheet" href="/css/foundation.css" />
@@ -22,7 +22,7 @@
 			
 			h1 img
 			{
-				filter: invert(100%);
+				filter: hue-rotate(250deg);
 			}
 		</style>
 		@endif
@@ -105,10 +105,7 @@
 						<a href="/home" class="button">Home</a>
 					</li>
 					<li>
-						<a href="https://cloud.sinners.be/" class="button">Cloud</a>
-					</li>
-					<li>
-						<a href="http://git.sinners.be/" class="button">Git</a>
+						<a href="/user/login" class="button">Login</a>
 					</li>
 					@show
 				</ul>
@@ -171,12 +168,11 @@
 		<footer class="row">
 			<hr />
 			<div class="large-6 column">
-				<p>&copy; Student Information Network</p>
+				<br />
 			</div>
 			<div class="large-6 column">
 				<ul class="inline-list right">
 					@section ('footerLinks')
-					<li><a href="/page/contact">Contact</a></li>
 					@show
 				</ul>
 			</div>
@@ -191,7 +187,7 @@
 				topbar:
 					{
 						custom_back_text: true,
-						back_text: '&laquo; Terug'
+						back_text: '&laquo; Back'
 					}
 			}
 		);

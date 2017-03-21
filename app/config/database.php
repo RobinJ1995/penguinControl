@@ -45,9 +45,9 @@ return array (
 		(
 			'driver' => 'mysql',
 			'host' => '192.168.20.101',
-			'database' => 'control_new',
-			'username' => 'control_dev',
-			'password' => '***REMOVED***',
+			'database' => 'penguincontrol',
+			'username' => 'penguincontrol',
+			'password' => '',
 			'charset' => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix' => '',
@@ -56,7 +56,7 @@ return array (
 		(
 			'driver' => 'mysql',
 			'host' => 'localhost',
-			'database' => 'control_new',
+			'database' => 'penguincontrol',
 			'username' => 'root',
 			'password' => '',
 			'charset' => 'utf8',
