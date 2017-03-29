@@ -1,6 +1,0 @@
-<map id="ProxmoxClass" name="ProxmoxClass">
-<area shape="rect" id="node2" href="$class_proxmox.html" title="Proxmox" alt="" coords="5,80,80,107"/>
-<area shape="rect" id="node3" href="$class_proxmox_node.html" title="ProxmoxNode" alt="" coords="104,80,208,107"/>
-<area shape="rect" id="node4" href="$class_proxmox_node_service.html" title="ProxmoxNodeService" alt="" coords="232,80,379,107"/>
-<area shape="rect" id="node5" href="$class_proxmox_node_v_m.html" title="ProxmoxNodeVM" alt="" coords="403,80,527,107"/>
-</map>

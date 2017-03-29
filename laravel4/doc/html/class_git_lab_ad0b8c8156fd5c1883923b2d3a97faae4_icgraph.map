@@ -1,6 +1,0 @@
-<map id="updateUser" name="updateUser">
-<area shape="rect" id="node2" href="$class_git_lab.html#a592a238ea58e065b512fc723304f7f29" title="changePassword" alt="" coords="141,5,263,32"/>
-<area shape="rect" id="node3" href="$class_git_lab.html#aea3aab26df5bf7398aea5e84d2a85129" title="changeName" alt="" coords="153,56,251,83"/>
-<area shape="rect" id="node4" href="$class_git_lab.html#a4c1dd994f79ecf289df6fc1f91c0e19e" title="changeEmail" alt="" coords="153,107,251,133"/>
-<area shape="rect" id="node5" href="$class_git_lab.html#ad0088df13f1b2dd3eec34f0984ac07e4" title="changeAdmin" alt="" coords="151,157,253,184"/>
-</map>

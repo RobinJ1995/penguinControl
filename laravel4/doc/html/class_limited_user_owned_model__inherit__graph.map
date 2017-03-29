@@ -1,8 +1,0 @@
-<map id="LimitedUserOwnedModel" name="LimitedUserOwnedModel">
-<area shape="rect" id="node4" href="$class_apache_vhost_virtual.html" title="ApacheVhostVirtual" alt="" coords="518,5,655,32"/>
-<area shape="rect" id="node5" href="$class_ftp_user_virtual.html" title="FtpUserVirtual" alt="" coords="534,56,639,83"/>
-<area shape="rect" id="node6" href="$class_mail_domain_virtual.html" title="MailDomainVirtual" alt="" coords="523,107,650,133"/>
-<area shape="rect" id="node7" href="$class_mail_forwarding_virtual.html" title="MailForwardingVirtual" alt="" coords="513,157,660,184"/>
-<area shape="rect" id="node8" href="$class_mail_user_virtual.html" title="MailUserVirtual" alt="" coords="531,208,642,235"/>
-<area shape="rect" id="node2" href="$class_user_owned_model.html" title="UserOwnedModel" alt="" coords="127,107,251,133"/>
-</map>

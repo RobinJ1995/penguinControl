@@ -1,4 +1,0 @@
-<map id="getMemoryUsage" name="getMemoryUsage">
-<area shape="rect" id="node2" href="$class_proxmox_node.html#a9bbc5ce58f73c826c8c568cf1ece0deb" title="getMem" alt="" coords="190,5,259,32"/>
-<area shape="rect" id="node3" href="$class_proxmox_node.html#a94a5b72f76ca4130d47e1c94ffa4e958" title="getMaxMem" alt="" coords="177,56,272,83"/>
-</map>
