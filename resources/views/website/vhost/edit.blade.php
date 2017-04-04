@@ -35,7 +35,7 @@ Edit vHost
 						<span class="prefix">{{ $insideHomedir ? $user->homedir : '' }}/</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="docroot" value="{{ Input::old ('docroot', substr ($vhost->docroot, ($insideHomedir ? strlen ($user->homedir): 0) + 1)) }}" />
+						<input type="text" name="docroot" {{ $insideHomedir ? '' : 'disabled' }} value="{{ Input::old ('docroot', substr ($vhost->docroot, ($insideHomedir ? strlen ($user->homedir): 0) + 1)) }}" />
 					</div>
 				</div>
 			</label>

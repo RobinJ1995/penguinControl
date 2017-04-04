@@ -32,7 +32,7 @@ vHosts &bull; Staff
 				@if ($vhost->locked)
 					<img src="/img/icons/locked.png" alt="[Locked]" />
 				@endif
-				@if ($vhost->getUser ()->hasExpired ())
+				@if ($vhost->user->hasExpired ())
 					<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
 				@endif
 				{{ $vhost->servername }}
@@ -40,7 +40,7 @@ vHosts &bull; Staff
 			<td>{{ $vhost->serveradmin }}</td>
 			<td>{{ $vhost->serveralias }}</td>
 			<td>
-				<span class="{{ $vhost->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $vhost->getUser ()->userInfo->username }}</span>
+				<span class="{{ $vhost->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $vhost->user->userInfo->username }}</span>
 			</td>
 		</tr>
 		@endforeach

@@ -54,7 +54,7 @@ Facturatie &bull; Staff
 			<td>{{ $boekhoudingBetekenis[$userlog->boekhouding] }}</td>
 			<td>
 				@if (! empty ($userlog->userInfo->user))
-				<span class="{{ $userlog->userInfo->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->getGroup ()->name) }}</span>
+				<span class="{{ $userlog->userInfo->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->primaryGroup->name) }}</span>
 				@endif
 			</td>
 		</tr>

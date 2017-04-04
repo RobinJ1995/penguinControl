@@ -35,7 +35,7 @@ FTP-accounts &bull; Staff
 			</td>
 			<td>{{ $ftp->dir }}</td>
 			<td>
-				<span class="{{ $ftp->getUser ()->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $ftp->getUser ()->userInfo->username }}</span>
+				<span class="{{ $ftp->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ $ftp->user->userInfo->username }}</span>
 			</td>
 		</tr>
 		@endforeach

@@ -61,7 +61,7 @@ Gebruikers &bull; Staff
 				<td>{{ $userInfo->getFullName () }}</td>
 				<td>{{ $userInfo->schoolnr }}</td>
 				<td>
-					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->getGroup ()->name) }}</span>
+					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->primaryGroup->name) }}</span>
 				</td>
 			</tr>
 			@endif

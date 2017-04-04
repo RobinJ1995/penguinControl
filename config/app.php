@@ -225,10 +225,26 @@ return [
 		'URL' => Illuminate\Support\Facades\URL::class,
 		'Validator' => Illuminate\Support\Facades\Validator::class,
 		'View' => Illuminate\Support\Facades\View::class,
-		'Redirect' => \Illuminate\Support\Facades\Redirect::class,
 		'Input' => \Illuminate\Support\Facades\Input::class,
+		'Redirect' => Illuminate\Support\Facades\Redirect::class,
+		'Validator' => Illuminate\Support\Facades\Validator::class,
 		'Form' => \App\Form::class,
-		'Alert' => \App\Alert::class
+		'Alert' => \App\Alert::class,
+		'Ftp' => \App\Models\Ftp::class,
+		'Group' => \App\Models\Group::class,
+		'Log' => \App\Models\Log::class,
+		'MailDomain' => \App\Models\MailDomain::class,
+		'MailForward' => \App\Models\MailForward::class,
+		'MailUser' => \App\Models\MailUser::class,
+		'MenuItem' => \App\Models\MenuItem::class,
+		'Page' => \App\Models\Page::class,
+		'SystemTask' => \App\Models\SystemTask::class,
+		'User' => \App\Models\User::class,
+		'UserGroup' => \App\Models\UserGroup::class,
+		'UserInfo' => \App\Models\UserInfo::class,
+		'UserLimit' => \App\Models\UserLimit::class,
+		'UserLog' => \App\Models\UserLog::class,
+		'Vhost' => \App\Models\Vhost::class
 	],
 
 ];

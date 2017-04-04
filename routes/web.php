@@ -77,13 +77,11 @@ Route::get ('user/{user}/expired', 'UserController@getExpired');
 Route::post ('user/{user}/expired', 'UserController@expired');
 
 // Afscherming van routes met Route Filters // http://laravel.com/docs/routing#route-filters //
-// Filters worden gedefinieerd in app/filters.php //
 Route::group
 (
-	array
-	(
-		'before' => 'user'
-	),
+	[
+		'middleware' => 'auth'
+	],
 	function ()
 	{
 		// User //
@@ -145,7 +143,7 @@ Route::group
 (
 	array
 	(
-		'before' => 'staff',
+		'middleware' => 'auth',
 		'namespace' => 'Staff'
 	),
 	function ()

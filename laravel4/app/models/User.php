@@ -26,11 +26,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface
 		$this->crypt = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
 	}
 	
-	public function getUserInfo () // Should be replaced by $user->userInfo everywhere //
-	{
-		return UserInfo::find ($this->user_info_id);
-	}
-	
 	public function userInfo ()
 	{
 		return $this->belongsTo ('UserInfo');

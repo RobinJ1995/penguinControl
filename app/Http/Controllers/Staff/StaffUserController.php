@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use App\Alert;
+use Illuminate\Support\Facades\Auth;
 
 class StaffUserController extends Controller
 {
@@ -76,7 +78,7 @@ class StaffUserController extends Controller
 		$count = $query->count ();
 		$results = $query->paginate ();
 		
-		$searchUrl = action ('StaffUserController@search');
+		$searchUrl = action ('Staff\StaffUserController@search');
 		
 		return view ('staff.user.user.search', compact ('count', 'results', 'searchUrl'));
 	}
@@ -227,7 +229,7 @@ class StaffUserController extends Controller
 
 			$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
 
-			exec ('php /home/users/s/sin/scripts/prepareUserHomedir.php ' . escapeshellarg ($userInfo->username) . ' ' . escapeshellarg ($user->homedir) . ' ' . escapeshellarg ($user->getGroup ()->name), $o);
+			exec ('php /home/users/s/sin/scripts/prepareUserHomedir.php ' . escapeshellarg ($userInfo->username) . ' ' . escapeshellarg ($user->homedir) . ' ' . escapeshellarg ($user->primaryGroup->name), $o);
                         try
                         {
                                 $exitStatus1 = $o[0];
@@ -242,7 +244,7 @@ class StaffUserController extends Controller
                                 {
                                         $alerts[] = new Alert ("Het voorbereiden van de home directory is mislukt ($exitStatus1,$exitStatus2). Voer de volgende commando's uit als root:" . PHP_EOL
                                                 . '<pre>cp -R /etc/skel/ ' . $user->homedir . PHP_EOL
-                                                . 'chown ' . $userInfo->username . ':' . $user->getGroup ()->name . ' ' . $user->homedir . ' -R</pre>', Alert::TYPE_ALERT);
+                                                . 'chown ' . $userInfo->username . ':' . $user->primaryGroup->name . ' ' . $user->homedir . ' -R</pre>', Alert::TYPE_ALERT);
 
                                         $alerts[] = new Alert ('Output:<br /><pre>' . $output . '</pre>', 'secondary');
                                 }
@@ -251,7 +253,7 @@ class StaffUserController extends Controller
                         {
                                 $alerts[] = new Alert ("Het voorbereiden van de home directory is mislukt. Voer de volgende commando's uit als root:" . PHP_EOL
                                         . '<pre>cp -R /etc/skel/ ' . $user->homedir . PHP_EOL
-                                        . 'chown ' . $userInfo->username . ':' . $user->getGroup ()->name . ' ' . $user->homedir . ' -R</pre>', Alert::TYPE_ALERT);
+                                        . 'chown ' . $userInfo->username . ':' . $user->primaryGroup->name . ' ' . $user->homedir . ' -R</pre>', Alert::TYPE_ALERT);
 
                                 $alerts[] = new Alert ('$o:<br /><pre>' . json_encode ($o) . '</pre>', 'secondary');
                         }

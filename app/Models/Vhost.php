@@ -13,9 +13,9 @@ class Vhost extends LimitedUserOwnedModel
 	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
 	//DEV// const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Eindigen met een `/` //
 	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
-	const SSLCERT = '/etc/apache2/ssl/wildcard.sinners.be.cert';
-	const SSLKEY = '/etc/apache2/ssl/wildcard.sinners.be.key';
-	const EXPIRED_DOCROOT = '/var/www/expired/';
+	const SSLCERT = '/etc/apache2/ssl/wildcard.cert';
+	const SSLKEY = '/etc/apache2/ssl/wildcard.key';
+	const EXPIRED_DOCROOT = '/opt/penguincontrol/static/expired/';
 
 	public function save (array $options = array ())
 	{

@@ -130,7 +130,7 @@ class VHostController extends Controller
 			),
 			array
 			(
-				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
+				'Document root' => array ($insideHomedir ? 'regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/' : 'optional'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')
 			)
@@ -151,7 +151,8 @@ class VHostController extends Controller
 				->withInput ()
 				->with ('alerts', array (new Alert ('You are not allowed to edit this vHost.', Alert::TYPE_ALERT)));
 		
-		$vhost->docroot = $docroot;
+		if ($insideHomedir)
+			$vhost->docroot = $user->homedir . '/' . $docroot;
 		$vhost->ssl = (int) Input::get ('ssl');
 		$vhost->cgi = (bool) Input::get ('cgi');
 		
