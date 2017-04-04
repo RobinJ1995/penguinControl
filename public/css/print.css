@@ -1,0 +1,15 @@
+@page
+{
+	margin: 2.5cm 0.5cm;
+}
+
+.row:nth-child(1), .row:nth-child(3), footer, header, div.right, 
+tr th:first-child, tr td:first-child, .pagination-centered
+{
+	display: none;
+}
+
+a imgs
+{
+	display: inline;
+}
