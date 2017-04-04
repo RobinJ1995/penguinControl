@@ -32,6 +32,9 @@ class MailDomainController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
+		if (! Config::get ('penguin.mail', false))
+			return back ()->with ('alerts', array (new Alert ('E-mail management has been disabled.', Alert::TYPE_WARNING)));
+		
 		if (! MailDomain::allowNew ($user))
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You are only allowed to create ' . MailDomain::getLimit ($user) . ' e-mail domains.', Alert::TYPE_ALERT)));
 		
@@ -45,7 +48,9 @@ class MailDomainController extends Controller
 	{
 		$user = Auth::user ();
 		
-		if (! MailDomain::allowNew ($user))
+		if (! Config::get ('penguin.mail', false))
+			return back ()->with ('alerts', array (new Alert ('E-mail management has been disabled.', Alert::TYPE_WARNING)));
+		else if (! MailDomain::allowNew ($user))
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You are only allowed to create ' . MailDomain::getLimit ($user) . ' e-mail domains.', Alert::TYPE_ALERT)));
 		
 		$validator = Validator::make

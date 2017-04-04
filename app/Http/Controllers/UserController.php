@@ -185,17 +185,11 @@ class UserController extends Controller
 	
 	public function getRegister ()
 	{
-		if (! Config::get ('penguin.user_registration', false))
-			return Redirect::to ('/home')->with ('alerts', array (new Alert ('User registration has been disabled.', Alert::TYPE_WARNING)));
-		
 		return view ('user.register');
 	}
 	
 	public function register ()
 	{
-		if (! Config::get ('penguin.user_registration', false))
-			return Redirect::to ('/home')->with ('alerts', array (new Alert ('User registration has been disabled.', Alert::TYPE_WARNING)));
-		
 		$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'administrator', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 		$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
 		

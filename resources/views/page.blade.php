@@ -8,7 +8,7 @@
 @endsection
 
 @section ('siteMenu')
-@include ('siteMenu')
+@include ('part.siteMenu')
 @endsection
 
 @section ('content')

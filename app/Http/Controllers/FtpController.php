@@ -25,7 +25,9 @@ class FtpController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
-		if (! Ftp::allowNew ($user))
+		if (! Config::get ('penguin.ftp', false))
+			return back ()->with ('alerts', array (new Alert ('FTP management has been disabled.', Alert::TYPE_WARNING)));
+		else if (! Ftp::allowNew ($user))
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You are only allowed to create ' . Ftp::getLimit ($user) . ' FTP accounts.', Alert::TYPE_ALERT)));
 		
 		return view ('ftp.create', compact ('user', 'userInfo'));
@@ -35,7 +37,9 @@ class FtpController extends Controller
 	{
 		$user = Auth::user ();
 		
-		if (! Ftp::allowNew ($user))
+		if (! Config::get ('penguin.ftp', false))
+			return Redirect::to ('/home')->with ('alerts', array (new Alert ('FTP management has been disabled.', Alert::TYPE_WARNING)));
+		else if (! Ftp::allowNew ($user))
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You are only allowed to create ' . Ftp::getLimit ($user) . ' FTP accounts.', Alert::TYPE_ALERT)));
 		
 		$validator = Validator::make

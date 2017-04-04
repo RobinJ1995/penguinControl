@@ -59,7 +59,8 @@ Route::get ('/', 'HomeController@show');
 Route::get ('/home', 'HomeController@show');
 
 // Pagina's //
-Route::get ('/page/{page}', 'PageController@show');
+if (Config::get ('penguin.website', false))
+	Route::get ('/page/{page}', 'PageController@show');
 
 // Error //
 Route::get ('/error', 'ErrorController@show');
@@ -68,13 +69,16 @@ Route::get ('/error', 'ErrorController@show');
 Route::get ('user/login', 'UserController@getLogin');
 Route::post ('user/login', 'UserController@login');
 Route::get ('user/{user}/expired/renew/{validationcode}', 'UserController@renew');
-Route::get ('user/register', 'UserController@getRegister');
-Route::post ('user/register', 'UserController@register');
 Route::get ('user/amnesia', 'UserController@getAmnesia');
 Route::post ('user/amnesia', 'UserController@amnesia');
 Route::get ('user/{user}/amnesia/login/{logintoken}', 'UserController@loginWithToken');
 Route::get ('user/{user}/expired', 'UserController@getExpired');
 Route::post ('user/{user}/expired', 'UserController@expired');
+if (Config::get ('penguin.user_registration', false))
+{
+	Route::get ('user/register', 'UserController@getRegister');
+	Route::post ('user/register', 'UserController@register');
+}
 
 // Afscherming van routes met Route Filters // http://laravel.com/docs/routing#route-filters //
 Route::group
@@ -91,51 +95,69 @@ Route::group
 		Route::get ('user/logout', 'UserController@logout');
 		
 		// vHost //
-		Route::get ('website/vhost', 'VHostController@index');
-		Route::get ('website/vhost/create', 'VHostController@create');
-		Route::post ('website/vhost/create', 'VHostController@store');
-		Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
-		Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
-		Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
+		if (Config::get ('penguin.vhost', false))
+		{
+			Route::get ('website/vhost', 'VHostController@index');
+			Route::get ('website/vhost/create', 'VHostController@create');
+			Route::post ('website/vhost/create', 'VHostController@store');
+			Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
+			Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
+			Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
+		}
 		
 		// FTP //
-		Route::get ('ftp', 'FtpController@index');
-		Route::get ('ftp/create', 'FtpController@create');
-		Route::post ('ftp/create', 'FtpController@store');
-		Route::get ('ftp/{ftp}/edit', 'FtpController@edit');
-		Route::post ('ftp/{ftp}/edit', 'FtpController@update');
-		Route::get ('ftp/{ftp}/remove', 'FtpController@remove');
+		if (Config::get ('penguin.ftp', false))
+		{
+			Route::get ('ftp', 'FtpController@index');
+			Route::get ('ftp/create', 'FtpController@create');
+			Route::post ('ftp/create', 'FtpController@store');
+			Route::get ('ftp/{ftp}/edit', 'FtpController@edit');
+			Route::post ('ftp/{ftp}/edit', 'FtpController@update');
+			Route::get ('ftp/{ftp}/remove', 'FtpController@remove');
+		}
 		
 		// Mail // Algemeen //
-		Route::get ('mail', 'MailController@show');
-		Route::post ('mail', 'MailController@update');
-		
-		// Mail // Domain //
-		Route::get ('mail/domain', 'MailDomainController@index');
-		Route::get ('mail/domain/create', 'MailDomainController@create');
-		Route::post ('mail/domain/create', 'MailDomainController@store');
-		Route::get ('mail/domain/{mDomain}/edit', 'MailDomainController@edit');
-		Route::post ('mail/domain/{mDomain}/edit', 'MailDomainController@update');
-		Route::get ('mail/domain/{mDomain}/remove', 'MailDomainController@remove');
-		
-		// Mail // User //
-		Route::get ('mail/user', 'MailUserController@index');
-		Route::get ('mail/user/create', 'MailUserController@create');
-		Route::post ('mail/user/create', 'MailUserController@store');
-		Route::get ('mail/user/{mUser}/edit', 'MailUserController@edit');
-		Route::post ('mail/user/{mUser}/edit', 'MailUserController@update');
-		Route::get ('mail/user/{mUser}/remove', 'MailUserController@remove');
-		
-		// Mail // Forward //
-		Route::get ('mail/forward', 'MailForwardController@index');
-		Route::get ('mail/forward/create', 'MailForwardController@create');
-		Route::post ('mail/forward/create', 'MailForwardController@store');
-		Route::get ('mail/forward/{mFwd}/edit', 'MailForwardController@edit');
-		Route::post ('mail/forward/{mFwd}/edit', 'MailForwardController@update');
-		Route::get ('mail/forward/{mFwd}/remove', 'MailForwardController@remove');
+		if (Config::get ('penguin.mail', false))
+		{
+			Route::get ('mail', 'MailController@show');
+			Route::post ('mail', 'MailController@update');
+			
+			// Mail // Domain //
+			Route::get ('mail/domain', 'MailDomainController@index');
+			Route::get ('mail/domain/create', 'MailDomainController@create');
+			Route::post ('mail/domain/create', 'MailDomainController@store');
+			Route::get ('mail/domain/{mDomain}/edit', 'MailDomainController@edit');
+			Route::post ('mail/domain/{mDomain}/edit', 'MailDomainController@update');
+			Route::get ('mail/domain/{mDomain}/remove', 'MailDomainController@remove');
+			
+			// Mail // User //
+			if (Config::get ('penguin.mail_user', false))
+			{
+				Route::get ('mail/user', 'MailUserController@index');
+				Route::get ('mail/user/create', 'MailUserController@create');
+				Route::post ('mail/user/create', 'MailUserController@store');
+				Route::get ('mail/user/{mUser}/edit', 'MailUserController@edit');
+				Route::post ('mail/user/{mUser}/edit', 'MailUserController@update');
+				Route::get ('mail/user/{mUser}/remove', 'MailUserController@remove');
+			}
+			
+			// Mail // Forward //
+			if (Config::get ('penguin.mail_forward', false))
+			{
+				Route::get ('mail/forward', 'MailForwardController@index');
+				Route::get ('mail/forward/create', 'MailForwardController@create');
+				Route::post ('mail/forward/create', 'MailForwardController@store');
+				Route::get ('mail/forward/{mFwd}/edit', 'MailForwardController@edit');
+				Route::post ('mail/forward/{mFwd}/edit', 'MailForwardController@update');
+				Route::get ('mail/forward/{mFwd}/remove', 'MailForwardController@remove');
+			}
+		}
 		
 		// Databases // Databasebeheer via PHPMyAdmin //
-		Route::get ('database', 'DatabaseController@show');
+		if (Config::get ('penguin.database', false))
+		{
+			Route::get ('database', 'DatabaseController@show');
+		}
 	}
 );
 
