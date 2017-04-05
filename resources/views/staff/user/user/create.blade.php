@@ -1,13 +1,13 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Gebruiker toevoegen &bull; Staff
+Create user
 @endsection
 
 @section ('content')
 <form action="/staff/user/user/create" method="POST" data-abide>
 	<fieldset>
-		<legend>Gebruiker toevoegen</legend>
+		<legend>Create user</legend>
 		<div class="row">
 			<div class="large-2 medium-3 small-12 column">
 				<label>UID:
@@ -16,7 +16,7 @@ Gebruiker toevoegen &bull; Staff
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-9 small-12 column">
-				<label>Gebruikersnaam:
+				<label>Username:
 					<input type="text" name="username" value="{{ Input::old ('username') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
@@ -30,32 +30,26 @@ Gebruiker toevoegen &bull; Staff
 		</div>
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
-				<label>E-mailadres:
+				<label>E-mail address:
 					<input type="email" name="email" value="{{ Input::old ('email') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
-				<label>Voornaam:
+				<label>First name:
 					<input type="text" name="fname" value="{{ Input::old ('fname') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
-				<label>Achternaam:
+				<label>Surname:
 					<input type="text" name="lname" value="{{ Input::old ('lname') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 		</div>
 		<div class="row">
-			<div class="large-4 medium-4 small-12 column">
-				<label>r-nummer:
-					<input type="text" name="rnummer" value="{{ Input::old ('rnummer') }}" required />
-				</label>
-				<small class="error">Invalid input</small>
-			</div>
-			<div class="large-4 medium-4 small-12 column">
+			<div class="large-6 medium-6 small-12 column">
 				<label>Shell:
 					{{ Form::select
 						(
@@ -66,7 +60,7 @@ Gebruiker toevoegen &bull; Staff
 								'/bin/fish' => 'Fish',
 								'/bin/zsh' => 'ZSH',
 								'/usr/bin/tmux' => 'Tmux',
-								'/bin/false' => 'Blokkeer toegang (/bin/false)'
+								'/bin/false' => 'Deny shell access (/bin/false)'
 							),
 							Input::old ('shell', '/bin/bash')
 						)
@@ -74,16 +68,16 @@ Gebruiker toevoegen &bull; Staff
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
-			<div class="large-4 medium-4 small-12 column">
+			<div class="large-6 medium-6 small-12 column">
 				<label>E-mail:
 					{{ Form::select
 						(
 							'mailEnabled',
 							array
 							(
-								'0' => 'Uit',
-								'1' => 'Aan',
-								'-1' => 'Blokkeren'
+								'0' => 'Disabled',
+								'1' => 'Enabled',
+								'-1' => 'Blocked'
 							),
 							Input::old ('mailEnabled', 0)
 						)
@@ -94,13 +88,13 @@ Gebruiker toevoegen &bull; Staff
 		</div>
 		<div class="row">
 			<div class="large-6 medium-6 small-12 column">
-				<label>Wachtwoord:
+				<label>Password:
 					<input type="password" name="password" id="newPass" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-6 medium-6 small-12 column">
-				<label>Wachtwoord (bevestiging):
+				<label>Password (confirmation):
 					<input type="password" name="password_confirm" data-equalto="newPass" required />
 				</label>
 				<small class="error">Invalid input</small>
@@ -109,13 +103,13 @@ Gebruiker toevoegen &bull; Staff
 		<div class="row">
 			<div class="large-12 column">
 			<fieldset>
-				<legend>Groep</legend>
+				<legend>Group</legend>
 				<table>
 					<thead>
 						<tr>
-							<th>Primair</th>
-							<th>Lid</th>
-							<th>Groep</th>
+							<th>Primary</th>
+							<th>Member</th>
+							<th>Group</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -132,7 +126,7 @@ Gebruiker toevoegen &bull; Staff
 								{{ ucfirst ($group->name) }}
 							</td>
 							<td>
-								<img src="/img/icons/{{ $group->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'sin.png" alt="Medewerker" title="Medewerker' : 'user.png" alt="User' }}" />
+								<img src="/img/icons/{{ $group->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'sin.png" alt="Administrator" title="Administrator' : 'user.png" alt="User' }}" />
 							</td>
 						</tr>
 						@endforeach
@@ -143,7 +137,7 @@ Gebruiker toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

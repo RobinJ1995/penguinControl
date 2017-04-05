@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class AppException // Een gewone Exception doorgeven met ->with () kan niet // Serialization of 'Closure' is not allowed //
 {
 	private $message;
@@ -7,7 +9,7 @@ class AppException // Een gewone Exception doorgeven met ->with () kan niet // S
 	private $line;
 	private $trace;
 	
-	function __construct (Exception $ex)
+	function __construct (\Exception $ex)
 	{
 		$this->message = $ex->getMessage ();
 		$this->file = $ex->getFile ();
@@ -17,9 +19,9 @@ class AppException // Een gewone Exception doorgeven met ->with () kan niet // S
 	
 	function __toString ()
 	{
-		return '<pre>Bericht: ' . $this->message . PHP_EOL
-		    . 'Bestand: ' . $this->file . PHP_EOL
-		    . 'Regel: ' . $this->line . '</pre>'
+		return '<pre>Message: ' . $this->message . PHP_EOL
+		    . 'File: ' . $this->file . PHP_EOL
+		    . 'Line: ' . $this->line . '</pre>'
 		    . '<h3>Stack trace</h3>'
 		    . '<pre>' . $this->trace . '</pre>';
 	}

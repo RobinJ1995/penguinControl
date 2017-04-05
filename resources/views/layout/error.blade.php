@@ -34,11 +34,11 @@
 			<h2>Details</h2>
 			@if (! empty ($alerts))
 				@foreach ($alerts as $alert)
-					<p>{{ $alert->getMessage () }}</p>
+					<p>{{ $alert->message }}</p>
 				@endforeach
 			@endif
 			@if (! empty ($ex))
-				<p>{{ $ex }}</p>
+				<p>{!! $ex !!}</p>
 			@endif
 			<p><a href="/home" onClick="history.back ();">Click here to go back.</a></p>
 		</div>

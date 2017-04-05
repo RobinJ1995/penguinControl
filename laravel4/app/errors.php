@@ -19,5 +19,5 @@ App::error (function(Exception $exception, $code)
 	if ($code == 404)
 		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgevraagde pagina bestaat niet.', 'info')));
 	
-	return Redirect::to ('/error')->with ('ex', new SinException ($exception));
+	return Redirect::to ('/error')->with ('ex', new AppException ($exception));
 });

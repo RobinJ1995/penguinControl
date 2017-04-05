@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\AppException;
 use App\DatabaseCredentials;
 use App\Http\Controllers\Controller;
 use App\Models\Ftp;
@@ -14,9 +15,11 @@ use App\Models\SystemTask;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserInfo;
+use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use App\Alert;
@@ -58,18 +61,14 @@ class StaffUserController extends Controller
 		$username = Input::get ('username');
 		$name = Input::get ('name');
 		$email = Input::get ('email');
-		$schoolnr = Input::get ('schoolnr');
-		$gid = Input::get ('gid');
 		$unusedValidationCode = Input::get ('validationcode');
 		$unusedLoginToken = Input::get ('logintoken');
 		
 		$query = UserInfo::where ('validated', '1')
 			->where ('username', 'LIKE', '%' . $username . '%')
 			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
-			->where ('email', 'LIKE', '%' . $email . '%')
-			->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
-		if (! empty ($gid))
-			
+			->where ('email', 'LIKE', '%' . $email . '%');
+		
 		if (! empty ($unusedValidationCode))
 			$query = $query->whereNotNull ('validationcode');
 		if (! empty ($unusedLoginToken))
@@ -117,7 +116,6 @@ class StaffUserController extends Controller
 			}
 
 			$strReservedUsers = implode (',', $reservedUsers);
-
 			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
 
 			$validator = Validator::make
@@ -125,34 +123,32 @@ class StaffUserController extends Controller
 				array
 				(
 					'UID' => Input::get ('uid'),
-					'Gebruikersnaam' => Input::get ('username'),
+					'Username' => Input::get ('username'),
 					'Home directory' => $inputHomedir,
-					'E-mailadres' => Input::get ('email'),
-					'Voornaam' => Input::get ('fname'),
-					'Achternaam' => Input::get ('lname'),
-					'r-nummer' => Input::get ('rnummer'),
+					'E-mail address' => Input::get ('email'),
+					'First name' => Input::get ('fname'),
+					'Surname' => Input::get ('lname'),
 					'Shell' => Input::get ('shell'),
 					'E-mail' => Input::get ('mailEnabled'),
-					'Wachtwoord' => Input::get ('password'),
-					'Wachtwoord (bevestiging)' => Input::get ('password_confirm'),
-					'Primaire groep' => Input::get ('groupPrimary'),
-					'Groepen' => Input::get ('groups')
+					'Password' => Input::get ('password'),
+					'Password (confirmation)' => Input::get ('password_confirm'),
+					'Primary group' => Input::get ('groupPrimary'),
+					'Groups' => Input::get ('groups')
 				),
 				array
 				(
 					'UID' => array ('required', 'unique:user,uid', 'integer', 'min:' . $uid, 'max:' . $uid),
-					'Gebruikersnaam' => array ('required', 'alpha_num', 'min:4', 'max:14', 'not_in:' . $strReservedUsers),
-					'Home directory' => array ('unique:user,homedir', 'regex:/^\/home\/[^\/]+\/[a-z0-9]\/[a-z0-9]+$/'),
-					'E-mailadres' => array ('required', 'email'),
-					'Voornaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'Achternaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'r-nummer' => array ('regex:/^(c|r|s|u|q)\d\d\d\d\d\d\d$/'),
+					'Username' => array ('required', 'alpha_num', 'min:4', 'max:14', 'not_in:' . $strReservedUsers),
+					'Home directory' => array ('unique:user,homedir', 'regex:/^\/home\/[a-z0-9\/]+$/'),
+					'E-mail address' => array ('required', 'email'),
+					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
 					'E-mail' => array ('required', 'in:-1,0,1'),
-					'Wachtwoord' => array ('required', 'not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8'),
-					'Wachtwoord (bevestiging)' => 'same:Wachtwoord',
-					'Primaire groep' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
-					'Groepen' => array ('array', 'exists:group,gid')
+					'Password' => array ('required', 'not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8'),
+					'Password (confirmation)' => 'same:Password',
+					'Primary group' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
+					'Groups' => array ('sometimes', 'array', 'exists:group,gid')
 				)
 			);
 
@@ -180,7 +176,6 @@ class StaffUserController extends Controller
 			$userInfo->fname = Input::get ('fname');
 			$userInfo->lname = Input::get ('lname');
 			$userInfo->email = Input::get ('email');
-			$userInfo->schoolnr = Input::get ('rnummer');
 			$userInfo->lastchange = ceil (time () / 60 / 60 / 24);
 			$userInfo->validated = 1;
 
@@ -190,7 +185,7 @@ class StaffUserController extends Controller
 
 			$alerts = array
 			(
-				new Alert ('Gebruiker aangemaakt: ' . Input::get ('username'), Alert::TYPE_SUCCESS)
+				new Alert ('User created: ' . Input::get ('username'), Alert::TYPE_SUCCESS)
 			);
 
 			foreach ((array) Input::get ('groups') as $gid)
@@ -203,60 +198,23 @@ class StaffUserController extends Controller
 
 				$group = Group::where ('gid', $gid)->first ();
 
-				$alerts[] = new Alert ('Gebruiker ' . $userInfo->username . ' toegewezen aan groep: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('User ' . $userInfo->username . ' assigned to group: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
 			}
-
-			$vhost = new Vhost (); // User's default vHost //
-			$vhost->uid = $user->uid;
-			$vhost->docroot = $user->homedir . '/public_html';
-			$vhost->servername = $userInfo->username . '.sinners.be';
-			$vhost->serveralias = 'www.' . $userInfo->username . '.sinners.be';
-			$vhost->serveradmin = $userInfo->username . '@sinners.be';
-			$vhost->cgi = 1;
-			$vhost->ssl = 0;
-			$vhost->locked = 1; // Enkel bewerkbaar door staff //
-			$vhost->save ();
-
-			$alerts[] = new Alert ('vHost toegevoegd: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 
 			$ftp = new Ftp (); // User's default FTP account //
 			$ftp->user = $userInfo->username;
 			$ftp->uid = $user->uid;
-			$ftp->passwd = $user->crypt;
+			$ftp->password = $user->crypt;
 			$ftp->dir = $user->homedir;
 			$ftp->locked = 1; // Enkel bewerkbaar door staff //
 			$ftp->save ();
 
-			$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
-
-			exec ('php /home/users/s/sin/scripts/prepareUserHomedir.php ' . escapeshellarg ($userInfo->username) . ' ' . escapeshellarg ($user->homedir) . ' ' . escapeshellarg ($user->primaryGroup->name), $o);
-                        try
-                        {
-                                $exitStatus1 = $o[0];
-                                $exitStatus2 = $o[1];
-                                $output = $o[2];
-
-                                if ($exitStatus1 === 0 && $exitStatus2 === 0)
-                                {
-                                        $alerts[] = new Alert ('/etc/skel gekopieerd naar ' . $user->homedir, Alert::TYPE_SUCCESS);
-                                }
-                                else
-                                {
-                                        $alerts[] = new Alert ("Het voorbereiden van de home directory is mislukt ($exitStatus1,$exitStatus2). Voer de volgende commando's uit als root:" . PHP_EOL
-                                                . '<pre>cp -R /etc/skel/ ' . $user->homedir . PHP_EOL
-                                                . 'chown ' . $userInfo->username . ':' . $user->primaryGroup->name . ' ' . $user->homedir . ' -R</pre>', Alert::TYPE_ALERT);
-
-                                        $alerts[] = new Alert ('Output:<br /><pre>' . $output . '</pre>', 'secondary');
-                                }
-                        }
-                        catch (Exception $ex)
-                        {
-                                $alerts[] = new Alert ("Het voorbereiden van de home directory is mislukt. Voer de volgende commando's uit als root:" . PHP_EOL
-                                        . '<pre>cp -R /etc/skel/ ' . $user->homedir . PHP_EOL
-                                        . 'chown ' . $userInfo->username . ':' . $user->primaryGroup->name . ' ' . $user->homedir . ' -R</pre>', Alert::TYPE_ALERT);
-
-                                $alerts[] = new Alert ('$o:<br /><pre>' . json_encode ($o) . '</pre>', 'secondary');
-                        }
+			$alerts[] = new Alert ('FTP account created: ' . $ftp->user, Alert::TYPE_SUCCESS);
+			
+			$task = new SystemTask ();
+			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
+			$task->data = json_encode (array ('userInfoId' => $userInfo->id, 'user' => $userInfo->username));
+			$task->save ();
 
 			$userLog = new UserLog ();
 			$userLog->user_info_id = $userInfo->id;
@@ -264,13 +222,13 @@ class StaffUserController extends Controller
 			$userLog->boekhouding = -1; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
 			$userLog->save ();
 
-			$alerts[] = new Alert ('Opgeslagen in log als niet te factureren', Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('Saved as "Not to be billed".', Alert::TYPE_SUCCESS);
 			
 			DatabaseCredentials::forUserPrimary (Input::get ('username'), Input::get ('password'));
 			
 			DB::commit ();
 			
-			Log::log ('Gebruiker aangemaakt', NULL, $user, $userInfo, $userLog);
+			Log::log ('User created', NULL, $user, $userInfo, $userLog);
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
@@ -278,7 +236,7 @@ class StaffUserController extends Controller
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
 	
@@ -405,7 +363,7 @@ class StaffUserController extends Controller
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
 	
@@ -474,7 +432,7 @@ class StaffUserController extends Controller
 			{
 				DB::rollback ();
 
-				return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het verwijderen van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+				return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het verwijderen van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 			}
 		}
 		else
@@ -633,7 +591,6 @@ class StaffUserController extends Controller
 					'E-mailadres' => Input::get ('email'),
 					'Voornaam' => Input::get ('fname'),
 					'Achternaam' => Input::get ('lname'),
-					'r-nummer' => Input::get ('rnummer'),
 					'Shell' => Input::get ('shell'),
 					'E-mail' => Input::get ('mailEnabled'),
 					'Primaire groep' => Input::get ('groupPrimary'),
@@ -647,7 +604,6 @@ class StaffUserController extends Controller
 					'E-mailadres' => array ('required', 'email'),
 					'Voornaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Achternaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'r-nummer' => array ('required'/*, 'regex:/^r\d\d\d\d\d\d\d$/'*/),
 					'Shell' => array ('required', 'in:/bin/bash,/bin/fish,/bin/zsh,/bin/false,/usr/bin/tmux'),
 					'E-mail' => array ('required', 'in:-1,0,1'),
 					'Primaire groep' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
@@ -680,7 +636,6 @@ class StaffUserController extends Controller
 			$userInfo->fname = Input::get ('fname');
 			$userInfo->lname = Input::get ('lname');
 			$userInfo->email = Input::get ('email');
-			$userInfo->schoolnr = Input::get ('rnummer');
 			$userInfo->lastchange = time () / 60 / 60 / 24;
 			$userInfo->etc = null;
 			$userInfo->validated = 1;
@@ -730,7 +685,7 @@ class StaffUserController extends Controller
 
 			$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
 
-			$userLog = new UserLog ();
+			$userLog = new UserLog();
 			$userLog->user_info_id = $userInfo->id;
 			$userLog->nieuw = 1;
 			$userLog->boekhouding = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
@@ -763,7 +718,7 @@ class StaffUserController extends Controller
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
 	

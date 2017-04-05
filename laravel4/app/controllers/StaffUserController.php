@@ -256,7 +256,7 @@ class StaffUserController extends BaseController
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
 		}
 	}
 	
@@ -383,7 +383,7 @@ class StaffUserController extends BaseController
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
 		}
 	}
 	
@@ -452,7 +452,7 @@ class StaffUserController extends BaseController
 			{
 				DB::rollback ();
 
-				return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het verwijderen van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
+				return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het verwijderen van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
 			}
 		}
 		else
@@ -776,7 +776,7 @@ class StaffUserController extends BaseController
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', 'alert')));
 		}
 	}
 	

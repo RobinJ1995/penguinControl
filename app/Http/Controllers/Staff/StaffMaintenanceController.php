@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\AppException;
 use App\Http\Controllers\Controller;
 use App\Models\Ftp;
 use App\Models\Group;
@@ -59,7 +60,7 @@ class StaffMaintenanceController extends Controller
 		}
 		catch (Exception $ex)
 		{
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex));
 		}
 	}
 	
@@ -86,7 +87,7 @@ class StaffMaintenanceController extends Controller
 		}
 		catch (Exception $ex)
 		{
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex));
 		}
 	}
 	
@@ -138,7 +139,7 @@ class StaffMaintenanceController extends Controller
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruikersdata is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruikersdata is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
 	
@@ -340,7 +341,7 @@ class StaffMaintenanceController extends Controller
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new SinException ($ex))->with ('alerts', array (new Alert ('Systeemcheck mislukt. Als dat ondertussen al fatsoenlijk werkt zouden alle databasetransacties moeten zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Systeemcheck mislukt. Als dat ondertussen al fatsoenlijk werkt zouden alle databasetransacties moeten zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
 }

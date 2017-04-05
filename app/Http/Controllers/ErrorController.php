@@ -18,7 +18,7 @@ class ErrorController extends Controller
 			if (! empty ($alerts))
 			{
 				foreach ($alerts as $key => $alert)
-					$strAlerts .= '[' . $key . '] ' . $alert->getMessage () . PHP_EOL;
+					$strAlerts .= '[' . $key . '] ' . $alert->message . PHP_EOL;
 			}
 		}
 		

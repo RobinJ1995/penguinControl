@@ -13,7 +13,7 @@ class Ftp extends LimitedUserOwnedModel
 
 	public function setPassword ($password)
 	{
-		$this->passwd = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
+		$this->password = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
 	}
 	
 	public function url ()
