@@ -66,10 +66,6 @@ class UserInfo extends Model
 		exec ($cmd1, $output, $exitStatus1);
 		exec ($cmd2, $output, $exitStatus2);
 		
-		$task = new SystemTask ();
-		$task->type = SystemTask::TYPE_APACHE_RELOAD;
-		$task->save ();
-		
 		return array
 		(
 			'exitcode' => max ($exitStatus1, $exitStatus2),

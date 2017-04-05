@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\HtmlString;
 
 class StaffSystemSystemTaskController extends Controller
 {
@@ -92,7 +93,30 @@ class StaffSystemSystemTaskController extends Controller
 	
 	public function show ($task)
 	{
-		return view ('staff.system.systemtask.show', compact ('task'));
+		$data = json_decode ($task->data, true);
+		$h1 = NULL;
+		
+		switch ($task->type)
+		{
+			case SystemTask::TYPE_APACHE_RELOAD:
+				$h1 = 'Webserver opnieuw laden';
+				break;
+			case SystemTask::TYPE_HOMEDIR_PREPARE:
+				$h1 = 'Home directory voorbereiden voor <kbd>' . $data['user'] . '</kbd>';
+				break;
+			case SystemTask::TYPE_NUKE_EXPIRED_VHOSTS:
+				$h1 = 'Websites van vervallen gebruikers uitschakelen';
+				break;
+			case SystemTask::TYPE_PROBLEM_SOLVER:
+				$h1 = 'Veelvoorkomende problemen automatisch proberen op te lossen voor <kbd>User#' . $data['userId'] . '</kbd>';
+				break;
+			case SystemTask::TYPE_CALCULATE_DISK_USAGE:
+				$h1 = 'Herbereken schijfruimtegebruik van gebruikers';
+				break;
+		}
+		$h1 = new HtmlString ($h1);
+		
+		return view ('staff.system.systemtask.show', compact ('task', 'data', 'h1'));
 	}
 	
 	public function remove ($task)

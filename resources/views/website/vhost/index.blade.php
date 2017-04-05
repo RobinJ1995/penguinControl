@@ -6,11 +6,7 @@ vHosts
 
 @section ('content')
 <p>Virtual hosts (vHosts) are used to host multiple websites on one server. Please make sure you have your domain's DNS records pointing to the right server.</p>
-<p>Please note that changes to vHost configuration may not take effect immediately, as the web server configuration needs to be reloaded in order for this to happen.
-	@if (! empty ($apacheReloadInterval))
-		According to the current configuration, this happens every {{ $apacheReloadInterval }}.
-	@endif
-</p>
+<p>Please note that changes to vHost configuration may not take effect immediately, as the web server configuration needs to be reloaded in order for this to happen. This may take up to a couple of minutes.</p>
 <table>
 	<thead>
 		<tr>

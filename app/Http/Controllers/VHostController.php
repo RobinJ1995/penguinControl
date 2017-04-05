@@ -92,6 +92,10 @@ class VHostController extends Controller
 		
 		Log::log ('vHost created', $user->id, $vhost);
 		
+		$task = new SystemTask ();
+		$task->type = SystemTask::TYPE_APACHE_RELOAD;
+		$task->save ();
+		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost created', Alert::TYPE_SUCCESS)));
 	}
 	
@@ -160,6 +164,10 @@ class VHostController extends Controller
 		
 		Log::log ('vHost modified', NULL, $vhost);
 		
+		$task = new SystemTask ();
+		$task->type = SystemTask::TYPE_APACHE_RELOAD;
+		$task->save ();
+		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost changes saved', Alert::TYPE_SUCCESS)));
 	}
 	
@@ -173,6 +181,10 @@ class VHostController extends Controller
 		$vhost->delete ();
 		
 		Log::log ('vHost removed', NULL, $vhost);
+		
+		$task = new SystemTask ();
+		$task->type = SystemTask::TYPE_APACHE_RELOAD;
+		$task->save ();
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost removed', Alert::TYPE_SUCCESS)));
 	}
