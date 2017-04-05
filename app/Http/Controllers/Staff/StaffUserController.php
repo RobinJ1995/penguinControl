@@ -138,7 +138,7 @@ class StaffUserController extends Controller
 				array
 				(
 					'UID' => array ('required', 'unique:user,uid', 'integer', 'min:' . $uid, 'max:' . $uid),
-					'Username' => array ('required', 'alpha_num', 'min:4', 'max:14', 'not_in:' . $strReservedUsers),
+					'Username' => array ('required', 'alpha_num', 'min:4', 'max:14', 'not_in:' . $strReservedUsers, 'unique:user_info,username'),
 					'Home directory' => array ('unique:user,homedir', 'regex:/^\/home\/[a-z0-9\/]+$/'),
 					'E-mail address' => array ('required', 'email'),
 					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
@@ -148,7 +148,7 @@ class StaffUserController extends Controller
 					'Password' => array ('required', 'not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8'),
 					'Password (confirmation)' => 'same:Password',
 					'Primary group' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
-					'Groups' => array ('sometimes', 'array', 'exists:group,gid')
+					'Groups' => array ('nullable', 'array', 'exists:group,gid')
 				)
 			);
 
