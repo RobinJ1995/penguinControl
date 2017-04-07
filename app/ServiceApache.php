@@ -10,8 +10,8 @@ class ServiceApache extends SystemService
 	protected $ssh = null; //EXAMPLE// squid // app/config/remote.php //
 	protected $needsSudo = false; // Of sudo voor het commando moet worden gezet //
 	
-	public function reload ()
+	public function reload ($returnAsString = true)
 	{
-		return $this->cmd ('reload', true);
+		return $this->cmd ('reload', $returnAsString);
 	}
 }

@@ -109,12 +109,12 @@ class CronCommand extends Command
 					$status1 = $vhost->createDocroot ();
 					
 					$apache = new ServiceApache ();
-					$status2 = $apache->reload ();
+					$status2 = $apache->reload (false);
 					
 					$status = [
 						'exitcode' => max ($status1['exitcode'], $status2['exitcode']),
-						'command' => array_merge ($status1['command'], $status2['command']),
-						'output' => $status1['output'] . PHP_EOL . PHP_EOL . $status2['output']
+						'command' => array_merge ((array) $status1['command'], (array) $status2['command']),
+						'output' => array_to_string ($status1['output']) . PHP_EOL . PHP_EOL . array_to_string ($status2['output'])
 					];
 					break;
 				case SystemTask::TYPE_VHOST_INSTALL_WORDPRESS:

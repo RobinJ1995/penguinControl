@@ -62,6 +62,7 @@ abstract class SystemService
 			return array
 			(
 				'exitcode' => $exitCode,
+				'command' => $cmd,
 				'output' => $output
 			);
 	}
