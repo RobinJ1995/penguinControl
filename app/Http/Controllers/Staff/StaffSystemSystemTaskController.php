@@ -54,10 +54,10 @@ class StaffSystemSystemTaskController extends Controller
 			array
 			(
 				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts,calculate_disk_usage'),
-				'Start' => array ('date'),
-				'Interval' => array ('numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),
-				'Interval-eenheid' => array ('required_with:Interval', 'in:sec,min,hour,day,week'),
-				'Einde' => array ('date')
+				'Start' => array ('nullable', 'date'),
+				'Interval' => array ('nullable', 'numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),
+				'Interval-eenheid' => array ('nullable', 'required_with:Interval', 'in:sec,min,hour,day,week'),
+				'Einde' => array ('nullable', 'date')
 			)
 		);
 		
@@ -94,27 +94,7 @@ class StaffSystemSystemTaskController extends Controller
 	public function show ($task)
 	{
 		$data = json_decode ($task->data, true);
-		$h1 = NULL;
-		
-		switch ($task->type)
-		{
-			case SystemTask::TYPE_APACHE_RELOAD:
-				$h1 = 'Webserver opnieuw laden';
-				break;
-			case SystemTask::TYPE_HOMEDIR_PREPARE:
-				$h1 = 'Home directory voorbereiden voor <kbd>' . $data['user'] . '</kbd>';
-				break;
-			case SystemTask::TYPE_NUKE_EXPIRED_VHOSTS:
-				$h1 = 'Websites van vervallen gebruikers uitschakelen';
-				break;
-			case SystemTask::TYPE_PROBLEM_SOLVER:
-				$h1 = 'Veelvoorkomende problemen automatisch proberen op te lossen voor <kbd>User#' . $data['userId'] . '</kbd>';
-				break;
-			case SystemTask::TYPE_CALCULATE_DISK_USAGE:
-				$h1 = 'Herbereken schijfruimtegebruik van gebruikers';
-				break;
-		}
-		$h1 = new HtmlString ($h1);
+		$h1 = new HtmlString ($task->getTitle ());
 		
 		return view ('staff.system.systemtask.show', compact ('task', 'data', 'h1'));
 	}

@@ -93,7 +93,7 @@ class DatabaseCredentials
 	
 	private static function generatePassword ()
 	{
-		return self::generateRandom (64);
+		return self::generateRandom (16);
 	}
 	
 	private static function generateRandom ($length)

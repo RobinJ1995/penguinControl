@@ -36,26 +36,7 @@ Systeemopdrachten &bull; Staff
 				</div>
 			</td>
 			<td>
-				<?php
-				switch ($task->type)
-				{
-					case SystemTask::TYPE_APACHE_RELOAD:
-						echo 'Webserver opnieuw laden';
-						break;
-					case SystemTask::TYPE_HOMEDIR_PREPARE:
-						echo 'Home directory voorbereiden voor <kbd>' . $data['user'] . '</kbd>';
-						break;
-					case SystemTask::TYPE_NUKE_EXPIRED_VHOSTS:
-						echo 'Websites van vervallen gebruikers uitschakelen';
-						break;
-					case SystemTask::TYPE_PROBLEM_SOLVER:
-						echo 'Veelvoorkomende problemen automatisch proberen op te lossen voor <kbd>User#' . $data['userId'] . '</kbd>';
-						break;
-					case SystemTask::TYPE_CALCULATE_DISK_USAGE:
-						echo 'Herbereken schijfruimtegebruik van gebruikers';
-						break;
-				}
-				?>
+				{{ $task->getTitle () }}
 			</td>
 			<td>
 				@if (! empty ($task->start))

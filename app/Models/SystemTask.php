@@ -14,6 +14,8 @@ class SystemTask extends Model
 	const TYPE_HOMEDIR_PREPARE = 'homedir_prepare';
 	const TYPE_PROBLEM_SOLVER = 'problem_solver';
 	const TYPE_CALCULATE_DISK_USAGE = 'calculate_disk_usage';
+	const TYPE_CREATE_VHOST_DOCROOT = 'create_vhost_docroot';
+	const TYPE_VHOST_INSTALL_WORDPRESS = 'vhost_install_wordpress';
 	
 	public function interval ()
 	{
@@ -42,6 +44,29 @@ class SystemTask extends Model
 			$str .= $secs . ' seconds';
 
 		return $str;
+	}
+	
+	public function getTitle ()
+	{
+		$data = json_decode ($this->data, true);
+		
+		switch ($this->type)
+		{
+			case SystemTask::TYPE_APACHE_RELOAD:
+				return 'Reload web server configuration';
+			case SystemTask::TYPE_HOMEDIR_PREPARE:
+				return 'Prepare home directory for <kbd>' . $data['user'] . '</kbd>';
+			case SystemTask::TYPE_NUKE_EXPIRED_VHOSTS:
+				return 'Disable expired users\' websites';
+			case SystemTask::TYPE_PROBLEM_SOLVER:
+				return 'Attempt to automatically fix common problems for <kbd>User#' . $data['userId'] . '</kbd>';
+			case SystemTask::TYPE_CALCULATE_DISK_USAGE:
+				return 'Recalculate users\' disk usage';
+			case SystemTask::TYPE_CREATE_VHOST_DOCROOT:
+				return 'Create document root for <kbd>vHost#' . $data['vhostId'] . '</kbd>';
+			case SystemTask::TYPE_VHOST_INSTALL_WORDPRESS:
+				return 'Install Wordpress on <kbd>vHost#' . $data['vhostId'] . '</kbd>';
+		}
 	}
 	
 	public function url ()

@@ -63,7 +63,8 @@ class VHostController extends Controller
 				//'Alias' => Input::get ('serveralias'),
 				'Document root' => $docroot,
 				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi')
+				'CGI' => Input::get ('cgi'),
+				'Install Wordpress' => Input::get ('installWordpress')
 			),
 			array
 			(
@@ -72,7 +73,8 @@ class VHostController extends Controller
 				//'Alias' => array ('different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
 				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
-				'CGI' => array ('required', 'in:0,1')
+				'CGI' => array ('required', 'in:0,1'),
+				'Install Wordpress' => array ('nullable', 'sometimes')
 			)
 		);
 		
@@ -93,8 +95,19 @@ class VHostController extends Controller
 		Log::log ('vHost created', $user->id, $vhost);
 		
 		$task = new SystemTask ();
-		$task->type = SystemTask::TYPE_APACHE_RELOAD;
+		$task->type = SystemTask::TYPE_CREATE_VHOST_DOCROOT;
+		$task->data = json_encode (['vhostId' => $vhost->id]);
 		$task->save ();
+		
+		if (Input::get ('installWordpress'))
+		{
+			$wpTask = new SystemTask ();
+			$wpTask->type = SystemTask::TYPE_VHOST_INSTALL_WORDPRESS;
+			$wpTask->data = json_encode (['vhostId' => $vhost->id]);
+			$wpTask->save ();
+			
+			return Redirect::to ('/system/systemtask/' . $wpTask->id . '/show')->with ('alerts', array (new Alert ('vHost created', Alert::TYPE_SUCCESS), new Alert ('Wordpress installation pending. This page will show more information once the installation attempt has completed.', Alert::TYPE_INFO)));
+		}
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost created', Alert::TYPE_SUCCESS)));
 	}
@@ -155,6 +168,7 @@ class VHostController extends Controller
 				->withInput ()
 				->with ('alerts', array (new Alert ('You are not allowed to edit this vHost.', Alert::TYPE_ALERT)));
 		
+		$oldDocroot = $vhost->docroot;
 		if ($insideHomedir)
 			$vhost->docroot = $user->homedir . '/' . $docroot;
 		$vhost->ssl = (int) Input::get ('ssl');
@@ -165,7 +179,15 @@ class VHostController extends Controller
 		Log::log ('vHost modified', NULL, $vhost);
 		
 		$task = new SystemTask ();
-		$task->type = SystemTask::TYPE_APACHE_RELOAD;
+		if ($insideHomedir && $oldDocroot != $vhost->docroot)
+		{
+			$task->type = SystemTask::TYPE_CREATE_VHOST_DOCROOT;
+			$task->data = json_encode (['vhostId' => $vhost->id]);
+		}
+		else
+		{
+			$task->type = SystemTask::TYPE_APACHE_RELOAD;
+		}
 		$task->save ();
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost changes saved', Alert::TYPE_SUCCESS)));

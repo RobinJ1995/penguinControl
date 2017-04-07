@@ -64,6 +64,14 @@ Create vHost
 				<small class="error">Invalid input</small>
 			</div>
 		</div>
+		<div class="row">
+			<div class="large-12 column">
+				<label>
+					<input type="checkbox" name="installWordpress" value="true" />
+					Install Wordpress on this vHost
+				</label>
+			</div>
+		</div>
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ time () }}">Save</button>

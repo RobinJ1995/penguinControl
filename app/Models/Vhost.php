@@ -160,6 +160,32 @@ class Vhost extends LimitedUserOwnedModel
 		}
 	}
 	
+	public function createDocroot ()
+	{
+		$username = $this->user->userInfo->username;
+		$groupName = $this->user->primaryGroup->name;
+		
+		$cmd1 = 'mkdir -p ' . escapeshellarg ($this->docroot) . ' 2>&1';
+		$cmd2 = 'chown ' . escapeshellarg ($username) . ':' . escapeshellarg ($groupName) . ' ' . escapeshellarg ($this->docroot) . ' -R 2>&1';
+		
+		$output = array ();
+		
+		exec ($cmd1, $output, $exitStatus1);
+		exec ($cmd2, $output, $exitStatus2);
+		
+		return array
+		(
+			'exitcode' => max ($exitStatus1, $exitStatus2),
+			'command' => array ($cmd1, $cmd2),
+			'output' => implode (PHP_EOL, $output)
+		);
+	}
+	
+	public function user ()
+	{
+		return $this->hasOne ('\App\Models\User', 'uid', 'uid');
+	}
+	
 	public function url ()
 	{
 		return action ('StaffVHostController@edit', $this->id);

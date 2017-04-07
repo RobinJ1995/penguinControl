@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\Vhost;
 use App\ServiceApache;
+use App\WordpressManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -102,6 +103,25 @@ class CronCommand extends Command
 					break;
 				case SystemTask::TYPE_CALCULATE_DISK_USAGE:
 					User::calculateAndSaveDiskUsage ();
+					break;
+				case SystemTask::TYPE_CREATE_VHOST_DOCROOT:
+					$vhost = Vhost::find ($data['vhostId']);
+					$status1 = $vhost->createDocroot ();
+					
+					$apache = new ServiceApache ();
+					$status2 = $apache->reload ();
+					
+					$status = [
+						'exitcode' => max ($status1['exitcode'], $status2['exitcode']),
+						'command' => array_merge ($status1['command'], $status2['command']),
+						'output' => $status1['output'] . PHP_EOL . PHP_EOL . $status2['output']
+					];
+					break;
+				case SystemTask::TYPE_VHOST_INSTALL_WORDPRESS:
+					$vhost = Vhost::find ($data['vhostId']);
+					$wpman = new WordpressManager ($vhost);
+					$status = $wpman->install ();
+					
 					break;
 			}
 			

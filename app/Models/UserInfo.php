@@ -23,12 +23,12 @@ class UserInfo extends Model
 	
 	public function userLog ()
 	{
-		return $this->hasMany ('UserLog');
+		return $this->hasMany ('\App\Models\UserLog');
 	}
 	
 	public function user ()
 	{
-		return $this->hasOne ('User');
+		return $this->hasOne ('\App\Models\User');
 	}
 
 	public function getFullName ()

@@ -158,6 +158,8 @@ Route::group
 		{
 			Route::get ('database', 'DatabaseController@show');
 		}
+		
+		Route::get ('system/systemtask/{systemTask}/show', 'Staff\StaffSystemSystemTaskController@show');
 	}
 );
 
