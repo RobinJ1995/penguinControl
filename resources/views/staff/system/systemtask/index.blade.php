@@ -36,7 +36,7 @@ Systeemopdrachten &bull; Staff
 				</div>
 			</td>
 			<td>
-				{{ $task->getTitle () }}
+				{!! $task->getTitle () !!}
 			</td>
 			<td>
 				@if (! empty ($task->start))

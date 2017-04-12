@@ -53,8 +53,8 @@ Edit vHost
 						array
 						(
 							'0' => 'HTTP',
-							'1' => 'Enkel HTTPS',
-							'2' => 'HTTPS met redirect'
+							'1' => 'HTTP + HTTPS',
+							'2' => 'HTTPS with redirect'
 						),
 						Input::old ('ssl', $vhost->ssl)
 					)

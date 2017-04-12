@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Certbot;
 use App\Models\Log;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -121,6 +122,12 @@ class CronCommand extends Command
 					$vhost = Vhost::find ($data['vhostId']);
 					$wpman = new WordpressManager ($vhost);
 					$status = $wpman->install ();
+					
+					break;
+				case SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE:
+					$vhost = Vhost::find ($data['vhostId']);
+					$certbot = new Certbot ($vhost);
+					$status = $certbot->obtain ((bool) $data['redirect']);
 					
 					break;
 			}

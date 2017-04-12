@@ -33,7 +33,7 @@ class Vhost extends LimitedUserOwnedModel
 		if ($user->expire <= $now && $user->expire != -1)
 			$expired = true;
 		
-		$template80 = 
+		$template =
 '<VirtualHost *:80>
 	ServerName {:servername:}
 	ServerAdmin {:serveradmin:}
@@ -52,55 +52,8 @@ class Vhost extends LimitedUserOwnedModel
 		Require all granted
 	</Directory>
 
-</VirtualHost>';
-		$template443 = 
-'<VirtualHost *:443>
-	ServerName {:servername:}
-	ServerAdmin {:serveradmin:}
-	ServerAlias {:serveralias:}
-	AssignUserID {:username:} {:group:}
-	
-	CustomLog "/var/log/apache2/vhost/{:identification:}" combined
-	ErrorLog "{:homedir:}/logs/error_log"
-	php_admin_value open_basedir "{:docroot:}:{:homedir:}/repos/:/tmp:/usr/share/php/{:basedir:}"
-
-	CustomLog "/var/log/apache2/vhost/{:identification:}.log" combined
-	SSLEngine On
-	SSLCertificateFile {:sslcert:}
-	SSLCertificateKeyFile {:sslkey:}
-
-	DocumentRoot "{:docroot:}"
-	<Directory "{:docroot:}">
-		{:cgiHandler:}
-		Options {:execCGI:} +Indexes +FollowSymLinks
-		AllowOverride {:overrides:}
-		Require all granted
-	</Directory>
-</VirtualHost>';
-		$templateRedirect = 
-'<VirtualHost *:80>
-	ServerName {:servername:}
-	ServerAdmin {:serveradmin:}
-	ServerAlias {:serveralias:}
-	AssignUserID {:username:} {:group:}
-	
-	Redirect permanent / https://{:servername:}/
-</VirtualHost>';
-		
-		$template = '';
-		switch ($this->ssl)
-		{
-			case 0:
-				$template = $template80;
-				break;
-			case 1:
-				$template = $template443;
-				break;
-			case 2:
-				$template = $templateRedirect . PHP_EOL . $template443;
-				break;
-		}
-		$template .= PHP_EOL; // Otherwise certbot has issues //
+</VirtualHost>
+'; // Needs an empty line at the end, otherwise Certbot has issues //
 		
 		$file = str_replace ('{:servername:}', $this->servername, $template);
 		$file = str_replace ('{:serveralias:}', $this->serveralias, $file);
@@ -127,6 +80,11 @@ class Vhost extends LimitedUserOwnedModel
 			throw new Exception ('Kan niet schrijven naar bestand `' . self::VHOSTDIRAVAILABLE . $filename . '`');
 		if ($ok2 === false) // Strict comparison (===) gebruiken! //
 			throw new Exception ('Kan niet geen symlink schrijven naar `' . self::VHOSTDIRENABLED . $filename . '`');
+		
+		$task = new SystemTask ();
+		$task->type = SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE;
+		$task->data = json_encode (['vhostId' => $this->id, 'redirect' => $this->ssl == 2]);
+		$task->save ();
 		
 		return parent::save ($options);
 	}

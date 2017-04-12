@@ -47,7 +47,7 @@ Create vHost
 						array
 						(
 							'0' => 'HTTP',
-							'1' => 'HTTPS only',
+							'1' => 'HTTP + HTTPS',
 							'2' => 'HTTPS with redirect'
 						),
 						Input::old ('ssl', 0)

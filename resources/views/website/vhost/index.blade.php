@@ -42,10 +42,10 @@ vHosts
 			<td>{{ $vhost->serveradmin }}</td>
 			<td>{{ substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir ? '~' . substr ($vhost->docroot, strlen ($user->homedir)) : $vhost->docroot }}</td>
 			<td>
-				<span class="label {{ $vhost->ssl ? 'success' : 'alert' }}">{{ $vhost->ssl == 0 ? 'HTTP' : ($vhost->ssl == 1 ? 'HTTPS' : 'HTTPS + Redirect') }}</span>
+				<span class="label {{ $vhost->ssl ? 'success' : 'alert' }}">{{ $vhost->ssl == 0 ? 'HTTP' : ($vhost->ssl == 1 ? 'HTTP + HTTPS' : 'HTTPS + Redirect') }}</span>
 			</td>
 			<td>
-				<span class="label {{ $vhost->cgi ? 'success' : 'alert' }}">{{ $vhost->cgi ? 'Ja' : 'Nee' }}</span>
+				<span class="label {{ $vhost->cgi ? 'success' : 'alert' }}">{{ $vhost->cgi ? 'Yes' : 'No' }}</span>
 			</td>
 		</tr>
 		@endforeach
