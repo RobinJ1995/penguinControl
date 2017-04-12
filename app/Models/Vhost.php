@@ -81,6 +81,8 @@ class Vhost extends LimitedUserOwnedModel
 		if ($ok2 === false) // Strict comparison (===) gebruiken! //
 			throw new Exception ('Kan niet geen symlink schrijven naar `' . self::VHOSTDIRENABLED . $filename . '`');
 		
+		$returnValue = parent::save ($options);
+		
 		if ($this->ssl > 0)
 		{
 			$task = new SystemTask ();
@@ -89,7 +91,7 @@ class Vhost extends LimitedUserOwnedModel
 			$task->save ();
 		}
 		
-		return parent::save ($options);
+		return $returnValue;
 	}
 	
 	public function delete ()
