@@ -51,7 +51,10 @@ Systeemopdrachten &bull; Staff
 				@endif
 			</td>
 			<td>
-				{{ ! empty ($task->lastRun) ? date ('d/m/Y', $task->lastRun) .  '<br />' . PHP_EOL . date ('H:i:s', $task->lastRun) : '' }}
+				@if (! empty ($task->lastRun))
+				{{ date ('d/m/Y', $task->lastRun) }}<br />
+				{{ date ('H:i:s', $task->lastRun) }}
+				@endif
 			</td>
 			<td>
 				@if (! empty ($task->interval))
