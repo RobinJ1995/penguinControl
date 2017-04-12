@@ -103,6 +103,14 @@ class VHostController extends Controller
 		$task->data = json_encode (['vhostId' => $vhost->id]);
 		$task->save ();
 		
+		if ($vhost->ssl > 0)
+		{
+			$task = new SystemTask ();
+			$task->type = SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE;
+			$task->data = json_encode (['vhostId' => $vhost->id, 'redirect' => $vhost->ssl == 2]);
+			$task->save ();
+		}
+		
 		if (Input::get ('installWordpress'))
 		{
 			$wpTask = new SystemTask ();
@@ -184,6 +192,14 @@ class VHostController extends Controller
 		$vhost->save ();
 		
 		Log::log ('vHost modified', NULL, $vhost);
+		
+		if ($vhost->ssl > 0)
+		{
+			$task = new SystemTask ();
+			$task->type = SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE;
+			$task->data = json_encode (['vhostId' => $vhost->id, 'redirect' => $vhost->ssl == 2]);
+			$task->save ();
+		}
 		
 		$task = new SystemTask ();
 		if ($insideHomedir && $oldDocroot != $vhost->docroot)
