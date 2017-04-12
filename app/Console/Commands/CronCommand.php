@@ -87,7 +87,7 @@ class CronCommand extends Command
 					Vhost::nukeExpired ();
 				case SystemTask::TYPE_APACHE_RELOAD: // Falls through //
 					$apache = new ServiceApache ();
-					$status = $apache->reload ();
+					$status = $apache->reload (false);
 					break;
 				case SystemTask::TYPE_HOMEDIR_PREPARE:
 					$userInfo = UserInfo::find ($data['userInfoId']);
