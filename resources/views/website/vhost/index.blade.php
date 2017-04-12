@@ -13,7 +13,6 @@ vHosts
 			<th></th>
 			<th>Host</th>
 			<th>Administrator</th>
-			<th>Alias</th>
 			<th>Document root</th>
 			<th>Protocol</th>
 			<th>CGI</th>
@@ -33,9 +32,14 @@ vHosts
 				</div>
 				@endif
 			</td>
-			<td>{{ $vhost->servername }}</td>
+			<td>
+				{{ $vhost->servername }}
+				@if ($vhost->serveralias)
+					<br />
+					<span class="serveralias">{{ str_replace (' ', ', ', $vhost->serveralias) }}</span>
+				@endif
+			</td>
 			<td>{{ $vhost->serveradmin }}</td>
-			<td>{{ $vhost->serveralias }}</td>
 			<td>{{ substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir ? '~' . substr ($vhost->docroot, strlen ($user->homedir)) : $vhost->docroot }}</td>
 			<td>
 				<span class="label {{ $vhost->ssl ? 'success' : 'alert' }}">{{ $vhost->ssl == 0 ? 'HTTP' : ($vhost->ssl == 1 ? 'HTTPS' : 'HTTPS + Redirect') }}</span>

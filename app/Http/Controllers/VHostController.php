@@ -60,7 +60,7 @@ class VHostController extends Controller
 			(
 				'Host' => $servername,
 				//'Beheerder' => Input::get ('serveradmin'),
-				//'Alias' => Input::get ('serveralias'),
+				'Alias' => Input::get ('serveralias'),
 				'Document root' => $docroot,
 				'Protocol' => Input::get ('ssl'),
 				'CGI' => Input::get ('cgi'),
@@ -70,7 +70,7 @@ class VHostController extends Controller
 			(
 				'Host' => array ('required', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
 				//'Beheerder' => array ('required', 'email'),
-				//'Alias' => array ('different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/', 'vhost_subdomain:' . $user->userInfo->username),
+				'Alias' => array ('nullable', 'different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'),
 				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1'),
@@ -81,11 +81,15 @@ class VHostController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/website/vhost/create')->withInput ()->withErrors ($validator);
 		
+		$serveralias = 'www.' . $servername;
+		if (Input::get ('serveralias'))
+			$serveralias .= ' ' . Input::get ('serveralias');
+		
 		$vhost = new Vhost ();
 		$vhost->uid = $user->uid;
 		$vhost->docroot = $user->homedir . '/' . $docroot;
 		$vhost->servername = $servername;
-		$vhost->serveralias = 'www.' . $servername;
+		$vhost->serveralias = $serveralias;
 		$vhost->serveradmin = $user->userInfo->username . '@' . $servername;
 		$vhost->ssl = (int) Input::get ('ssl');
 		$vhost->cgi = (bool) Input::get ('cgi');
@@ -142,12 +146,14 @@ class VHostController extends Controller
 			array
 			(
 				'Document root' => $docroot,
+				'Aliases' => Input::get ('serveralias'),
 				'Protocol' => Input::get ('ssl'),
 				'CGI' => Input::get ('cgi')
 			),
 			array
 			(
 				'Document root' => array ($insideHomedir ? 'regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/' : 'optional'),
+				'Alias' => array ('nullable', 'different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')
 			)
@@ -171,6 +177,7 @@ class VHostController extends Controller
 		$oldDocroot = $vhost->docroot;
 		if ($insideHomedir)
 			$vhost->docroot = $user->homedir . '/' . $docroot;
+		$vhost->serveralias = Input::get ('serveralias');
 		$vhost->ssl = (int) Input::get ('ssl');
 		$vhost->cgi = (bool) Input::get ('cgi');
 		

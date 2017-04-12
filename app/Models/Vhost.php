@@ -100,6 +100,7 @@ class Vhost extends LimitedUserOwnedModel
 				$template = $templateRedirect . PHP_EOL . $template443;
 				break;
 		}
+		$template .= PHP_EOL; // Otherwise certbot has issues //
 		
 		$file = str_replace ('{:servername:}', $this->servername, $template);
 		$file = str_replace ('{:serveralias:}', $this->serveralias, $file);

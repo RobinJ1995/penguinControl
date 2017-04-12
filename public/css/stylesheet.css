@@ -145,3 +145,9 @@ ul.pagination li.current a:hover
 {
 	margin-bottom: 1px;
 }
+
+.serveralias
+{
+	font-size: 0.84em;
+	color: #4A4A4A;
+}

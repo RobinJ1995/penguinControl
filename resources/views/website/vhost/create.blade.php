@@ -30,6 +30,15 @@ Create vHost
 			</div>
 		</div>
 		<div class="row">
+			<div class="large-12 column">
+				<label>Aliases:
+					<small>(Separate multiple aliases with spaces.)</small>
+					<input type="text" name="serveralias" value="{{ Input::old ('serveralias') }}" />
+				</label>
+				<small class="error">Invalid input</small>
+			</div>
+		</div>
+		<div class="row">
 			<div class="large-6 medium-7 small-12 column">
 				<label>Protocol:
 					{{ Form::select

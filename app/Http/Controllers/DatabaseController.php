@@ -13,7 +13,7 @@ class DatabaseController extends Controller
 		$user = Auth::user ();
 		$creds = DatabaseCredentials::forUser ($user);
 		$phpmyadminUrl = Config::get ('penguin.phpmyadmin_url');
-		dd ($creds);
+		
 		return view ('database.show')->with ('dbUsername', $creds[0])->with ('dbPassword', $creds[1])->with ('phpmyadminUrl', $phpmyadminUrl);
 	}
 }
