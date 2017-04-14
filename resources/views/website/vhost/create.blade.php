@@ -41,6 +41,7 @@ Create vHost
 		<div class="row">
 			<div class="large-6 medium-7 small-12 column">
 				<label>Protocol:
+					<small>(Make sure you have the DNS records setup correctly before enabling HTTPS.)</small>
 					{{ Form::select
 					(
 						'ssl',

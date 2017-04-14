@@ -42,7 +42,7 @@ class Vhost extends LimitedUserOwnedModel
 	
 	CustomLog "/var/log/apache2/vhost/{:identification:}.log" combined
 	ErrorLog "{:homedir:}/logs/error_log"
-	php_admin_value open_basedir "{:docroot:}:{:homedir:}/repos/:/tmp:/usr/share/php/{:basedir:}"
+	php_admin_value open_basedir "{:docroot:}:{:homedir:}:/tmp:/usr/share/php/{:basedir:}"
 
 	DocumentRoot "{:docroot:}"
 	<Directory "{:docroot:}">
@@ -68,7 +68,8 @@ class Vhost extends LimitedUserOwnedModel
 		$file = str_replace ('{:sslcert:}', self::SSLCERT, $file);
 		$file = str_replace ('{:sslkey:}', self::SSLKEY, $file);
 		$file = str_replace ('{:basedir:}', empty ($this->basedir) ? '' : ':' . $this->basedir, $file);
-		$file = str_replace ('{:overrides:}', 'FileInfo Indexes Limit AuthConfig Options', $file);
+		//$file = str_replace ('{:overrides:}', 'FileInfo Indexes Limit AuthConfig Options', $file);
+		$file = str_replace ('{:overrides:}', 'All', $file);
 		
 		@unlink (self::VHOSTDIRAVAILABLE . $filename);
 		@unlink (self::VHOSTDIRENABLED . $filename);
