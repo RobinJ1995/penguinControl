@@ -1,28 +1,33 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Groep toevoegen &bull; Staff
+	Create group
+@endsection
+
+@section ('alerts')
+	@parent
+	{!! new Alert ('Groups with a GID lower than 1100 are considered to have special privileges and users in such groups will gain access to some at least some administrative functionality.', Alert::TYPE_WARNING) !!}
 @endsection
 
 @section ('content')
 <form action="/staff/user/group/create" method="POST" data-abide>
 	<fieldset>
-		<legend>Groep toevoegen</legend>
+		<legend>Create group</legend>
 		<div class="row">
 			<div class="large-3 medium-3 small-12 column">
 				<label>GID:
-					<input type="number" name="gid" value="{{ Input::old ('gid') }}" min="1" max="{{ 200 }}" required />
+					<input type="number" name="gid" value="{{ Input::old ('gid') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-5 medium-5 small-12 column">
-				<label>Naam:
+				<label>Name:
 					<input type="text" name="name" value="{{ Input::old ('name') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-4 small-12 column">
-				<p>De volgende GID's zijn reeds in gebruik en kunnen dus niet meer gebruikt worden:</p>
+				<p>The following GIDs are already in use and thus can no longer be used:</p>
 				<ul>
 					@foreach ($gids as $gid)
 					<li>{{ $gid }}</li>
@@ -32,7 +37,7 @@ Groep toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

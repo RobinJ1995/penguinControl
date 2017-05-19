@@ -10,7 +10,7 @@ Groepen &bull; Staff
 		<tr>
 			<th></th>
 			<th>GID</th>
-			<th>Naam</th>
+			<th>Name</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -26,16 +26,13 @@ Groepen &bull; Staff
 			</td>
 			<td>{{ $group->gid }}</td>
 			<td>{{ $group->name }}</td>
-			<td>
-				<img src="/img/icons/{{ $group->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'sin.png" alt="Medewerker" title="Medewerker' : 'user.png" alt="User' }}" />
-			</td>
 		</tr>
 		@endforeach
 	</tbody>
 </table>
 <div class="right">
-	<a href="/staff/user/group/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/user/group/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 @endsection

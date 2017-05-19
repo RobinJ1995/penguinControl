@@ -39,7 +39,7 @@ class StaffGroupController extends Controller
 		foreach (Group::all () as $group)
 			$gids[] = $group->gid;
 		
-		return view ('staff.user.group.create', compact ('gids'))->with ('alerts', array (new Alert ("Groepen met een GID <strong>kleiner dan 1100</strong> zijn bedoeld voor medewerkers. Gebruikers die lid zijn van zo'n groep zullen onder andere toegang krijgen tot het staff-gedeelte van SINControl.", 'warning')));
+		return view ('staff.user.group.create', compact ('gids'));
 	}
 
 	public function store ()
