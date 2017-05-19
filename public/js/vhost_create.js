@@ -11,7 +11,7 @@ $(document).ready
 					
 					if (servername)
 					{
-						let name = servername.split ('.')[0];
+						let name = servername.split ('.')[servername.startsWith ('www.') ? 1 : 0];
 						
 						$('input[name="docroot"]').val (name + '/public/');
 					}
