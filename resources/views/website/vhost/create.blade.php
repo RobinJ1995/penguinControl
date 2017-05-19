@@ -4,6 +4,11 @@
 Create vHost
 @endsection
 
+@section ('js')
+@parent
+<script src="/js/vhost_create.js"></script>
+@endsection
+
 @section ('content')
 <form action="/website/vhost/create" method="POST" data-abide>
 	<fieldset>
