@@ -69,8 +69,8 @@ Edit vHost
 						'cgi',
 						array
 						(
-							'0' => 'Uit',
-							'1' => 'Aan'
+							'0' => 'Off',
+							'1' => 'On'
 						),
 						Input::old ('cgi', $vhost->cgi)
 					)
