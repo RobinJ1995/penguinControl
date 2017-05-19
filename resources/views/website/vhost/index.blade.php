@@ -40,7 +40,13 @@ vHosts
 			</td>
 			<td>{{ substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir ? '~' . substr ($vhost->docroot, strlen ($user->homedir)) : $vhost->docroot }}</td>
 			<td>
-				<span class="label {{ $vhost->ssl ? 'success' : 'alert' }}">{{ $vhost->ssl == 0 ? 'HTTP' : ($vhost->ssl == 1 ? 'HTTP + HTTPS' : 'HTTPS + Redirect') }}</span>
+				@if ($vhost->ssl == 0)
+					<span class="label alert">HTTP</span>
+				@elseif ($vhost->ssl == 1)
+					<span class="label warning">HTTP + HTTPS</span>
+				@elseif ($vhost->ssl == 1)
+					<span class="label success">HTTP + Redirect</span>
+				@endif
 			</td>
 			<td>
 				<span class="label {{ $vhost->cgi ? 'success' : 'alert' }}">{{ $vhost->cgi ? 'Yes' : 'No' }}</span>
