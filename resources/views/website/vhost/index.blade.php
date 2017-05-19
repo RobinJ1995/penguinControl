@@ -35,7 +35,7 @@ vHosts
 				{{ $vhost->servername }}
 				@if ($vhost->serveralias)
 					<br />
-					<span class="serveralias">{{ str_replace (' ', ', ', $vhost->serveralias) }}</span>
+					<span class="serveralias">{{ htmlstr (str_replace (' ', '<br />', $vhost->serveralias)) }}</span>
 				@endif
 			</td>
 			<td>{{ substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir ? '~' . substr ($vhost->docroot, strlen ($user->homedir)) : $vhost->docroot }}</td>
