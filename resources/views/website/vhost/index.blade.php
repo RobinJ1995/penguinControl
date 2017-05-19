@@ -44,7 +44,7 @@ vHosts
 					<span class="label alert">HTTP</span>
 				@elseif ($vhost->ssl == 1)
 					<span class="label warning">HTTP + HTTPS</span>
-				@elseif ($vhost->ssl == 1)
+				@elseif ($vhost->ssl == 2)
 					<span class="label success">HTTP + Redirect</span>
 				@endif
 			</td>
