@@ -7,7 +7,7 @@ Edit vHost
 @section ('content')
 <form action="/website/vhost/{{ $vhost->id }}/edit" method="POST" data-abide>
 	<fieldset>
-		<legend>vHost bewerken</legend>
+		<legend>Edit vHost</legend>
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
 				<label>Host:
