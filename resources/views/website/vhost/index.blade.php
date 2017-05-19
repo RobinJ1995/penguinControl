@@ -12,7 +12,6 @@ vHosts
 		<tr>
 			<th></th>
 			<th>Host</th>
-			<th>Administrator</th>
 			<th>Document root</th>
 			<th>Protocol</th>
 			<th>CGI</th>
@@ -39,7 +38,6 @@ vHosts
 					<span class="serveralias">{{ str_replace (' ', ', ', $vhost->serveralias) }}</span>
 				@endif
 			</td>
-			<td>{{ $vhost->serveradmin }}</td>
 			<td>{{ substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir ? '~' . substr ($vhost->docroot, strlen ($user->homedir)) : $vhost->docroot }}</td>
 			<td>
 				<span class="label {{ $vhost->ssl ? 'success' : 'alert' }}">{{ $vhost->ssl == 0 ? 'HTTP' : ($vhost->ssl == 1 ? 'HTTP + HTTPS' : 'HTTPS + Redirect') }}</span>
