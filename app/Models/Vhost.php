@@ -119,9 +119,17 @@ class Vhost extends LimitedUserOwnedModel
 	{
 		$username = $this->user->userInfo->username;
 		$groupName = $this->user->primaryGroup->name;
+		$homedir = $this->user->homedir;
+		$docrootTop = $this->docroot;
+		
+		if (strlen (trailing_slash ($this->docroot)) > strlen (trailing_slash ($homedir)) && starts_with ($this->docroot, $homedir))
+		{
+			$slashPos = strpos ($this->docroot, '/', strlen (trailing_slash ($homedir)));
+			$docrootTop = substr ($this->docroot, 0, $slashPos);
+		}
 		
 		$cmd1 = 'mkdir -p ' . escapeshellarg ($this->docroot) . ' 2>&1';
-		$cmd2 = 'chown ' . escapeshellarg ($username) . ':' . escapeshellarg ($groupName) . ' ' . escapeshellarg ($this->docroot) . ' -R 2>&1';
+		$cmd2 = 'chown ' . escapeshellarg ($username) . ':' . escapeshellarg ($groupName) . ' ' . escapeshellarg ($docrootTop) . ' -R 2>&1';
 		
 		$output = array ();
 		
