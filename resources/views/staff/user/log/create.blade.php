@@ -1,13 +1,13 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Facturatie: toevoegen &bull; Staff
+Add billing entry
 @endsection
 
 @section ('content')
 <form action="/staff/user/log/create" method="POST" data-abide>
 	<fieldset>
-		<legend>Gebruikerlog toevoegen</legend>
+		<legend>Add billing entry</legend>
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Gebruiker:
@@ -62,7 +62,7 @@ Facturatie: toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

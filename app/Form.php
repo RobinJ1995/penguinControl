@@ -22,7 +22,7 @@ class Form
 		{
 			$html .= '<option value="' . e ($value) . '"';
 			
-			if ($value == $selected)
+			if ($value === $selected)
 				$html .= ' selected';
 			
 			$html .= '>' . e ($title) . '</option>' . PHP_EOL;

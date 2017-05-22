@@ -6,7 +6,7 @@
 
 @section ('alerts')
 	@parent
-	{!! new Alert ('Groups with a GID lower than 1100 are considered to have special privileges and users in such groups will gain access to some at least some administrative functionality.', Alert::TYPE_WARNING) !!}
+	{!! new Alert ('Groups with a GID lower than 1100 are considered to have special privileges and users in such groups will gain access to at least some administrative functionality.', Alert::TYPE_WARNING) !!}
 @endsection
 
 @section ('content')

@@ -176,8 +176,8 @@ return [
 		// App\Providers\BroadcastServiceProvider::class,
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
-		\App\Providers\ViewComposerServiceProvider::class
-	
+		\App\Providers\ViewComposerServiceProvider::class,
+		Barryvdh\Debugbar\ServiceProvider::class
 	],
 	
 	/*
@@ -244,7 +244,8 @@ return [
 		'UserInfo' => \App\Models\UserInfo::class,
 		'UserLimit' => \App\Models\UserLimit::class,
 		'UserLog' => \App\Models\UserLog::class,
-		'Vhost' => \App\Models\Vhost::class
+		'Vhost' => \App\Models\Vhost::class,
+		'Debugbar' => Barryvdh\Debugbar\Facade::class
 	],
 
 ];

@@ -20,18 +20,18 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class StaffUserLogController extends Controller
 {
-
 	private $boekhoudingBetekenis = array
 	(
-		-1 => 'Niet te factureren',
-		0 => 'Nog te factureren',
-		1 => 'Gefactureerd'
+		-1 => 'Not to be billed',
+		0 => 'To be billed',
+		1 => 'Billed'
 	);
 
 	public function index ()
@@ -50,7 +50,6 @@ class StaffUserLogController extends Controller
 		$username = Input::get ('username');
 		$name = Input::get ('name');
 		$email = Input::get ('email');
-		$schoolnr = Input::get ('schoolnr');
 		$gid = Input::get ('gid');
 
 		$time_van = Input::get ('time_van');
@@ -63,13 +62,12 @@ class StaffUserLogController extends Controller
 			->whereHas
 			(
 				'userInfo',
-				function ($q) use ($username, $name, $email, $schoolnr, $gid)
+				function ($q) use ($username, $name, $email, $gid)
 				{
 					$q->where ('validated', '1')
 						->where ('username', 'LIKE', '%' . $username . '%')
 						->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
-						->where ('email', 'LIKE', '%' . $email . '%')
-						->where ('schoolnr', 'LIKE', '%' . $schoolnr . '%');
+						->where ('email', 'LIKE', '%' . $email . '%');
 					
 					if (! empty ($gid))
 					{
@@ -174,7 +172,6 @@ class StaffUserLogController extends Controller
 			'userInfo.fname' => 'voornaam',
 			'userInfo.lname' => 'achternaam',
 			'userInfo.email' => 'e-mail',
-			'userInfo.schoolnr' => 'r-nummer',
 			'userInfo.lastchange' => 'lastchange',
 			'userInfo.validated' => 'validated',
 			'userLog.id' => 'user_log_id',
@@ -210,11 +207,11 @@ class StaffUserLogController extends Controller
 
 		$output[] = implode ($seperator, $userOutput);
 
-		foreach ($userLogsUserInfo as $user_log)
+		foreach ($userLogsUserInfo as $userLog)
 		{
 			$userOutput = array ();
-			$userInfo = $user_log->userInfo;
-
+			$userInfo = $userLog->userInfo;
+			
 			foreach ($fields as $field)
 			{
 				if (array_key_exists ($field, $csvHeader))
@@ -231,19 +228,19 @@ class StaffUserLogController extends Controller
 		}
 
 		$csvOutput = rtrim (implode (PHP_EOL, $output), "\n");
-		$fileName = 'export/sin_facturatie_' . date ('Y_m_d_H_i_s') . '.csv';
-		$fileHandle = fopen ($fileName, 'w');
+		$fileName = 'export/billing_report_' . date ('Y_m_d_H_i_s') . '.csv';
+		$fileHandle = fopen (public_path ($fileName), 'w');
 		fwrite ($fileHandle, $csvOutput);
 		fclose ($fileHandle);
 		$fileLink = '<a href="/' . $fileName . '" target="_blank">' . $fileName . '</a>';
-		$alert = 'Facturatie(s) gewijzigd en ge&euml;xporteerd';
+		$alert = 'Status changed and billing report exported';
 		
-		Log::log ('Facturaties geëxporteerd', NULL, $userLogsUserInfo, $fileName);
+		Log::log ('Billing report exported', NULL, $userLogsUserInfo, $fileName);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array
 			(
 				new Alert ($alert, Alert::TYPE_SUCCESS),
-				new Alert ('CSV-bestand kan hier worden gedownload: ' . $fileLink, Alert::TYPE_INFO)
+				new Alert ('The billing report can be downloaded here: ' . $fileLink, Alert::TYPE_INFO)
 			)
 		);
 	}
@@ -253,7 +250,7 @@ class StaffUserLogController extends Controller
 		$users = array ();
 
 		foreach (UserInfo::orderBy ('username')->get () as $userInfo)
-			$users[$userInfo->id] = $userInfo->username . ' (' . $userInfo->getFullName () . ', ' . $userInfo->schoolnr . ')';
+			$users[$userInfo->id] = $userInfo->username . ' (' . $userInfo->getFullName () . ')';
 
 		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
 
@@ -263,20 +260,21 @@ class StaffUserLogController extends Controller
 	public function store ()
 	{
 		$validator = Validator::make
-				(
-				array
-			    (
-			    'user_info_id' => Input::get ('user_info_id'),
-			    'Datum/tijd' => Input::get ('time'),
-			    'Nieuw' => Input::get ('nieuw'),
-			    'Gefactureerd' => Input::get ('boekhouding')
-				), array
-			    (
-			    'user_info_id' => array ('required', 'numeric'),
-			    'Datum/tijd' => array ('required'),
-			    'Nieuw' => array ('required'),
-			    'Gefactureerd' => array ('required')
-				)
+		(
+			array
+		        (
+				'User' => Input::get ('user_info_id'),
+				'Date/Time' => Input::get ('time'),
+				'New' => Input::get ('nieuw'),
+				'Billing status' => Input::get ('boekhouding')
+			),
+			array
+	                (
+				'User' => array ('required', 'numeric'),
+				'Date/Time' => array ('required'),
+				'New' => array ('required'),
+				'Billing status' => array ('required')
+			)
 		);
 
 		if ($validator->fails ())
@@ -291,9 +289,9 @@ class StaffUserLogController extends Controller
 
 		$userLog->save ();
 		
-		Log::log ('Facturatie aangemaakt', NULL, $userLog);
+		Log::log ('Billing entry added', NULL, $userLog);
 
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Billing entry added', Alert::TYPE_SUCCESS)));
 	}
 
 	public function edit ($userlog)
@@ -309,11 +307,11 @@ class StaffUserLogController extends Controller
 		(
 			array
 			(
-				'Gefactureerd' => Input::get ('boekhouding')
+				'Billing status' => Input::get ('boekhouding')
 			),
 			array
 			(
-				'Gefactureerd' => array ('required')
+				'Billing status' => array ('required')
 			)
 		);
 
@@ -323,18 +321,18 @@ class StaffUserLogController extends Controller
 		$userLog->boekhouding = Input::get ('boekhouding');
 		$userLog->save ();
 		
-		Log::log ('Facturatie bijgewerkt', NULL, $userLog);
+		Log::log ('Billing entry modified', NULL, $userLog);
 
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Billing entry changes saved', Alert::TYPE_SUCCESS)));
 	}
 
 	public function remove ($userLog)
 	{
 		$userLog->delete ();
 		
-		Log::log ('Facturatie verwijderd', NULL, $userLog);
+		Log::log ('Billing entry removed', NULL, $userLog);
 
-		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Facturatie verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Billing entry removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

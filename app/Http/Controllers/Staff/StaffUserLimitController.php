@@ -26,12 +26,12 @@ use Illuminate\Support\Facades\Validator;
 
 class StaffUserLimitController extends Controller
 {
-	public function index ($order = 'username')
+	public function index ($order = 'id')
 	{
 		$global = UserLimit::whereNull ('uid')->first ();
-		$limits = UserLimit::join ('user', 'user.uid', '=', 'user_limit.uid')->join ('user_info', 'user_info.id', '=', 'user.user_info_id')->whereNotNull ('user_limit.uid')->orderBy ($order)->paginate ();
+		$limits = UserLimit::whereNotNull ('user_limit.uid')->orderBy ($order)->paginate ();
 		
-		$url = action ('StaffUserLimitController@index');
+		$url = action ('Staff\StaffUserLimitController@index', $order);
 		
 		return view ('staff.user.limit.index', compact ('global', 'limits', 'url'));
 	}
@@ -57,23 +57,23 @@ class StaffUserLimitController extends Controller
 		(
 			array
 			(
-				'Gebruiker' => Input::get ('uid'),
-				'FTP-accounts' => Input::get ('ftp'),
+				'User' => Input::get ('uid'),
+				'FTP accounts' => Input::get ('ftp'),
 				'vHosts' => Input::get ('vhost'),
-				'E-maildomeinen' => Input::get ('maildomain'),
-				'E-mailaccounts' => Input::get ('mailuser'),
-				'Doorstuuradressen' => Input::get ('mailforwarding'),
-				'Schijfruimte' => Input::get ('diskusage')
+				'E-mail domains' => Input::get ('maildomain'),
+				'E-mail accounts' => Input::get ('mailuser'),
+				'Forwarding addresses' => Input::get ('mailforward'),
+				'Storage space' => Input::get ('diskusage')
 			),
 			array
 			(
-				'Gebruiker' => array ('required', 'integer', 'exists:user,uid', 'unique:user_limit,uid'),
-				'FTP-accounts' => array ('required', 'integer', 'min:0', 'max:25'),
+				'User' => array ('required', 'integer', 'exists:user,uid', 'unique:user_limit,uid'),
+				'FTP accounts' => array ('required', 'integer', 'min:0', 'max:25'),
 				'vHosts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-maildomeinen' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-mailaccounts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'Doorstuuradressen' => array ('required', 'integer', 'min:0', 'max:25'),
-				'Schijfruimte' => array ('required', 'integer', 'min:10', 'max:500000')
+				'E-mail domains' => array ('required', 'integer', 'min:0', 'max:25'),
+				'E-mail accounts' => array ('required', 'integer', 'min:0', 'max:25'),
+				'Forwarding addresses' => array ('required', 'integer', 'min:0', 'max:25'),
+				'Storage space' => array ('required', 'integer', 'min:10', 'max:1000000')
 			)
 		);
 		
@@ -86,13 +86,13 @@ class StaffUserLimitController extends Controller
 		$limit->vhost = Input::get ('vhost');
 		$limit->mail_domain = Input::get ('maildomain');
 		$limit->mail_user = Input::get ('mailuser');
-		$limit->mail_forward = Input::get ('mailforwarding');
+		$limit->mail_forward = Input::get ('mailforward');
 		$limit->diskusage = Input::get ('diskusage');
 		$limit->save ();
 		
-		Log::log ('Gebruikerslimiet aangemaakt', NULL, $limit);
+		Log::log ('User limit exception created', NULL, $limit);
 		
-		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Uitzondering toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Exception created', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($limit)
@@ -115,21 +115,21 @@ class StaffUserLimitController extends Controller
 		(
 			array
 			(
-				'FTP-accounts' => Input::get ('ftp'),
+				'FTP accounts' => Input::get ('ftp'),
 				'vHosts' => Input::get ('vhost'),
-				'E-maildomeinen' => Input::get ('maildomain'),
-				'E-mailaccounts' => Input::get ('mailuser'),
-				'Doorstuuradressen' => Input::get ('mailforwarding'),
-				'Schijfruimte' => Input::get ('diskusage')
+				'E-mail domains' => Input::get ('maildomain'),
+				'E-mail accounts' => Input::get ('mailuser'),
+				'Forwarding addresses' => Input::get ('mailforward'),
+				'Storage space' => Input::get ('diskusage')
 			),
 			array
 			(
-				'FTP-accounts' => array ('required', 'integer', 'min:0', 'max:25'),
+				'FTP accounts' => array ('required', 'integer', 'min:0', 'max:25'),
 				'vHosts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-maildomeinen' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-mailaccounts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'Doorstuuradressen' => array ('required', 'integer', 'min:0', 'max:25'),
-				'Schijfruimte' => array ('required', 'integer', 'min:10', 'max:500000')
+				'E-mail domains' => array ('required', 'integer', 'min:0', 'max:25'),
+				'E-mail accounts' => array ('required', 'integer', 'min:0', 'max:25'),
+				'Forwarding addresses' => array ('required', 'integer', 'min:0', 'max:25'),
+				'Storage space' => array ('required', 'integer', 'min:10', 'max:1000000')
 			)
 		);
 		
@@ -137,24 +137,24 @@ class StaffUserLimitController extends Controller
 			return Redirect::to ('/staff/user/limit/' . $limit->id . '/edit')->withInput ()->withErrors ($validator);
 		
 		$limit->ftp = Input::get ('ftp');
-		$limit->apache_vhost_virtual = Input::get ('vhost');
-		$limit->mail_domain_virtual = Input::get ('maildomain');
-		$limit->mail_user_virtual = Input::get ('mailuser');
-		$limit->mail_forwarding_virtual = Input::get ('mailforwarding');
+		$limit->vhost = Input::get ('vhost');
+		$limit->mail_domain = Input::get ('maildomain');
+		$limit->mail_user = Input::get ('mailuser');
+		$limit->mail_forward = Input::get ('mailforward');
 		$limit->diskusage = Input::get ('diskusage');
 		$limit->save ();
 		
-		Log::log ('Gebruikerslimiet bijgewerkt', NULL, $limit);
+		Log::log ('User limit exception modified', NULL, $limit);
 		
-		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Uitzondering bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Exception saved', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($limit)
 	{
 		$limit->delete ();
 		
-		Log::log ('Gebruiker verwijderd', NULL, $limit);
+		Log::log ('User limit exception removed', NULL, $limit);
 		
-		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Uitzondering verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/limit')->with ('alerts', array (new Alert ('Exception removed', Alert::TYPE_SUCCESS)));
 	}
 }
