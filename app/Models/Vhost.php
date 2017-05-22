@@ -41,7 +41,7 @@ class Vhost extends LimitedUserOwnedModel
 	AssignUserID {:username:} {:group:}
 	
 	CustomLog "/var/log/apache2/vhost/{:identification:}.log" combined
-	ErrorLog "{:homedir:}/logs/error_log"
+	ErrorLog "{:homedir:}/logs/{:identification:}_errors.log"
 	php_admin_value open_basedir "{:docroot:}:{:homedir:}:/tmp:/usr/share/php/{:basedir:}"
 
 	DocumentRoot "{:docroot:}"
