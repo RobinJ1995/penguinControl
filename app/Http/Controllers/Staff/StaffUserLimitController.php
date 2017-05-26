@@ -68,11 +68,11 @@ class StaffUserLimitController extends Controller
 			array
 			(
 				'User' => array ('required', 'integer', 'exists:user,uid', 'unique:user_limit,uid'),
-				'FTP accounts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'vHosts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-mail domains' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-mail accounts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'Forwarding addresses' => array ('required', 'integer', 'min:0', 'max:25'),
+				'FTP accounts' => array ('required', 'integer', 'min:0', 'max:250'),
+				'vHosts' => array ('required', 'integer', 'min:0', 'max:250'),
+				'E-mail domains' => array ('required', 'integer', 'min:0', 'max:250'),
+				'E-mail accounts' => array ('required', 'integer', 'min:0', 'max:250'),
+				'Forwarding addresses' => array ('required', 'integer', 'min:0', 'max:250'),
 				'Storage space' => array ('required', 'integer', 'min:10', 'max:1000000')
 			)
 		);
@@ -124,11 +124,11 @@ class StaffUserLimitController extends Controller
 			),
 			array
 			(
-				'FTP accounts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'vHosts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-mail domains' => array ('required', 'integer', 'min:0', 'max:25'),
-				'E-mail accounts' => array ('required', 'integer', 'min:0', 'max:25'),
-				'Forwarding addresses' => array ('required', 'integer', 'min:0', 'max:25'),
+				'FTP accounts' => array ('required', 'integer', 'min:0', 'max:250'),
+				'vHosts' => array ('required', 'integer', 'min:0', 'max:250'),
+				'E-mail domains' => array ('required', 'integer', 'min:0', 'max:250'),
+				'E-mail accounts' => array ('required', 'integer', 'min:0', 'max:250'),
+				'Forwarding addresses' => array ('required', 'integer', 'min:0', 'max:250'),
 				'Storage space' => array ('required', 'integer', 'min:10', 'max:1000000')
 			)
 		);

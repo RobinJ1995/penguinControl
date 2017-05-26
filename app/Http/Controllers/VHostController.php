@@ -71,7 +71,7 @@ class VHostController extends Controller
 				'Host' => array ('required', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
 				//'Beheerder' => array ('required', 'email'),
 				'Alias' => array ('nullable', 'different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'),
-				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/', 'not:www/public/'),
+				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/', 'not_in:www/public/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1'),
 				'Install Wordpress' => array ('nullable', 'sometimes')

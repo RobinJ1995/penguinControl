@@ -1,48 +1,48 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Gebruiker bewerken &bull; Staff
+Edit user
 @endsection
 
 @section ('content')
 <form action="/staff/user/user/{{ $user->id }}/edit" method="POST" data-abide>
 	<fieldset>
-		<legend>Gebruiker bewerken</legend>
+		<legend>Edit user</legend>
 		<div class="row">
 			<div class="large-2 medium-3 small-12 column">
 				<label>UID:
 					<input type="number" name="uid" value="{{ $user->uid }}" min="{{ $user->uid }}" max="{{ $user->uid }}" disabled />
 				</label>
-				<small class="error">Afblijven!</small>
+				<small class="error">Hands off!</small>
 			</div>
 			<div class="large-4 medium-9 small-12 column">
-				<label>Gebruikersnaam:
+				<label>Username:
 					<input type="text" name="username" value="{{ $userInfo->username }}" disabled />
 				</label>
-				<small class="error">Afblijven!</small>
+				<small class="error">Hands off!</small>
 			</div>
 			<div class="large-6 medium-12 small-12 column">
 				<label>Home directory:
 					<input type="text" name="homedir" value="{{ $user->homedir }}" disabled />
 				</label>
-				<small class="error">Afblijven!</small>
+				<small class="error">Hands off!</small>
 			</div>
 		</div>
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
-				<label>E-mailadres:
+				<label>E-mail address:
 					<input type="email" name="email" value="{{ $userInfo->email }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
-				<label>Voornaam:
+				<label>First name:
 					<input type="text" name="fname" value="{{ $userInfo->fname }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
-				<label>Achternaam:
+				<label>Surname:
 					<input type="text" name="lname" value="{{ $userInfo->lname }}" required />
 				</label>
 				<small class="error">Invalid input</small>

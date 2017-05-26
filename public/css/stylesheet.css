@@ -151,3 +151,8 @@ ul.pagination li.current a:hover
 	font-size: 0.84em;
 	color: #4A4A4A;
 }
+
+.incognito:link
+{
+	color: inherit;
+}

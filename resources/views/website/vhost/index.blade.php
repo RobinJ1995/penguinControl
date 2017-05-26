@@ -32,10 +32,12 @@ vHosts
 				@endif
 			</td>
 			<td>
-				{{ $vhost->servername }}
+				<a href="http://{{ $vhost->servername }}" class="incognito">{{ $vhost->servername }}</a>
 				@if ($vhost->serveralias)
-					<br />
-					<span class="serveralias">{{ htmlstr (str_replace (' ', '<br />', $vhost->serveralias)) }}</span>
+					@foreach (explode (' ', $vhost->serveralias) as $alias)
+						<br />
+						<a href="http://{{ $alias }}" class="serveralias incognito">{{ $alias }}</a>
+					@endforeach
 				@endif
 			</td>
 			<td>{{ substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir ? '~' . substr ($vhost->docroot, strlen ($user->homedir)) : $vhost->docroot }}</td>
