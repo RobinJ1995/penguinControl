@@ -32,11 +32,11 @@ vHosts
 				@endif
 			</td>
 			<td>
-				<a href="http://{{ $vhost->servername }}" class="incognito">{{ $vhost->servername }}</a>
+				<a href="http://{{ $vhost->servername }}" class="servername">{{ $vhost->servername }}</a>
 				@if ($vhost->serveralias)
 					@foreach (explode (' ', $vhost->serveralias) as $alias)
 						<br />
-						<a href="http://{{ $alias }}" class="serveralias incognito">{{ $alias }}</a>
+						<a href="http://{{ $alias }}" class="serveralias">{{ $alias }}</a>
 					@endforeach
 				@endif
 			</td>

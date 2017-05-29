@@ -146,13 +146,12 @@ ul.pagination li.current a:hover
 	margin-bottom: 1px;
 }
 
-.serveralias
+.servername, .servername:link
+{
+	color: #222222;
+}
+.serveralias, .serveralias:link
 {
 	font-size: 0.84em;
 	color: #4A4A4A;
-}
-
-.incognito:link
-{
-	color: inherit;
 }
