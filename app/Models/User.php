@@ -55,9 +55,14 @@ class User extends Authenticatable
 		return $this->hasOne ('\App\Models\Group', 'gid', 'gid');
 	}
 	
-	public function isGroupMember ($group)
+	public function isGroupMember (Group $group)
 	{
 		return (UserGroup::where ('uid', $this->uid)->where ('gid', $group->gid)->count () > 0);
+	}
+	
+	public function isAdmin ()
+	{
+		return $this->getLowestGid () <= 1050;
 	}
 	
 	public function getLowestGid () // Lagere gid betekent hogere permissies //

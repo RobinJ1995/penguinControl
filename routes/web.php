@@ -95,69 +95,100 @@ Route::group
 		Route::get ('user/logout', 'UserController@logout');
 		
 		// vHost //
-		if (Config::get ('penguin.vhost', false))
-		{
-			Route::get ('website/vhost', 'VHostController@index');
-			Route::get ('website/vhost/create', 'VHostController@create');
-			Route::post ('website/vhost/create', 'VHostController@store');
-			Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
-			Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
-			Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
-		}
+		Route::group
+		(
+			['middleware' => ['owner:vhost', 'feature_enabled:vhost']],
+			function ()
+			{
+				Route::get ('website/vhost', 'VHostController@index');
+				Route::get ('website/vhost/create', 'VHostController@create');
+				Route::post ('website/vhost/create', 'VHostController@store');
+				Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
+				Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
+				Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
+			}
+		);
 		
 		// FTP //
-		if (Config::get ('penguin.ftp', false))
-		{
-			Route::get ('ftp', 'FtpController@index');
-			Route::get ('ftp/create', 'FtpController@create');
-			Route::post ('ftp/create', 'FtpController@store');
-			Route::get ('ftp/{ftp}/edit', 'FtpController@edit');
-			Route::post ('ftp/{ftp}/edit', 'FtpController@update');
-			Route::get ('ftp/{ftp}/remove', 'FtpController@remove');
-		}
+		Route::group
+		(
+			['middleware' => ['owner:ftp', 'feature_enabled:ftp']],
+			function ()
+			{
+				Route::get ('website/vhost', 'VHostController@index');
+				Route::get ('website/vhost/create', 'VHostController@create');
+				Route::post ('website/vhost/create', 'VHostController@store');
+				Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
+				Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
+				Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
+			}
+		);
 		
 		// Mail // Algemeen //
-		if (Config::get ('penguin.mail', false))
-		{
-			Route::get ('mail', 'MailController@show');
-			Route::post ('mail', 'MailController@update');
-			
-			// Mail // Domain //
-			Route::get ('mail/domain', 'MailDomainController@index');
-			Route::get ('mail/domain/create', 'MailDomainController@create');
-			Route::post ('mail/domain/create', 'MailDomainController@store');
-			Route::get ('mail/domain/{mDomain}/edit', 'MailDomainController@edit');
-			Route::post ('mail/domain/{mDomain}/edit', 'MailDomainController@update');
-			Route::get ('mail/domain/{mDomain}/remove', 'MailDomainController@remove');
-			
-			// Mail // User //
-			if (Config::get ('penguin.mail_user', false))
+		Route::group
+		(
+			['middleware' => ['feature_enabled:mail']],
+			function ()
 			{
-				Route::get ('mail/user', 'MailUserController@index');
-				Route::get ('mail/user/create', 'MailUserController@create');
-				Route::post ('mail/user/create', 'MailUserController@store');
-				Route::get ('mail/user/{mUser}/edit', 'MailUserController@edit');
-				Route::post ('mail/user/{mUser}/edit', 'MailUserController@update');
-				Route::get ('mail/user/{mUser}/remove', 'MailUserController@remove');
+				Route::get ('mail', 'MailController@show');
+				Route::post ('mail', 'MailController@update');
+				
+				// Mail // Domain //
+				Route::group
+				(
+					['middleware' => ['owner:mDomain']],
+					function ()
+					{
+						Route::get ('mail/domain', 'MailDomainController@index');
+						Route::get ('mail/domain/create', 'MailDomainController@create');
+						Route::post ('mail/domain/create', 'MailDomainController@store');
+						Route::get ('mail/domain/{mDomain}/edit', 'MailDomainController@edit');
+						Route::post ('mail/domain/{mDomain}/edit', 'MailDomainController@update');
+						Route::get ('mail/domain/{mDomain}/remove', 'MailDomainController@remove');
+					}
+				);
+				
+				// Mail // User //
+				Route::group
+				(
+					['middleware' => ['owner:mUser', 'feature_enabled:mail_user']],
+					function ()
+					{
+						Route::get ('mail/user', 'MailUserController@index');
+						Route::get ('mail/user/create', 'MailUserController@create');
+						Route::post ('mail/user/create', 'MailUserController@store');
+						Route::get ('mail/user/{mUser}/edit', 'MailUserController@edit');
+						Route::post ('mail/user/{mUser}/edit', 'MailUserController@update');
+						Route::get ('mail/user/{mUser}/remove', 'MailUserController@remove');
+					}
+				);
+				
+				// Mail // Forward //
+				Route::group
+				(
+					['middleware' => ['owner:mFwd', 'feature_enabled:mail_forward']],
+					function ()
+					{
+						Route::get ('mail/forward', 'MailForwardController@index');
+						Route::get ('mail/forward/create', 'MailForwardController@create');
+						Route::post ('mail/forward/create', 'MailForwardController@store');
+						Route::get ('mail/forward/{mFwd}/edit', 'MailForwardController@edit');
+						Route::post ('mail/forward/{mFwd}/edit', 'MailForwardController@update');
+						Route::get ('mail/forward/{mFwd}/remove', 'MailForwardController@remove');
+					}
+				);
 			}
-			
-			// Mail // Forward //
-			if (Config::get ('penguin.mail_forward', false))
-			{
-				Route::get ('mail/forward', 'MailForwardController@index');
-				Route::get ('mail/forward/create', 'MailForwardController@create');
-				Route::post ('mail/forward/create', 'MailForwardController@store');
-				Route::get ('mail/forward/{mFwd}/edit', 'MailForwardController@edit');
-				Route::post ('mail/forward/{mFwd}/edit', 'MailForwardController@update');
-				Route::get ('mail/forward/{mFwd}/remove', 'MailForwardController@remove');
-			}
-		}
+		);
 		
 		// Databases // Databasebeheer via PHPMyAdmin //
-		if (Config::get ('penguin.database', false))
-		{
-			Route::get ('database', 'DatabaseController@show');
-		}
+		Route::group
+		(
+			['middleware' => ['feature_enabled:database']],
+			function ()
+			{
+				Route::get ('database', 'DatabaseController@show');
+			}
+		);
 		
 		Route::get ('system/systemtask/{systemTask}/show', 'Staff\StaffSystemSystemTaskController@show');
 	}
