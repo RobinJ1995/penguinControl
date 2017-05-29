@@ -51,7 +51,7 @@ vHosts
 				@endif
 			</td>
 			<td>
-				<span class="label {{ $vhost->cgi ? 'success' : 'alert' }}">{{ $vhost->cgi ? 'Yes' : 'No' }}</span>
+				<span class="label {{ $vhost->cgi ? 'warning' : 'success' }}">{{ $vhost->cgi ? 'On' : 'Off' }}</span>
 			</td>
 		</tr>
 		@endforeach
