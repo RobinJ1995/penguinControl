@@ -18,11 +18,12 @@ header h1 img
 {
 	transition: all 0.4s;
 	-webkit-transition: all 0.4s;
+	height: 128px;
 }
 header h1 img:hover
 {
-	transform: rotate(90deg);
-	-webkit-transform: rotate(90deg);
+	transform: rotate(-8deg) scale(1.2);
+	-webkit-transform: rotate(-8deg) scale(1.2);
 }
 
 nav#staffMenu li.staffMenu a:hover
