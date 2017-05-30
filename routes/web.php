@@ -115,12 +115,12 @@ Route::group
 			['middleware' => ['owner:ftp', 'feature_enabled:ftp', 'locked:ftp']],
 			function ()
 			{
-				Route::get ('website/ftp', 'FTPController@index');
-				Route::get ('website/ftp/create', 'FTPController@create');
-				Route::post ('website/ftp/create', 'FTPController@store');
-				Route::get ('website/ftp/{ftp}/edit', 'FTPController@edit');
-				Route::post ('website/ftp/{ftp}/edit', 'FTPController@update');
-				Route::get ('website/ftp/{ftp}/remove', 'FTPController@remove');
+				Route::get ('ftp', 'FtpController@index');
+				Route::get ('ftp/create', 'FtpController@create');
+				Route::post ('ftp/create', 'FtpController@store');
+				Route::get ('ftp/{ftp}/edit', 'FtpController@edit');
+				Route::post ('ftp/{ftp}/edit', 'FtpController@update');
+				Route::get ('ftp/{ftp}/remove', 'FtpController@remove');
 			}
 		);
 		

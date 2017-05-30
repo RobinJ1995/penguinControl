@@ -3,8 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 
 class FeatureEnabled
 {
@@ -17,9 +15,9 @@ class FeatureEnabled
 	 *
 	 * @return mixed
 	 */
-	public function handle ($request, Closure $next, $featureName)
+	public function handle ($request, Closure $next, string $featureName)
 	{
-		if (! Config::get ('penguin.' . $featureName, false))
+		if (! is_feature_enabled ($featureName))
 			abort (404, 'The requested feature is disabled.');
 		
 		return $next ($request);

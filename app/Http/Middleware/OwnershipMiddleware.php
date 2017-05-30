@@ -16,7 +16,7 @@ class OwnershipMiddleware
 	 *
 	 * @return mixed
 	 */
-	public function handle ($request, Closure $next, $resourceName)
+	public function handle ($request, Closure $next, string $resourceName)
 	{
 		$resource = $request->route ()->parameter ($resourceName);
 		

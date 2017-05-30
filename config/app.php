@@ -236,7 +236,6 @@ return [
 		'MailDomain' => \App\Models\MailDomain::class,
 		'MailForward' => \App\Models\MailForward::class,
 		'MailUser' => \App\Models\MailUser::class,
-		'MenuItem' => \App\Models\MenuItem::class,
 		'Page' => \App\Models\Page::class,
 		'SystemTask' => \App\Models\SystemTask::class,
 		'User' => \App\Models\User::class,

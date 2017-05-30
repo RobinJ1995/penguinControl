@@ -201,7 +201,7 @@ class VHostController extends Controller
 		
 		$vhost->delete ();
 		
-		Log::log ('vHost removed', NULL, $vhost);
+		Log::log ('vHost removed', $user->id, $vhost);
 		
 		$task = new SystemTask ();
 		$task->type = SystemTask::TYPE_APACHE_RELOAD;

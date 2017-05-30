@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Menu;
+use App\Models\Page;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,26 +16,16 @@ class ViewComposerServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		View::composer ('part.controlMenu',
-			function ($view)
-			{
-				$view->with ('controlMenu', Menu::getControl ());
-			}
-		);
+		$pages = Page::where ('published', '1')
+			->orderBy ('weight')
+			->get ();
+		
 		View::composer
 		(
 			'*',
-			function ($view)
+			function ($view) use ($pages)
 			{
-				$view->with ('siteMenu', Menu::getSite ());
-			}
-		);
-		View::composer
-		(
-			'*',
-			function ($view)
-			{
-				$view->with ('staffMenu', Menu::getStaff ());
+				$view->with ('siteMenu', $pages);
 			}
 		);
 	}

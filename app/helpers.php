@@ -38,3 +38,8 @@ function array_keyval_combine (array $arr)
 {
 	return array_combine ($arr, $arr);
 }
+
+function is_feature_enabled (string $featureName)
+{
+	return config ('penguin.' . $featureName, false);
+}

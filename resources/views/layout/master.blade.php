@@ -114,14 +114,129 @@
 
 		<div class="row">
 			@section ('controlMenu')
-			@include ('part.controlMenu')
+			<div class="contain-to-grid sticky">
+				<nav id="controlMenu" class="top-bar" data-topbar data-options="sticky_on: large">
+					<ul class="title-area">
+						<li class="name"></li>
+						<li class="toggle-topbar menu-icon">
+							<a href="#">
+								<span>Menu</span>
+							</a>
+						</li>
+					</ul>
+					
+					<section class="top-bar-section">
+						<ul>
+							<li class="has-dropdown">
+								<a href="#">User</a>
+								<ul class="dropdown">
+									<li>
+										<a href="/user/start">Information</a>
+									</li>
+									<li>
+										<a href="/user/edit">Modify account</a>
+									</li>
+									<li>
+										<a href="/user/logout">Logout</a>
+									</li>
+									@if (Auth::user ()->isAdmin ())
+									<li class="divider hide-for-small"></li>
+									<li class="has-dropdown">
+										<a href="#">Admin</a>
+										<ul class="dropdown">
+											<li>
+												<a href="/staff/user/user">Users</a>
+											</li>
+											<li>
+												<a href="/staff/user/log">Billing</a>
+											</li>
+											<li>
+												<a href="/staff/user/limit">Limits</a>
+											</li>
+											<li>
+												<a href="/staff/user/group">Groups</a>
+											</li>
+										</ul>
+									</li>
+									@endif
+								</ul>
+							</li>
+							<li class="divider hide-for-small"></li>
+							@if (is_feature_enabled ('vhost') || (is_feature_enabled ('website') && Auth::user ()->isAdmin ()))
+							<li class="has-dropdown">
+								<a href="#">Websites</a>
+								<ul class="dropdown">
+									@if (is_feature_enabled ('vhost'))
+									<li>
+										<a href="/website/vhost">vHosts</a>
+									</li>
+									@endif
+									@if (is_feature_enabled ('website') && Auth::user ()->isAdmin ())
+										<li>
+											<a href="/staff/page">Pages</a>
+										</li>
+									@endif
+								</ul>
+							</li>
+							<li class="divider hide-for-small"></li>
+							@endif
+							@if (is_feature_enabled ('ftp'))
+							<li class="">
+								<a href="/ftp">FTP</a>
+							</li>
+							<li class="divider hide-for-small"></li>
+							@endif
+							@if (is_feature_enabled ('database'))
+							<li class="">
+								<a href="/database">Databases</a>
+							</li>
+							<li class="divider hide-for-small"></li>
+							@endif
+							@if (is_feature_enabled ('ftp'))
+							<li class="has-dropdown">
+								<a href="#">E-mail</a>
+								<ul class="dropdown">
+									<li>
+										<a href="/mail">General</a>
+									</li>
+									<li>
+										<a href="/mail/domain">Domains</a>
+									</li>
+									@if (is_feature_enabled ('mail_user'))
+									<li>
+										<a href="/mail/user">E-mail accounts</a>
+									</li>
+									@endif
+									@if (is_feature_enabled ('mail_forward'))
+									<li>
+										<a href="/mail/forward">Forwarding addresses</a>
+									</li>
+									@endif
+								</ul>
+							</li>
+							<li class="divider hide-for-small"></li>
+							@endif
+							@if (Auth::user ()->isAdmin ())
+							<li class="has-dropdown">
+								<a href="#">System</a>
+								<ul class="dropdown">
+									<li>
+										<a href="/staff/system/systemtask">System tasks</a>
+									</li>
+									<li>
+										<a href="/staff/system/log">Logs</a>
+									</li>
+								</ul>
+							</li>
+							<li class="divider hide-for-small"></li>
+							@endif
+						</ul>
+					</section>
+				</nav>
+			</div>
 			@show
 			
 			@section ('siteMenu')
-			@show
-			
-			@section ('staffMenu')
-			@include ('part.staffMenu')
 			@show
 		</div>
 
