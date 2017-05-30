@@ -81,21 +81,12 @@ class FtpController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
-		if ($ftp->uid !== $user->uid)
-			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You don\'t own this FTP account!', Alert::TYPE_ALERT)));
-		
-		if ($ftp->locked)
-			return Redirect::to ('/ftp')->withInput ()->with ('alerts', array (new Alert ('You are not allowed to edit this FTP account.', Alert::TYPE_ALERT)));
-		
 		return view ('ftp.edit', compact ('user', 'userInfo', 'ftp'));
 	}
 	
 	public function update ($ftp)
 	{
 		$user = Auth::user ();
-		
-		if ($ftp->uid !== $user->uid)
-			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You don\'t own this FTP account!', Alert::TYPE_ALERT)));
 		
 		$validator = Validator::make
 		(
@@ -120,14 +111,6 @@ class FtpController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		if ($ftp->uid !== $user->uid)
-			return Redirect::to ('/ftp/' . $ftp->id . '/edit')
-				->withInput ()
-				->with ('alerts', array (new Alert ('You don\'t own this FTP account!', Alert::TYPE_ALERT)));
-		
-		if ($ftp->locked)
-			return Redirect::to ('/ftp')->withInput ()->with ('alerts', array (new Alert ('You are not allowed to edit this FTP account.', Alert::TYPE_ALERT)));
-		
 		$ftp->user = $user->userInfo->username . '_' . Input::get ('user');
 		$ftp->dir = $user->homedir . '/' . Input::get ('dir');
 		if (! empty (Input::get ('passwd')))
@@ -147,9 +130,6 @@ class FtpController extends Controller
 	public function remove ($ftp)
 	{
 		$user = Auth::user ();
-		
-		if ($ftp->uid !== $user->uid)
-			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You don\'t own this FTP account!', Alert::TYPE_ALERT)));
 		
 		$ftp->delete ();
 		

@@ -94,9 +94,6 @@ class MailUserController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
-		if ($mUser->uid !== $user->uid)
-			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('You don\'t own this e-mail account!', Alert::TYPE_ALERT)));
-		
 		if (! $user->mail_enabled)
 			return Redirect::to ('/mail');
 		
@@ -111,9 +108,6 @@ class MailUserController extends Controller
 	public function update ($mUser)
 	{
 		$user = Auth::user ();
-		
-		if ($mUser->uid !== $user->uid)
-			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('You don\'t own this e-mail account!', Alert::TYPE_ALERT)));
 		
 		$validator = Validator::make
 		(
@@ -155,9 +149,6 @@ class MailUserController extends Controller
 	public function remove ($mUser)
 	{
 		$user = Auth::user ();
-		
-		if ($mUser->uid !== $user->uid)
-			return Redirect::to ('/mail/user')->with ('alerts', array (new Alert ('You don\'t own this e-mail account!', Alert::TYPE_ALERT)));
 		
 		$mUser->delete ();
 		

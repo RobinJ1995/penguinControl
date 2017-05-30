@@ -110,9 +110,6 @@ class MailForwardController extends Controller
 	{
 		$user = Auth::user ();
 		
-		if ($mFwd->uid !== $user->uid)
-			return Redirect::to ('/mail/forward')->with ('alerts', array (new Alert ('You don\'t own this forwarding address!', Alert::TYPE_ALERT)));
-		
 		$validator = Validator::make
 		(
 			array
@@ -149,9 +146,6 @@ class MailForwardController extends Controller
 	public function remove ($mFwd)
 	{
 		$user = Auth::user ();
-		
-		if ($mFwd->uid !== $user->uid)
-			return Redirect::to ('/mail/forward')->with ('alerts', array (new Alert ('You don\'t own this forwarding address!', Alert::TYPE_ALERT)));
 		
 		$mFwd->delete ();
 		

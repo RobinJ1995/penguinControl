@@ -32,9 +32,6 @@ class MailDomainController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
-		if (! Config::get ('penguin.mail', false))
-			return back ()->with ('alerts', array (new Alert ('E-mail management has been disabled.', Alert::TYPE_WARNING)));
-		
 		if (! MailDomain::allowNew ($user))
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You are only allowed to create ' . MailDomain::getLimit ($user) . ' e-mail domains.', Alert::TYPE_ALERT)));
 		
@@ -48,9 +45,7 @@ class MailDomainController extends Controller
 	{
 		$user = Auth::user ();
 		
-		if (! Config::get ('penguin.mail', false))
-			return back ()->with ('alerts', array (new Alert ('E-mail management has been disabled.', Alert::TYPE_WARNING)));
-		else if (! MailDomain::allowNew ($user))
+		if (! MailDomain::allowNew ($user))
 			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You are only allowed to create ' . MailDomain::getLimit ($user) . ' e-mail domains.', Alert::TYPE_ALERT)));
 		
 		$validator = Validator::make
@@ -84,9 +79,6 @@ class MailDomainController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
-		if ($domain->uid !== $user->uid)
-			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You don\'t own this e-mail domain!', Alert::TYPE_ALERT)));
-		
 		if (! $user->mail_enabled)
 			return Redirect::to ('/mail');
 		
@@ -96,9 +88,6 @@ class MailDomainController extends Controller
 	public function update ($domain)
 	{
 		$user = Auth::user ();
-		
-		if ($domain->uid !== $user->uid)
-			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You don\'t own this e-mail domain!', Alert::TYPE_ALERT)));
 		
 		$validator = Validator::make
 		(
@@ -122,7 +111,7 @@ class MailDomainController extends Controller
 		
 		$domain->save ();
 		
-		Log::log ('E_mail domain modified', $user->id, $domain);
+		Log::log ('E-mail domain modified', $user->id, $domain);
 		
 		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-mail domain changes saved', Alert::TYPE_SUCCESS)));
 	}
@@ -130,9 +119,6 @@ class MailDomainController extends Controller
 	public function remove ($domain)
 	{
 		$user = Auth::user ();
-		
-		if ($domain->uid !== $user->uid)
-			return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('You don\'t own this e-mail domain!', Alert::TYPE_ALERT)));
 		
 		$mUsersCount = MailUser::where ('mail_domain_id', $domain->id)->count ();
 		$mFwdsCount = MailForward::where ('mail_domain_id', $domain->id)->count ();

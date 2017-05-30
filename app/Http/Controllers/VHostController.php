@@ -127,14 +127,7 @@ class VHostController extends Controller
 	public function edit ($vhost)
 	{
 		$user = Auth::user ();
-		
-		if ($vhost->uid !== $user->uid)
-			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('You don\'t own this vHost!', Alert::TYPE_ALERT)));
-		
 		$insideHomedir = substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir;
-		
-		if ($vhost->locked)
-			return Redirect::to ('/website/vhost')->withInput ()->with ('alerts', array (new Alert ('You are not allowed to edit this vHost.', Alert::TYPE_ALERT)));
 		
 		return view ('website.vhost.edit', compact ('user', 'vhost', 'insideHomedir'));
 	}
@@ -142,10 +135,6 @@ class VHostController extends Controller
 	public function update ($vhost)
 	{
 		$user = Auth::user ();
-		
-		if ($vhost->uid !== $user->uid)
-			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('You don\'t own this vHost!', Alert::TYPE_ALERT)));
-		
 		$insideHomedir = (Input::get ('outsideHomedir') !== 'true');
 		$docroot = @trailing_slash (Input::get ('docroot'));
 		
@@ -171,16 +160,6 @@ class VHostController extends Controller
 			return Redirect::to ('website/vhost/' . $vhost->id . '/edit')
 				->withInput ()
 				->withErrors ($validator);
-		
-		if ($vhost->uid !== $user->uid)
-			return Redirect::to ('website/vhost/' . $vhost->id . '/edit')
-				->withInput ()
-				->with ('alerts', array (new Alert ('You don\'t own this vHost!', Alert::TYPE_ALERT)));
-		
-		if ($vhost->locked)
-			return Redirect::to ('/website/vhost/' . $vhost->id . '/edit')
-				->withInput ()
-				->with ('alerts', array (new Alert ('You are not allowed to edit this vHost.', Alert::TYPE_ALERT)));
 		
 		$oldDocroot = $vhost->docroot;
 		if ($insideHomedir)
@@ -219,9 +198,6 @@ class VHostController extends Controller
 	public function remove ($vhost)
 	{
 		$user = Auth::user ();
-		
-		if ($vhost->uid !== $user->uid)
-			return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('You don\'t own this vHost!', Alert::TYPE_ALERT)));
 		
 		$vhost->delete ();
 		
