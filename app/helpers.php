@@ -44,9 +44,18 @@ function is_feature_enabled (string $featureName)
 	return config ('penguin.' . $featureName, false);
 }
 
-function is_admin ()
+function is_admin ($user = NULL)
 {
-	$user = \Illuminate\Support\Facades\Auth::user ();
+	if ($user === NULL)
+		$user = \Illuminate\Support\Facades\Auth::user ();
 	
 	return ($user !== NULL && $user->isAdmin ());
+}
+
+function is_owner ($resource, $user = NULL)
+{
+	if ($user === NULL)
+		$user = \Illuminate\Support\Facades\Auth::user ();
+	
+	return ($user !== NULL && $user->uid === $resource->uid);
 }

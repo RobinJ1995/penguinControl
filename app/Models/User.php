@@ -133,6 +133,11 @@ class User extends Authenticatable
 	{
 		return UserLimit::getLimit ($this, $property);
 	}
+	
+	public function label ()
+	{
+		return htmlstr (view ('part.user.label')->with ('user', $this));
+	}
 
 	/**
 	 * Get the unique identifier for the user.

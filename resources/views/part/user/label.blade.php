@@ -1,0 +1,1 @@
+<span class="{{ is_admin ($user) ? 'label' : '' }}">{{ $user->userInfo->username }}</span>

@@ -21,7 +21,7 @@ class ResourceLockedMiddleware
 		$resource = $request->route ()->parameter ($resourceName);
 		
 		$user = Auth::user ();
-		if (! $user->isAdmin () && $resource->locked)
+		if ($resource !== NULL && ! $user->isAdmin () && $resource->locked)
 			abort (403, 'The requested resource has been locked!');
 		
 		return $next ($request);

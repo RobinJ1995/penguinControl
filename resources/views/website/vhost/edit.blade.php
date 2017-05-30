@@ -19,10 +19,10 @@ Edit vHost
 				<label>Document root:
 					<div class="row collapse">
 						<div class="large-5 medium-6 small-12 column">
-							<span class="prefix">{{ $insideHomedir ? $user->homedir : '' }}/</span>
+							<span class="prefix">{{ $insideHomedir ? $vhost->user->homedir : '' }}/</span>
 						</div>
 						<div class="large-7 medium-6 small-12 column">
-							<input type="text" name="docroot" {{ $insideHomedir ? '' : 'disabled' }} value="{{ Input::old ('docroot', substr ($vhost->docroot, ($insideHomedir ? strlen ($user->homedir): 0) + 1)) }}" />
+							<input type="text" name="docroot" {{ $insideHomedir ? '' : 'disabled' }} value="{{ Input::old ('docroot', substr ($vhost->docroot, ($insideHomedir ? strlen ($vhost->user->homedir): 0) + 1)) }}" />
 						</div>
 					</div>
 				</label>

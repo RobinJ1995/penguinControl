@@ -21,7 +21,7 @@ class OwnershipMiddleware
 		$resource = $request->route ()->parameter ($resourceName);
 		
 		$user = Auth::user ();
-		if (! $user->isAdmin () && $user->uid !== $resource->uid)
+		if ($resource !== NULL && ! $user->isAdmin () && $user->uid !== $resource->uid)
 			abort (403, 'You don\'t have access to the requested resource!');
 		
 		return $next ($request);

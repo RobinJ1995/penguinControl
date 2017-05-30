@@ -156,3 +156,16 @@ ul.pagination li.current a:hover
 	font-size: 0.84em;
 	color: #4A4A4A;
 }
+
+tr.owned
+{
+}
+tr.notOwned
+{
+	opacity: 0.84;
+	transition: opacity 0.2s;
+}
+tr.notOwned:hover
+{
+	opacity: 1.0;
+}

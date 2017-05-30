@@ -17,7 +17,7 @@ class VHostController extends Controller
 	{
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
-		$vhosts = Vhost::where ('uid', $user->uid)->get ();
+		$vhosts = Vhost::accessible ()->get ();
 		
 		$apacheReloadInterval = SystemTask::where ('type', SystemTask::TYPE_APACHE_RELOAD)
 			->where
@@ -127,7 +127,7 @@ class VHostController extends Controller
 	public function edit ($vhost)
 	{
 		$user = Auth::user ();
-		$insideHomedir = substr ($vhost->docroot, 0, strlen ($user->homedir)) == $user->homedir;
+		$insideHomedir = substr ($vhost->docroot, 0, strlen ($vhost->user->homedir)) == $vhost->user->homedir;
 		
 		return view ('website.vhost.edit', compact ('user', 'vhost', 'insideHomedir'));
 	}
@@ -163,7 +163,7 @@ class VHostController extends Controller
 		
 		$oldDocroot = $vhost->docroot;
 		if ($insideHomedir)
-			$vhost->docroot = $user->homedir . '/' . $docroot;
+			$vhost->docroot = $vhost->user->homedir . '/' . $docroot;
 		$vhost->serveralias = Input::get ('serveralias');
 		$vhost->ssl = (int) Input::get ('ssl');
 		$vhost->cgi = (bool) Input::get ('cgi');

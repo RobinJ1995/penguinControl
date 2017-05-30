@@ -13,13 +13,15 @@ vHosts
 			<th></th>
 			<th>Host</th>
 			<th>Document root</th>
-			<th>Protocol</th>
-			<th>CGI</th>
+			<th>Protocol/CGI</th>
+			@if (is_admin ())
+				<th>User</th>
+			@endif
 		</tr>
 	</thead>
 	<tbody>
 		@foreach ($vhosts as $vhost)
-		<tr>
+		<tr class="{{ is_owner ($vhost) ? 'owned' : 'notOwned' }}">
 			<td>
 				@if (! $vhost->locked)
 				<div class="button-group radius">
@@ -49,10 +51,14 @@ vHosts
 				@elseif ($vhost->ssl == 2)
 					<span class="label success">HTTPS + Redirect</span>
 				@endif
+				<br />
+				<span class="label {{ $vhost->cgi ? 'warning' : 'success' }}">CGI {{ $vhost->cgi ? 'enabled' : 'disabled' }}</span>
 			</td>
-			<td>
-				<span class="label {{ $vhost->cgi ? 'warning' : 'success' }}">{{ $vhost->cgi ? 'On' : 'Off' }}</span>
-			</td>
+			@if (is_admin ())
+				<td>
+					{{ $vhost->user->label () }}
+				</td>
+			@endif
 		</tr>
 		@endforeach
 	</tbody>
