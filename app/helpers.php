@@ -43,3 +43,10 @@ function is_feature_enabled (string $featureName)
 {
 	return config ('penguin.' . $featureName, false);
 }
+
+function is_admin ()
+{
+	$user = \Illuminate\Support\Facades\Auth::user ();
+	
+	return ($user !== NULL && $user->isAdmin ());
+}

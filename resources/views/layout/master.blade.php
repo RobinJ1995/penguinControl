@@ -139,7 +139,7 @@
 									<li>
 										<a href="/user/logout">Logout</a>
 									</li>
-									@if (Auth::user ()->isAdmin ())
+									@if (is_admin ())
 									<li class="divider hide-for-small"></li>
 									<li class="has-dropdown">
 										<a href="#">Admin</a>
@@ -162,7 +162,7 @@
 								</ul>
 							</li>
 							<li class="divider hide-for-small"></li>
-							@if (is_feature_enabled ('vhost') || (is_feature_enabled ('website') && Auth::user ()->isAdmin ()))
+							@if (is_feature_enabled ('vhost') || (is_feature_enabled ('website') && is_admin ()))
 							<li class="has-dropdown">
 								<a href="#">Websites</a>
 								<ul class="dropdown">
@@ -171,7 +171,7 @@
 										<a href="/website/vhost">vHosts</a>
 									</li>
 									@endif
-									@if (is_feature_enabled ('website') && Auth::user ()->isAdmin ())
+									@if (is_feature_enabled ('website') && is_admin ())
 										<li>
 											<a href="/staff/page">Pages</a>
 										</li>
@@ -216,7 +216,7 @@
 							</li>
 							<li class="divider hide-for-small"></li>
 							@endif
-							@if (Auth::user ()->isAdmin ())
+							@if (is_admin ())
 							<li class="has-dropdown">
 								<a href="#">System</a>
 								<ul class="dropdown">
