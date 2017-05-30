@@ -97,7 +97,7 @@ Route::group
 		// vHost //
 		Route::group
 		(
-			['middleware' => ['owner:vhost', 'feature_enabled:vhost']],
+			['middleware' => ['owner:vhost', 'feature_enabled:vhost', 'locked:vhost']],
 			function ()
 			{
 				Route::get ('website/vhost', 'VHostController@index');
@@ -112,15 +112,15 @@ Route::group
 		// FTP //
 		Route::group
 		(
-			['middleware' => ['owner:ftp', 'feature_enabled:ftp']],
+			['middleware' => ['owner:ftp', 'feature_enabled:ftp', 'locked:ftp']],
 			function ()
 			{
-				Route::get ('website/vhost', 'VHostController@index');
-				Route::get ('website/vhost/create', 'VHostController@create');
-				Route::post ('website/vhost/create', 'VHostController@store');
-				Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
-				Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
-				Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
+				Route::get ('website/ftp', 'FTPController@index');
+				Route::get ('website/ftp/create', 'FTPController@create');
+				Route::post ('website/ftp/create', 'FTPController@store');
+				Route::get ('website/ftp/{ftp}/edit', 'FTPController@edit');
+				Route::post ('website/ftp/{ftp}/edit', 'FTPController@update');
+				Route::get ('website/ftp/{ftp}/remove', 'FTPController@remove');
 			}
 		);
 		
@@ -136,7 +136,7 @@ Route::group
 				// Mail // Domain //
 				Route::group
 				(
-					['middleware' => ['owner:mDomain']],
+					['middleware' => ['owner:mDomain', 'locked:mDomain']],
 					function ()
 					{
 						Route::get ('mail/domain', 'MailDomainController@index');
@@ -151,7 +151,7 @@ Route::group
 				// Mail // User //
 				Route::group
 				(
-					['middleware' => ['owner:mUser', 'feature_enabled:mail_user']],
+					['middleware' => ['owner:mUser', 'feature_enabled:mail_user', 'locked:mUser']],
 					function ()
 					{
 						Route::get ('mail/user', 'MailUserController@index');
@@ -166,7 +166,7 @@ Route::group
 				// Mail // Forward //
 				Route::group
 				(
-					['middleware' => ['owner:mFwd', 'feature_enabled:mail_forward']],
+					['middleware' => ['owner:mFwd', 'feature_enabled:mail_forward', 'locked:mFwd']],
 					function ()
 					{
 						Route::get ('mail/forward', 'MailForwardController@index');
