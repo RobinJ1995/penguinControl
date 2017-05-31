@@ -62,7 +62,7 @@ function is_owner ($resource, $user = NULL)
 
 function prohibited_usernames (bool $returnString = false)
 {
-	$reservedUsernames = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'control', 'sincontrol', 'admin', 'administrator', 'root', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'ssh', 'shell', 'cloud', 'voice', 'docu');
+	$reservedUsernames = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'control', 'penguincontrol', 'admin', 'administrator', 'root', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'ssh', 'shell', 'cloud', 'voice', 'docu');
 	$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
 	
 	foreach ($etcPasswd as $entry)
@@ -74,6 +74,10 @@ function prohibited_usernames (bool $returnString = false)
 			$reservedUsernames[] = $fields[0];
 		}
 	}
+	
+	$whoami = `whoami`;
+	if (! empty ($whoami))
+		$reservedUsernames[] = $whoami;
 	
 	if ($returnString)
 		return implode (',', $reservedUsernames);
