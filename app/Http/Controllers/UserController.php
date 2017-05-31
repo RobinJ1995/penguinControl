@@ -191,21 +191,6 @@ class UserController extends Controller
 	
 	public function register ()
 	{
-		$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'administrator', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
-		$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
-		
-		foreach ($etcPasswd as $entry)
-		{
-			if (! empty ($entry))
-			{
-				$fields = explode (':', $entry, 2);
-
-				$reservedUsers[] = $fields[0];
-			}
-		}
-		
-		$strReservedUsers = implode (',', $reservedUsers);
-		
 		$validator = Validator::make
 		(
 			array
@@ -220,7 +205,7 @@ class UserController extends Controller
 			),
 			array
 			(
-				'Username' => array ('required', 'alpha_num', 'min:4', 'max:14', 'unique:user_info,username', 'not_in:' . $strReservedUsers),
+				'Username' => array ('required', 'alpha_num', 'min:4', 'max:14', 'unique:user_info,username', 'not_in:' . prohibited_usernames (true)),
 				'Password' => array ('required', 'not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8'),
 				'Password (confirmation)' => 'same:Password',
 				'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),

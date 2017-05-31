@@ -6,8 +6,10 @@ use App\Alert;
 use App\Models\Ftp;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class FtpController extends Controller
 {
@@ -15,7 +17,7 @@ class FtpController extends Controller
 	{
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
-		$ftps = Ftp::where ('uid', $user->uid)->get ();
+		$ftps = Ftp::accessible ()->get ();
 		
 		return view ('ftp.index', compact ('user', 'userInfo', 'ftps'));
 	}
@@ -25,9 +27,7 @@ class FtpController extends Controller
 		$user = Auth::user ();
 		$userInfo = $user->userInfo;
 		
-		if (! Config::get ('penguin.ftp', false))
-			return back ()->with ('alerts', array (new Alert ('FTP management has been disabled.', Alert::TYPE_WARNING)));
-		else if (! Ftp::allowNew ($user))
+		if (! Ftp::allowNew ($user))
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You are only allowed to create ' . Ftp::getLimit ($user) . ' FTP accounts.', Alert::TYPE_ALERT)));
 		
 		return view ('ftp.create', compact ('user', 'userInfo'));
@@ -37,26 +37,29 @@ class FtpController extends Controller
 	{
 		$user = Auth::user ();
 		
-		if (! Config::get ('penguin.ftp', false))
-			return Redirect::to ('/home')->with ('alerts', array (new Alert ('FTP management has been disabled.', Alert::TYPE_WARNING)));
-		else if (! Ftp::allowNew ($user))
+		if (! Ftp::allowNew ($user))
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You are only allowed to create ' . Ftp::getLimit ($user) . ' FTP accounts.', Alert::TYPE_ALERT)));
+		
+		$dir = @ltrim (trailing_slash (Input::get ('dir')), '/');
+		$username = $user->userInfo->username . '_' . Input::get ('username');
+		if (is_admin () && $user->userInfo->username . '_' == $username)
+			$username = $user->userInfo->username;
 		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Username' => Input::get ('user'),
+				'Username' => $username,
 				'Password' => Input::get ('passwd'),
 				'Password (confirmation)' => Input::get ('passwd_confirm'),
-				'Directory' => Input::get ('dir')
+				'Directory' => $dir
 			),
 			array
 			(
-				'Username' => array ('required', 'unique:ftp,user', 'alpha_num'),
+				'Username' => array ('required', 'unique:ftp,username', 'alpha_dash', 'not_in:' . $ftp->user->userInfo->username . '_,' . prohibited_usernames (true)),
 				'Password' => array ('required', 'min:8'),
 				'Password (confirmation)' => 'same:Password',
-				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
+				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-]+\/)*$/')
 			)
 		);
 		
@@ -65,9 +68,9 @@ class FtpController extends Controller
 		
 		$ftp = new Ftp ();
 		$ftp->uid = $user->uid;
-		$ftp->user = $user->userInfo->username . '_' . Input::get ('user');
+		$ftp->username = $username;
 		$ftp->setPassword (Input::get ('passwd'));
-		$ftp->dir = $user->homedir . '/' . Input::get ('dir');
+		$ftp->dir = $user->homedir . '/' . $dir;
 		
 		$ftp->save ();
 		
@@ -88,21 +91,26 @@ class FtpController extends Controller
 	{
 		$user = Auth::user ();
 		
+		$dir = @ltrim (trailing_slash (Input::get ('dir')), '/');
+		$username = $ftp->user->userInfo->username . '_' . Input::get ('username');
+		if (is_admin () && $ftp->user->userInfo->username . '_' == $username)
+			$username = $ftp->user->userInfo->username;
+		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Username' => Input::get ('user'),
+				'Username' => $username,
 				'Password' => Input::get ('passwd'),
 				'Password (confirmation)' => Input::get ('passwd_confirm'),
-				'Directory' => Input::get ('dir')
+				'Directory' => $dir
 			),
 			array
 			(
-				'Username' => array ('required', 'unique:ftp,user', 'alpha_num'),
-				'Password' => array ('required_with:Password (confirmation)', 'min:8'),
-				'Password (confirmation)' => array ('required_with:Password', 'same:Password'),
-				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
+				'Username' => array ('required', 'unique:ftp,username,' . $ftp->id, 'alpha_dash', 'not_in:' . $user->userInfo->username . '_,' . prohibited_usernames (true)),
+				'Password' => array ('nullable', 'required_with:Password (confirmation)', 'min:8'),
+				'Password (confirmation)' => array ('nullable', 'required_with:Password', 'same:Password'),
+				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-]+\/)*$/')
 			)
 		);
 		
@@ -111,8 +119,8 @@ class FtpController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$ftp->user = $user->userInfo->username . '_' . Input::get ('user');
-		$ftp->dir = $user->homedir . '/' . Input::get ('dir');
+		$ftp->username = $username;
+		$ftp->dir = $ftp->user->homedir . '/' . $dir;
 		if (! empty (Input::get ('passwd')))
 		{
 			Log::log ('FTP account password changed', $user->id, $ftp);

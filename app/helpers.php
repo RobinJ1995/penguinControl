@@ -59,3 +59,24 @@ function is_owner ($resource, $user = NULL)
 	
 	return ($user !== NULL && $user->uid === $resource->uid);
 }
+
+function prohibited_usernames (bool $returnString = false)
+{
+	$reservedUsernames = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'control', 'sincontrol', 'admin', 'administrator', 'root', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'ssh', 'shell', 'cloud', 'voice', 'docu');
+	$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
+	
+	foreach ($etcPasswd as $entry)
+	{
+		if (! empty ($entry))
+		{
+			$fields = explode (':', $entry, 2);
+			
+			$reservedUsernames[] = $fields[0];
+		}
+	}
+	
+	if ($returnString)
+		return implode (',', $reservedUsernames);
+	
+	return $reservedUsernames;
+}

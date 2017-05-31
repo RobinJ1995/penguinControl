@@ -15,7 +15,7 @@
 						<span class="prefix">{{ $userInfo->username }}_</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="user" value="{{ Input::old ('user') }}" required />
+						<input type="text" name="username" value="{{ Input::old ('username') }}" />
 					</div>
 				</div>
 			</label>

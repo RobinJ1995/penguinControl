@@ -15,16 +15,19 @@ Edit FTP account
 		<legend>Edit FTP account</legend>
 		<div>
 			<label>Username:
-				<div class="row collapse">
-					<div class="large-4 medium-6 small-12 column">
-						<span class="prefix">{{ $userInfo->username }}_</span>
+				@if (is_admin () && $ftp->user->userInfo->username == $ftp->username)
+					<input type="text" name="username" value="{{ Input::old ('username', $ftp->username) }}" disabled />
+				@else
+					<div class="row collapse">
+						<div class="large-4 medium-6 small-12 column">
+							<span class="prefix">{{ $ftp->user->userInfo->username }}_</span>
+						</div>
+						<div class="large-8 medium-6 small-12 column">
+							<input type="text" name="username" value="{{ Input::old ('username', substr ($ftp->username, strlen ($ftp->user->userInfo->username) + 1)) }}" />
+						</div>
 					</div>
-					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="user" value="{{ Input::old ('user', substr ($ftp->user, strlen ($userInfo->username) + 1)) }}" required />
-					</div>
-				</div>
+				@endif
 			</label>
-			<small class="error">Required field</small>
 		</div>
 		<div>
 			<label>Password:
@@ -42,10 +45,10 @@ Edit FTP account
 			<label>Directory:
 				<div class="row collapse">
 					<div class="large-4 medium-6 small-12 column">
-						<span class="prefix">{{ $user->homedir }}/</span>
+						<span class="prefix">{{ $ftp->user->homedir }}/</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="dir" value="{{ Input::old ('dir', substr ($ftp->dir, strlen ($user->homedir) + 1)) }}" />
+						<input type="text" name="dir" value="{{ Input::old ('dir', substr ($ftp->dir, strlen ($ftp->user->homedir) + 1)) }}" />
 					</div>
 				</div>
 			</label>

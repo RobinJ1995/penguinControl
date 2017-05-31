@@ -23,7 +23,7 @@ vHosts
 		@foreach ($vhosts as $vhost)
 		<tr class="{{ is_owner ($vhost) ? 'owned' : 'notOwned' }}">
 			<td>
-				@if (! $vhost->locked)
+				@if (! $vhost->locked || is_admin ())
 				<div class="button-group radius">
 					<a href="/website/vhost/{{ $vhost->id }}/edit" title="Edit" class="button tiny">
 						<img src="/img/icons/edit.png" alt="Edit" />
@@ -34,6 +34,14 @@ vHosts
 				@endif
 			</td>
 			<td>
+				@if (is_admin ())
+					@if ($vhost->locked)
+						<img src="/img/icons/locked.png" alt="[Locked]" />
+					@endif
+					@if ($vhost->user->hasExpired ())
+						<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+					@endif
+				@endif
 				<a href="http://{{ $vhost->servername }}" class="servername">{{ $vhost->servername }}</a>
 				@if ($vhost->serveralias)
 					@foreach (explode (' ', $vhost->serveralias) as $alias)

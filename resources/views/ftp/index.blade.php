@@ -11,24 +11,42 @@ FTP accounts
 			<th></th>
 			<th>Username</th>
 			<th>Directory</th>
+			@if (is_admin ())
+				<th>User</th>
+			@endif
 		</tr>
 	</thead>
 	<tbody>
 		@foreach ($ftps as $ftp)
-		<tr>
+			<tr class="{{ is_owner ($ftp) ? 'owned' : 'notOwned' }}">
 			<td>
-				@if (! $ftp->locked)
+				@if (! $ftp->locked || is_admin ())
 				<div class="button-group radius">
-					<a href="/ftp/{{ $ftp->id }}/edit" title="Bewerken" class="button tiny">
-						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/ftp/{{ $ftp->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/ftp/{{ $ftp->id }}/edit" title="Edit" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Edit" />
+					</a><a href="/ftp/{{ $ftp->id }}/remove" title="Remove" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 				@endif
 			</td>
-			<td>{{ $ftp->user }}</td>
-			<td>~/{{ substr ($ftp->dir, strlen ($user->homedir) + 1) }}</td>
+			<td>
+				@if (is_admin ())
+					@if ($ftp->locked)
+						<img src="/img/icons/locked.png" alt="[Locked]" />
+					@endif
+					@if ($ftp->user->hasExpired ())
+						<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
+					@endif
+				@endif
+				{{ $ftp->username }}
+			</td>
+			<td>~/{{ substr ($ftp->dir, strlen ($ftp->user->homedir) + 1) }}</td>
+			@if (is_admin ())
+				<td>
+					{{ $ftp->user->label () }}
+				</td>
+			@endif
 		</tr>
 		@endforeach
 	</tbody>
