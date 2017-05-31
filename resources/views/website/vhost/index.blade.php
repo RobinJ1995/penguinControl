@@ -42,6 +42,9 @@ vHosts
 						<img src="/img/icons/vhost-expired.png" alt="[Expired]" />
 					@endif
 				@endif
+				@if (! $vhost->isResolvingToThisServer ())
+					<img src="/img/icons/dns-error.png" alt="[DNS Error]" title="One or more A records are not resolving to this server." />
+				@endif
 				<a href="http://{{ $vhost->servername }}" class="servername">{{ $vhost->servername }}</a>
 				@if ($vhost->serveralias)
 					@foreach (explode (' ', $vhost->serveralias) as $alias)

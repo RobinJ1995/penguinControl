@@ -10,5 +10,6 @@ return [
 	'mail' => env ('MAIL', true),
 	'mail_user' => env ('MAIL_USER', true),
 	'mail_forward' => env ('MAIL_FORWARD', true),
-	'website' => env ('WEBSITE', false)
+	'website' => env ('WEBSITE', false),
+	'server_ip' => env ('SERVER_IP', '127.0.0.1')
 ];

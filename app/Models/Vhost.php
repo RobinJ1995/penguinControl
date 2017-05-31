@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\LimitedUserOwnedModel;
+use Illuminate\Support\Facades\Config;
 
 class Vhost extends LimitedUserOwnedModel
 {
@@ -177,5 +178,31 @@ class Vhost extends LimitedUserOwnedModel
 	public function __toString ()
 	{
 		return 'vHost: ' . $this->servername . ' (' . $this->filename () . ')';
+	}
+	
+	public function resolve ()
+	{
+		$hosts = [ $this->servername ];
+		foreach (explode (' ', $this->serveralias) as $alias)
+			$hosts[] = $alias;
+		
+		$resolved = [];
+		foreach ($hosts as $host)
+			$resolved[$host] = gethostbyname ($host);
+		
+		return $resolved;
+	}
+	
+	public function isResolvingToThisServer ()
+	{
+		$serverIP = Config::get ('penguin.server_ip');
+		
+		foreach ($this->resolve () as $ip)
+		{
+			if ($ip != $serverIP)
+				return false;
+		}
+		
+		return true;
 	}
 }
