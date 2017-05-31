@@ -16,10 +16,11 @@ abstract class UserOwnedModel extends Model
 	{
 		$user = Auth::user ();
 		
-		$secondary = [];
-		if (is_admin ())
-			$secondary = self::where ('uid', '!=', $user->uid);
+		$results = self::where ('uid', $user->uid);
 		
-		return self::where ('uid', $user->uid)->union ($secondary);
+		if (is_admin ())
+			return $results->union (self::where ('uid', '!=', $user->uid));
+		
+		return $results;
 	}
 }
