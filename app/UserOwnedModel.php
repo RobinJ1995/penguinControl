@@ -9,7 +9,7 @@ abstract class UserOwnedModel extends Model
 {
 	public function user ()
 	{
-		return $this->belongsTo('\App\Models\User', 'uid', 'uid');
+		return $this->belongsTo ('\App\Models\User', 'uid', 'uid');
 	}
 	
 	public static function accessible ()
