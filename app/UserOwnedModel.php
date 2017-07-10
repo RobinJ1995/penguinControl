@@ -2,10 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-abstract class UserOwnedModel extends Model
+abstract class UserOwnedModel extends BaseModel
 {
 	public function user ()
 	{

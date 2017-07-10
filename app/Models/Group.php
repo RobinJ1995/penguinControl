@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class Group extends Model
+class Group extends BaseModel
 {
 
 	protected $table = 'group';

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class SystemTask extends Model
+class SystemTask extends BaseModel
 {
 	protected $table = 'system_task';
 	public $timestamps = false;

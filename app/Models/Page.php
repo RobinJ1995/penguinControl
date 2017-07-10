@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class Page extends Model
+class Page extends BaseModel
 {
 	protected $table = 'page';
 	public $timestamps = true;

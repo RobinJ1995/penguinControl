@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class Log extends Model
+class Log extends BaseModel
 {
 	protected $table = 'log';
 	public $timestamps = true;
