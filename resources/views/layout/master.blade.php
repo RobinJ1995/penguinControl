@@ -192,7 +192,7 @@
 							</li>
 							<li class="divider hide-for-small"></li>
 							@endif
-							@if (is_feature_enabled ('ftp'))
+							@if (is_feature_enabled ('mail'))
 							<li class="has-dropdown">
 								<a href="#">E-mail</a>
 								<ul class="dropdown">

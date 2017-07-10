@@ -48,7 +48,7 @@ class Vhost extends LimitedUserOwnedModel
 	DocumentRoot "{:docroot:}"
 	<Directory "{:docroot:}">
 		{:cgiHandler:}
-		Options {:execCGI:} +Indexes +FollowSymLinks
+		Options {:execCGI:} +FollowSymLinks
 		AllowOverride {:overrides:}
 		Require all granted
 	</Directory>
