@@ -64,8 +64,7 @@ class VHostController extends Controller
 				'Aliases' => $serveralias,
 				'Document root' => $docroot,
 				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi'),
-				'Install Wordpress' => Input::get ('installWordpress')
+				'CGI' => Input::get ('cgi')
 			),
 			array
 			(
@@ -74,8 +73,7 @@ class VHostController extends Controller
 				'Aliases' => array ('nullable', 'different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'),
 				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/', 'not_in:www/public/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
-				'CGI' => array ('required', 'in:0,1'),
-				'Install Wordpress' => array ('nullable', 'sometimes')
+				'CGI' => array ('required', 'in:0,1')
 			)
 		);
 		
@@ -108,16 +106,6 @@ class VHostController extends Controller
 			$task->type = SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE;
 			$task->data = json_encode (['vhostId' => $vhost->id, 'redirect' => $vhost->ssl == 2]);
 			$task->save ();
-		}
-		
-		if (Input::get ('installWordpress'))
-		{
-			$wpTask = new SystemTask ();
-			$wpTask->type = SystemTask::TYPE_VHOST_INSTALL_WORDPRESS;
-			$wpTask->data = json_encode (['vhostId' => $vhost->id]);
-			$wpTask->save ();
-			
-			return Redirect::to ('/system/systemtask/' . $wpTask->id . '/show')->with ('alerts', array (new Alert ('vHost created', Alert::TYPE_SUCCESS), new Alert ('Wordpress installation pending. This page will show more information once the installation attempt has completed.', Alert::TYPE_INFO)));
 		}
 		
 		return Redirect::to ('/website/vhost')->with ('alerts', array (new Alert ('vHost created', Alert::TYPE_SUCCESS)));

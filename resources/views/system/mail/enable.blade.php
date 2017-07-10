@@ -15,5 +15,7 @@ E-mail
 			<button class="alert" name="enable" value="{{ time () }}" style="margin-top: 3px;">Enable e-mail</button>
 		</div>
 	</div>
+	@section ('custom_fields')
+	@show
 </form>
 @endsection

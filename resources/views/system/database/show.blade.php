@@ -17,6 +17,8 @@ Databases
 		</form>
 	</div>
 </div>
+@section ('custom_fields')
+@show
 <script type="text/javascript">
 	document.getElementById ('phpMyAdminPost').submit ();
 </script>

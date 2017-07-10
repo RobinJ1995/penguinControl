@@ -46,6 +46,8 @@
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ time () }}">Save</button>

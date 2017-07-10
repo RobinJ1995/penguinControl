@@ -18,6 +18,8 @@ Amnesia
                         </label>
                         <small class="error">Enter your username or e-mail address.</small>
                 </div>
+                @section ('custom_fields')
+                @show
                 <div>
                         {{ Form::token () }}
                         <button name="time" value="{{ time () }}">Confirm</button>

@@ -22,6 +22,8 @@ Login
 			</label>
 			<small class="error">Enter your password.</small>
 		</div>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			<button name="time" value="{{ time () }}">Login</button>

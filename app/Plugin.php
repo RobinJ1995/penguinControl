@@ -36,8 +36,16 @@ class Plugin
 
     public static function executeAllActions ($request, $action, ...$params)
     {
+        $responses = [];
+
         foreach (self::all () as $plugin)
-            $plugin->executeActions ($request, $action, $params);
+        {
+            $pluginResponses = $plugin->executeActions ($request, $action, $params);
+            if (count ($pluginResponses) > 0)
+                array_push ($responses, ...$pluginResponses);
+        }
+
+        return $responses;
     }
 
     private function __construct ($name)
@@ -79,6 +87,7 @@ class Plugin
             return;
 
         include_once ($this->getFolder () . 'actions.php');
+        $responses = [];
 
         foreach ($this->actions as $actionName => $actionMethods)
         {
@@ -87,8 +96,12 @@ class Plugin
             if ($action === $actionName)
             {
                 foreach ($actionMethods as $actionMethod)
-                    call_user_func ($actionMethod, $request, ...$params);
+                    $responses[] = call_user_func ($actionMethod, $request, ...$params);
+
+                break;
             }
         }
+
+        return $responses;
     }
 }

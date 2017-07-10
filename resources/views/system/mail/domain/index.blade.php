@@ -29,6 +29,8 @@ E-mail domains
 		@endforeach
 	</tbody>
 </table>
+@section ('custom_fields')
+@show
 <div class="right">
 	<a href="/mail/domain/create" title="Add" class="button radius">
 		<img src="/img/icons/add.png" alt="Add" />

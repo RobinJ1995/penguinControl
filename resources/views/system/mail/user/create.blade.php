@@ -42,6 +42,8 @@ Create e-mail account
 				<small class="error">Please confirm your password by entering it a second time.</small>
 			</div>
 		</div>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ time () }}">Save</button>

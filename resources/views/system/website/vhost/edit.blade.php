@@ -79,6 +79,8 @@ Edit vHost
 				<small class="error">Invalid input</small>
 			</div>
 		</div>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			{{ $insideHomedir ? '' : Form::hidden ('outsideHomedir', 'true') }}

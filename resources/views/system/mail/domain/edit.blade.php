@@ -14,6 +14,8 @@ Edit e-mail domain
 			</label>
 			<small class="error">Required field</small>
 		</div>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ $domain->id }}">Save</button>

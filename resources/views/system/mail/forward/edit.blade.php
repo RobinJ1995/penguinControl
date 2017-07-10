@@ -36,6 +36,8 @@ Edit forwarding address
 				<small class="error">Enter a valid e-mail address.</small>
 			</div>
 		</div>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ $mFwd->id }}">Save</button>

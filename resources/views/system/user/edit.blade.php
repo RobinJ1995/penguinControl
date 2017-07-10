@@ -57,6 +57,8 @@ Modify account
 			<small class="error">Please confirm your new password by entering it a second time.</small>
 		</div>
 	</div>
+	@section ('custom_fields')
+	@show
 	<div>
 		{{ Form::token () }}
 		<button name="time" value="{{ time () }}">Modify account</button>

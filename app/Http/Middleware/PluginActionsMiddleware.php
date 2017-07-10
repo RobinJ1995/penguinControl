@@ -19,9 +19,17 @@ class PluginActionsMiddleware
         $response = $next($request);
 
         $route = $request->route ();
+        if ($route)
+        {
+            $action = substr ($route->getActionName (), strrpos($route->getActionName (), '\\') + 1);
+            $responses = Plugin::executeAllActions ($request, $action, ...array_values ($route->parameters ()));
 
-        $action = substr ($route->getActionName (), strrpos ($route->getActionName (), '\\') + 1);
-        Plugin::executeAllActions ($request, $action, ...$route->parameters ());
+            foreach ($responses as $pluginResponse)
+            {
+                if ($pluginResponse !== NULL)
+                    return $pluginResponse;
+            }
+        }
 
         return $response;
     }

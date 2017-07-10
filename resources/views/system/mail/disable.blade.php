@@ -16,5 +16,7 @@ E-mail
 			<button name="disable" value="{{ time () }}" style="margin-top: 3px;">Disable e-mail</button>
 		</div>
 	</div>
+	@section ('custom_fields')
+	@show
 </form>
 @endsection

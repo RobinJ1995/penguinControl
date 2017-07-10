@@ -1,6 +1,6 @@
 @extends ('system.website.vhost.create')
 
-@section ('plugins')
+@section ('custom_fields')
             <div class="row">
                 <div class="large-12 column">
                     <label>

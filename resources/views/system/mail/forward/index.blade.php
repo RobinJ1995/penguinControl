@@ -39,6 +39,8 @@ Forwarding addresses
 		@endforeach
 	</tbody>
 </table>
+@section ('custom_fields')
+@show
 <div class="right">
 	<a href="/mail/forward/create" title="Add" class="button radius">
 		<img src="/img/icons/add.png" alt="Add" />

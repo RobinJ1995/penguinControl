@@ -10,7 +10,7 @@ Account expired
 </div>
 <div class="large-6 medium-6 small-12 column">
 	<p>Please enter your username and password to renew your account. An e-mail will be sent to your e-mail address containing further instructions.</p>
-	
+
         <form method="POST" data-abide>
                 <div>
                         <label>Username:
@@ -24,9 +24,11 @@ Account expired
                         </label>
                         <small class="error">Enter your password.</small>
                 </div>
-		<div>
-			<input type="checkbox" name="renew" value="yes" /> I wish to extend my account
+                <div>
+                    <input type="checkbox" name="renew" value="yes" /> I wish to extend my account
                 </div>
+                @section ('custom_fields')
+                @show
                 <div>
                         {{ Form::token () }}
                         <button name="time" value="{{ time () }}">Confirm</button>

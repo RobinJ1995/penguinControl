@@ -79,7 +79,7 @@ Create vHost
 				<small class="error">Invalid input</small>
 			</div>
 		</div>
-		@section ('plugins')
+		@section ('custom_fields')
 		@show
 		<div>
 			{{ Form::token () }}

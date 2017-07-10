@@ -79,6 +79,8 @@ Sign up
 			<legend>Terms and conditions</legend>
 			<input type="checkbox" name="termsAgree" value="yes" /> I agree to <a href="/etc/algemene_gebruiksvoorwaarden.pdf">the terms and conditions</a>.
 		</fieldset>
+		@section ('custom_fields')
+		@show
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ time () }}">Sign up</button>
