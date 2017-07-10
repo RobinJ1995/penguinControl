@@ -1,0 +1,8 @@
+{
+  "title": "Wordpress Installer",
+  "name": "wordpress-installer",
+  "override_views": true,
+  "actions": {
+    "VHostController@store": "vhost_store"
+  }
+}

@@ -79,9 +79,9 @@ class Vhost extends LimitedUserOwnedModel
 		$ok2 = symlink (self::VHOSTDIRAVAILABLE . $filename, self::VHOSTDIRENABLED . $filename);
 		
 		if ($ok1 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Kan niet schrijven naar bestand `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+			throw new Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
 		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Kan niet geen symlink schrijven naar `' . self::VHOSTDIRENABLED . $filename . '`');
+			throw new Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
 		
 		return parent::save ($options);
 	}
@@ -94,9 +94,9 @@ class Vhost extends LimitedUserOwnedModel
 		$ok2 = unlink (self::VHOSTDIRENABLED . $filename);
 		
 		if ($ok1 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Kan bestand `' . self::VHOSTDIRAVAILABLE . $filename . '` niet verwijderen');
+			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
 		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Kan bestand `' . self::VHOSTDIRENABLED . $filename . '` niet verwijderen');
+			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '` niet verwijderen');
 		
 		return parent::delete ();
 	}
