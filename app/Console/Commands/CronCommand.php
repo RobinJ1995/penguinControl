@@ -8,6 +8,7 @@ use App\Models\SystemTask;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\Vhost;
+use App\Plugin;
 use App\ServiceApache;
 use App\WordpressManager;
 use Illuminate\Console\Command;
@@ -118,18 +119,15 @@ class CronCommand extends Command
 						'output' => array_to_string ($status1['output']) . PHP_EOL . PHP_EOL . array_to_string ($status2['output'])
 					];
 					break;
-				case SystemTask::TYPE_VHOST_INSTALL_WORDPRESS:
-					$vhost = Vhost::find ($data['vhostId']);
-					$wpman = new WordpressManager ($vhost);
-					$status = $wpman->install ();
-					
-					break;
 				case SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE:
 					$vhost = Vhost::find ($data['vhostId']);
 					$certbot = new Certbot ($vhost);
 					$status = $certbot->obtain ((bool) $data['redirect']);
 					
 					break;
+				default:
+					$pluginStatuses = Plugin::executeSystemTask ($task->type, $data);
+					$status = array_merge (...$pluginStatuses);
 			}
 			
 			if (is_array ($status))

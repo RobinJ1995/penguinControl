@@ -8,6 +8,7 @@ class Plugin
     public $title;
     public $overrideViews = false;
     private $actions = [];
+    private $tasks = [];
 
     public static function all ()
     {
@@ -47,6 +48,20 @@ class Plugin
 
         return $responses;
     }
+
+	public static function executeAllTasks ($type, $data = [])
+	{
+		$statuses = [];
+
+		foreach (self::all () as $plugin)
+		{
+			$pluginStatuses = $plugin->executeTasks ($type, $data);
+			if (count ($pluginStatuses) > 0)
+				array_push ($statuses, ...$pluginStatuses);
+		}
+
+		return $statuses;
+	}
 
     private function __construct ($name)
     {
@@ -104,4 +119,28 @@ class Plugin
 
         return $responses;
     }
+
+	public function executeTasks ($type, $data = [])
+	{
+		if (count ($this->tasks) === 0)
+			return;
+
+		include_once ($this->getFolder () . 'system_tasks.php');
+		$statuses = [];
+
+		foreach ($this->tasks as $taskType => $taskMethods)
+		{
+			$taskMethods = (array) $taskMethods;
+
+			if ($type === $taskType)
+			{
+				foreach ($taskMethods as $taskMethod)
+					$statuses[] = call_user_func ($taskMethod, $data);
+
+				break;
+			}
+		}
+
+		return $statuses;
+	}
 }

@@ -4,5 +4,8 @@
   "override_views": true,
   "actions": {
     "VHostController@store": "vhost_store"
+  },
+  "system_tasks": {
+	"VHOST_INSTALL_WORDPRESS": "vhost_install_wordpress"
   }
 }
