@@ -50,7 +50,6 @@ Billing
 			<td>{{ $boekhoudingBetekenis[$userlog->boekhouding] }}</td>
 			<td>
 				@if (! empty ($userlog->user))
-					{{ dd ($userlog->user) }}
 					<span class="{{ $userlog->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user->primaryGroup->name) }}</span>
 				@endif
 			</td>

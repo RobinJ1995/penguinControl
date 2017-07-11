@@ -16,7 +16,6 @@ class SystemTask extends BaseModel
 	const TYPE_PROBLEM_SOLVER = 'problem_solver';
 	const TYPE_CALCULATE_DISK_USAGE = 'calculate_disk_usage';
 	const TYPE_CREATE_VHOST_DOCROOT = 'create_vhost_docroot';
-	const TYPE_VHOST_INSTALL_WORDPRESS = 'vhost_install_wordpress';
 	const TYPE_VHOST_OBTAIN_CERTIFICATE = 'vhost_obtain_certificate';
 	
 	public function interval ()

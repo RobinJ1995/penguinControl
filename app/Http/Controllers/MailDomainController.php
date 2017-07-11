@@ -71,8 +71,6 @@ class MailDomainController extends Controller
 		
 		Log::log ('E-mail domain created', $user->id, $domain);
 		
-		dd (MailDomain::getLastSaved ());
-		
 		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-mail domein created', Alert::TYPE_SUCCESS)));
 	}
 	

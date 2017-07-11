@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Plugin\WordpressInstaller;
 
 use App\Models\Vhost;
 

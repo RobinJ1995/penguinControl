@@ -1,9 +1,15 @@
 <?php
 
-function vhost_task ($data)
+namespace Plugin\WordpressInstaller;
+
+use App\Models\Vhost;
+
+require_once ('WordpressManager.php');
+
+function vhost_install_wordpress ($data)
 {
-	$vhost = \App\Models\Vhost::find ($data['vhostId']);
-	$wpman = new \App\WordpressManager ($vhost);
+	$vhost = Vhost::find ($data['vhostId']);
+	$wpman = new WordpressManager ($vhost);
 
 	return $wpman->install ();
 }

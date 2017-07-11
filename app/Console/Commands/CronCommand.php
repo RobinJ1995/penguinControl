@@ -126,7 +126,7 @@ class CronCommand extends Command
 					
 					break;
 				default:
-					$pluginStatuses = Plugin::executeSystemTask ($task->type, $data);
+					$pluginStatuses = Plugin::executeAllSystemTasks ($task->type, $data);
 					$status = array_merge (...$pluginStatuses);
 			}
 			
