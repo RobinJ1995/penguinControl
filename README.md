@@ -8,4 +8,4 @@ Originally written for [a student organisation at Thomas More Kempen](https://si
 
 * [Robin Jacobs](https://github.com/RobinJ1995)
 * [Karlos van Hest](https://github.com/karlosvh)
-
+* [Denis Bourne](https://github.com/Dieseled-UP)
