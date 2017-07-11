@@ -1,0 +1,12 @@
+{
+	"title": "Wordpress Installer",
+	"name": "wordpress-installer",
+	"namespace": "WordpressInstaller",
+	"override_views": true,
+	"actions": {
+		"VHostController@store": "vhost_store"
+	},
+	"system_tasks": {
+		"vhost_install_wordpress": "vhost_install_wordpress"
+	}
+}

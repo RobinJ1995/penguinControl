@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class UserLog extends Model
+class UserLog extends BaseModel
 {
 	protected $table = 'user_log';
 	public $timestamps = false;
