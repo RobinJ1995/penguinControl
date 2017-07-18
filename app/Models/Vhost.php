@@ -58,6 +58,7 @@ class Vhost extends LimitedUserOwnedModel
 		
 		$file = str_replace ('{:servername:}', $this->servername, $template);
 		$file = str_replace ('{:serveralias:}', $this->serveralias, $file);
+
 		$file = str_replace ('{:username:}', $username, $file);
 		$file = str_replace ('{:homedir:}', $homedir, $file);
 		$file = str_replace ('{:group:}', $group, $file);
@@ -75,12 +76,12 @@ class Vhost extends LimitedUserOwnedModel
 		@unlink (self::VHOSTDIRAVAILABLE . $filename);
 		@unlink (self::VHOSTDIRENABLED . $filename);
 		
-		$ok1 = file_put_contents (self::VHOSTDIRAVAILABLE . $filename, $file); // Bestand wordt overschreven wanneer reeds bestaat //
+		$ok1 = file_put_contents (self::VHOSTDIRAVAILABLE . $filename, $file); // File is overwritten when already exists //
 		$ok2 = symlink (self::VHOSTDIRAVAILABLE . $filename, self::VHOSTDIRENABLED . $filename);
 		
-		if ($ok1 === false) // Strict comparison (===) gebruiken! //
+		if ($ok1 === false) // Strict comparison (===) to use! //
 			throw new Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
-		if ($ok2 === false) // Strict comparison (===) gebruiken! //
+		if ($ok2 === false) // Strict comparison (===) to use! //
 			throw new Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
 		
 		return parent::save ($options);
@@ -93,10 +94,10 @@ class Vhost extends LimitedUserOwnedModel
 		$ok1 = unlink (self::VHOSTDIRAVAILABLE . $filename);
 		$ok2 = unlink (self::VHOSTDIRENABLED . $filename);
 		
-		if ($ok1 === false) // Strict comparison (===) gebruiken! //
+		if ($ok1 === false) // Strict comparison (===) to use! //
 			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
-		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '` niet verwijderen');
+		if ($ok2 === false) // Strict comparison (===) to use! //
+			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '`');
 		
 		return parent::delete ();
 	}

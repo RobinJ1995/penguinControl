@@ -65,8 +65,10 @@ class SystemTask extends BaseModel
 				return 'Recalculate users\' disk usage';
 			case SystemTask::TYPE_CREATE_VHOST_DOCROOT:
 				return 'Create document root for <kbd>vHost#' . $data['vhostId'] . '</kbd>';
-			case SystemTask::TYPE_VHOST_INSTALL_WORDPRESS:
+			case 'vhost_install_wordpress': //TODO// Stick this into the plugin system //
 				return 'Install Wordpress on <kbd>vHost#' . $data['vhostId'] . '</kbd>';
+			case 'vhost_install_towncms':
+				return 'Install Town CMS on <kbd>vHost#' . $data['vhostId'] . '</kbd>';
 			case SystemTask::TYPE_VHOST_OBTAIN_CERTIFICATE:
 				return 'Obtain certificate for <kbd>vHost#' . $data['vhostId'] . '</kbd>';
 		}

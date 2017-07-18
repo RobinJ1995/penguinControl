@@ -86,7 +86,7 @@ class StaffSystemSystemTaskController extends Controller
 		
 		$task->save ();
 		
-		Log::log ('Systeemtaak aangemaakt', NULL, $task);
+		Log::log ('System task created', NULL, $task);
 		
 		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', Alert::TYPE_SUCCESS)));
 	}
@@ -103,7 +103,7 @@ class StaffSystemSystemTaskController extends Controller
 	{
 		$task->delete ();
 		
-		Log::log ('Systeemtaak verwijderd', NULL, $task);
+		Log::log ('System task removed', NULL, $task);
 		
 		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Opdracht verwijderd', Alert::TYPE_SUCCESS)));
 	}

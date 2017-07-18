@@ -1,0 +1,12 @@
+{
+  "title": "Town CMS Installer",
+  "name": "towncms-installer",
+  "namespace": "TownCMSInstaller",
+  "override_views": true,
+  "actions": {
+	"VHostController@store": "vhost_store"
+  },
+  "system_tasks": {
+	"vhost_install_towncms": "vhost_install_towncms"
+  }
+}

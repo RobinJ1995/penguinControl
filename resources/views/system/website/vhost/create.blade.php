@@ -79,8 +79,7 @@ Create vHost
 				<small class="error">Invalid input</small>
 			</div>
 		</div>
-		@section ('custom_fields')
-		@show
+		@yield('custom_fields')
 		<div>
 			{{ Form::token () }}
 			<button name="save" value="{{ time () }}">Save</button>
