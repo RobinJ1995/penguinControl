@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: town10
- * Date: 10/07/2017
- * Time: 10:17
- */
 
 namespace App\Providers;
 
