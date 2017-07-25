@@ -93,31 +93,33 @@ class TownCMSManager
 
 		echo 'Generate application key...' . PHP_EOL;
 		unset ($output, $exitCode);
-		exec ('php artisan key:generate', $output, $exitCode);
+		$appKey = exec ('php artisan key:generate', $output, $exitCode);
 		if ($exitCode !== 0)
 			die ('`php artisan key:generate` failed...' . PHP_EOL . implode (PHP_EOL, $output));
 
-		echo exec ('pwd') . PHP_EOL;
+		$appKey = substr ($appKey, 17, -19);
 
-		echo 'Setting up the CMS...' . PHP_EOL;
+		$sedMap = [
+			'{:APP_KEY:}'   => $appKey,
+			'{:DOMAIN:}'   => $domain,
+			'{:TOWN_KEY:}' => $key,
+			'{:DATABASE:}' => $dbUsername,
+			'{:USERNAME:}' => $username,
+			'{:PASSWORD:}' => $password
+		];
 
+		echo 'Writing to .env file...' . PHP_EOL;
 		if (file_exists ('.env'))
 		{
 
-			foreach ($sedMap as $placeholder => $value)
+			if ( ! $this->changeEnv ($sedMap))
 			{
-
-				$sedStr = 's/' . $placeholder . '/' . $value . '/g';
-
-				echo $sedStr . PHP_EOL;
-
-				unset ($output, $exitCode);
-				exec ('sudo sed ' . escapeshellarg ($sedStr) . ' .env > .env', $output, $exitCode);
-				if ($exitCode !== 0)
-					die ('Placeholder replacement with `sed` failed...' . PHP_EOL . implode (PHP_EOL, $output));
+				die ('Could not write to file' . PHP_EOL . implode (PHP_EOL, $output));
 			}
 
-		} else {
+		}
+		else
+		{
 			die ('Could not find file' . PHP_EOL . implode (PHP_EOL, $output));
 		}
 
@@ -154,6 +156,17 @@ class TownCMSManager
 		if ($exitCode !== 0)
 			die ('Reloading Apache failed...' . PHP_EOL . implode (PHP_EOL, $output));*/
 
+		if ( ! chdir ("etc"))
+			die ("Switching to etc failed");
+
+		echo exec ('pwd') . PHP_EOL;
+
+		echo 'Writing to database...' . PHP_EOL;
+		unset ($output, $exitCode);
+		exec ('mysql -u root -p ' . $dbUsername . ' < database.sql', $output, $exitCode);
+		if ($exitCode !== 0)
+			die ('Writing to database failed...' . PHP_EOL . implode (PHP_EOL, $output));
+
 		echo PHP_EOL . '---' . PHP_EOL;
 		echo 'Setup completed!' . PHP_EOL;
 		echo '---' . PHP_EOL;
@@ -170,47 +183,23 @@ class TownCMSManager
 		);
 	}
 
-	protected function changeEnv ($data = array())
+	protected function changeEnv ($data)
 	{
-		if (count ($data) > 0) {
+		if (count ($data) > 0)
+		{
 
 			// Read .env-file
-			$env = file_get_contents (base_path () . '/.env');
+			$env = file_get_contents ('.env');
 
-			// Split string on every " " and write into array
-			$env = preg_split ('/\s+/', $env);;
-
-			// Loop through given data
-			foreach ((array)$data as $key => $value) {
-
-				// Loop through .env-data
-				foreach ($env as $env_key => $env_value) {
-
-					// Turn the value into an array and stop after the first split
-					// So it's not possible to split e.g. the App-Key by accident
-					$entry = explode ("=", $env_value, 2);
-
-					// Check, if new key fits the actual .env-key
-					if ($entry[0] == $key) {
-						// If yes, overwrite it with the new one
-						$env[$env_key] = $key . "=" . $value;
-					}
-					else {
-						// If not, keep the old one
-						$env[$env_key] = $env_value;
-					}
-				}
-			}
-
-			// Turn the array back to an String
-			$env = implode ("\n", $env);
+			$env = str_replace (array_keys ($data), array_values ($data), $env);
 
 			// And overwrite the .env with the new data
-			file_put_contents (base_path () . '/.env', $env);
+			file_put_contents ('.env', $env);
 
 			return TRUE;
 		}
-		else {
+		else
+		{
 			return FALSE;
 		}
 	}
