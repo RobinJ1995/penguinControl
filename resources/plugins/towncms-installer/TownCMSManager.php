@@ -20,9 +20,13 @@ class TownCMSManager
 		$domain   = $this->vhost->servername;
 		$docroot  = $this->vhost->docroot;
 
-		$user       = substr ($domain, 0, strrpos ($domain, "."));
+		// Get the newly create user from the domain
+		$user = substr ($domain, 0, strrpos ($domain, "."));
+
+		// Combine the username and user for the database name
 		$dbUsername = $username . '_' . $user;
 
+		// Path to
 		echo $docroot . PHP_EOL;
 
 		echo $dbUsername . PHP_EOL;
@@ -41,19 +45,13 @@ class TownCMSManager
 			die ('Username needs to be between 5 and 16 characters long');
 
 		echo 'Generating password and key...' . PHP_EOL;
-		$password = "***REMOVED***"/*bin2hex (openssl_random_pseudo_bytes (10))*/
+		$password = "password"/*bin2hex (openssl_random_pseudo_bytes (10))*/
 		;
 		/*$passwordCrypt = password_hash ($password, PASSWORD_DEFAULT);*/
-		$key    = bin2hex (openssl_random_pseudo_bytes (32));
-		$sedMap = [
-			'{:DOMAIN:}'   => $domain,
-			'{:USERNAME:}' => $username,
-			'{:PASSWORD:}' => $password,
-			'{:TOWN_KEY:}' => $key
-		];
+		$key = bin2hex (openssl_random_pseudo_bytes (32));
 
+		// Create the database and add the correct privileges
 		$pdo = DB::connection ()->getPdo ();
-
 		echo 'Connecting to database...' . PHP_EOL;
 		$pdo->setAttribute (\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
@@ -68,23 +66,29 @@ class TownCMSManager
 
 		echo exec ('pwd') . PHP_EOL;
 
+
+		// Clone down the town-cms to the correct folder
 		echo 'Cloning Git repository...' . PHP_EOL;
 		unset ($output, $exitCode);
 		exec ('GIT_SSH_COMMAND="ssh -i ' . escapeshellarg (SSH_KEY) . '" git clone ' . escapeshellarg (TOWN_CMS_GIT_REPO), $output, $exitCode) . ' sudo -u ' . escapeshellarg ($username);
 		if ($exitCode !== 0)
 			die ('Cloning Git repository failed...' . PHP_EOL . implode (PHP_EOL, $output));
 
+
+		// Switch into the town-cms folder
 		if ( ! chdir ("town-cms"))
 			die ("Switching to town-cms failed");
 
 		echo exec ('pwd') . PHP_EOL;
 
+		// Install the dependencies necessary to get the app running
 		echo 'Installing dependencies...' . PHP_EOL;
 		unset ($output, $exitCode);
 		exec ('composer install', $output, $exitCode);
 		if ($exitCode !== 0)
 			die ('`composer install` failed...' . PHP_EOL . implode (PHP_EOL, $output));
 
+		// Copy the .env file and populate with the correct variables
 		echo 'Setting up the CMS...' . PHP_EOL;
 		unset ($output, $exitCode);
 		exec ('cp .env.example .env', $output, $exitCode);
@@ -97,10 +101,12 @@ class TownCMSManager
 		if ($exitCode !== 0)
 			die ('`php artisan key:generate` failed...' . PHP_EOL . implode (PHP_EOL, $output));
 
+		// Get app key
 		$appKey = substr ($appKey, 17, -19);
 
+		// Create array of variables that will be used to seed the .env file
 		$sedMap = [
-			'{:APP_KEY:}'   => $appKey,
+			'{:APP_KEY:}'  => $appKey,
 			'{:DOMAIN:}'   => $domain,
 			'{:TOWN_KEY:}' => $key,
 			'{:DATABASE:}' => $dbUsername,
@@ -156,16 +162,17 @@ class TownCMSManager
 		if ($exitCode !== 0)
 			die ('Reloading Apache failed...' . PHP_EOL . implode (PHP_EOL, $output));*/
 
+		/*
+		// Move into the etc folder
 		if ( ! chdir ("etc"))
 			die ("Switching to etc failed");
 
+		// See if we are in the correct directory
 		echo exec ('pwd') . PHP_EOL;
 
+		// Use the database file in the etc folder to seed the database with the correct tables
 		echo 'Writing to database...' . PHP_EOL;
-		unset ($output, $exitCode);
-		exec ('mysql -u root -p ' . $dbUsername . ' < database.sql', $output, $exitCode);
-		if ($exitCode !== 0)
-			die ('Writing to database failed...' . PHP_EOL . implode (PHP_EOL, $output));
+		exec ('mysql -u root -p ' . $dbUsername . ' < database.sql');*/
 
 		echo PHP_EOL . '---' . PHP_EOL;
 		echo 'Setup completed!' . PHP_EOL;
@@ -183,12 +190,19 @@ class TownCMSManager
 		);
 	}
 
+	/**
+	 * Method to populate all the correct variables into the .env file
+	 *
+	 * @param $data array of variables
+	 *
+	 * @return bool whether the file was correctly seeded
+	 */
 	protected function changeEnv ($data)
 	{
 		if (count ($data) > 0)
 		{
 
-			// Read .env-file
+			// Read .env file
 			$env = file_get_contents ('.env');
 
 			$env = str_replace (array_keys ($data), array_values ($data), $env);
