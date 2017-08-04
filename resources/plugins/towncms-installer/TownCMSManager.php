@@ -129,6 +129,39 @@ class TownCMSManager
 			die ('Could not find file' . PHP_EOL . implode (PHP_EOL, $output));
 		}
 
+		// Move into the etc folder
+		if ( ! chdir ("etc"))
+			die ("Switching to etc failed");
+
+		// See if we are in the correct directory
+		echo exec ('pwd') . PHP_EOL;
+
+		// Use the database file in the etc folder to seed the database with the correct tables
+		echo 'Writing to database...' . PHP_EOL;
+		unset ($output, $exitCode);
+		exec ('mysql -u root --password=' . $password . ' ' . $dbUsername . ' < database.sql', $output, $exitCode);
+		if ($exitCode !== 0)
+			die ('database seed failed...' . PHP_EOL . implode (PHP_EOL, $output));
+
+
+		// Move back into the town-cms folder
+		if ( ! chdir ("../"))
+			die ("Switching to town-cms failed");
+
+		// See if we are in the correct directory
+		echo exec ('pwd') . PHP_EOL;
+
+		// Run laravel migrations to generate any other tables.
+		if ($this->checkIfDatabaseExists ($dbUsername))
+		{
+			echo 'Running migrations...' . PHP_EOL;
+			unset ($output, $exitCode);
+			exec ('php artisan migrate', $output, $exitCode);
+			if ($exitCode !== 0)
+				die ('`php artisan migrate` failed...' . PHP_EOL . implode (PHP_EOL, $output));
+		} else
+			die ('database does not exist...' . PHP_EOL . implode (PHP_EOL, $output));
+
 		/*echo 'Generating vHost...' . PHP_EOL;
 		unset ($output, $exitCode);
 		exec ('sudo cp /etc/apache2/sites-available/template.conf ' . escapeshellarg ('/etc/apache2/sites-available/' . $user . '.conf'), $output, $exitCode);
@@ -162,17 +195,6 @@ class TownCMSManager
 		if ($exitCode !== 0)
 			die ('Reloading Apache failed...' . PHP_EOL . implode (PHP_EOL, $output));*/
 
-		/*
-		// Move into the etc folder
-		if ( ! chdir ("etc"))
-			die ("Switching to etc failed");
-
-		// See if we are in the correct directory
-		echo exec ('pwd') . PHP_EOL;
-
-		// Use the database file in the etc folder to seed the database with the correct tables
-		echo 'Writing to database...' . PHP_EOL;
-		exec ('mysql -u root -p ' . $dbUsername . ' < database.sql');*/
 
 		echo PHP_EOL . '---' . PHP_EOL;
 		echo 'Setup completed!' . PHP_EOL;
@@ -213,8 +235,44 @@ class TownCMSManager
 			return TRUE;
 		}
 		else
-		{
 			return FALSE;
-		}
+	}
+
+	/**
+	 * Method to check if database exists before running migration command
+	 *
+	 * @param $databaseName String name
+	 *
+	 * @return bool whether database exists
+	 */
+	protected function checkIfDatabaseExists ($databaseName)
+	{
+
+		$query    = 'SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?';
+		$database = DB::select ($query, [$databaseName]);
+
+		if (empty($database))
+			return FALSE;
+		else
+			return TRUE;
+
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
