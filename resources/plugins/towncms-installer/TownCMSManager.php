@@ -26,15 +26,8 @@ class TownCMSManager
 		// Combine the username and user for the database name
 		$dbUsername = $username . '_' . $user;
 
-		// Path to
-		echo $docroot . PHP_EOL;
-
-		echo $dbUsername . PHP_EOL;
-
 		$parts   = explode ('/', $docroot);
 		$dirPath = implode ('/', array_slice ($parts, 0, 4));
-
-		echo $dirPath . PHP_EOL;
 
 		define ('TOWN_CMS_GIT_REPO', 'gogs@git.webtown.ie:robinjacobs/town-cms.git');
 		define ('SSH_KEY', '~/.ssh/penguincontrol_towncms_autoinstall');
@@ -59,27 +52,16 @@ class TownCMSManager
 		$pdo->exec ("CREATE DATABASE `$dbUsername`;");
 		$pdo->exec ("GRANT ALL PRIVILEGES ON `$dbUsername`.* TO '$username'@'%';");
 
-		echo exec ('pwd') . PHP_EOL;
-
-		if ( ! chdir ("../../Documents"))
+		if ( ! chdir ($dirPath))
 			die ("Could not switch directory...");
-
-		echo exec ('pwd') . PHP_EOL;
-
+		echo 'Switched to path ' . $dirPath;
 
 		// Clone down the town-cms to the correct folder
 		echo 'Cloning Git repository...' . PHP_EOL;
 		unset ($output, $exitCode);
-		exec ('GIT_SSH_COMMAND="ssh -i ' . escapeshellarg (SSH_KEY) . '" git clone ' . escapeshellarg (TOWN_CMS_GIT_REPO), $output, $exitCode) . ' sudo -u ' . escapeshellarg ($username);
+		exec ('GIT_SSH_COMMAND="ssh -i ' . escapeshellarg (SSH_KEY) . '" git clone ' . escapeshellarg (TOWN_CMS_GIT_REPO), $output, $exitCode);
 		if ($exitCode !== 0)
 			die ('Cloning Git repository failed...' . PHP_EOL . implode (PHP_EOL, $output));
-
-
-		// Switch into the town-cms folder
-		if ( ! chdir ("town-cms"))
-			die ("Switching to town-cms failed");
-
-		echo exec ('pwd') . PHP_EOL;
 
 		// Install the dependencies necessary to get the app running
 		echo 'Installing dependencies...' . PHP_EOL;
@@ -117,50 +99,34 @@ class TownCMSManager
 		echo 'Writing to .env file...' . PHP_EOL;
 		if (file_exists ('.env'))
 		{
-
 			if ( ! $this->changeEnv ($sedMap))
-			{
 				die ('Could not write to file' . PHP_EOL . implode (PHP_EOL, $output));
-			}
-
 		}
 		else
 		{
 			die ('Could not find file' . PHP_EOL . implode (PHP_EOL, $output));
 		}
 
-		// Move into the etc folder
-		if ( ! chdir ("etc"))
-			die ("Switching to etc failed");
-
-		// See if we are in the correct directory
-		echo exec ('pwd') . PHP_EOL;
-
 		// Use the database file in the etc folder to seed the database with the correct tables
 		echo 'Writing to database...' . PHP_EOL;
 		unset ($output, $exitCode);
-		exec ('mysql -u root --password=' . $password . ' ' . $dbUsername . ' < database.sql', $output, $exitCode);
+		exec ('mysql -u root --password=' . $password . ' ' . $dbUsername . ' < etc/database.sql', $output, $exitCode);
 		if ($exitCode !== 0)
-			die ('database seed failed...' . PHP_EOL . implode (PHP_EOL, $output));
-
-
-		// Move back into the town-cms folder
-		if ( ! chdir ("../"))
-			die ("Switching to town-cms failed");
-
-		// See if we are in the correct directory
-		echo exec ('pwd') . PHP_EOL;
+			die ('Database seed failed...' . PHP_EOL . implode (PHP_EOL, $output));
 
 		// Run laravel migrations to generate any other tables.
 		if ($this->checkIfDatabaseExists ($dbUsername))
 		{
-			echo 'Running migrations...' . PHP_EOL;
+			echo 'Updating CMS...' . PHP_EOL;
 			unset ($output, $exitCode);
-			echo exec ('cd ../../Documents/town-cms/ && php artisan cms:update', $output, $exitCode);
+			echo exec ('php artisan cms:update', $output, $exitCode);
 			if ($exitCode !== 0)
-				die ('`php artisan migrate` failed...' . PHP_EOL . implode (PHP_EOL, $output));
-		} else
-			die ('database does not exist...' . PHP_EOL . implode (PHP_EOL, $output));
+				die ('CMS update failed...' . PHP_EOL . implode (PHP_EOL, $output));
+		}
+		else
+		{
+			die ('Database does not exist...' . PHP_EOL . implode (PHP_EOL, $output));
+		}
 
 		/*echo 'Generating vHost...' . PHP_EOL;
 		unset ($output, $exitCode);
