@@ -156,7 +156,7 @@ class TownCMSManager
 		{
 			echo 'Running migrations...' . PHP_EOL;
 			unset ($output, $exitCode);
-			exec ('php artisan migrate', $output, $exitCode);
+			echo exec ('cd ../../Documents/town-cms/ && php artisan cms:update', $output, $exitCode);
 			if ($exitCode !== 0)
 				die ('`php artisan migrate` failed...' . PHP_EOL . implode (PHP_EOL, $output));
 		} else
