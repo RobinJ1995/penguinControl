@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Validator;
 
 class StaffUserLogController extends Controller
 {
-	private $boekhoudingBetekenis = array
+	private $statusMeaning = array
 	(
 		-1 => 'Not to be billed',
 		0 => 'To be billed',
@@ -41,8 +41,8 @@ class StaffUserLogController extends Controller
 			->paginate ();
 
 		$searchUrl = action ('Staff\StaffUserLogController@search');
-		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
-		return view ('staff.user.log.index', compact ('userlogs', 'searchUrl', 'boekhoudingBetekenis'));
+		$statusMeaning = $this->statusMeaning;
+		return view ('staff.user.log.index', compact ('userlogs', 'searchUrl', 'statusMeaning'));
 	}
 
 	public function search ()
@@ -54,8 +54,8 @@ class StaffUserLogController extends Controller
 
 		$time_van = Input::get ('time_van');
 		$time_tot = Input::get ('time_tot');
-		$nieuw = Input::get ('nieuw');
-		$boekhouding = Input::get ('boekhouding');
+		$new = Input::get ('new');
+		$status = Input::get ('status');
 		$pagination = Input::get ('pagination');
 
 		$query = UserLog::with ('userInfo.user')
@@ -68,7 +68,7 @@ class StaffUserLogController extends Controller
 						->where ('username', 'LIKE', '%' . $username . '%')
 						->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
 						->where ('email', 'LIKE', '%' . $email . '%');
-					
+
 					if (! empty ($gid))
 					{
 						$q->whereHas
@@ -96,11 +96,11 @@ class StaffUserLogController extends Controller
 				$query->where ('time', '<', $time_tot);
 		}
 
-		if ($nieuw != 'all')
-			$query->where ('nieuw', $nieuw);
+		if ($new != 'all')
+			$query->where ('new', $new);
 
-		if ($boekhouding != 'all')
-			$query->where ('boekhouding', $boekhouding);
+		if ($status != 'all')
+			$query->where ('status', $status);
 
 		$count = $query->count ();
 		if ($pagination === 'true')
@@ -115,9 +115,9 @@ class StaffUserLogController extends Controller
 		}
 
 		$searchUrl = action ('Staff\StaffUserLogController@search');
-		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
+		$statusMeaning = $this->statusMeaning;
 
-		return view ('staff.user.log.search', compact ('count', 'userlogs', 'searchUrl', 'boekhoudingBetekenis', 'paginationOn'));
+		return view ('staff.user.log.search', compact ('count', 'userlogs', 'searchUrl', 'statusMeaning', 'paginationOn'));
 	}
 
 	public function editChecked ()
@@ -125,7 +125,7 @@ class StaffUserLogController extends Controller
 		if (! empty (Input::get ('userLogId')))
 		{
 			$userLogsIds = Input::get ('userLogId');
-			$boekhouding = Input::get ('boekhouding');
+			$status = Input::get ('status');
 
 			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 		}
@@ -138,16 +138,16 @@ class StaffUserLogController extends Controller
 		{
 			if (! empty (Input::get ('facturatie')))
 			{
-				$userLogs->update (array ('boekhouding' => $boekhouding));
+				$userLogs->update (array ('status' => $status));
 				$alert = 'Facturatie(s) gewijzigd';
 			}
 
 			if (! empty (Input::get ('export')))
 			{
-				$boekhoudingBetekenis = $this->boekhoudingBetekenis;
-				return view ('staff.user.log.export', compact ('userLogsIds', 'boekhoudingBetekenis'));
+				$statusMeaning = $this->statusMeaning;
+				return view ('staff.user.log.export', compact ('userLogsIds', 'statusMeaning'));
 			}
-			
+
 			Log::log ('Facturaties bijgewerkt', NULL, $userLogs);
 		}
 
@@ -162,7 +162,7 @@ class StaffUserLogController extends Controller
 			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 		}
 
-		$boekhouding = Input::get ('boekhouding');
+		$status = Input::get ('status');
 		$exportSeperator = Input::get ('seperator');
 
 		$csvHeader = array
@@ -176,8 +176,8 @@ class StaffUserLogController extends Controller
 			'userInfo.validated' => 'validated',
 			'userLog.id' => 'user_log_id',
 			'userLog.time' => 'datum/tijd',
-			'userLog.nieuw' => 'nieuw',
-			'userLog.boekhouding' => 'boekhouding'
+			'userLog.new' => 'new',
+			'userLog.status' => 'status'
 		);
 
 
@@ -186,8 +186,8 @@ class StaffUserLogController extends Controller
 		$output = array ();
 		$userLogsUserInfo = $userLogs->with ('userInfo')->get ();
 
-		if ($boekhouding != 'unchanged')
-			$userLogs->update (array ('boekhouding' => $boekhouding));
+		if ($status != 'unchanged')
+			$userLogs->update (array ('status' => $status));
 
 		switch ($exportSeperator)
 		{
@@ -211,7 +211,7 @@ class StaffUserLogController extends Controller
 		{
 			$userOutput = array ();
 			$userInfo = $userLog->userInfo;
-			
+
 			foreach ($fields as $field)
 			{
 				if (array_key_exists ($field, $csvHeader))
@@ -234,7 +234,7 @@ class StaffUserLogController extends Controller
 		fclose ($fileHandle);
 		$fileLink = '<a href="/' . $fileName . '" target="_blank">' . $fileName . '</a>';
 		$alert = 'Status changed and billing report exported';
-		
+
 		Log::log ('Billing report exported', NULL, $userLogsUserInfo, $fileName);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array
@@ -252,9 +252,9 @@ class StaffUserLogController extends Controller
 		foreach (UserInfo::orderBy ('username')->get () as $userInfo)
 			$users[$userInfo->id] = $userInfo->username . ' (' . $userInfo->getFullName () . ')';
 
-		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
+		$statusMeaning = $this->statusMeaning;
 
-		return view ('staff.user.log.create', compact ('users', 'boekhoudingBetekenis'));
+		return view ('staff.user.log.create', compact ('users', 'statusMeaning'));
 	}
 
 	public function store ()
@@ -265,8 +265,8 @@ class StaffUserLogController extends Controller
 		        (
 				'User' => Input::get ('user_info_id'),
 				'Date/Time' => Input::get ('time'),
-				'New' => Input::get ('nieuw'),
-				'Billing status' => Input::get ('boekhouding')
+				'New' => Input::get ('new'),
+				'Billing status' => Input::get ('status')
 			),
 			array
 	                (
@@ -284,11 +284,11 @@ class StaffUserLogController extends Controller
 
 		$userLog->user_info_id = Input::get ('user_info_id');
 		$userLog->time = Input::get ('time');
-		$userLog->nieuw = Input::get ('nieuw');
-		$userLog->boekhouding = Input::get ('boekhouding');
+		$userLog->new = Input::get ('new');
+		$userLog->status = Input::get ('status');
 
 		$userLog->save ();
-		
+
 		Log::log ('Billing entry added', NULL, $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Billing entry added', Alert::TYPE_SUCCESS)));
@@ -296,9 +296,9 @@ class StaffUserLogController extends Controller
 
 	public function edit ($userlog)
 	{
-		$boekhoudingBetekenis = $this->boekhoudingBetekenis;
+		$statusMeaning = $this->statusMeaning;
 
-		return view ('staff.user.log.edit', compact ('userlog', 'boekhoudingBetekenis'));
+		return view ('staff.user.log.edit', compact ('userlog', 'statusMeaning'));
 	}
 
 	public function update ($userLog)
@@ -307,7 +307,7 @@ class StaffUserLogController extends Controller
 		(
 			array
 			(
-				'Billing status' => Input::get ('boekhouding')
+				'Billing status' => Input::get ('status')
 			),
 			array
 			(
@@ -318,9 +318,9 @@ class StaffUserLogController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/user/log/' . $userLog->id . '/edit')->withInput ()->withErrors ($validator);
 
-		$userLog->boekhouding = Input::get ('boekhouding');
+		$userLog->status = Input::get ('status');
 		$userLog->save ();
-		
+
 		Log::log ('Billing entry modified', NULL, $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Billing entry changes saved', Alert::TYPE_SUCCESS)));
@@ -329,7 +329,7 @@ class StaffUserLogController extends Controller
 	public function remove ($userLog)
 	{
 		$userLog->delete ();
-		
+
 		Log::log ('Billing entry removed', NULL, $userLog);
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ('Billing entry removed', Alert::TYPE_SUCCESS)));

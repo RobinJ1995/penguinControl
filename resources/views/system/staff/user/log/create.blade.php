@@ -12,7 +12,7 @@ Add billing entry
 			<div class="large-12 medium-12 small-12 column">
 				<label>Gebruiker:
 					<!--<input type="number" name="user_info_id" value="{{ Input::old ('user_info_id') }}" required />-->
-					
+
 					{{ Form::select
 				(
 					'user_info_id',
@@ -32,28 +32,28 @@ Add billing entry
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-4 small-12 column">
-				<label>Nieuw:
+				<label>New:
 					{{ Form::select
 						(
-							'nieuw',
+							'new',
 							array
 							(
-								'0' => 'Nee',
-								'1' => 'Ja',
+								'0' => 'No',
+								'1' => 'Yes',
 							),
-							Input::old ('nieuw', 0)
+							Input::old ('new', 0)
 						)
 					}}
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-4 small-12 column">
-				<label>Gefactureerd:
+				<label>Status:
 					{{ Form::select
 						(
-							'boekhouding',
-							$boekhoudingBetekenis,
-							Input::old ('boekhouding', 0)
+							'status',
+							$statusMeaning,
+							Input::old ('status', 0)
 						)
 					}}
 				</label>

@@ -13,7 +13,7 @@ Facturatie &bull; Staff
 @parent
 <script type="text/javascript">
 	$(document).ready(function () {
-		
+
 		$('#selectAllUserLog').change(function () {
 			$('input[name="userLogId[]"]').prop('checked', $(this).prop("checked"));
 		});
@@ -21,7 +21,7 @@ Facturatie &bull; Staff
 		$('input[name="userLogId[]"]').change(function () {
 			$('#selectAllUserLog').prop('checked', false);
 		});
-		
+
 	});
 </script>
 @endsection
@@ -69,8 +69,8 @@ Facturatie &bull; Staff
 				</td>
 				<td>{{ $userlog->userInfo->username }}</td>
 				<td>{{ $userlog->time }}</td>
-				<td><img src="/img/icons/{{ $userlog->nieuw ? 'validate' : 'reject' }}.png" alt="" /></td>
-				<td>{{ $boekhoudingBetekenis[$userlog->boekhouding]}}</td>
+				<td><img src="/img/icons/{{ $userlog->new ? 'validate' : 'reject' }}.png" alt="" /></td>
+				<td>{{ $statusMeaning[$userlog->status]}}</td>
 				<td>
 					@if (! empty ($userlog->user_info->user))
 					<span class="{{ $userlog->user_info->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user_info->user->primaryGroup->name) }}</span>
@@ -90,8 +90,8 @@ Facturatie &bull; Staff
 			{{
 				Form::select
 				(
-					'boekhouding',
-					$boekhoudingBetekenis,
+					'status',
+					$statusMeaning,
 					0
 				)
 			}}

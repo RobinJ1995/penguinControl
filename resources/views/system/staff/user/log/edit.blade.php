@@ -13,9 +13,9 @@ Edit billing entry
 				<label>Status:
 					{{ Form::select
 						(
-							'boekhouding',
-							$boekhoudingBetekenis,
-							$userlog->boekhouding
+							'status',
+							$statusMeaning,
+							$userlog->status
 						)
 					}}
 				</label>
