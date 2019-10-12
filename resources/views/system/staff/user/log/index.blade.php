@@ -46,8 +46,8 @@ Billing
 			</td>
 			<td>{{ $userlog->userInfo->username }}</td>
 			<td>{{ $userlog->time }}</td>
-			<td><img src="/img/icons/{{ $userlog->nieuw ? 'validate.png' : 'reject.png' }}" alt="" /></td>
-			<td>{{ $boekhoudingBetekenis[$userlog->boekhouding] }}</td>
+			<td><img src="/img/icons/{{ $userlog->new ? 'validate.png' : 'reject.png' }}" alt="" /></td>
+			<td>{{ $statusMeaning[$userlog->status] }}</td>
 			<td>
 				@if (! empty ($userlog->user))
 					<span class="{{ $userlog->user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($userlog->user->primaryGroup->name) }}</span>

@@ -30,21 +30,21 @@ class StaffUserController extends Controller
 	public function index ($order = 'uid')
 	{
 		$now = time () / 60 / 60 / 24;
-		
+
 		//TODO//Paginator::setPageName ('user_page');
 		$usersQ = User::where ('expire', '>', $now)
 			->orWhere ('expire', -1)
 			->orderBy ($order);
 		$usersCount = $usersQ->count ();
 		$users = $usersQ->paginate ();
-		
+
 		//TODO//Paginator::setPageName ('expired_page');
 		$expiredQ = User::where ('expire', '<=', $now)
 			->where ('expire', '>', -1)
 			->orderBy ($order);
 		$expiredCount = $expiredQ->count ();
 		$expired = $expiredQ->paginate ();
-		
+
 		//TODO//Paginator::setPageName ('pending_page');
 		$pendingQ = UserInfo::where ('validated', 0);
 		$pendingCount = $pendingQ->count ();
@@ -52,10 +52,10 @@ class StaffUserController extends Controller
 
 		$url = action ('Staff\StaffUserController@index', $order);
 		$searchUrl = action ('Staff\StaffUserController@search', $order);
-		
+
 		return view ('staff.user.user.index', compact ('usersCount', 'users', 'expiredCount', 'expired', 'pendingCount', 'pending', 'url', 'searchUrl'));
 	}
-	
+
 	public function search ()
 	{
 		$username = Input::get ('username');
@@ -63,41 +63,41 @@ class StaffUserController extends Controller
 		$email = Input::get ('email');
 		$unusedValidationCode = Input::get ('validationcode');
 		$unusedLoginToken = Input::get ('logintoken');
-		
+
 		$query = UserInfo::where ('validated', '1')
 			->where ('username', 'LIKE', '%' . $username . '%')
 			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
 			->where ('email', 'LIKE', '%' . $email . '%');
-		
+
 		if (! empty ($unusedValidationCode))
 			$query = $query->whereNotNull ('validationcode');
 		if (! empty ($unusedLoginToken))
 			$query = $query->whereNotNull ('logintoken');
-		
+
 		$count = $query->count ();
 		$results = $query->paginate ();
-		
+
 		$searchUrl = action ('Staff\StaffUserController@search');
-		
+
 		return view ('staff.user.user.search', compact ('count', 'results', 'searchUrl'));
 	}
-	
+
 	public function create ()
 	{
 		$uid = User::max ('uid') + 1;
 		$groups = Group::all ();
-		
+
 		return view ('staff.user.user.create', compact ('uid', 'groups'));
 	}
 
 	public function store ()
 	{
 		$alerts = array ();
-		
+
 		try
 		{
 			DB::beginTransaction ();
-			
+
 			$uid = User::max ('uid') + 1;
 
 			$inputHomedir = rtrim (Input::get ('homedir'), '/');
@@ -210,7 +210,7 @@ class StaffUserController extends Controller
 			$ftp->save ();
 
 			$alerts[] = new Alert ('FTP account created: ' . $ftp->user, Alert::TYPE_SUCCESS);
-			
+
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
 			$task->data = json_encode (array ('userInfoId' => $userInfo->id, 'user' => $userInfo->username));
@@ -218,44 +218,44 @@ class StaffUserController extends Controller
 
 			$userLog = new UserLog ();
 			$userLog->user_info_id = $userInfo->id;
-			$userLog->nieuw = 1;
-			$userLog->boekhouding = -1; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			$userLog->new = 1;
+			$userLog->status = -1; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
 			$userLog->save ();
 
 			$alerts[] = new Alert ('Saved as "Not to be billed".', Alert::TYPE_SUCCESS);
-			
+
 			DatabaseCredentials::forUserPrimary (Input::get ('username'), Input::get ('password'));
-			
+
 			DB::commit ();
-			
+
 			Log::log ('User created', NULL, $user, $userInfo, $userLog);
-			
+
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
 		catch (\Exception $ex) // ->with ('ex', $ex) kan blijkbaar niet // Serialization of 'Closure' is not allowed //
 		{
 			DB::rollback ();
-			
+
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
-	
+
 	public function edit ($user)
 	{
 		$userInfo = $user->userInfo;
 		$groups = Group::all ();
-		
+
 		return view ('staff.user.user.edit', compact ('user', 'userInfo', 'groups'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', Alert::TYPE_INFO)));
 	}
-	
+
 	public function update ($user)
 	{
 		$alerts = array ();
-		
+
 		try
 		{
 			DB::beginTransaction ();
-			
+
 			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
 
 			$validator = Validator::make
@@ -295,7 +295,7 @@ class StaffUserController extends Controller
 			{
 				$user->setPassword (Input::get ('password'));
 				$user->lastchange = ceil (time () / 60 / 60 / 24);
-				
+
 				$alerts[] = new Alert ('Enkel het gebruikerswachtwoord is veranderd. Wachtwoorden van FTP-accounts e.d. zijn apart opgeslagen.', Alert::TYPE_INFO);
 			}
 			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
@@ -352,25 +352,25 @@ class StaffUserController extends Controller
 					}
 				}
 			}
-			
+
 			DB::commit ();
-			
+
 			Log::log ('Gebruiker bijgewerkt', NULL, $user, $userInfo);
-			
+
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
 		catch (Exception $ex)
 		{
 			DB::rollback ();
-			
+
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
-	
+
 	public function remove ($user) // UserInfo blijft behouden voor UserLog //
 	{
 		$alerts = array ();
-		
+
 		if (Input::get ('confirm') === 'pizza') // Voor iets ernstig als het verwijderen van een gebruiker best niet enkel vertrouwen op Javascript confirm () //
 		{
 			try
@@ -423,7 +423,7 @@ class StaffUserController extends Controller
 				$alerts[] = new Alert ('Gebruiker verwijderd: ' . $userInfo->username, Alert::TYPE_SUCCESS);
 
 				DB::commit ();
-				
+
 				Log::log ('Gebruiker verwijderd', NULL, $user, $userInfo);
 
 				return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
@@ -444,14 +444,14 @@ class StaffUserController extends Controller
 	public function login ($user)
 	{
 		$userInfo = $user->userInfo;
-		
+
 		Log::log ('Ingelogd als gebruiker', NULL, $user); // Hier moet de log vóór de effectieve actie gebeuren, anders klopt de user_id in de log entry niet //
-		
+
 		Auth::login ($user);
-		
+
 		return Redirect::to ('/user/start')->with ('alerts', array (new Alert ('Ingelogd als gebruiker: ' . $userInfo->username . ' (' . $userInfo->fname . ' ' . $userInfo->lname . ')')));
 	}
-	
+
 	public function getExpire ($user)
 	{
 		$validUntilUnix = $user->expire * 24 * 60 * 60;
@@ -459,16 +459,16 @@ class StaffUserController extends Controller
 		$validUntilShortDate = date ('d-m-Y', $validUntilUnix);
 		$stillValidUnix = $validUntilUnix - time ();
 		$stillValidDate = (int) ($stillValidUnix / 60 / 60 / 24) . ' dagen';
-		
+
 		$septemberYet = (idate ('n') >= 9);
-		
+
 		$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
 		$next1OctUnix = strtotime ('Oct 1,' . $nextYear);
 		$next1OctDate = date ('D j F Y', $next1OctUnix);
-		
+
 		$nowUnix = time ();
 		$nowDate = date ('D j F Y', $nowUnix);
-		
+
 		$expires = array
 		(
 			$validUntilUnix => 'Huidig: ' . $validUntilDate,
@@ -476,7 +476,7 @@ class StaffUserController extends Controller
 			$nowUnix => 'Nu: ' . $nowDate,
 			-1 * 24 * 60 * 60 => 'Vervalt nooit'
 		);
-		
+
 		if ($user->expire === -1)
 		{
 			$validUntilDate = 'Altijd';
@@ -485,15 +485,15 @@ class StaffUserController extends Controller
 			$stillValidDate = '&infin;';
 			$stillValidUnix = '';
 		}
-		
+
 		$alerts = array
 		(
 			new Alert ('Wanneer de vervaldatum door een medewerker wordt gewijzigd zal de gebruiker hiervoor niet gefactureerd worden.', 'warning')
 		);
-		
+
 		return view ('staff.user.user.expire', compact ('user', 'validUntilUnix', 'validUntilDate', 'stillValidUnix', 'stillValidDate', 'validUntilShortDate', 'expires', 'alerts'));
 	}
-	
+
 	public function expire ($user)
 	{
 		$validator = Validator::make
@@ -507,13 +507,13 @@ class StaffUserController extends Controller
 				'Vervaldatum' => array ('integer')
 			)
 		);
-		
+
 		if ($validator->fails ())
 			return Redirect::to ('/staff/user/user/' . $user->id . '/expire')->withInput ()->withErrors ($validator);
-		
+
 		$newExpireDays;
 		$newExpireDate;
-		
+
 		if (Input::get ('expire') > 0)
 		{
 			$newExpireDays = ceil (Input::get ('expire') / 60 / 60 / 24);
@@ -524,10 +524,10 @@ class StaffUserController extends Controller
 			$newExpireDays = -1;
 			$newExpireDate = 'Vervalt nooit';
 		}
-		
+
 		$user->expire = $newExpireDays;
 		$user->save ();
-		
+
 		/*
 		 * Alle vHosts voor gebruiker ophalen en en terug opslaan aangezien
 		 * in Vhost->save () de check gebeurt of de gebruiker expired
@@ -535,31 +535,31 @@ class StaffUserController extends Controller
 		 */
 		foreach ($user->vhost as $vhost)
 			$vhost->save ();
-		
+
 		Log::log ('Vervaltdatum bijgewerkt', NULL, $user);
-		
+
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->userInfo->username . ' (' . $user->userInfo->getFullName () . ') ingesteld: ' . $newExpireDate)));
 	}
-	
+
 	public function getApprove ($userInfo)
 	{
 		$uid = User::max ('uid') + 1;
 		$groups = Group::all ();
-		
+
 		return view ('staff.user.user.validate', compact ('userInfo', 'uid', 'groups'));
 	}
-	
+
 	public function approve ($userInfo)
 	{
 		$alerts = array ();
-		
+
 		try
 		{
 			if ($userInfo->validated == 1)
 				return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Gebruiker is al gevalideerd', Alert::TYPE_ALERT)));
-			
+
 			DB::beginTransaction ();
-			
+
 			$uid = User::max ('uid') + 1;
 
 			$inputHomedir = rtrim (Input::get ('homedir'), '/');
@@ -687,55 +687,55 @@ class StaffUserController extends Controller
 
 			$userLog = new UserLog();
 			$userLog->user_info_id = $userInfo->id;
-			$userLog->nieuw = 1;
-			$userLog->boekhouding = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			$userLog->new = 1;
+			$userLog->status = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
 			$userLog->save ();
 
 			$alerts[] = new Alert ('Opgeslagen in log als nog te factureren', Alert::TYPE_SUCCESS);
-			
+
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
 			$task->data = json_encode (array ('userInfoId' => $userInfo->id, 'user' => $userInfo->username));
 			$task->save ();
-			
+
 			$alerts[] = new Alert ('Home directory zal bij de volgende SystemTask-uitvoeringscyclus aangemaakt worden. Vergeet de <a href="/staff/system/systemtask">status</a> niet in de gaten te houden.', 'warning');
 
 			DatabaseCredentials::forUserPrimary_hash ($userInfo->username, $etc['mysql_hash']);
-			
+
 			DB::commit ();
-			
+
 			Mail::send ('email.user.activated', compact ('userInfo'), function ($msg) use ($userInfo)
 				{
 					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Uw SIN-account is geactiveerd');
 				}
 			);
-			
+
 			Log::log ('Gebruiker gevalideerd', NULL, $user, $userInfo);
-			
+
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
 		catch (Exception $ex)
 		{
 			DB::rollback ();
-			
+
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
 		}
 	}
-	
+
 	public function reject ($userInfo)
 	{
 		$userInfo->delete ();
-		
+
 		Log::log ('Gebruikersregistratie geweigerd', NULL, $userInfo);
-		
+
 		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Validatie geweigerd: ' . $userInfo->username . PHP_EOL . '</br />Gebruikersinformatie verwijderd.<br />Let op: Er is <strong>geen</strong> geautomatiseerde e-mail verstuurd naar de gebruiker in kwestie. Gelieve (indien het om een gebruiker ging, en geen bot o.i.d.) zelf even een e-mail naar de gebruiker in kwestie te sturen en er ook duidelijk bij te zeggen <strong>waarom</strong> zijn registratie geweigerd is.')));
 	}
-	
+
 	public function more ($user)
 	{
 		$userInfo = $user->userInfo;
 		$groups = Group::all ();
-		
+
 		try
 		{
 			$userMailEnabledMap = array
@@ -750,7 +750,7 @@ class StaffUserController extends Controller
 		{
 			$userMailEnabledPretty = $user->mail_enabled;
 		}
-		
+
 		$cryptAlgorithm = explode ('$', $user->crypt)[1];
 		switch ($cryptAlgorithm)
 		{
@@ -770,19 +770,19 @@ class StaffUserController extends Controller
 				$cryptAlgorithmPretty = 'Onbekend';
 		}
 		$cryptAlgorithmPretty .= ' ($' . $cryptAlgorithm . '$)';
-		
+
 		return view ('staff.user.user.more', compact ('user', 'userInfo', 'groups', 'userMailEnabledPretty', 'cryptAlgorithmPretty'));
 	}
-	
+
 	public function generateLoginToken ($user)
 	{
 		$userInfo = $user->userInfo;
-		
+
 		$userInfo->generateLoginToken ();
 		$userInfo->save ();
-		
+
 		Log::log ('Eenmalige login token gegenereerd', NULL, $user, $userInfo);
-		
+
 		return Redirect::to ('staff/user/user/' . $user->id . '/more')->with ('alerts', array (new Alert ('Eenmalige login token gegenereerd. Deze kan doorgegeven worden aan de gebruiker in kwestie zodat deze zelf via <em>Gebruiker</em> -> <em>Gegevens wijzigen</em> een nieuw wachtwoord kan instellen voor zijn/haar account.<br />Deze link zal automatisch vervallen wanneer deze gebruikt wordt.', Alert::TYPE_INFO)));
 	}
 }

@@ -21,7 +21,7 @@ Export billing report
 						<input type="checkbox" name="exportFields[]" value="userInfo.lname" checked="checked" /> Surname
 					</label>
 				</div>
-				
+
 				<div class="large-6 medium-12 column">
 					<label>
 						<input type="checkbox" name="exportFields[]" value="userInfo.username" checked="checked" /> Username
@@ -32,7 +32,7 @@ Export billing report
 						<input type="checkbox" name="exportFields[]" value="userInfo.email"/> E-mail address
 					</label>
 				</div>
-				
+
 				<div class="large-12 medium-12 column">
 					<label>
 						<input type="checkbox" name="exportFields[]" value="userLog.time" checked="checked" /> Date/Time
@@ -43,8 +43,8 @@ Export billing report
 					<label>Set billing status of exported items:
 						{{ Form::select
 						(
-							'boekhouding',
-							array ( 'unchanged' => 'Don\'t change' ) + $boekhoudingBetekenis,
+							'status',
+							array ( 'unchanged' => 'Don\'t change' ) + $statusMeaning,
 							'unchanged'
 						)
 						}}
@@ -55,7 +55,7 @@ Export billing report
 						{{ Form::select
 						(
 							'seperator',
-							array 
+							array
 							(
 								'Comma (,)',
 								'Semicolon (MS Excel) (;)'

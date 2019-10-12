@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="large-12 column">
 			<h2>Search</h2>
-			
+
 			<form action="{{ $searchUrl }}" method="GET">
 				<div class="row">
 					<div class="large-6 medium-12 column">
@@ -51,8 +51,8 @@
 						<label>Billing status:
 							{{ Form::select
 								(
-									'boekhouding',
-									array ('all' => 'All') + $boekhoudingBetekenis
+									'status',
+									array ('all' => 'All') + $statusMeaning
 								)
 							}}
 						</label>
@@ -61,7 +61,7 @@
 						<label>New:
 							{{ Form::select
 								(
-									'nieuw',
+									'new',
 									array
 									(
 										'all' => 'All',
@@ -81,11 +81,11 @@
 						</label>
 					</div>
 				</div>
-				
+
 				<button>Search</button>
 		</div>
 	</div>
 	</form>
-	
+
 	<a class="close-reveal-modal">&#215;</a>
 </div>
