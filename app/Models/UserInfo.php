@@ -51,7 +51,7 @@ class UserInfo extends BaseModel
 		return $this->logintoken;
 	}
 	
-	public function prepareHomedir () // Hoort aangeroepen te worden als root vanuit een SystemTask //
+	public function prepareHomedir () // Should be called as root, from a SystemTask //
 	{
 		$group = $this->user->primaryGroup;
 		$homedir = $this->user->homedir;

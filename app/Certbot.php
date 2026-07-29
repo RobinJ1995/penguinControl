@@ -15,12 +15,17 @@ class Certbot
 	
 	public function obtain ($redirect = false)
 	{
-		$domains = '-d ' . $this->vhost->servername;
+		$hosts = array ($this->vhost->servername);
 		if ($this->vhost->serveralias)
-			$domains .= ' -d ' . str_replace (' ', ' -d ', $this->vhost->serveralias);
+			$hosts = array_merge ($hosts, preg_split ('/\s+/', trim ($this->vhost->serveralias)));
 		
-		$cmd = 'certbot --apache -n ' . $domains . ($redirect ? ' --redirect' : '') . ' 2>&1';
+		$domains = array ();
+		foreach (array_filter ($hosts) as $host)
+			$domains[] = '-d ' . escapeshellarg ($host);
+		
+		$cmd = 'certbot --apache -n ' . implode (' ', $domains) . ($redirect ? ' --redirect' : '') . ' 2>&1';
 		$output = [];
+		$exitStatus = NULL;
 		
 		exec ($cmd, $output, $exitStatus);
 		
