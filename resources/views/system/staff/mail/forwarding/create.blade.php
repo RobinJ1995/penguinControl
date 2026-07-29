@@ -5,7 +5,7 @@ Doorstuuradres toevoegen &bull; Staff
 @endsection
 
 @section ('content')
-<form action="/staff/mail/forwarding/create" method="POST" data-abide>
+<form action="/staff/mail/forward/create" method="POST" data-abide>
 	<fieldset>
 		<legend>Doorstuuradres toevoegen</legend>
 		<div class="row">

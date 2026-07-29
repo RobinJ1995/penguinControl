@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -53,6 +52,8 @@ class StaffMailUserController extends Controller
 
 	public function store ()
 	{
+		$user = Auth::user ();
+
 		$validator = Validator::make
 		(
 			array
@@ -64,9 +65,9 @@ class StaffMailUserController extends Controller
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mailadres' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
 				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),
+				'E-maildomein' => array ('required', 'exists:mail_domain,id,uid,' . $user->uid),
 				'Wachtwoord' => array ('required', 'min:8'),
 				'Wachtwoord (bevestiging)' => 'same:Wachtwoord'
 			)
@@ -80,7 +81,7 @@ class StaffMailUserController extends Controller
 		$mUser = new MailUser ();
 		$mUser->uid = $domain->uid;
 		$mUser->email = request ('email');
-		$mUser->mail_domain_virtual_id = request ('domain');
+		$mUser->mail_domain_id = request ('domain');
 		$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
@@ -118,8 +119,8 @@ class StaffMailUserController extends Controller
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email,' . $mUser->id, 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id'),
+				'E-mailadres' => array ('required', 'unique:mail_user,email,' . $mUser->id, 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-maildomein' => array ('required', 'exists:mail_domain,id'),
 				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
 				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord')
 			)
@@ -130,10 +131,10 @@ class StaffMailUserController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$domain = MailDomain::where ('domain', request ('domain'))->firstOrFail ();
+		$domain = MailDomain::findOrFail (request ('domain'));
 		
 		$mUser->email = request ('email');
-		$mUser->mail_domain_virtual_id = request ('domain');
+		$mUser->mail_domain_id = request ('domain');
 		$mUser->uid = $domain->uid;
 		if (! empty (request ('password')))
 			$mUser->setPassword (request ('password'));

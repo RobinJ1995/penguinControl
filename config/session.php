@@ -226,8 +226,14 @@ return [
     |
     | Supported: "json", "php"
     |
+    | penguinControl flashes App\Alert *objects* through the session on almost
+    | every redirect, and the layout renders them by casting to string. JSON
+    | serialization flattens them into plain arrays, so every flashed alert
+    | would break. Keeping "php" preserves that; the alternative is flashing
+    | plain data and rehydrating it at around a hundred call sites.
+    |
     */
 
-    'serialization' => 'json',
+    'serialization' => env('SESSION_SERIALIZATION', 'php'),
 
 ];

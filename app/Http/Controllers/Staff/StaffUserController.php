@@ -7,6 +7,7 @@ use App\DatabaseCredentials;
 use App\Http\Controllers\Controller;
 use App\Models\Ftp;
 use App\Models\Group;
+use App\Mail\AccountActivated;
 use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
@@ -201,14 +202,14 @@ class StaffUserController extends Controller
 			}
 
 			$ftp = new Ftp (); // User's default FTP account //
-			$ftp->user = $userInfo->username;
+			$ftp->username = $userInfo->username;
 			$ftp->uid = $user->uid;
-			$ftp->password = $user->crypt;
+			$ftp->passwd = $user->crypt;
 			$ftp->dir = $user->homedir;
 			$ftp->locked = 1; // Enkel bewerkbaar door staff //
 			$ftp->save ();
 
-			$alerts[] = new Alert ('FTP account created: ' . $ftp->user, Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('FTP account created: ' . $ftp->username, Alert::TYPE_SUCCESS);
 
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
@@ -317,7 +318,7 @@ class StaffUserController extends Controller
 				new Alert ('Gebruiker bijgewerkt: ' . $userInfo->username, Alert::TYPE_SUCCESS)
 			);
 
-			$allGroups = Group::lists ('gid');
+			$allGroups = Group::pluck ('gid');
 			$inputGroups = (array) request ('groups');
 
 			foreach ($allGroups as $gid) // Let op; Dit gaat niet over de primaire groep //
@@ -358,7 +359,7 @@ class StaffUserController extends Controller
 
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			DB::rollback ();
 
@@ -389,7 +390,7 @@ class StaffUserController extends Controller
 				foreach (Ftp::where ('uid', $user->uid)->get () as $ftp)
 				{
 					$ftp->delete ();
-					$alerts[] = new Alert ('FTP-account verwijderd: ' . $ftp->user, Alert::TYPE_SUCCESS);
+					$alerts[] = new Alert ('FTP-account verwijderd: ' . $ftp->username, Alert::TYPE_SUCCESS);
 				}
 
 				foreach (Vhost::where ('uid', $user->uid)->get () as $vhost)
@@ -427,7 +428,7 @@ class StaffUserController extends Controller
 
 				return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 			}
-			catch (Exception $ex)
+			catch (\Exception $ex)
 			{
 				DB::rollback ();
 
@@ -510,8 +511,6 @@ class StaffUserController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/user/user/' . $user->id . '/expire')->withInput ()->withErrors ($validator);
 
-		$newExpireDays;
-		$newExpireDate;
 
 		if (request ('expire') > 0)
 		{
@@ -675,14 +674,14 @@ class StaffUserController extends Controller
 			$alerts[] = new Alert ('vHost toegevoegd: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 
 			$ftp = new Ftp (); // User's default FTP account //
-			$ftp->user = $userInfo->username;
+			$ftp->username = $userInfo->username;
 			$ftp->uid = $user->uid;
 			$ftp->passwd = $user->crypt;
 			$ftp->dir = $user->homedir;
 			$ftp->locked = 1; // Enkel bewerkbaar door staff //
 			$ftp->save ();
 
-			$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->username, Alert::TYPE_SUCCESS);
 
 			$userLog = new UserLog();
 			$userLog->user_info_id = $userInfo->id;
@@ -703,17 +702,13 @@ class StaffUserController extends Controller
 
 			DB::commit ();
 
-			Mail::send ('email.user.activated', compact ('userInfo'), function ($msg) use ($userInfo)
-				{
-					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Uw SIN-account is geactiveerd');
-				}
-			);
+			Mail::send (new AccountActivated ($userInfo));
 
 			Log::log ('Gebruiker gevalideerd', NULL, $user, $userInfo);
 
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			DB::rollback ();
 
@@ -745,7 +740,7 @@ class StaffUserController extends Controller
 			);
 			$userMailEnabledPretty = $userMailEnabledMap[$user->mail_enabled] . ' (' . $user->mail_enabled . ')';
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			$userMailEnabledPretty = $user->mail_enabled;
 		}

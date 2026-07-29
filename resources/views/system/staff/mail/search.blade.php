@@ -72,9 +72,9 @@ E-maildomeinen en -adressen &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/mail/forwarding/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
+						<a href="/staff/mail/forward/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
 							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/mail/forwarding/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
+						</a><a href="/staff/mail/forward/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
 							<img src="/img/icons/remove.png" alt="Verwijderen" />
 						</a>
 					</div>

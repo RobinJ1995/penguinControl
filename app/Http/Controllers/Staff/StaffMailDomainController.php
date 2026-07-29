@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -62,7 +61,7 @@ class StaffMailDomainController extends Controller
 			array
 			(
 				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Domein' => array ('required', 'unique:mail_domain_virtual,domain', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
+				'Domein' => array ('required', 'unique:mail_domain,domain', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
 			)
 		);
 		
@@ -106,7 +105,7 @@ class StaffMailDomainController extends Controller
 			array
 			(
 				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Domein' => array ('required', 'unique:mail_domain_virtual,domain,' . $domain->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
+				'Domein' => array ('required', 'unique:mail_domain,domain,' . $domain->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
 			)
 		);
 		
@@ -128,9 +127,9 @@ class StaffMailDomainController extends Controller
 	
 	public function remove ($domain)
 	{
-		$mUsersCount = MailUser::where('mail_domain_virtual_id', $domain->id)
+		$mUsersCount = MailUser::where('mail_domain_id', $domain->id)
 			->count();
-		$mFwdsCount = MailForward::where('mail_domain_virtual_id', $domain->id)
+		$mFwdsCount = MailForward::where('mail_domain_id', $domain->id)
 			->count();
 		
 		if ($mUsersCount > 0 || $mFwdsCount > 0)

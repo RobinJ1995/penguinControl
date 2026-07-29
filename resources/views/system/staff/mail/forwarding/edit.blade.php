@@ -5,7 +5,7 @@ Doorstuuradres bewerken &bull; Staff
 @endsection
 
 @section ('content')
-<form action="/staff/mail/forwarding/{{ $mFwd->id }}/edit" method="POST" data-abide>
+<form action="/staff/mail/forward/{{ $mFwd->id }}/edit" method="POST" data-abide>
 	<fieldset>
 		<legend>Doorstuurdadres bewerken</legend>
 		<div class="row">
@@ -21,7 +21,7 @@ Doorstuuradres bewerken &bull; Staff
 						(
 							'domain',
 							$domains,
-							old ('domain', $mFwd->mail_domain_virtual_id)
+							old ('domain', $mFwd->mail_domain_id)
 						)
 					}}
 				</label>

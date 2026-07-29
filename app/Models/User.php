@@ -38,27 +38,27 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	
 	public function userInfo ()
 	{
-		return $this->belongsTo ('\App\Models\UserInfo');
+		return $this->belongsTo (UserInfo::class);
 	}
 	
 	public function mailDomain ()
 	{
-		return $this->hasMany ('\App\Models\MailDomain');
+		return $this->hasMany (MailDomain::class);
 	}
 	
 	public function mailForward ()
 	{
-		return $this->hasMany ('\App\Models\MailForward');
+		return $this->hasMany (MailForward::class);
 	}
 	
 	public function mailUser ()
 	{
-		return $this->hasMany ('\App\Models\MailUser');
+		return $this->hasMany (MailUser::class);
 	}
 	
 	public function primaryGroup ()
 	{
-		return $this->hasOne ('\App\Models\Group', 'gid', 'gid');
+		return $this->hasOne (Group::class, 'gid', 'gid');
 	}
 	
 	public function isGroupMember (Group $group)

@@ -21,7 +21,7 @@ E-mailaccount bewerken &bull; Staff
 						(
 							'domain',
 							$domains,
-							old ('domain', $mUser->mail_domain_virtual_id)
+							old ('domain', $mUser->mail_domain_id)
 						)
 					}}
 				</label>

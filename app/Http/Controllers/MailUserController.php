@@ -24,7 +24,7 @@ class MailUserController extends Controller
 			->with ('mailDomain')
 			->get ();
 		
-		return view ('mail.user.index', compact ('user', 'userInfo', 'mUsers', 'alerts'));
+		return view ('mail.user.index', compact ('user', 'userInfo', 'mUsers'));
 	}
 	
 	public function create ()

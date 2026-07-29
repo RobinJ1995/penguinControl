@@ -136,7 +136,7 @@ class VHostController extends Controller
 			),
 			array
 			(
-				'Document root' => array ($insideHomedir ? 'regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/' : 'optional'),
+				'Document root' => array ($insideHomedir ? 'regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/' : 'nullable'),
 				'Aliases' => array ('nullable', 'unique:vhost,servername', 'unique:vhost,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1')

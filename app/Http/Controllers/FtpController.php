@@ -55,7 +55,7 @@ class FtpController extends Controller
 			),
 			array
 			(
-				'Username' => array ('required', 'unique:ftp,username', 'alpha_dash', 'not_in:' . $ftp->user->userInfo->username . '_,' . prohibited_usernames (true)),
+				'Username' => array ('required', 'unique:ftp,username', 'alpha_dash', 'not_in:' . $user->userInfo->username . '_,' . prohibited_usernames (true)),
 				'Password' => array ('required', 'min:8'),
 				'Password (confirmation)' => 'same:Password',
 				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-]+\/)*$/')

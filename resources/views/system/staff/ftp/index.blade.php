@@ -31,7 +31,7 @@ FTP-accounts &bull; Staff
 				@if ($ftp->locked)
 					<img src="/img/icons/locked.png" alt="[Locked]" />
 				@endif
-				{{ $ftp->user }}
+				{{ $ftp->username }}
 			</td>
 			<td>{{ $ftp->dir }}</td>
 			<td>

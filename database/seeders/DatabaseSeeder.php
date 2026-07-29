@@ -30,6 +30,15 @@ class DatabaseSeeder extends Seeder
 	const USER_GID = 2000;
 
 	/**
+	 * The staff views compare a user's gid against the gid of the group named
+	 * "user" to decide whether to render them as staff, so that group has to
+	 * exist under exactly that name.
+	 */
+	const ADMIN_GROUP = 'staff';
+
+	const USER_GROUP = 'user';
+
+	/**
 	 * Seed the application's database.
 	 *
 	 * @return void
@@ -39,8 +48,8 @@ class DatabaseSeeder extends Seeder
 		$this->seedLimits ();
 		$this->seedPages ();
 
-		$adminGroup = $this->seedGroup ('staff', self::ADMIN_GID);
-		$userGroup = $this->seedGroup ('users', self::USER_GID);
+		$adminGroup = $this->seedGroup (self::ADMIN_GROUP, self::ADMIN_GID);
+		$userGroup = $this->seedGroup (self::USER_GROUP, self::USER_GID);
 
 		$this->seedUser ('admin', 'Ada', 'Lovelace', $adminGroup, 5000, 'admin');
 		$this->seedUser ('penguin', 'Pingu', 'Pinguin', $userGroup, 5001, 'penguin');

@@ -2,6 +2,11 @@
 
 namespace App;
 
+use App\Models\Log;
+use App\Models\User;
+use App\Models\UserInfo;
+use Illuminate\Support\Facades\App;
+
 class ProblemSolver
 {
 	private $user;
@@ -48,12 +53,12 @@ class ProblemSolver
 			'USER_NOT_VALIDATED' => array
 			(
 				'name' => 'USER_NOT_VALIDATED',
-				'message' => 'User has noy yet been activated'
+				'message' => 'User has not yet been activated'
 			),
 			'RETARDED_MEDEWERKER' => array
 			(
 				'name' => 'RETARDED_MEDEWERKER',
-				'message' => 'Eén of andere retarded medewerker heeft weer gebruikers zitten valideren zonder de documentatie te lezen.'
+				'message' => 'A user was validated without following the documentation: the home directory is missing.'
 			),
 		);
 		$problems = array ();
@@ -67,7 +72,7 @@ class ProblemSolver
 		{
 			$problems[] = array ('USER_NOT_VALIDATED');
 		}
-		else if (! file_exists ($this->user->homedir) && ! App::environment ('local')) // In lokale dev environment gaat dit anders waarschijnlijk altijd triggeren //
+		else if (! file_exists ($this->user->homedir) && ! App::environment ('local')) // Otherwise this would trigger constantly in a local dev environment //
 		{
 			$problems[] = array ('RETARDED_MEDEWERKER');
 		}
@@ -78,31 +83,32 @@ class ProblemSolver
 				if (! file_exists ($vhost->path ()))
 				{
 					if ($fix)
-						$vhost->save (); // vHost file zou geschreven moeten worden //
+						$vhost->save (); // The vHost file should have been written //
 					
 					$problems[] = array ('VHOST_FILE_ABSENT', 'vHost configuration file has been regenerated', $vhost);
 				}
 				else if (preg_match ('#\s*DocumentRoot\s+expired#i', file_get_contents ($vhost->path ())))
 				{
 					if ($fix)
-						$vhost->save (); // vHost file zou opnieuw geschreven moeten worden //
+						$vhost->save (); // The vHost file should be rewritten //
 					
 					$problems[] = array ('VHOST_NOT_RENEWED', 'vHost configuration file has been regenerated', $vhost);
 				}
 				
 				if (! (file_exists ($vhost->docroot) && is_dir ($vhost->docroot)))
 				{
-					$sinUser = UserInfo::where ('username', 'sin')->firstOrFail ()->user;
-					if (! (file_exists ($sinUser->homedir) && is_dir ($sinUser->homedir)))
+					$referenceUserInfo = UserInfo::where ('username', 'sin')->first ();
+					$referenceUser = $referenceUserInfo === NULL ? NULL : $referenceUserInfo->user;
+					if ($referenceUser !== NULL && ! (file_exists ($referenceUser->homedir) && is_dir ($referenceUser->homedir)))
 					{
-						$problems[] = array ('HOMEDIR_STORAGE_UNAVAILABLE'); // Problemen met de NAS? De home directories lijken niet beschikbaar te zijn... //
+						$problems[] = array ('HOMEDIR_STORAGE_UNAVAILABLE'); // Trouble with the NAS? The home directories don't look available... //
 					}
 					else
 					{
 						if ($fix)
 							$status = $this->createDirectory ($vhost->docroot, $this->user, '711');
 						
-						$problems[] = array ('DOCROOT_ABSENT', 'Document root created' . (isset ($status) && $status['exitcode'] > 0 ? ' (possibly failed)' : ''), $vhost); // Document root van de vHost lijkt niet te bestaan; Automatisch proberen te fixen kan riskant zijn //
+						$problems[] = array ('DOCROOT_ABSENT', 'Document root created' . (isset ($status) && $status['exitcode'] > 0 ? ' (possibly failed)' : ''), $vhost); // The vHost's document root doesn't seem to exist; fixing it automatically can be risky //
 					}
 				}
 			}
@@ -112,7 +118,7 @@ class ProblemSolver
 				if ($fix)
 					$status = $this->createDirectory ($this->user->homedir . '/logs', $this->user, '711');
 
-				$problems[] = array ('LOGS_FOLDER_ABSENT', 'Log folder created' . (isset ($status) && $status['exitcode'] > 0 ? ' (possibly failed)' : ''), $this->user); // Weer zo ene die zijne logs folder verwijderd heeft... //
+				$problems[] = array ('LOGS_FOLDER_ABSENT', 'Log folder created' . (isset ($status) && $status['exitcode'] > 0 ? ' (possibly failed)' : ''), $this->user); // Another one who deleted their logs folder... //
 			}
 		}
 		
@@ -135,14 +141,16 @@ class ProblemSolver
 			);
 		}
 		
-		SinLog::log ('ProblemSolver has been executed' . (! $fix ? ' (dry run)' : ''), NULL, $data);
+		Log::log ('ProblemSolver has been executed' . (! $fix ? ' (dry run)' : ''), NULL, $data);
 		
 		return $data;
 	}
 	
-	private function createDirectory ($directory, User $owner = NULL, $permissions = NULL)
+	private function createDirectory ($directory, ?User $owner = NULL, $permissions = NULL)
 	{
 		$output = array ();
+		$cmd2 = $cmd3 = NULL;
+		$exitStatus2 = $exitStatus3 = 0;
 		
 		$cmd1 = 'mkdir -p ' . escapeshellarg ($directory) . ' 2>&1';
 		exec ($cmd1, $output, $exitStatus1);
@@ -156,7 +164,7 @@ class ProblemSolver
 		if ($permissions !== NULL)
 		{
 			if (! is_string ($permissions))
-				throw new Exception ('Permissions should be passed as string, just to be safe...');
+				throw new \Exception ('Permissions should be passed as string, just to be safe...');
 			
 			$cmd3 = 'chmod ' . escapeshellarg ($permissions) . ' ' . escapeshellarg ($directory) . ' 2>&1';
 			exec ($cmd3, $output, $exitStatus3);
@@ -165,7 +173,7 @@ class ProblemSolver
 		return array
 		(
 			'exitcode' => max ($exitStatus1, $exitStatus2, $exitStatus3),
-			'command' => array ($cmd1, $cmd2, $cmd3),
+			'command' => array_values (array_filter (array ($cmd1, $cmd2, $cmd3))),
 			'output' => implode (PHP_EOL, $output)
 		);
 	}

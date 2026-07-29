@@ -247,7 +247,6 @@
 			{!! $alert !!}
 			@endforeach
 			@endif
-			@section ('alerts')
 			@if (! empty (Session::get ('alerts')))
 			@foreach (Session::get ('alerts') as $alert)
 			{!! $alert !!}

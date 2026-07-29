@@ -79,6 +79,6 @@ class SystemTask extends BaseModel
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 }

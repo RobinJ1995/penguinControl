@@ -55,7 +55,7 @@ class DatabaseCredentials
 		$hash = $result[0][0];
 		
 		if (empty ($hash))
-			throw new Exception ("DBMS didn't return a valid password hash");
+			throw new \Exception ("DBMS didn't return a valid password hash");
 		
 		return $hash;
 	}

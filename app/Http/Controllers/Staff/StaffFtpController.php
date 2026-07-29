@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -41,7 +40,7 @@ class StaffFtpController extends Controller
 		$username = request ('username');
 		
 		$query = Ftp::where ('dir', 'LIKE', '%' . $dir . '%')
-			->where ('user', 'LIKE', '%' . $user . '%');
+			->where ('username', 'LIKE', '%' . $user . '%');
 		
 		if (! empty ($username))
 		{
@@ -99,7 +98,7 @@ class StaffFtpController extends Controller
 			array
 			(
 				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Gebruikersnaam' => array ('unique:ftp,user', 'alpha_num'),
+				'Gebruikersnaam' => array ('unique:ftp,username', 'alpha_num'),
 				'Wachtwoord' => array ('required', 'min:8'),
 				'Wachtwoord (bevestiging)' => 'same:Wachtwoord',
 				'Map' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
@@ -112,7 +111,7 @@ class StaffFtpController extends Controller
 		$ftp = new Ftp ();
 		$ftp->uid = request ('uid');
 		$userInfo = $ftp->getUser ()->userInfo;
-		$ftp->user = (empty (request ('user')) ? $userInfo->username : $userInfo->username . '_' . request ('user'));
+		$ftp->username = (empty (request ('user')) ? $userInfo->username : $userInfo->username . '_' . request ('user'));
 		$ftp->setPassword (request ('passwd'));
 		$ftp->dir = request ('dir');
 		
@@ -152,7 +151,7 @@ class StaffFtpController extends Controller
 			array
 			(
 				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Gebruikersnaam' => array ('unique:ftp,user', 'alpha_num'),
+				'Gebruikersnaam' => array ('unique:ftp,username', 'alpha_num'),
 				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
 				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord'),
 				'Map' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
@@ -166,7 +165,7 @@ class StaffFtpController extends Controller
 		
 		$ftp->uid = request ('uid');
 		$userInfo = $ftp->getUser ()->userInfo;
-		$ftp->user = (empty (request ('user')) ? $userInfo->username : $userInfo->username . '_' . request ('user'));
+		$ftp->username = (empty (request ('user')) ? $userInfo->username : $userInfo->username . '_' . request ('user'));
 		$ftp->dir = request ('dir');
 		if (! empty (request ('passwd')))
 			$ftp->setPassword (request ('passwd'));

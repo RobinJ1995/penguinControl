@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Facade;
+
 return [
 
     /*
@@ -128,17 +130,24 @@ return [
     | Class Aliases
     |--------------------------------------------------------------------------
     |
-    | Facade::defaultAliases() already aliases every framework facade, so only
-    | this application's own classes need listing here. Blade templates refer
-    | to these by their short names.
+    | Facade::defaultAliases() covers every framework facade. Setting this key
+    | replaces that list rather than extending it, so it has to be merged in
+    | explicitly. Only this application's own classes are added: the Blade
+    | templates refer to them by their short names.
     |
     */
 
-    'aliases' => [
+    'aliases' => Facade::defaultAliases()->merge([
         'Alert' => App\Alert::class,
         'Form' => App\Form::class,
+        'Ftp' => App\Models\Ftp::class,
+        'Group' => App\Models\Group::class,
+        'MailDomain' => App\Models\MailDomain::class,
+        'MailForward' => App\Models\MailForward::class,
+        'MailUser' => App\Models\MailUser::class,
         'SystemTask' => App\Models\SystemTask::class,
         'UserLimit' => App\Models\UserLimit::class,
-    ],
+        'Vhost' => App\Models\Vhost::class,
+    ])->toArray(),
 
 ];

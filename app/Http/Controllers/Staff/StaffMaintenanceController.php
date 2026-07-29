@@ -20,7 +20,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -31,6 +30,7 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -57,7 +57,7 @@ class StaffMaintenanceController extends Controller
 
 			return view ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex));
 		}
@@ -84,7 +84,7 @@ class StaffMaintenanceController extends Controller
 			
 			return view ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex));
 		}
@@ -118,14 +118,14 @@ class StaffMaintenanceController extends Controller
 				$alerts[] = new Alert ('vHost toegevoegd: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 
 				$ftp = new Ftp (); // User's default FTP account //
-				$ftp->user = $userInfo->username;
+				$ftp->username = $userInfo->username;
 				$ftp->uid = $user->uid;
 				$ftp->passwd = $user->crypt;
 				$ftp->dir = $user->homedir;
 				$ftp->locked = 1; // Enkel bewerkbaar door staff //
 				$ftp->save ();
 
-				$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->username, Alert::TYPE_SUCCESS);
 			}
 			
 			DB::commit ();
@@ -134,7 +134,7 @@ class StaffMaintenanceController extends Controller
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex) // ->with ('ex', $ex) kan blijkbaar niet // Serialization of 'Closure' is not allowed //
+		catch (\Exception $ex) // ->with ('ex', $ex) kan blijkbaar niet // Serialization of 'Closure' is not allowed //
 		{
 			DB::rollback ();
 			
@@ -244,7 +244,7 @@ class StaffMaintenanceController extends Controller
 				(
 					empty ($ftp->id)
 					|| empty ($ftp->uid)
-					|| empty ($ftp->user)
+					|| empty ($ftp->username)
 					|| empty ($ftp->passwd)
 					|| empty ($ftp->dir)
 				)
@@ -321,7 +321,7 @@ class StaffMaintenanceController extends Controller
 					|| empty ($task->type)
 				)
 				{
-					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->link (), 'warning');
+					$alerts[] = new Alert ('System task has missing fields: ' . $task->link (), 'warning');
 				}
 				
 				if ($task->started == 1 && (time () + 5 > $task->start) && empty ($task->exitcode))
@@ -336,7 +336,7 @@ class StaffMaintenanceController extends Controller
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			DB::rollback ();
 			

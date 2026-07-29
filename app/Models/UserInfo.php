@@ -24,12 +24,12 @@ class UserInfo extends BaseModel
 	
 	public function userLog ()
 	{
-		return $this->hasMany ('\App\Models\UserLog');
+		return $this->hasMany (UserLog::class);
 	}
 	
 	public function user ()
 	{
-		return $this->hasOne ('\App\Models\User');
+		return $this->hasOne (User::class);
 	}
 
 	public function getFullName ()
@@ -57,7 +57,7 @@ class UserInfo extends BaseModel
 		$homedir = $this->user->homedir;
 		
 		if ($group == NULL)
-			throw new Exception ('Group unknown');
+			throw new \Exception ('Group unknown');
 		
 		$cmd1 = 'cp -R /etc/skel/ ' . escapeshellarg ($homedir) . ' 2>&1';
 		$cmd2 = 'chown ' . escapeshellarg ($this->username) . ':' . escapeshellarg ($group->name) . ' ' . escapeshellarg ($homedir) . ' -R 2>&1';
@@ -86,7 +86,7 @@ class UserInfo extends BaseModel
 	public function link ()
 	{
 		$url = $this->url ();
-		$caption = get_class () . '#' . $this->id . ' (' . $this->username . ')';
+		$caption = class_basename (static::class) . '#' . $this->id . ' (' . $this->username . ')';
 		
 		if ($url == NULL)
 			return $caption;

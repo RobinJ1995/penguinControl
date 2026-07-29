@@ -44,7 +44,7 @@ class Plugin
 		
 		foreach (self::all () as $plugin)
 		{
-			$pluginResponses = $plugin->executeActions ($request, $action, $params);
+			$pluginResponses = $plugin->executeActions ($request, $action, ...$params);
 			if (count ($pluginResponses) > 0)
 				array_push ($responses, ...$pluginResponses);
 		}
@@ -116,7 +116,7 @@ class Plugin
 	public function executeActions ($request, $action, ...$params)
 	{
 		if (count ($this->actions) === 0)
-			return;
+			return array ();
 		
 		include_once ($this->getFolder () . 'actions.php');
 		$responses = [];
@@ -140,7 +140,7 @@ class Plugin
 	public function executeSystemTasks ($type, $data = [])
 	{
 		if (count ($this->systemTasks) === 0)
-			return;
+			return array ();
 		
 		include_once ($this->getFolder () . 'system_tasks.php');
 		$statuses = [];

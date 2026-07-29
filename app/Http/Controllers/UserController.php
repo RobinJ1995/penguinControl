@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use App\Alert;
 use App\DatabaseCredentials;
 use App\Models\Ftp;
+use App\Mail\AccountLoginLink;
+use App\Mail\AccountRenewal;
+use App\Mail\AccountTemporaryPassword;
+use App\Mail\UserAwaitingActivation;
 use App\Models\Log;
 use App\Models\User;
+use App\Models\SystemTask;
 use App\Models\UserInfo;
+use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -235,11 +241,7 @@ class UserController extends Controller
 
 		$userInfo->save ();
 
-		Mail::send ('email.staff.user.awaiting_activation', compact ('userInfo'), function ($msg) use ($userInfo)
-			{
-				$msg->to (Config::get ('penguin.admin_email', '🐧control')->subject ('User awaiting activation'));
-			}
-		);
+		Mail::send (new UserAwaitingActivation ($userInfo));
 
 		Log::log ('Account registration', NULL, $userInfo);
 
@@ -293,11 +295,7 @@ class UserController extends Controller
 		$userInfo->save ();
 
 		$url = url ('user/' . $user->id . '/expired/renew/' . $userInfo->validationcode);
-		Mail::send ('email.user.expired', compact ('userInfo', 'url'), function ($msg) use ($userInfo)
-			{
-				$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Account renewal');
-			}
-		);
+		Mail::send (new AccountRenewal ($userInfo, $url));
 
 		Log::log ('Account renewal requested', $user->id, $userInfo);
 
@@ -388,15 +386,11 @@ class UserController extends Controller
 		{
 			$expired = true;
 
-			$random = bin2hex (openssl_random_pseudo_bytes (8));
+			$random = bin2hex (random_bytes (8));
 			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
 			$user->save ();
 
-			Mail::send ('email.user.amnesia_expired', compact ('userInfo', 'random'), function ($msg) use ($userInfo)
-				{
-					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Account login information');
-				}
-			);
+			Mail::send (new AccountTemporaryPassword ($userInfo, $random));
 
 			Log::log ('Temporary password sent', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
@@ -408,13 +402,9 @@ class UserController extends Controller
 
 		$url = url ('user/' . $user->id . '/amnesia/login/' . $userInfo->logintoken);
 
-		Mail::send ('email.user.amnesia', compact ('userInfo', 'url'), function ($msg) use ($userInfo)
-			{
-				$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Account login information');
-			}
-		);
+		Mail::send (new AccountLoginLink ($userInfo, $url));
 
-		Log::info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
+		logger ()->info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
 
 		Log::log ('One-time login link sent', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
@@ -441,7 +431,7 @@ class UserController extends Controller
 			$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', Alert::TYPE_SUCCESS);
 			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken. Indien gewenst kunt u uw wachtwoord wijzigen via <a href="/user/edit">Gebruiker &raquo; Gegevens wijzigen</a>.', Alert::TYPE_INFO);
 
-			Log::info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			logger ()->info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
 			Log::log ('Gebruiker ingelogd met eenmalige loginlink', $user->id, $user);
 
@@ -449,7 +439,7 @@ class UserController extends Controller
 		}
 		else
 		{
-			Log::info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			logger ()->info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
 			Log::log ('Eenmalige login token geweigerd', $user->id, $userInfo, $logintoken, $_SERVER['REMOTE_ADDR']);
 

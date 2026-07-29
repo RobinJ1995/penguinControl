@@ -80,9 +80,9 @@ class Vhost extends LimitedUserOwnedModel
 		$ok2 = symlink (self::VHOSTDIRAVAILABLE . $filename, self::VHOSTDIRENABLED . $filename);
 		
 		if ($ok1 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+			throw new \Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
 		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
+			throw new \Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
 		
 		return parent::save ($options);
 	}
@@ -95,9 +95,9 @@ class Vhost extends LimitedUserOwnedModel
 		$ok2 = unlink (self::VHOSTDIRENABLED . $filename);
 		
 		if ($ok1 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+			throw new \Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
 		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '` niet verwijderen');
+			throw new \Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '` niet verwijderen');
 		
 		return parent::delete ();
 	}
@@ -148,7 +148,7 @@ class Vhost extends LimitedUserOwnedModel
 	
 	public function user ()
 	{
-		return $this->hasOne ('\App\Models\User', 'uid', 'uid');
+		return $this->hasOne (User::class, 'uid', 'uid');
 	}
 	
 	public function url ()
@@ -158,7 +158,7 @@ class Vhost extends LimitedUserOwnedModel
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 	
 	public function identification ()

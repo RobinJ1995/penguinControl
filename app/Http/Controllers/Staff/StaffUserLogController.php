@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -155,26 +154,27 @@ class StaffUserLogController extends Controller
 
 	public function export ()
 	{
-		if (!empty (request ('userLogId')))
+		$userLogs = UserLog::query ();
+		if (! empty (request ('userLogId')))
 		{
 			$userLogsIds = json_decode (request ('userLogId'));
 			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 		}
 
 		$status = request ('status');
-		$exportSeperator = request ('seperator');
+		$exportSeparator = request ('seperator');
 
 		$csvHeader = array
 		(
 			'userInfo.id' => 'id',
-			'userInfo.username' => 'gebruikersnaam',
-			'userInfo.fname' => 'voornaam',
-			'userInfo.lname' => 'achternaam',
+			'userInfo.username' => 'username',
+			'userInfo.fname' => 'first_name',
+			'userInfo.lname' => 'surname',
 			'userInfo.email' => 'e-mail',
 			'userInfo.lastchange' => 'lastchange',
 			'userInfo.validated' => 'validated',
 			'userLog.id' => 'user_log_id',
-			'userLog.time' => 'datum/tijd',
+			'userLog.time' => 'date_time',
 			'userLog.new' => 'new',
 			'userLog.status' => 'status'
 		);
@@ -188,23 +188,25 @@ class StaffUserLogController extends Controller
 		if ($status != 'unchanged')
 			$userLogs->update (array ('status' => $status));
 
-		switch ($exportSeperator)
+		// Cast, because PHP 8 no longer considers '' equal to 0 //
+		switch ((int) $exportSeparator)
 		{
 			case 0:
-				$seperator = ',';
+				$separator = ',';
 				break;
 			case 1:
-				$seperator = ';';
+				$separator = ';';
 				break;
 			default :
-				$seperator = '';
+				$separator = '';
 				break;
 		}
 
+		$userOutput = array ();
 		foreach ($fields as $field)
 			$userOutput[] = $csvHeader[$field];
 
-		$output[] = implode ($seperator, $userOutput);
+		$output[] = implode ($separator, $userOutput);
 
 		foreach ($userLogsUserInfo as $userLog)
 		{
@@ -218,16 +220,19 @@ class StaffUserLogController extends Controller
 					$arr = explode ('.', $field);
 					$table = $arr[0];
 					$tableField = $arr[1];
+					$source = $table === 'userInfo' ? $userInfo : $userLog;
 					// escape values with double quotes
-					$userOutput[] = '"' . ${$table}->{$tableField} . '"';
+					$userOutput[] = '"' . $source->{$tableField} . '"';
 				}
 			}
 
-			$output[] = implode ($seperator, $userOutput);
+			$output[] = implode ($separator, $userOutput);
 		}
 
 		$csvOutput = rtrim (implode (PHP_EOL, $output), "\n");
 		$fileName = 'export/billing_report_' . date ('Y_m_d_H_i_s') . '.csv';
+		if (! is_dir (public_path ('export')))
+			mkdir (public_path ('export'), 0755, true);
 		$fileHandle = fopen (public_path ($fileName), 'w');
 		fwrite ($fileHandle, $csvOutput);
 		fclose ($fileHandle);

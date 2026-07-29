@@ -20,9 +20,9 @@ Doorstuuradressen &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/mail/forwarding/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
+					<a href="/staff/mail/forward/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
 						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/staff/mail/forwarding/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
+					</a><a href="/staff/mail/forward/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
 						<img src="/img/icons/remove.png" alt="Verwijderen" />
 					</a>
 				</div>
@@ -52,7 +52,7 @@ Doorstuuradressen &bull; Staff
 </table>
 {{ $mFwds->links () }}
 <div class="right">
-	<a href="/staff/mail/forwarding/create" title="Toevoegen" class="button radius">
+	<a href="/staff/mail/forward/create" title="Toevoegen" class="button radius">
 		<img src="/img/icons/add.png" alt="Toevoegen" />
 	</a>
 </div>
