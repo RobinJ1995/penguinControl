@@ -7,7 +7,7 @@ Edit page &bull; Staff
 @section ('js')
 @parent
 <script type="text/javascript" src="/js/ace/ace.js"></script>
-<script type="text/javascript" src="/js/embedAce.js"></script>
+@vite ('resources/js/page-editor.js')
 @endsection
 
 @section ('content')

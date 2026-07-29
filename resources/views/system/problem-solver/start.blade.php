@@ -6,7 +6,7 @@ Problem solver
 
 @section ('js')
 @parent
-<script src="/js/ProblemSolver.js"></script>
+@vite ('resources/js/problem-solver.js')
 <script type="text/javascript">
 	$(document).ready
 	(

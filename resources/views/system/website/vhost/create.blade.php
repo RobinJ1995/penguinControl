@@ -6,7 +6,7 @@ Create vHost
 
 @section ('js')
 @parent
-<script src="/js/vhost_create.js"></script>
+@vite ('resources/js/vhost-create.js')
 @endsection
 
 @section ('content')

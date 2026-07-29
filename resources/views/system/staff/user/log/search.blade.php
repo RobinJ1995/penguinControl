@@ -2,7 +2,7 @@
 
 @section ('css')
 @parent
-<link rel="stylesheet" media="print" href="/css/print.css" />
+@vite ('resources/css/print.css')
 @endsection
 
 @section ('pageTitle')

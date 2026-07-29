@@ -1,4 +1,4 @@
-ProblemSolver =
+const ProblemSolver =
 (
 	function (userId)
 	{
@@ -90,4 +90,6 @@ ProblemSolver =
 			$('#problemSolverContainer').html (table);
 		}
 	}
-)
+);
+
+export default ProblemSolver;
