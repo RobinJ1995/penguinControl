@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Pagina toevoegen &bull; Staff
+Add page &bull; Staff
 @endsection
 
 @section ('js')
@@ -13,10 +13,10 @@ Pagina toevoegen &bull; Staff
 @section ('content')
 <form action="/staff/page/create" method="POST" data-abide>
 	<fieldset>
-		<legend>Pagina toevoegen</legend>
+		<legend>Add page</legend>
 		<div class="row">
 			<div class="large-6 medium-12 small-12 column">
-				<label>Titel:
+				<label>Title:
 					<input type="text" name="title" value="{{ old ('title') }}" required />
 				</label>
 				<small class="error">Required field</small>
@@ -28,9 +28,9 @@ Pagina toevoegen &bull; Staff
 						'published',
 						array
 						(
-							'-1' => 'Concept',
-							'0' => 'Gepubliceerd',
-							'1' => 'Gepubliceerd met link in menu'
+							'-1' => 'Draft',
+							'0' => 'Published',
+							'1' => 'Published with a menu link'
 						),
 						old ('published', '0')
 					)
@@ -39,14 +39,14 @@ Pagina toevoegen &bull; Staff
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-2 medium-6 small-12 column">
-				<label>Gewicht:
+				<label>Weight:
 					<input type="number" name="weight" value="{{ old ('weight', 0) }}" min="-127" max="127" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 		</div>
 		<div>
-			<label>Inhoud (HTML):
+			<label>Content (HTML):
 				<div id="editor"></div>
 				<textarea name="content" required>{{ old ('content') }}</textarea>
 			</label>
@@ -54,7 +54,7 @@ Pagina toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

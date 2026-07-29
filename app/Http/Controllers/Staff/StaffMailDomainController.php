@@ -55,13 +55,13 @@ class StaffMailDomainController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => request ('uid'),
-				'Domein' => request ('domain')
+				'Owner' => request ('uid'),
+				'Domain' => request ('domain')
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Domein' => array ('required', 'unique:mail_domain,domain', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Domain' => array ('required', 'unique:mail_domain,domain', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
 			)
 		);
 		
@@ -74,9 +74,9 @@ class StaffMailDomainController extends Controller
 		
 		$domain->save ();
 		
-		Log::log ('E-maildomein aangemaakt', NULL, $domain);
+		Log::log ('E-mail domain created', NULL, $domain);
 		
-		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-maildomein toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-mail domain added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($domain)
@@ -99,13 +99,13 @@ class StaffMailDomainController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => request ('uid'),
-				'Domein' => request ('domain')
+				'Owner' => request ('uid'),
+				'Domain' => request ('domain')
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Domein' => array ('required', 'unique:mail_domain,domain,' . $domain->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Domain' => array ('required', 'unique:mail_domain,domain,' . $domain->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/')
 			)
 		);
 		
@@ -120,9 +120,9 @@ class StaffMailDomainController extends Controller
 		
 		$domain->save ();
 		
-		Log::log ('E-maildomein bijgewerkt', NULL, $domain);
+		Log::log ('E-mail domain updated', NULL, $domain);
 		
-		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-maildomein bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-mail domain updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($domain)
@@ -133,13 +133,13 @@ class StaffMailDomainController extends Controller
 			->count();
 		
 		if ($mUsersCount > 0 || $mFwdsCount > 0)
-			return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('U heeft nog E-mailadressen en/of doorstuuradressen die aan dit domein zijn gekoppeld.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('You still have e-mail addresses and/or forwarding addresses linked to this domain.', Alert::TYPE_ALERT)));
 		
 		$domain->delete ();
 		
-		Log::log ('E-maildomein verwijderd', NULL, $domain);
+		Log::log ('E-mail domain removed', NULL, $domain);
 		
-		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-maildomein verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/domain')->with ('alerts', array (new Alert ('E-mail domain removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

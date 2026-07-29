@@ -89,19 +89,19 @@ class StaffFtpController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => request ('uid'),
-				'Gebruikersnaam' => request ('user'),
-				'Wachtwoord' => request ('passwd'),
-				'Wachtwoord (bevestiging)' => request ('passwd_confirm'),
-				'Map' => request ('dir')
+				'Owner' => request ('uid'),
+				'Username' => request ('user'),
+				'Password' => request ('passwd'),
+				'Password (confirmation)' => request ('passwd_confirm'),
+				'Directory' => request ('dir')
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Gebruikersnaam' => array ('unique:ftp,username', 'alpha_num'),
-				'Wachtwoord' => array ('required', 'min:8'),
-				'Wachtwoord (bevestiging)' => 'same:Wachtwoord',
-				'Map' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Username' => array ('unique:ftp,username', 'alpha_num'),
+				'Password' => array ('required', 'min:8'),
+				'Password (confirmation)' => 'same:Password',
+				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
 			)
 		);
 		
@@ -117,9 +117,9 @@ class StaffFtpController extends Controller
 		
 		$ftp->save ();
 		
-		Log::log ('FTP-account aangemaakt', NULL, $ftp);
+		Log::log ('FTP account created', NULL, $ftp);
 		
-		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP-account toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP account added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($ftp)
@@ -142,19 +142,19 @@ class StaffFtpController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => request ('uid'),
-				'Gebruikersnaam' => request ('user'),
-				'Wachtwoord' => request ('passwd'),
-				'Wachtwoord (bevestiging)' => request ('passwd_confirm'),
-				'Map' => request ('dir')
+				'Owner' => request ('uid'),
+				'Username' => request ('user'),
+				'Password' => request ('passwd'),
+				'Password (confirmation)' => request ('passwd_confirm'),
+				'Directory' => request ('dir')
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Gebruikersnaam' => array ('unique:ftp,username', 'alpha_num'),
-				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
-				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord'),
-				'Map' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Username' => array ('unique:ftp,username', 'alpha_num'),
+				'Password' => array ('required_with:Password (confirmation)', 'min:8'),
+				'Password (confirmation)' => array ('required_with:Password', 'same:Password'),
+				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/')
 			)
 		);
 		
@@ -172,18 +172,18 @@ class StaffFtpController extends Controller
 		
 		$ftp->save ();
 		
-		Log::log ('FTP-account bijgewerkt', NULL, $ftp);
+		Log::log ('FTP account updated', NULL, $ftp);
 		
-		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP-account bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP account updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($ftp)
 	{
 		$ftp->delete ();
 		
-		Log::log ('FTP-account verwijderd', NULL, $ftp);
+		Log::log ('FTP account removed', NULL, $ftp);
 		
-		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP-account verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/ftp')->with ('alerts', array (new Alert ('FTP account removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

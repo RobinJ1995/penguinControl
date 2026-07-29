@@ -1,15 +1,15 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-vHost bewerken &bull; Staff
+Edit vHost &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/website/vhost/{{ $vhost->id }}/edit" method="POST" data-abide>
 	<fieldset>
-		<legend>vHost bewerken</legend>
+		<legend>Edit vHost</legend>
 		<div>
-			<label>Eigenaar:
+			<label>Owner:
 				{{ Form::select
 				(
 					'uid',
@@ -26,7 +26,7 @@ vHost bewerken &bull; Staff
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Beheerder:
+			<label>Administrator:
 				<input type="email" name="serveradmin" value="{{ old ('serveradmin', $vhost->serveradmin) }}" required />
 			</label>
 			<small class="error">Required field</small>
@@ -74,8 +74,8 @@ vHost bewerken &bull; Staff
 						'cgi',
 						array
 						(
-							'0' => 'Uit',
-							'1' => 'Aan'
+							'0' => 'Disabled',
+							'1' => 'Enabled'
 						),
 						old ('cgi', $vhost->cgi)
 					)
@@ -86,7 +86,7 @@ vHost bewerken &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ $vhost->id }}">Opslaan</button>
+			<button name="save" value="{{ $vhost->id }}">Save</button>
 		</div>
 	</fieldset>
 </form>

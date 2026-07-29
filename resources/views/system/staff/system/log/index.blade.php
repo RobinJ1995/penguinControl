@@ -10,7 +10,7 @@ Logs &bull; Staff
 		<tr>
 			<th></th>
 			<th>Datum/Tijd</th>
-			<th>Gebruiker</th>
+			<th>User</th>
 			<th>Gebeurtenis</th>
 		</tr>
 	</thead>
@@ -22,8 +22,8 @@ Logs &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/system/log/{{ $log->id }}/show" title="Weergeven" class="button tiny">
-						<img src="/img/icons/show.png" alt="Weergeven" />
+					<a href="/staff/system/log/{{ $log->id }}/show" title="Show" class="button tiny">
+						<img src="/img/icons/show.png" alt="Show" />
 					</a>
 				</div>
 			</td>

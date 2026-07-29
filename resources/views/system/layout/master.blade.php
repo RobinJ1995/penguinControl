@@ -15,9 +15,8 @@
 		@if (App::environment ('local'))
 		<style type="text/css">
 			/*
-			 * Gewoon om verwarring te voorkomen en een duidelijke
-			 * indicatie te geven dat in deze tab de lokale versie
-			 * draait ;-)
+			 * Just to avoid confusion, and to make it obvious that this
+			 * tab is running the local version ;-)
 			 */
 			
 			h1 img

@@ -11,7 +11,7 @@ ProblemSolver =
 			$('#problemSolverContainer').slideUp (320,
 				function ()
 				{
-					$(this).html ('<div class="panel"><img src="/img/spinner.gif" alt="" /> Zoeken naar veelvoorkomende problemen...</div>').slideDown (240);
+					$(this).html ('<div class="panel"><img src="/img/spinner.gif" alt="" /> Searching for common problems...</div>').slideDown (240);
 					
 					$.get
 					(
@@ -64,17 +64,17 @@ ProblemSolver =
 							
 			if (data.length === 0)
 			{
-				table = 'Geen problemen gevonden';
+				table = 'No problems found';
 			}
 			else
 			{
-				table = 'Gevonden problemen:\n\
+				table = 'Problems found:\n\
 					<table>\n\
 						<thead>\n\
 							<tr>\n\
-								<th>Probleem</th>\n\
-								<th>Onderdeel</th>\n\
-								<th>Opgelost?</th>\n\
+								<th>Problem</th>\n\
+								<th>Component</th>\n\
+								<th>Fixed?</th>\n\
 							</tr>\n\
 						</thead>\n\
 						<tbody>\n';
@@ -83,7 +83,7 @@ ProblemSolver =
 					table += '<tr>\n\
 						<td>' + data[i].message + '</td>\n\
 						<td>' + data[i].object + '</td>\n\
-						<td>' + (data[i].fix == void 0 ? 'Niet opgelost' : data[i].fix) + '</td>\n\
+						<td>' + (data[i].fix == void 0 ? 'Not fixed' : data[i].fix) + '</td>\n\
 						</tr>\n';
 			}
 

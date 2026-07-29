@@ -59,7 +59,7 @@ class VHostController extends Controller
 			array
 			(
 				'Host' => $servername,
-				//'Beheerder' => request ('serveradmin'),
+				//'Administrator' => request ('serveradmin'),
 				'Aliases' => $serveralias,
 				'Document root' => $docroot,
 				'Protocol' => request ('ssl'),
@@ -68,7 +68,7 @@ class VHostController extends Controller
 			array
 			(
 				'Host' => array ('required', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'),
-				//'Beheerder' => array ('required', 'email'),
+				//'Administrator' => array ('required', 'email'),
 				'Aliases' => array ('nullable', 'different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'),
 				'Document root' => array ('regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/', 'not_in:www/public/'),
 				'Protocol' => array ('required', 'in:0,1,2'),

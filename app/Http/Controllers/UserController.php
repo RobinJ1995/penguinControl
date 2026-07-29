@@ -236,7 +236,7 @@ class UserController extends Controller
 		$userInfo->email = request ('email');
 		$userInfo->schoolnr = request ('rnummer');
 		$userInfo->lastchange = time () / 60 / 60 / 24;
-		$userInfo->etc = serialize ($etc); // Na al de dirty hacks die Runes uitgehaald heeft met de oude SINControl mag ik ook wel eens zondigen zeker... //
+		$userInfo->etc = serialize ($etc); // After all the dirty hacks that were pulled with the old SINControl, I'm allowed to sin once too... //
 		$userInfo->validated = 0;
 
 		$userInfo->save ();
@@ -264,13 +264,13 @@ class UserController extends Controller
 			(
 				'Username' => request ('username'),
 				'Password' => request ('password'),
-				'Verlengen' => request ('renew')
+				'Renew' => request ('renew')
 			),
 			array
 			(
 				'Username' => array ('required', 'exists:user_info,username'),
 				'Password' => 'required',
-				'Verlengen' => array ('required', 'accepted')
+				'Renew' => array ('required', 'accepted')
 			)
 		);
 
@@ -311,7 +311,7 @@ class UserController extends Controller
 			$userLog = new UserLog ();
 			$userLog->user_info_id = $userInfo->id;
 			$userLog->new = 0;
-			$userLog->status = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			$userLog->status = 0; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
 
 			$userInfo->validationcode = null;
 
@@ -330,7 +330,7 @@ class UserController extends Controller
 
 			$vhosts = Vhost::where ('uid', $user->uid)->get ();
 			foreach ($vhosts as $vhost)
-				$vhost->save (); // In save () wordt nagekeken of user expired is //
+				$vhost->save (); // save () checks whether the user has expired //
 
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_APACHE_RELOAD;
@@ -387,7 +387,7 @@ class UserController extends Controller
 			$expired = true;
 
 			$random = bin2hex (random_bytes (8));
-			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
+			$user->setPassword ($random); //TODO// This can be abused to change arbitrary users' passwords //
 			$user->save ();
 
 			Mail::send (new AccountTemporaryPassword ($userInfo, $random));
@@ -422,18 +422,18 @@ class UserController extends Controller
 
 			$now = ceil (time () / 60 / 60 / 24);
 			if ($user->expire <= $now && $user->expire != -1)
-				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.<br />Uw gebruikersnaam is <kbd>' . $userInfo->username . '</kbd>. Indien u uw wachtwoord niet meer weet, <a href="/page/contact">neem contact met ons op</a>.', Alert::TYPE_INFO)));
+				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Your account has expired. Renew it to continue.<br />Your username is <kbd>' . $userInfo->username . '</kbd>. If you no longer know your password, <a href="/page/contact">contact us</a>.', Alert::TYPE_INFO)));
 
 			Auth::login ($user);
 
 			Session::put ('isLoggedInWithToken', true);
 
-			$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', Alert::TYPE_SUCCESS);
-			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken. Indien gewenst kunt u uw wachtwoord wijzigen via <a href="/user/edit">Gebruiker &raquo; Gegevens wijzigen</a>.', Alert::TYPE_INFO);
+			$alerts[] = new Alert ('Welcome, ' . $userInfo->fname . '!', Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('You are logged in via a <em>login token</em>. Remember that the link could only be used once. If you wish, you can change your password via <a href="/user/edit">User &raquo; Modify account</a>.', Alert::TYPE_INFO);
 
 			logger ()->info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
-			Log::log ('Gebruiker ingelogd met eenmalige loginlink', $user->id, $user);
+			Log::log ('User logged in with a one-time login link', $user->id, $user);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}
@@ -441,9 +441,9 @@ class UserController extends Controller
 		{
 			logger ()->info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
-			Log::log ('Eenmalige login token geweigerd', $user->id, $userInfo, $logintoken, $_SERVER['REMOTE_ADDR']);
+			Log::log ('One-time login token refused', $user->id, $userInfo, $logintoken, $_SERVER['REMOTE_ADDR']);
 
-			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgegeven link is ongeldig voor gebruiker ' . $userInfo->username, Alert::TYPE_ALERT)));
+			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('The supplied link is not valid for user ' . $userInfo->username, Alert::TYPE_ALERT)));
 		}
 	}
 }

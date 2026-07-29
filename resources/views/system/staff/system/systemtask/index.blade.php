@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Systeemopdrachten &bull; Staff
+System tasks &bull; Staff
 @endsection
 
 @section ('content')
@@ -9,9 +9,9 @@ Systeemopdrachten &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
-			<th>Opdracht</th>
+			<th>Task</th>
 			<th>Start</th>
-			<th>Einde</th>
+			<th>End</th>
 			<th>Laatste keer</th>
 			<th>Interval</th>
 			<th>Status</th>
@@ -25,12 +25,12 @@ Systeemopdrachten &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/system/systemtask/{{ $task->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
-					</a><!-- // Anders staat er spatie tussen de knoppen //
+					<a href="/staff/system/systemtask/{{ $task->id }}/remove" title="Remove" class="button tiny alert remove confirm">
+						<img src="/img/icons/remove.png" alt="Remove" />
+					</a><!-- // Otherwise there is whitespace between the buttons //
 					-->@if (! empty ($data))<!--
-					--><a href="/staff/system/systemtask/{{ $task->id }}/show" title="Weergeven" class="button tiny">
-						<img src="/img/icons/show.png" alt="Weergeven" />
+					--><a href="/staff/system/systemtask/{{ $task->id }}/show" title="Show" class="button tiny">
+						<img src="/img/icons/show.png" alt="Show" />
 					</a>
 					@endif
 				</div>
@@ -87,17 +87,17 @@ Systeemopdrachten &bull; Staff
 						if ($task->exitcode === NULL)
 						{
 							$img = 'task-unknown';
-							$alt = 'Zou gestart moeten zijn maar exit code is onbekend. Mogelijk is de opdracht nog aan het uitvoeren of is er iets mis.';
+							$alt = 'Should have started but the exit code is unknown. The task may still be running, or something went wrong.';
 						}
 						else if ($task->exitcode == 0)
 						{
 							$img = 'task-ok';
-							$alt = 'Uitgevoerd en beëindigd met exit code 0.';
+							$alt = 'Executed and finished with exit code 0.';
 						}
 						else
 						{
 							$img = 'task-error';
-							$alt = 'Uitgevoerd en beëindigd met exit code ' . $task->exitcode . '.';
+							$alt = 'Executed and finished with exit code ' . $task->exitcode . '.';
 						}
 					}
 					else
@@ -105,24 +105,24 @@ Systeemopdrachten &bull; Staff
 						if ($task->exitcode === NULL)
 						{
 							$img = 'task-unknown';
-							$alt = 'Staat gepland om opnieuw uitgevoerd te worden. Van de laatste uitvoering is geen exit code bekend. Mogelijk is de opdracht nog aan het uitvoeren of is er iets mis.';
+							$alt = 'Scheduled to run again. No exit code is known for the last run. The task may still be running, or something went wrong.';
 						}
 						else if ($task->exitcode == 0)
 						{
 							$img = 'task-planned-last-ok';
-							$alt = 'Staat gepland om opnieuw uitgevoerd te worden. Laatste uitvoering beëindigde met exit code 0.';
+							$alt = 'Scheduled to run again. The last run finished with exit code 0.';
 						}
 						else
 						{
 							$img = 'task-planned-last-error';
-							$alt = 'Staat gepland om opnieuw uitgevoerd te worden. Laatste uitvoering beëindigde met exit code ' . $task->exitcode . '.';
+							$alt = 'Scheduled to run again. The last run finished with exit code ' . $task->exitcode . '.';
 						}
 					}
 				}
 				else
 				{
 					$img = 'task-planned';
-					$alt = 'Staat gepland om uitgevoerd te worden.';
+					$alt = 'Scheduled to run.';
 				}
 				?>
 				<img src="/img/icons/{{ $img }}.png" alt="{{ $alt }}" title="{{ $alt }}" />
@@ -132,8 +132,8 @@ Systeemopdrachten &bull; Staff
 	</tbody>
 </table>
 <div class="right">
-	<a href="/staff/system/systemtask/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/system/systemtask/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 @endsection

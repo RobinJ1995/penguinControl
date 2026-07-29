@@ -1,15 +1,15 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-FTP-account toevoegen &bull; Staff
+Add FTP account &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/ftp/create" method="POST" data-abide>
 	<fieldset>
-		<legend>FTP-account toevoegen</legend>
+		<legend>Add FTP account</legend>
 		<div>
-			<label>Eigenaar:
+			<label>Owner:
 				{{ Form::select
 				(
 					'uid',
@@ -20,7 +20,7 @@ FTP-account toevoegen &bull; Staff
 			</label>
 		</div>
 		<div>
-			<label>Gebruikersnaam:
+			<label>Username:
 				<div class="row collapse">
 					<div class="large-4 medium-6 small-12 column">
 						<span class="prefix"><em>&lt;username&gt;</em>_</span>
@@ -33,26 +33,26 @@ FTP-account toevoegen &bull; Staff
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Wachtwoord:
+			<label>Password:
 				<input type="password" name="passwd" id="newPass" value="" required />
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Wachtwoord (bevestiging):
+			<label>Password (confirmation):
 				<input type="password" name="passwd_confirm" value="" data-equalto="newPass" />
 			</label>
-			<small class="error">Bevestig uw nieuwe wachtwoord door het een tweede keer in te geven.</small>
+			<small class="error">Confirm your new password by entering it a second time.</small>
 		</div>
 		<div>
-			<label>Map:
+			<label>Directory:
 				<input type="text" name="dir" value="{{ old ('dir') }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

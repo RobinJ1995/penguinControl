@@ -1,15 +1,15 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-vHost toevoegen &bull; Staff
+Add vHost &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/website/vhost/create" method="POST" data-abide>
 	<fieldset>
-		<legend>vHost toevoegen</legend>
+		<legend>Add vHost</legend>
 		<div>
-			<label>Eigenaar:
+			<label>Owner:
 				{{ Form::select
 				(
 					'uid',
@@ -26,7 +26,7 @@ vHost toevoegen &bull; Staff
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Beheerder:
+			<label>Administrator:
 				<input type="email" name="serveradmin" value="{{ old ('serveradmin') }}" required />
 			</label>
 			<small class="error">Required field</small>
@@ -74,8 +74,8 @@ vHost toevoegen &bull; Staff
 						'cgi',
 						array
 						(
-							'0' => 'Uit',
-							'1' => 'Aan'
+							'0' => 'Disabled',
+							'1' => 'Enabled'
 						),
 						old ('cgi', 0)
 					)
@@ -86,7 +86,7 @@ vHost toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

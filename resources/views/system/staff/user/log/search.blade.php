@@ -6,7 +6,7 @@
 @endsection
 
 @section ('pageTitle')
-Facturatie &bull; Staff
+Billing &bull; Staff
 @endsection
 
 @section ('js')
@@ -27,7 +27,7 @@ Facturatie &bull; Staff
 @endsection
 
 @section ('content')
-<p>{{ $count }} zoekresultaten</p>
+<p>{{ $count }} search results</p>
 
 {{ $paginationOn ? $userlogs->withQueryString ()->links () : '' }}
 <form id="log" action="/staff/user/log/edit/checked" method="post">

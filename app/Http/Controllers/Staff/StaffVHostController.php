@@ -114,9 +114,9 @@ class StaffVHostController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => request ('uid'),
+				'Owner' => request ('uid'),
 				'Host' => request ('servername'),
-				'Beheerder' => request ('serveradmin'),
+				'Administrator' => request ('serveradmin'),
 				'Alias' => request ('serveralias'),
 				'Document root' => request ('docroot'),
 				'Basedir' => request ('basedir'),
@@ -125,9 +125,9 @@ class StaffVHostController extends Controller
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
 				'Host' => array ('required', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
-				'Beheerder' => array ('required', 'email'),
+				'Administrator' => array ('required', 'email'),
 				'Alias' => array ('different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'), //'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
 				'Document root' => array ('required', 'regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Basedir' => array ('regex:/^([a-zA-Z0-9\_\.\-\/\:]+)?$/'),
@@ -151,9 +151,9 @@ class StaffVHostController extends Controller
 		
 		$vhost->save ();
 		
-		Log::log ('vHost aangemaakt', NULL, $vhost);
+		Log::log ('vHost created', NULL, $vhost);
 		
-		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($vhost)
@@ -169,7 +169,7 @@ class StaffVHostController extends Controller
 		}
 		
 		if ($vhost->locked)
-			$alerts[] = new Alert ('Deze vHost is vergrendeld en kan niet door de gebruiker zelf worden bewerkt.', 'warning');
+			$alerts[] = new Alert ('This vHost is locked and cannot be edited by the user themselves.', 'warning');
 		
 		return view ('staff.website.vhost.edit', compact ('vhost', 'users', 'alerts'));
 	}
@@ -180,8 +180,8 @@ class StaffVHostController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => request ('uid'),
-				'Beheerder' => request ('serveradmin'),
+				'Owner' => request ('uid'),
+				'Administrator' => request ('serveradmin'),
 				'Alias' => request ('serveralias'),
 				'Basedir' => request ('basedir'),
 				'Protocol' => request ('ssl'),
@@ -190,8 +190,8 @@ class StaffVHostController extends Controller
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Beheerder' => array ('required', 'email'),
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Administrator' => array ('required', 'email'),
 				'Alias' => array ('unique:vhost,servername', 'unique:vhost,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
 				'Basedir' => array ('regex:/^([a-zA-Z0-9\_\.\-\/\:]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
@@ -215,18 +215,18 @@ class StaffVHostController extends Controller
 		
 		$vhost->save ();
 		
-		Log::log ('vHost bijgewerkt', NULL, $vhost);
+		Log::log ('vHost updated', NULL, $vhost);
 		
-		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($vhost)
 	{
 		$vhost->delete ();
 		
-		Log::log ('vHost verwijderd', NULL, $vhost);
+		Log::log ('vHost removed', NULL, $vhost);
 		
-		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

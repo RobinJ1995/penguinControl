@@ -65,12 +65,12 @@ class StaffGroupController extends Controller
 			array
 			(
 				'GID' => request ('gid'),
-				'Naam' => request ('name')
+				'Name' => request ('name')
 			),
 			array
 			(
 				'GID' => array ('required', 'unique:group,gid', 'integer', 'not_in:' . $strReservedGids),
-				'Naam' => array ('required', 'unique:group,name', 'alpha', 'max:30', 'not_in:' . $strReservedGroups)
+				'Name' => array ('required', 'unique:group,name', 'alpha', 'max:30', 'not_in:' . $strReservedGroups)
 			)
 		);
 		
@@ -83,18 +83,18 @@ class StaffGroupController extends Controller
 		
 		$group->save ();
 		
-		Log::log ('Gebruikersgroep aangemaakt', NULL, $group);
+		Log::log ('User group created', NULL, $group);
 		
-		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep aangemaakt: ' . $group->name, Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Group created: ' . $group->name, Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($group)
 	{
 		$group->delete ();
 		
-		Log::log ('Gebruikersgroep verwijderd', NULL, $group);
+		Log::log ('User group removed', NULL, $group);
 		
-		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep verwijderd: ' . $group->name, Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Group removed: ' . $group->name, Alert::TYPE_SUCCESS)));
 	}
 
 }

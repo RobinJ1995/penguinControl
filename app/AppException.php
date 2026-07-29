@@ -2,7 +2,7 @@
 
 namespace App;
 
-class AppException // Een gewone Exception doorgeven met ->with () kan niet // Serialization of 'Closure' is not allowed //
+class AppException // A plain Exception can't be passed through ->with () // Serialization of 'Closure' is not allowed //
 {
 	private $message;
 	private $file;

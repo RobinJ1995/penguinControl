@@ -56,16 +56,16 @@ class StaffMailForwardController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => request ('source'),
-				'E-maildomein' => request ('domain'),
-				'Bestemming' => request ('destination')
+				'E-mail address' => request ('source'),
+				'E-mail domain' => request ('domain'),
+				'Destination' => request ('destination')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mail address' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
 				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
-				'E-maildomein' => array ('required', 'exists:mail_domain,id'),
-				'Bestemming' => array ('required', 'email')
+				'E-mail domain' => array ('required', 'exists:mail_domain,id'),
+				'Destination' => array ('required', 'email')
 			)
 		);
 		
@@ -82,9 +82,9 @@ class StaffMailForwardController extends Controller
 		
 		$mFwd->save ();
 		
-		Log::log ('Doorstuuradres aangemaakt', NULL, $mFwd);
+		Log::log ('Forwarding address created', NULL, $mFwd);
 		
-		return Redirect::to ('/staff/mail/forward')->with ('alerts', array (new Alert ('Doorstuuradres toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/forward')->with ('alerts', array (new Alert ('Forwarding address added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($mFwd)
@@ -106,16 +106,16 @@ class StaffMailForwardController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => request ('source'),
-				'E-maildomein' => request ('domain'),
-				'Bestemming' => request ('destination')
+				'E-mail address' => request ('source'),
+				'E-mail domain' => request ('domain'),
+				'Destination' => request ('destination')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source,' . $mFwd->id, 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mail address' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source,' . $mFwd->id, 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
 				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
-				'E-maildomein' => array ('required', 'exists:mail_domain,id'),
-				'Bestemming' => array ('required', 'email')
+				'E-mail domain' => array ('required', 'exists:mail_domain,id'),
+				'Destination' => array ('required', 'email')
 			)
 		);
 		
@@ -133,17 +133,17 @@ class StaffMailForwardController extends Controller
 		
 		$mFwd->save ();
 		
-		Log::log ('Doorstuuradres bijgewerkt', NULL, $mFwd);
+		Log::log ('Forwarding address updated', NULL, $mFwd);
 		
-		return Redirect::to ('/staff/mail/forward')->with ('alerts', array (new Alert ('Doorstuuradres bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/forward')->with ('alerts', array (new Alert ('Forwarding address updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($mFwd)
 	{
 		$mFwd->delete ();
 		
-		Log::log ('Doorstuuradres verwijderd', NULL, $mFwd);
+		Log::log ('Forwarding address removed', NULL, $mFwd);
 		
-		return Redirect::to ('/staff/mail/forward')->with ('alerts', array (new Alert ('Doorstuuradres verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/forward')->with ('alerts', array (new Alert ('Forwarding address removed', Alert::TYPE_SUCCESS)));
 	}
 }

@@ -44,19 +44,19 @@ class StaffPageController extends Controller
 		(
 			array
 			(
-				'Titel' => request ('title'),
-				'Naam' => $name,
+				'Title' => request ('title'),
+				'Name' => $name,
 				'Status' => request ('published'),
-				'Gewicht' => request ('weight'),
-				'Inhoud' => request ('content')
+				'Weight' => request ('weight'),
+				'Content' => request ('content')
 			),
 			array
 			(
-				'Titel' => array ('required', 'max:64', 'unique:page,title'),
-				'Naam' => array ('required', 'max:64', 'unique:page,name', 'alpha_dash'),
+				'Title' => array ('required', 'max:64', 'unique:page,title'),
+				'Name' => array ('required', 'max:64', 'unique:page,name', 'alpha_dash'),
 				'Status' => array ('required', 'integer', 'in:-1,0,1'),
-				'Gewicht' => array ('required', 'integer', 'min:-127', 'max:127'),
-				'Inhoud' => 'required'
+				'Weight' => array ('required', 'integer', 'min:-127', 'max:127'),
+				'Content' => 'required'
 			)
 		);
 		
@@ -72,9 +72,9 @@ class StaffPageController extends Controller
 		
 		$page->save ();
 		
-		Log::log ('Pagina aangemaakt', NULL, $page);
+		Log::log ('Page created', NULL, $page);
 		
-		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Page added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($page)
@@ -89,14 +89,14 @@ class StaffPageController extends Controller
 			array
 			(
 				'Status' => request ('published'),
-				'Gewicht' => request ('weight'),
-				'Inhoud' => request ('content')
+				'Weight' => request ('weight'),
+				'Content' => request ('content')
 			),
 			array
 			(
 				'Status' => array ('required', 'integer', 'in:-1,0,1'),
-				'Gewicht' => array ('required', 'integer', 'min:-127', 'max:127'),
-				'Inhoud' => 'required'
+				'Weight' => array ('required', 'integer', 'min:-127', 'max:127'),
+				'Content' => 'required'
 			)
 		);
 		
@@ -109,17 +109,17 @@ class StaffPageController extends Controller
 		
 		$page->save ();
 		
-		Log::log ('Pagina bijgewerkt', NULL, $page);
+		Log::log ('Page updated', NULL, $page);
 		
-		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Page updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($page)
 	{
 		$page->delete ();
 		
-		Log::log ('Pagina verwijderd', NULL, $page);
+		Log::log ('Page removed', NULL, $page);
 		
-		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Page removed', Alert::TYPE_SUCCESS)));
 	}
 }

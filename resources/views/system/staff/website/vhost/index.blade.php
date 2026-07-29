@@ -11,9 +11,9 @@ vHosts &bull; Staff
 		<tr>
 			<th></th>
 			<th>Host</th>
-			<th>Beheerder</th>
+			<th>Administrator</th>
 			<th>Alias</th>
-			<th>Gebruiker</th>
+			<th>User</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -21,10 +21,10 @@ vHosts &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/website/vhost/{{ $vhost->id }}/edit" title="Bewerken" class="button tiny">
-						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/staff/website/vhost/{{ $vhost->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/staff/website/vhost/{{ $vhost->id }}/edit" title="Edit" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Edit" />
+					</a><a href="/staff/website/vhost/{{ $vhost->id }}/remove" title="Remove" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 			</td>
@@ -48,13 +48,13 @@ vHosts &bull; Staff
 </table>
 {{ $vhosts->links () }}
 <div class="right">
-	<a href="/staff/website/vhost/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/website/vhost/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
-	<h2>Zoeken</h2>
+	<h2>Search</h2>
 	
 	<form action="{{ $searchUrl }}" method="GET">
 		<label>Host:
@@ -66,11 +66,11 @@ vHosts &bull; Staff
 		<label>Basedir:
 			<input type="text" name="basedir" />
 		</label>
-		<label>Gebruiker:
+		<label>User:
 			<input type="text" name="username" />
 		</label>
 		
-		<button>Zoeken</button>
+		<button>Search</button>
 	</form>
 	
 	<a class="close-reveal-modal">&#215;</a>

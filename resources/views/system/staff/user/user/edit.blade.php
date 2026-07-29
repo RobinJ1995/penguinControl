@@ -50,7 +50,7 @@ Edit user
 		</div>
 		<div class="row">
 			<div class="large-4 medium-4 small-12 column">
-				<label>r-nummer:
+				<label>Student number:
 					<input type="text" name="rnummer" value="{{ $userInfo->schoolnr }}" />
 				</label>
 				<small class="error">Invalid input</small>
@@ -66,7 +66,7 @@ Edit user
 								'/usr/bin/fish' => 'Fish',
 								'/usr/bin/zsh' => 'ZSH',
 								'/usr/bin/tmux' => 'Tmux',
-								'/bin/false' => 'Blokkeer toegang (/bin/false)'
+								'/bin/false' => 'Deny shell access (/bin/false)'
 							),
 							old ('shell', $user->shell)
 						)
@@ -81,9 +81,9 @@ Edit user
 							'mailEnabled',
 							array
 							(
-								'0' => 'Uit',
-								'1' => 'Aan',
-								'-1' => 'Blokkeren'
+								'0' => 'Disabled',
+								'1' => 'Enabled',
+								'-1' => 'Blocked'
 							),
 							old ('mailEnabled', $user->mail_enabled)
 						)
@@ -94,13 +94,13 @@ Edit user
 		</div>
 		<div class="row">
 			<div class="large-6 medium-6 small-12 column">
-				<label>Wachtwoord:
+				<label>Password:
 					<input type="password" name="password" id="newPass" />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-6 medium-6 small-12 column">
-				<label>Wachtwoord (bevestiging):
+				<label>Password (confirmation):
 					<input type="password" name="password_confirm" data-equalto="newPass" />
 				</label>
 				<small class="error">Invalid input</small>
@@ -109,13 +109,13 @@ Edit user
 		<div class="row">
 			<div class="large-12 column">
 			<fieldset>
-				<legend>Groep</legend>
+				<legend>Group</legend>
 				<table>
 					<thead>
 						<tr>
-							<th>Primair</th>
-							<th>Lid</th>
-							<th>Groep</th>
+							<th>Primary</th>
+							<th>Member</th>
+							<th>Group</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -132,7 +132,7 @@ Edit user
 								{{ ucfirst ($group->name) }}
 							</td>
 							<td>
-								<img src="/img/icons/{{ $group->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'sin.png" alt="Medewerker" title="Medewerker' : 'user.png" alt="User' }}" />
+								<img src="/img/icons/{{ $group->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'sin.png" alt="Administrator" title="Administrator' : 'user.png" alt="User' }}" />
 							</td>
 						</tr>
 						@endforeach
@@ -143,7 +143,7 @@ Edit user
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ $user->id }}">Opslaan</button>
+			<button name="save" value="{{ $user->id }}">Save</button>
 		</div>
 	</fieldset>
 </form>

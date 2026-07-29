@@ -129,7 +129,7 @@ class StaffUserLogController extends Controller
 		}
 		else
 		{
-			$alert = 'Geen wijzigingen doorgevoerd';
+			$alert = 'No changes applied';
 		}
 
 		if (isset ($userLogs))
@@ -137,7 +137,7 @@ class StaffUserLogController extends Controller
 			if (! empty (request ('facturatie')))
 			{
 				$userLogs->update (array ('status' => $status));
-				$alert = 'Facturatie(s) gewijzigd';
+				$alert = 'Billing entries changed';
 			}
 
 			if (! empty (request ('export')))
@@ -146,7 +146,7 @@ class StaffUserLogController extends Controller
 				return view ('staff.user.log.export', compact ('userLogsIds', 'statusMeaning'));
 			}
 
-			Log::log ('Facturaties bijgewerkt', NULL, $userLogs);
+			Log::log ('Billing entries updated', NULL, $userLogs);
 		}
 
 		return Redirect::to ('/staff/user/log')->with ('alerts', array (new Alert ($alert, Alert::TYPE_SUCCESS)));

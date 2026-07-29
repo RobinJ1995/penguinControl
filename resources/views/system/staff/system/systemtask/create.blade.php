@@ -1,13 +1,13 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Systeemopdracht toevoegen &bull; Staff
+Add system task &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/system/systemtask/create" method="POST" data-abide>
 	<fieldset>
-		<legend>Systeemopdracht toevoegen</legend>
+		<legend>Add system task</legend>
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Type:
@@ -16,9 +16,9 @@ Systeemopdracht toevoegen &bull; Staff
 						'type',
 						array
 						(
-							SystemTask::TYPE_APACHE_RELOAD => 'Webserver opnieuw laden',
-							SystemTask::TYPE_NUKE_EXPIRED_VHOSTS => 'Websites van vervallen gebruikers uitschakelen',
-							SystemTask::TYPE_CALCULATE_DISK_USAGE => 'Herbereken schijfuimtegebruik van gebruikers'
+							SystemTask::TYPE_APACHE_RELOAD => 'Reload web server configuration',
+							SystemTask::TYPE_NUKE_EXPIRED_VHOSTS => 'Disable expired users\' websites',
+							SystemTask::TYPE_CALCULATE_DISK_USAGE => 'Recalculate users\' disk usage'
 						),
 						old ('type')
 					)
@@ -35,7 +35,7 @@ Systeemopdracht toevoegen &bull; Staff
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-6 medium-6 small-12 column">
-				<label>Einde:
+				<label>End:
 					<input type="text" name="end" value="{{ old ('end') }}" placeholder="DD-MM-YYYY HH:MM:SS" />
 				</label>
 				<small class="error">Invalid input</small>
@@ -55,11 +55,11 @@ Systeemopdracht toevoegen &bull; Staff
 						'interval_unit',
 						array
 						(
-							'sec' => 'seconden',
-							'min' => 'minuten',
+							'sec' => 'seconds',
+							'min' => 'minutes',
 							'hour' => 'uur',
-							'day' => 'dagen',
-							'week' => 'weken'
+							'day' => 'days',
+							'week' => 'weeks'
 						),
 						old ('interval_unit')
 					)
@@ -70,7 +70,7 @@ Systeemopdracht toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

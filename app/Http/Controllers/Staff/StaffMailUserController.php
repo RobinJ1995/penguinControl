@@ -58,18 +58,18 @@ class StaffMailUserController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => request ('email'),
-				'E-maildomein' => request ('domain'),
-				'Wachtwoord' => request ('password'),
-				'Wachtwoord (bevestiging)' => request ('password_confirm')
+				'E-mail address' => request ('email'),
+				'E-mail domain' => request ('domain'),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mail address' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
 				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
-				'E-maildomein' => array ('required', 'exists:mail_domain,id,uid,' . $user->uid),
-				'Wachtwoord' => array ('required', 'min:8'),
-				'Wachtwoord (bevestiging)' => 'same:Wachtwoord'
+				'E-mail domain' => array ('required', 'exists:mail_domain,id,uid,' . $user->uid),
+				'Password' => array ('required', 'min:8'),
+				'Password (confirmation)' => 'same:Password'
 			)
 		);
 		
@@ -86,9 +86,9 @@ class StaffMailUserController extends Controller
 		
 		$mUser->save ();
 		
-		Log::log ('E-mailadres aangemaakt', NULL, $mUser);
+		Log::log ('E-mail address created', NULL, $mUser);
 		
-		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mail account added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($mUser)
@@ -101,7 +101,7 @@ class StaffMailUserController extends Controller
 		foreach ($objDomains as $objDomain)
 			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
-		return view ('staff.mail.user.edit', compact ('mUser', 'domains'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', Alert::TYPE_INFO)));
+		return view ('staff.mail.user.edit', compact ('mUser', 'domains'))->with ('alerts', array (new Alert ('Leave the password fields empty if you do not wish to change the current password.', Alert::TYPE_INFO)));
 	}
 	
 	public function update ($mUser)
@@ -112,17 +112,17 @@ class StaffMailUserController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => request ('email'),
-				'E-maildomein' => request ('domain'),
-				'Wachtwoord' => request ('password'),
-				'Wachtwoord (bevestiging)' => request ('password_confirm')
+				'E-mail address' => request ('email'),
+				'E-mail domain' => request ('domain'),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user,email,' . $mUser->id, 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain,id'),
-				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
-				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord')
+				'E-mail address' => array ('required', 'unique:mail_user,email,' . $mUser->id, 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mail domain' => array ('required', 'exists:mail_domain,id'),
+				'Password' => array ('required_with:Password (confirmation)', 'min:8'),
+				'Password (confirmation)' => array ('required_with:Password', 'same:Password')
 			)
 		);
 		
@@ -141,18 +141,18 @@ class StaffMailUserController extends Controller
 		
 		$mUser->save ();
 		
-		Log::log ('E-mailadres bijgewerkt', NULL, $mUser);
+		Log::log ('E-mail address updated', NULL, $mUser);
 		
-		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mail account updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($mUser)
 	{
 		$mUser->delete ();
 		
-		Log::log ('E-mailadres verwijderd', NULL, $mUser);
+		Log::log ('E-mail address removed', NULL, $mUser);
 		
-		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mail account removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

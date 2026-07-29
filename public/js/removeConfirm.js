@@ -5,7 +5,7 @@ $(document).ready
 			$('#content').on('click', '.remove',
 				function(e)
 				{
-					if (! confirm ('Weet u zeker dat u het gekozen item wil verwijderen?'))
+					if (! confirm ('Are you sure you want to remove the selected item?'))
 						e.preventDefault();
 				}
 			);

@@ -1,20 +1,20 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-E-maildomeinen en -adressen &bull; Staff
+E-mail domains and addresses &bull; Staff
 @endsection
 
 @section ('content')
 {{ $mUsers->links () }}
 <fieldset>
-	<legend>{{ $mUsersCount }} e-mailaccounts gevonden</legend>
+	<legend>{{ $mUsersCount }} e-mail accounts found</legend>
 	
 	<table>
 		<thead>
 			<tr>
 				<th></th>
-				<th>E-mailadres</th>
-				<th>Gebruiker</th>
+				<th>E-mail address</th>
+				<th>User</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -22,10 +22,10 @@ E-maildomeinen en -adressen &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/mail/user/{{ $mUser->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/mail/user/{{ $mUser->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
+						<a href="/staff/mail/user/{{ $mUser->id }}/edit" title="Edit" class="button tiny">
+							<img src="/img/icons/edit.png" alt="Edit" />
+						</a><a href="/staff/mail/user/{{ $mUser->id }}/remove" title="Remove" class="button tiny alert remove">
+							<img src="/img/icons/remove.png" alt="Remove" />
 						</a>
 					</div>
 				</td>
@@ -55,16 +55,16 @@ E-maildomeinen en -adressen &bull; Staff
 </fieldset>
 
 <fieldset>
-	<legend>{{ $mFwdsCount }} doorstuuradressen gevonden</legend>
+	<legend>{{ $mFwdsCount }} forwarding addresses found</legend>
 	
 	{{ $mFwds->links () }}
 	<table>
 		<thead>
 			<tr>
 				<th></th>
-				<th>E-mailadres</th>
-				<th>Bestemming</th>
-				<th>Gebruiker</th>
+				<th>E-mail address</th>
+				<th>Destination</th>
+				<th>User</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -72,10 +72,10 @@ E-maildomeinen en -adressen &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/mail/forward/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/mail/forward/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
+						<a href="/staff/mail/forward/{{ $mFwd->id }}/edit" title="Edit" class="button tiny">
+							<img src="/img/icons/edit.png" alt="Edit" />
+						</a><a href="/staff/mail/forward/{{ $mFwd->id }}/remove" title="Remove" class="button tiny alert remove">
+							<img src="/img/icons/remove.png" alt="Remove" />
 						</a>
 					</div>
 				</td>
@@ -106,15 +106,15 @@ E-maildomeinen en -adressen &bull; Staff
 </fieldset>
 
 <fieldset>
-	<legend>{{ $domainsCount }} e-maildomeinen gevonden</legend>
+	<legend>{{ $domainsCount }} e-mail domains found</legend>
 	
 	{{ $domains->links () }}
 	<table>
 		<thead>
 			<tr>
 				<th></th>
-				<th>Domein</th>
-				<th>Gebruiker</th>
+				<th>Domain</th>
+				<th>User</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -122,10 +122,10 @@ E-maildomeinen en -adressen &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/mail/domain/{{ $domain->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/mail/domain/{{ $domain->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
+						<a href="/staff/mail/domain/{{ $domain->id }}/edit" title="Edit" class="button tiny">
+							<img src="/img/icons/edit.png" alt="Edit" />
+						</a><a href="/staff/mail/domain/{{ $domain->id }}/remove" title="Remove" class="button tiny alert remove">
+							<img src="/img/icons/remove.png" alt="Remove" />
 						</a>
 					</div>
 				</td>

@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Pagina's &bull; Staff
+Pages &bull; Staff
 @endsection
 
 @section ('content')
@@ -9,9 +9,9 @@ Pagina's &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
-			<th>Titel</th>
-			<th>Aangemaakt</th>
-			<th>Gewijzigd</th>
+			<th>Title</th>
+			<th>Created</th>
+			<th>Modified</th>
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -20,10 +20,10 @@ Pagina's &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/page/{{ $page->name }}/edit" title="Bewerken" class="button tiny">
-						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/staff/page/{{ $page->name }}/remove" title="Verwijderen" class="button tiny alert remove">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/staff/page/{{ $page->name }}/edit" title="Edit" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Edit" />
+					</a><a href="/staff/page/{{ $page->name }}/remove" title="Remove" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 			</td>
@@ -34,11 +34,11 @@ Pagina's &bull; Staff
 			<td>{{ $page->updated_at }}</td>
 			<td>
 				@if ($page->published > 0)
-					<img src="/img/icons/published-in-menu.png" alt="[1]" /> Gepubliceerd in menu
+					<img src="/img/icons/published-in-menu.png" alt="[1]" /> Published in the menu
 				@elseif ($page->published == 0)
-					<img src="/img/icons/published.png" alt="[0]" /> Gepubliceerd
+					<img src="/img/icons/published.png" alt="[0]" /> Published
 				@else
-					<img src="/img/icons/draft.png" alt="[-1]" /> Concept
+					<img src="/img/icons/draft.png" alt="[-1]" /> Draft
 				@endif
 			</td>
 		</tr>
@@ -46,8 +46,8 @@ Pagina's &bull; Staff
 	</tbody>
 </table>
 <div class="right">
-	<a href="/staff/page/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/page/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 @endsection

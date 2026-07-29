@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-E-maildomeinen &bull; Staff
+E-mail domains &bull; Staff
 @endsection
 
 @section ('content')
@@ -10,8 +10,8 @@ E-maildomeinen &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
-			<th>Domein</th>
-			<th>Gebruiker</th>
+			<th>Domain</th>
+			<th>User</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,10 +19,10 @@ E-maildomeinen &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/mail/domain/{{ $domain->id }}/edit" title="Bewerken" class="button tiny">
-						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/staff/mail/domain/{{ $domain->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/staff/mail/domain/{{ $domain->id }}/edit" title="Edit" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Edit" />
+					</a><a href="/staff/mail/domain/{{ $domain->id }}/remove" title="Remove" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 			</td>
@@ -41,8 +41,8 @@ E-maildomeinen &bull; Staff
 </table>
 {{ $domains->links () }}
 <div class="right">
-	<a href="/staff/mail/domain/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/mail/domain/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 

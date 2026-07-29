@@ -10,7 +10,7 @@ Add billing entry
 		<legend>Add billing entry</legend>
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
-				<label>Gebruiker:
+				<label>User:
 					<!--<input type="number" name="user_info_id" value="{{ old ('user_info_id') }}" required />-->
 
 					{{ Form::select

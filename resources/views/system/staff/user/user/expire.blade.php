@@ -1,33 +1,33 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Gebruikershoudbaarheidsdatum &bull; Staff
+User expiry date &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/user/user/{{ $user->id }}/expire" method="POST" data-abide>
 	<fieldset>
-		<legend>Houdbaarheidsdatum wijzigen</legend>
+		<legend>Change expiry date</legend>
 		<div class="row">
 			<div class="large-4 medium-4 small-12 column">
-				<label>Geldig tot:
+				<label>Valid until:
 					<input type="text" value="{{ $validUntilDate }}" disabled title="{{ $validUntilShortDate }}" />
 				</label>
 			</div>
 			<div class="large-4 medium-4 small-12 column">
 				<label>UNIX timestamp:
-					<input type="text" value="{{ $validUntilUnix }}" disabled title="{{ $user->expire > 0 ? $user->expire . ' dagen sinds 1 januari 1970' : '' }}" />
+					<input type="text" value="{{ $validUntilUnix }}" disabled title="{{ $user->expire > 0 ? $user->expire . ' days since 1 January 1970' : '' }}" />
 				</label>
 			</div>
 			<div class="large-4 medium-4 small-12 column">
-				<label>Nog geldig:
-					<input type="text" value="{{ $stillValidDate }}" disabled title="{{ $user->expire > 0 ? $stillValidUnix . ' seconden' : '' }}" />
+				<label>Still valid for:
+					<input type="text" value="{{ $stillValidDate }}" disabled title="{{ $user->expire > 0 ? $stillValidUnix . ' seconds' : '' }}" />
 				</label>
 			</div>
 		</div>
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
-				<label>Vervaldatum:
+				<label>Expiry date:
 					{{ Form::select
 						(
 							'expire',
@@ -40,7 +40,7 @@ Gebruikershoudbaarheidsdatum &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ $user->id }}">Opslaan</button>
+			<button name="save" value="{{ $user->id }}">Save</button>
 		</div>
 	</fieldset>
 </form>

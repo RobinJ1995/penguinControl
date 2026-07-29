@@ -1,22 +1,22 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Doorstuuradres toevoegen &bull; Staff
+Add forwarding address &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/mail/forward/create" method="POST" data-abide>
 	<fieldset>
-		<legend>Doorstuuradres toevoegen</legend>
+		<legend>Add forwarding address</legend>
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
-				<label>E-mailadres:
+				<label>E-mail address:
 					<input type="text" name="source" value="{{ old ('source') }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
 			<div class="large-5 medium-6 small-12 column">
-				<label>Domein:
+				<label>Domain:
 					{{ Form::select
 						(
 							'domain',
@@ -30,15 +30,15 @@ Doorstuuradres toevoegen &bull; Staff
 		</div>
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
-				<label>Bestemming:
+				<label>Destination:
 					<input type="email" name="destination" value="{{ old ('destination') }}" required />
 				</label>
-				<small class="error">Geef een geldig e-mailadres in</small>
+				<small class="error">Enter a valid e-mail address</small>
 			</div>
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

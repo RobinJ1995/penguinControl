@@ -1,22 +1,22 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-E-mailaccount toevoegen &bull; Staff
+Add e-mail account &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/mail/user/create" method="POST" data-abide>
 	<fieldset>
-		<legend>E-mailaccount toevoegen</legend>
+		<legend>Add e-mail account</legend>
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
-				<label>E-mailadres:
+				<label>E-mail address:
 					<input type="text" name="email" value="{{ old ('email') }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
 			<div class="large-5 medium-6 small-12 column">
-				<label>Domein:
+				<label>Domain:
 					{{ Form::select
 						(
 							'domain',
@@ -30,21 +30,21 @@ E-mailaccount toevoegen &bull; Staff
 		</div>
 		<div class="row">
 			<div class="large-6 medium-6 small-12 column">
-				<label>Wachtwoord:
+				<label>Password:
 					<input type="password" name="password" id="newPass" value="" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
 			<div class="large-6 medium-6 small-12 column">
-				<label>Wachtwoord (bevestiging):
+				<label>Password (confirmation):
 					<input type="password" name="password_confirm" value="" data-equalto="newPass" />
 				</label>
-				<small class="error">Bevestig uw nieuwe wachtwoord door het een tweede keer in te geven.</small>
+				<small class="error">Confirm your new password by entering it a second time.</small>
 			</div>
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

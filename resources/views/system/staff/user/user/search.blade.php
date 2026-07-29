@@ -1,12 +1,12 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Gebruikers &bull; Staff
+Users &bull; Staff
 @endsection
 
 @section ('content')
 <fieldset>
-	<legend>{{ $count }} zoekresultaten</legend>
+	<legend>{{ $count }} search results</legend>
 	
 	{{ $results->withQueryString ()->links () }}
 	<table>
@@ -17,16 +17,16 @@ Gebruikers &bull; Staff
 					UID
 				</th>
 				<th>
-					Gebruikersnaam
+					Username
 				</th>
 				<th>
-					Naam
+					Name
 				</th>
 				<th>
-					r-nummer
+					Student number
 				</th>
 				<th>
-					Primaire groep
+					Primary group
 				</th>
 			</tr>
 		</thead>
@@ -36,7 +36,7 @@ Gebruikers &bull; Staff
 			@if (empty ($user))
 			<tr>
 				<td colspan="2">
-					Geen bijhorende gebruiker<br />
+					No matching user<br />
 					(<kbd>user_info#{{ $userInfo->id }}</kbd>)</td>
 				<td>{{ $userInfo->username }}</td>
 				<td>{{ $userInfo->getFullName () }}</td>
@@ -47,12 +47,12 @@ Gebruikers &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/user/user/{{ $user->id }}/more" title="Meer..." class="button tiny">
-							<img src="/img/icons/more.png" alt="Meer..." />
-						</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Vervaldatum wijzigen" class="button tiny {{ $user->hasExpired () ? 'alert' : '' }}">
+						<a href="/staff/user/user/{{ $user->id }}/more" title="More..." class="button tiny">
+							<img src="/img/icons/more.png" alt="More..." />
+						</a><a href="/staff/user/user/{{ $user->id }}/expire" title="Change expiry date" class="button tiny {{ $user->hasExpired () ? 'alert' : '' }}">
 							<img src="/img/icons/expire.png" alt="Expire" />
-						</a><a href="/staff/user/user/{{ $user->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
+						</a><a href="/staff/user/user/{{ $user->id }}/edit" title="Edit" class="button tiny">
+							<img src="/img/icons/edit.png" alt="Edit" />
 						</a>
 					</div>
 				</td>
@@ -72,29 +72,29 @@ Gebruikers &bull; Staff
 </fieldset>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
-	<h2>Zoeken</h2>
+	<h2>Search</h2>
 	
 	<form action="{{ $searchUrl }}" method="GET">
-		<label>Gebruikersnaam:
+		<label>Username:
 			<input type="text" name="username" />
 		</label>
-		<label>Naam:
+		<label>Name:
 			<input type="text" name="name" />
 		</label>
-		<label>E-mailadres:
+		<label>E-mail address:
 			<input type="text" name="email" />
 		</label>
-		<label>Studentnummer:
+		<label>Student number:
 			<input type="text" name="schoolnr" />
 		</label>
 		<label>
-			<input type="checkbox" name="validationcode" /> Heeft ongebruikte validatiecode voor verlenging
+			<input type="checkbox" name="validationcode" /> Has an unused renewal validation code
 		</label>
 		<label>
-			<input type="checkbox" name="logintoken" /> Heeft ongebruikte eenmalige loginlink
+			<input type="checkbox" name="logintoken" /> Has an unused one-time login link
 		</label>
 		
-		<button>Zoeken</button>
+		<button>Search</button>
 	</form>
 	
 	<a class="close-reveal-modal">&#215;</a>

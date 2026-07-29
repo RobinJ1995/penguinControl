@@ -46,16 +46,16 @@ class StaffSystemSystemTaskController extends Controller
 				'Type' => request ('type'),
 				'Start' => request ('start'),
 				'Interval' => request ('interval'),
-				'Interval-eenheid' => request ('interval_unit'),
-				'Einde' => request ('end')
+				'Interval unit' => request ('interval_unit'),
+				'End' => request ('end')
 			),
 			array
 			(
 				'Type' => array ('required', 'in:apache_reload,nuke_expired_vhosts,calculate_disk_usage'),
 				'Start' => array ('nullable', 'date'),
-				'Interval' => array ('nullable', 'numeric', 'required_with:Einde', 'min:1', 'max:113529600000'),
-				'Interval-eenheid' => array ('nullable', 'required_with:Interval', 'in:sec,min,hour,day,week'),
-				'Einde' => array ('nullable', 'date')
+				'Interval' => array ('nullable', 'numeric', 'required_with:End', 'min:1', 'max:113529600000'),
+				'Interval unit' => array ('nullable', 'required_with:Interval', 'in:sec,min,hour,day,week'),
+				'End' => array ('nullable', 'date')
 			)
 		);
 		
@@ -84,9 +84,9 @@ class StaffSystemSystemTaskController extends Controller
 		
 		$task->save ();
 		
-		Log::log ('Systeemtaak aangemaakt', NULL, $task);
+		Log::log ('System task created', NULL, $task);
 		
-		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Opdracht toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Task added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function show ($task)
@@ -101,9 +101,9 @@ class StaffSystemSystemTaskController extends Controller
 	{
 		$task->delete ();
 		
-		Log::log ('Systeemtaak verwijderd', NULL, $task);
+		Log::log ('System task removed', NULL, $task);
 		
-		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Opdracht verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/system/systemtask')->with ('alerts', array (new Alert ('Task removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

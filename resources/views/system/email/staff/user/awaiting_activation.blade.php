@@ -3,19 +3,19 @@
 @section ('content')
 <table>
 	<tr>
-		<th>Gebruikersnaam</th>
+		<th>Username</th>
 		<td>{{ $userInfo->username }}</td>
 	</tr>
 	<tr>
-		<th>Naam</th>
+		<th>Name</th>
 		<td>{{ $userInfo->getFullName () }}</td>
 	</tr>
 	<tr>
-		<th>E-mailadres</th>
+		<th>E-mail address</th>
 		<td>{{ $userInfo->email }}</td>
 	</tr>
 	<tr>
-		<th>r-nummer</th>
+		<th>Student number</th>
 		<td>{{ $userInfo->schoolnr }}</td>
 	</tr>
 </table>

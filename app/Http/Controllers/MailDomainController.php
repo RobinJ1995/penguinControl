@@ -70,7 +70,7 @@ class MailDomainController extends Controller
 		
 		Log::log ('E-mail domain created', $user->id, $domain);
 		
-		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-mail domein created', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/mail/domain')->with ('alerts', array (new Alert ('E-mail domain created', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($domain)
