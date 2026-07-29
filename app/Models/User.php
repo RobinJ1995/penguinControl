@@ -11,7 +11,6 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\BaseModel;
-use App\Models\Permission;
 
 class User extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
@@ -34,7 +33,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	
 	public function setPassword ($password)
 	{
-		$this->crypt = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
+		$this->crypt = crypt ($password, '$6$rounds=' . random_int (8000, 12000) . '$' . bin2hex (random_bytes (8)) . '$');
 	}
 	
 	public function userInfo ()
@@ -72,7 +71,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 		return $this->getLowestGid () <= 1050;
 	}
 	
-	public function getLowestGid () // Lagere gid betekent hogere permissies //
+	public function getLowestGid () // A lower gid means higher permissions //
 	{
 		$userGroups = UserGroup::where ('uid', $this->uid);
 		$lowestGid = $this->gid;
@@ -92,7 +91,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	
 	public function vhost ()
 	{
-		return $this->hasMany ('Vhost', 'uid', 'uid');
+		return $this->hasMany (Vhost::class, 'uid', 'uid');
 	}
 	
 	public function url ()
@@ -102,7 +101,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . ($this->userInfo != NULL ? ' (' . $this->userInfo->username . ')' : '') . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . ($this->userInfo != NULL ? ' (' . $this->userInfo->username . ')' : '') . '</a>';
 	}
 	
 	public function calculateDiskUsage ($save = false)
@@ -163,7 +162,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	 */
 	public function getAuthPassword ()
 	{
-		return $this->password;
+		return $this->crypt;
 	}
 
 	/**
@@ -214,7 +213,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 		if ($this->userInfo != NULL)
 			$name = $this->userInfo->username;
 		
-		return 'Gebruiker: ' . $name;
+		return 'User: ' . $name;
 	}
 	
 	/**
@@ -224,6 +223,6 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	 */
 	public function getAuthIdentifierName ()
 	{
-		// TODO: Implement getAuthIdentifierName() method.
+		return $this->getKeyName ();
 	}
 }
