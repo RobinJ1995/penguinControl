@@ -74,7 +74,7 @@ class SystemTask extends BaseModel
 	
 	public function url ()
 	{
-		return action ('StaffSystemTaskController@edit', $this->id);
+		return route ('staff.system.systemtask.show', $this->id);
 	}
 	
 	public function link ()

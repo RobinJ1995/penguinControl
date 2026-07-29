@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,17 +39,17 @@ class StaffPageController extends Controller
 
 	public function store ()
 	{
-		$name = snake_case (preg_replace ('/[^A-Za-z0-9\-\_\ ]/', '', strtolower (Input::get ('title'))));
+		$name = Str::snake (preg_replace ('/[^A-Za-z0-9\-\_\ ]/', '', strtolower (request ('title'))));
 		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Titel' => Input::get ('title'),
+				'Titel' => request ('title'),
 				'Naam' => $name,
-				'Status' => Input::get ('published'),
-				'Gewicht' => Input::get ('weight'),
-				'Inhoud' => Input::get ('content')
+				'Status' => request ('published'),
+				'Gewicht' => request ('weight'),
+				'Inhoud' => request ('content')
 			),
 			array
 			(
@@ -66,11 +65,11 @@ class StaffPageController extends Controller
 			return Redirect::to ('/staff/page/create')->withInput ()->withErrors ($validator);
 		
 		$page = new Page ();
-		$page->title = Input::get ('title');
+		$page->title = request ('title');
 		$page->name = $name;
-		$page->published = Input::get ('published');
-		$page->weight = Input::get ('weight');
-		$page->content = Input::get ('content');
+		$page->published = request ('published');
+		$page->weight = request ('weight');
+		$page->content = request ('content');
 		
 		$page->save ();
 		
@@ -90,9 +89,9 @@ class StaffPageController extends Controller
 		(
 			array
 			(
-				'Status' => Input::get ('published'),
-				'Gewicht' => Input::get ('weight'),
-				'Inhoud' => Input::get ('content')
+				'Status' => request ('published'),
+				'Gewicht' => request ('weight'),
+				'Inhoud' => request ('content')
 			),
 			array
 			(
@@ -105,9 +104,9 @@ class StaffPageController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/page/'. $page->id . '/edit')->withInput ()->withErrors ($validator);
 		
-		$page->published = Input::get ('published');
-		$page->weight = Input::get ('weight');
-		$page->content = Input::get ('content');
+		$page->published = request ('published');
+		$page->weight = request ('weight');
+		$page->content = request ('content');
 		
 		$page->save ();
 		

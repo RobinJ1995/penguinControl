@@ -15,7 +15,7 @@ function htmlstr (string $str)
 
 function trailing_slash ($path)
 {
-	if (! ends_with ($path, '/'))
+	if (! \Illuminate\Support\Str::endsWith ($path, '/'))
 		$path .= '/';
 	
 	return $path;

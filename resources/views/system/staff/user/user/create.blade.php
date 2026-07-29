@@ -11,19 +11,19 @@ Create user
 		<div class="row">
 			<div class="large-2 medium-3 small-12 column">
 				<label>UID:
-					<input type="number" name="uid" value="{{ Input::old ('uid', $uid) }}" min="{{ $uid }}" max="{{ $uid }}" required />
+					<input type="number" name="uid" value="{{ old ('uid', $uid) }}" min="{{ $uid }}" max="{{ $uid }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-9 small-12 column">
 				<label>Username:
-					<input type="text" name="username" value="{{ Input::old ('username') }}" required />
+					<input type="text" name="username" value="{{ old ('username') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-6 medium-12 small-12 column">
 				<label>Home directory:
-					<input type="text" name="homedir" value="{{ Input::old ('homedir') }}" required />
+					<input type="text" name="homedir" value="{{ old ('homedir') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -31,19 +31,19 @@ Create user
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
 				<label>E-mail address:
-					<input type="email" name="email" value="{{ Input::old ('email') }}" required />
+					<input type="email" name="email" value="{{ old ('email') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
 				<label>First name:
-					<input type="text" name="fname" value="{{ Input::old ('fname') }}" required />
+					<input type="text" name="fname" value="{{ old ('fname') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
 				<label>Surname:
-					<input type="text" name="lname" value="{{ Input::old ('lname') }}" required />
+					<input type="text" name="lname" value="{{ old ('lname') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -62,7 +62,7 @@ Create user
 								'/usr/bin/tmux' => 'Tmux',
 								'/bin/false' => 'Deny shell access (/bin/false)'
 							),
-							Input::old ('shell', '/bin/bash')
+							old ('shell', '/bin/bash')
 						)
 					}}
 				</label>
@@ -79,7 +79,7 @@ Create user
 								'1' => 'Enabled',
 								'-1' => 'Blocked'
 							),
-							Input::old ('mailEnabled', 0)
+							old ('mailEnabled', 0)
 						)
 					}}
 				</label>

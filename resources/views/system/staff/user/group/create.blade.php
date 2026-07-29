@@ -16,13 +16,13 @@
 		<div class="row">
 			<div class="large-3 medium-3 small-12 column">
 				<label>GID:
-					<input type="number" name="gid" value="{{ Input::old ('gid') }}" required />
+					<input type="number" name="gid" value="{{ old ('gid') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-5 medium-5 small-12 column">
 				<label>Name:
-					<input type="text" name="name" value="{{ Input::old ('name') }}" required />
+					<input type="text" name="name" value="{{ old ('name') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>

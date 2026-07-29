@@ -14,7 +14,7 @@ Amnesia
         <form method="POST" data-abide>
                 <div>
                         <label>Username/e-mail address:
-                                <input type="text" name="something" value="{{ Input::old ('something') }}" required />
+                                <input type="text" name="something" value="{{ old ('something') }}" required />
                         </label>
                         <small class="error">Enter your username or e-mail address.</small>
                 </div>

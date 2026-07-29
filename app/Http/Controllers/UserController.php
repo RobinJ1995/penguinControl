@@ -12,7 +12,6 @@ use App\Models\Vhost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -44,8 +43,8 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username' => Input::get ('username'),
-				'Password' => Input::get ('password')
+				'Username' => request ('username'),
+				'Password' => request ('password')
 			),
 			array
 			(
@@ -57,7 +56,7 @@ class UserController extends Controller
 		if ($validator->fails ())
 			return view ('user.login')->withErrors ($validator);
 
-		$userInfo = UserInfo::where ('username', Input::get ('username'))->first ();
+		$userInfo = UserInfo::where ('username', request ('username'))->first ();
 		if (empty ($userInfo))
 			return view ('user.login')->with ('alerts', array (new Alert ('Invalid username', Alert::TYPE_ALERT)));
 
@@ -65,13 +64,13 @@ class UserController extends Controller
 		if (empty ($user))
 			return view ('user.login')->with ('alerts', array (new Alert ('Your account has not yet been activated.', Alert::TYPE_ALERT)));
 
-		$hashedPass = crypt (Input::get ('password'), $user->crypt);
+		$hashedPass = crypt (request ('password'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
 		{
 			Log::log ('Login attempt with wrong password', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
 			return view ('user.login')
-				->withInput (Input::only ('username'))
+				->withInput (request ()->only ('username'))
 				->with ('alerts', array (new Alert ('Invalid password for user ' . $userInfo->username, Alert::TYPE_ALERT)));
 		}
 
@@ -81,7 +80,7 @@ class UserController extends Controller
 
 		Auth::login ($user);
 
-		$hash = DatabaseCredentials::getHash (Input::get ('password'));
+		$hash = DatabaseCredentials::getHash (request ('password'));
 		if (! empty ($hash))
 			DatabaseCredentials::forUserPrimary_hash ($userInfo->username, $hash);
 
@@ -115,11 +114,11 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Shell' => Input::get ('shell'),
-				'E-mail address' => Input::get ('email'),
-				'Current password' => Input::get ('currentPass'),
-				'New password' => Input::get ('newPass'),
-				'New password (confirmation)' => Input::get ('newPassConfirm')
+				'Shell' => request ('shell'),
+				'E-mail address' => request ('email'),
+				'Current password' => request ('currentPass'),
+				'New password' => request ('newPass'),
+				'New password (confirmation)' => request ('newPassConfirm')
 			),
 			array
 			(
@@ -136,24 +135,24 @@ class UserController extends Controller
 
 		if ($isLoggedInWithToken !== true)
 		{
-			$hashedPass = crypt (Input::get ('currentPass'), $user->crypt);
+			$hashedPass = crypt (request ('currentPass'), $user->crypt);
 			if ($hashedPass !== $user->crypt && !$isLoggedInWithToken)
 				return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('The entered current password is incorrect.', Alert::TYPE_ALERT)));
 		}
 
 		$userInfo = $user->userInfo;
-		$userInfo->email = Input::get ('email');
+		$userInfo->email = request ('email');
 
-		if (! empty (Input::get ('newPass')))
+		if (! empty (request ('newPass')))
 		{
-			$user->setPassword (Input::get ('newPass'));
-			DatabaseCredentials::forUserPrimary($userInfo->username, Input::get ('newPass'));
+			$user->setPassword (request ('newPass'));
+			DatabaseCredentials::forUserPrimary($userInfo->username, request ('newPass'));
 
 			$ftp = Ftp::where ('user', $userInfo->username)->where ('locked', '1')->first ();
 			$ftpPasswordChanged = false;
 			if (! empty ($ftp))
 			{
-				$ftp->setPassword (Input::get ('newPass'));
+				$ftp->setPassword (request ('newPass'));
 				$ftpPasswordChanged = true;
 
 				$ftp->save ();
@@ -163,7 +162,7 @@ class UserController extends Controller
 
 			Log::log ('Password changed', $user->id, compact ('isLoggedInWithToken', 'ftpPasswordChanged'));
 		}
-		$user->shell = Input::get ('shell');
+		$user->shell = request ('shell');
 
 		$userInfo->save ();
 		$user->save ();
@@ -195,13 +194,13 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username' => strtolower (Input::get ('username')),
-				'Password' => Input::get ('password'),
-				'Password (confirmation)' => Input::get ('password_confirm'),
-				'First name' => Input::get ('fname'),
-				'Surname' => Input::get ('lname'),
-				'E-mail address' => Input::get ('email'),
-				'Terms and conditions' => Input::get ('termsAgree')
+				'Username' => strtolower (request ('username')),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm'),
+				'First name' => request ('fname'),
+				'Surname' => request ('lname'),
+				'E-mail address' => request ('email'),
+				'Terms and conditions' => request ('termsAgree')
 			),
 			array
 			(
@@ -220,16 +219,16 @@ class UserController extends Controller
 
 		$etc = array
 		(
-			'password' => crypt (Input::get ('password'), '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$'),
-			'mysql_hash' => DatabaseCredentials::getHash (Input::get ('password'))
+			'password' => crypt (request ('password'), '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$'),
+			'mysql_hash' => DatabaseCredentials::getHash (request ('password'))
 		);
 
 		$userInfo = new UserInfo ();
-		$userInfo->username = strtolower (Input::get ('username'));
-		$userInfo->fname = Input::get ('fname');
-		$userInfo->lname = Input::get ('lname');
-		$userInfo->email = Input::get ('email');
-		$userInfo->schoolnr = Input::get ('rnummer');
+		$userInfo->username = strtolower (request ('username'));
+		$userInfo->fname = request ('fname');
+		$userInfo->lname = request ('lname');
+		$userInfo->email = request ('email');
+		$userInfo->schoolnr = request ('rnummer');
 		$userInfo->lastchange = time () / 60 / 60 / 24;
 		$userInfo->etc = serialize ($etc); // Na al de dirty hacks die Runes uitgehaald heeft met de oude SINControl mag ik ook wel eens zondigen zeker... //
 		$userInfo->validated = 0;
@@ -261,9 +260,9 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username' => Input::get ('username'),
-				'Password' => Input::get ('password'),
-				'Verlengen' => Input::get ('renew')
+				'Username' => request ('username'),
+				'Password' => request ('password'),
+				'Verlengen' => request ('renew')
 			),
 			array
 			(
@@ -276,7 +275,7 @@ class UserController extends Controller
 		if ($validator->fails ())
 			return view ('user.expired', compact ('user'))->withErrors ($validator);
 
-		$userInfo = UserInfo::where ('username', Input::get ('username'))->first ();
+		$userInfo = UserInfo::where ('username', request ('username'))->first ();
 		if (empty ($userInfo))
 			return view ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Account information could not be found', Alert::TYPE_ALERT)));
 
@@ -284,10 +283,10 @@ class UserController extends Controller
 		if ($user->expire > ($now + 14))
 			return view ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Your account is not about to expire yet. Account renewal can only be done less than 14 days before your account is set to expire.', Alert::TYPE_ALERT)));
 
-		$hashedPass = crypt (Input::get ('password'), $user->crypt);
+		$hashedPass = crypt (request ('password'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
 			return view ('user.expired', compact ('user'))
-				->withInput (Input::only ('username'))
+				->withInput (request ()->only ('username'))
 				->with ('alerts', array (new Alert ('Invalid password for user ' . $userInfo->username, Alert::TYPE_ALERT)));
 
 		$userInfo->generateValidationCode ();
@@ -362,7 +361,7 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username/e-mail address' => Input::get ('something')
+				'Username/e-mail address' => request ('something')
 			),
 			array
 			(
@@ -373,7 +372,7 @@ class UserController extends Controller
 		if ($validator->fails ())
 			return view ('user.amnesia')->withErrors ($validator);
 
-		$something = Input::get ('something');
+		$something = request ('something');
 
 		$userInfo = UserInfo::where ('username', $something)->orWhere ('email', $something)->first ();
 		if (empty ($userInfo))

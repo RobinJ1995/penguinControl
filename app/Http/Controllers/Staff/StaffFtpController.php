@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,16 +29,16 @@ class StaffFtpController extends Controller
 	{
 		$ftps = Ftp::paginate ();
 		
-		$searchUrl = action ('Staff\StaffFtpController@search');
+		$searchUrl = route ('staff.ftp.search');
 		
 		return view ('staff.ftp.index', compact ('ftps', 'searchUrl'));
 	}
 	
 	public function search ()
 	{
-		$user = Input::get ('user');
-		$dir = Input::get ('dir');
-		$username = Input::get ('username');
+		$user = request ('user');
+		$dir = request ('dir');
+		$username = request ('username');
 		
 		$query = Ftp::where ('dir', 'LIKE', '%' . $dir . '%')
 			->where ('user', 'LIKE', '%' . $user . '%');
@@ -65,7 +64,7 @@ class StaffFtpController extends Controller
 		$count = $query->count ();
 		$ftps = $query->paginate ();
 		
-		$searchUrl = action ('Staff\StaffFtpController@search');
+		$searchUrl = route ('staff.ftp.search');
 		
 		return view ('staff.ftp.search', compact ('count', 'ftps', 'searchUrl'));
 	}
@@ -91,11 +90,11 @@ class StaffFtpController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Gebruikersnaam' => Input::get ('user'),
-				'Wachtwoord' => Input::get ('passwd'),
-				'Wachtwoord (bevestiging)' => Input::get ('passwd_confirm'),
-				'Map' => Input::get ('dir')
+				'Eigenaar' => request ('uid'),
+				'Gebruikersnaam' => request ('user'),
+				'Wachtwoord' => request ('passwd'),
+				'Wachtwoord (bevestiging)' => request ('passwd_confirm'),
+				'Map' => request ('dir')
 			),
 			array
 			(
@@ -111,11 +110,11 @@ class StaffFtpController extends Controller
 			return Redirect::to ('/staff/ftp/create')->withInput ()->withErrors ($validator);
 		
 		$ftp = new Ftp ();
-		$ftp->uid = Input::get ('uid');
+		$ftp->uid = request ('uid');
 		$userInfo = $ftp->getUser ()->userInfo;
-		$ftp->user = (empty (Input::get ('user')) ? $userInfo->username : $userInfo->username . '_' . Input::get ('user'));
-		$ftp->setPassword (Input::get ('passwd'));
-		$ftp->dir = Input::get ('dir');
+		$ftp->user = (empty (request ('user')) ? $userInfo->username : $userInfo->username . '_' . request ('user'));
+		$ftp->setPassword (request ('passwd'));
+		$ftp->dir = request ('dir');
 		
 		$ftp->save ();
 		
@@ -144,11 +143,11 @@ class StaffFtpController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Gebruikersnaam' => Input::get ('user'),
-				'Wachtwoord' => Input::get ('passwd'),
-				'Wachtwoord (bevestiging)' => Input::get ('passwd_confirm'),
-				'Map' => Input::get ('dir')
+				'Eigenaar' => request ('uid'),
+				'Gebruikersnaam' => request ('user'),
+				'Wachtwoord' => request ('passwd'),
+				'Wachtwoord (bevestiging)' => request ('passwd_confirm'),
+				'Map' => request ('dir')
 			),
 			array
 			(
@@ -165,12 +164,12 @@ class StaffFtpController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$ftp->uid = Input::get ('uid');
+		$ftp->uid = request ('uid');
 		$userInfo = $ftp->getUser ()->userInfo;
-		$ftp->user = (empty (Input::get ('user')) ? $userInfo->username : $userInfo->username . '_' . Input::get ('user'));
-		$ftp->dir = Input::get ('dir');
-		if (! empty (Input::get ('passwd')))
-			$ftp->setPassword (Input::get ('passwd'));
+		$ftp->user = (empty (request ('user')) ? $userInfo->username : $userInfo->username . '_' . request ('user'));
+		$ftp->dir = request ('dir');
+		if (! empty (request ('passwd')))
+			$ftp->setPassword (request ('passwd'));
 		
 		$ftp->save ();
 		

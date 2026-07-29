@@ -14,14 +14,14 @@ E-maildomein bewerken &bull; Staff
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $domain->uid)
+					old ('uid', $domain->uid)
 				)
 				}}
 			</label>
 		</div>
 		<div>
 			<label>Domein:
-				<input type="text" name="domain" value="{{ Input::old ('domain', $domain->domain) }}" required />
+				<input type="text" name="domain" value="{{ old ('domain', $domain->domain) }}" required />
 			</label>
 			<small class="error">Required field</small>
 		</div>

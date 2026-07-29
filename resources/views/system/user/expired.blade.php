@@ -14,7 +14,7 @@ Account expired
         <form method="POST" data-abide>
                 <div>
                         <label>Username:
-                                <input type="text" name="username" value="{{ Input::old ('username') }}" required />
+                                <input type="text" name="username" value="{{ old ('username') }}" required />
                         </label>
                         <small class="error">Enter your username.</small>
                 </div>

@@ -25,7 +25,7 @@ class UserLimit extends UserOwnedModel
 	
 	public function url ()
 	{
-		return action ('StaffUserLimitController@edit', $this->id);
+		return route ('staff.limit.edit', $this->id);
 	}
 	
 	public function link ()

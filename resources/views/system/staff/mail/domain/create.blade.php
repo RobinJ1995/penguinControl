@@ -14,7 +14,7 @@ E-maildomein toevoegen &bull; Staff
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $user->uid)
+					old ('uid', $user->uid)
 				)
 				}}
 			</label>

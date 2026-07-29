@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\HtmlString;
@@ -45,11 +44,11 @@ class StaffSystemSystemTaskController extends Controller
 		(
 			array
 			(
-				'Type' => Input::get ('type'),
-				'Start' => Input::get ('start'),
-				'Interval' => Input::get ('interval'),
-				'Interval-eenheid' => Input::get ('interval_unit'),
-				'Einde' => Input::get ('end')
+				'Type' => request ('type'),
+				'Start' => request ('start'),
+				'Interval' => request ('interval'),
+				'Interval-eenheid' => request ('interval_unit'),
+				'Einde' => request ('end')
 			),
 			array
 			(
@@ -65,10 +64,10 @@ class StaffSystemSystemTaskController extends Controller
 			return Redirect::to ('/staff/system/systemtask/create')->withInput ()->withErrors ($validator);
 		
 		$task = new SystemTask ();
-		$task->type = Input::get ('type');
-		$task->start = (empty (Input::get ('start')) ? time () : strtotime (Input::get ('start')));
+		$task->type = request ('type');
+		$task->start = (empty (request ('start')) ? time () : strtotime (request ('start')));
 		$factor = 1;
-		switch (Input::get ('interval_unit'))
+		switch (request ('interval_unit'))
 		{
 			case 'week': // Falls through //
 				$factor *= 7;
@@ -79,9 +78,9 @@ class StaffSystemSystemTaskController extends Controller
 			case 'min': // Falls through //
 				$factor *= 60;
 		}
-		if (! empty (Input::get ('interval')))
-			$task->interval = Input::get ('interval') * $factor;
-		$task->end = (empty (Input::get ('end')) ? NULL : strtotime (Input::get ('end')));
+		if (! empty (request ('interval')))
+			$task->interval = request ('interval') * $factor;
+		$task->end = (empty (request ('end')) ? NULL : strtotime (request ('end')));
 		$task->started = 0;
 		
 		$task->save ();

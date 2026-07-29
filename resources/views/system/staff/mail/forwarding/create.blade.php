@@ -11,7 +11,7 @@ Doorstuuradres toevoegen &bull; Staff
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mailadres:
-					<input type="text" name="source" value="{{ Input::old ('source') }}" required />
+					<input type="text" name="source" value="{{ old ('source') }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -21,7 +21,7 @@ Doorstuuradres toevoegen &bull; Staff
 						(
 							'domain',
 							$domains,
-							Input::old ('domain')
+							old ('domain')
 						)
 					}}
 				</label>
@@ -31,7 +31,7 @@ Doorstuuradres toevoegen &bull; Staff
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Bestemming:
-					<input type="email" name="destination" value="{{ Input::old ('destination') }}" required />
+					<input type="email" name="destination" value="{{ old ('destination') }}" required />
 				</label>
 				<small class="error">Geef een geldig e-mailadres in</small>
 			</div>

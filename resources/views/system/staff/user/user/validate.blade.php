@@ -11,19 +11,19 @@ Gebruiker valideren &bull; Staff
 		<div class="row">
 			<div class="large-2 medium-3 small-12 column">
 				<label>UID:
-					<input type="number" name="uid" value="{{ Input::old ('uid', $uid) }}" min="{{ $uid }}" max="{{ $uid }}" required />
+					<input type="number" name="uid" value="{{ old ('uid', $uid) }}" min="{{ $uid }}" max="{{ $uid }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-9 small-12 column">
 				<label>Gebruikersnaam:
-					<input type="text" name="username" value="{{ Input::old ('username', $userInfo->username) }}" required />
+					<input type="text" name="username" value="{{ old ('username', $userInfo->username) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-6 medium-12 small-12 column">
 				<label>Home directory:
-					<input type="text" name="homedir" value="/home/users/{{ substr (Input::old ('username', $userInfo->username), 0, 1) }}/{{ Input::old ('username', $userInfo->username) }}" required />
+					<input type="text" name="homedir" value="/home/users/{{ substr (old ('username', $userInfo->username), 0, 1) }}/{{ old ('username', $userInfo->username) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -31,19 +31,19 @@ Gebruiker valideren &bull; Staff
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
 				<label>E-mailadres:
-					<input type="email" name="email" value="{{ Input::old ('email', $userInfo->email) }}" required />
+					<input type="email" name="email" value="{{ old ('email', $userInfo->email) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
 				<label>Voornaam:
-					<input type="text" name="fname" value="{{ Input::old ('fname', $userInfo->fname) }}" required />
+					<input type="text" name="fname" value="{{ old ('fname', $userInfo->fname) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-4 medium-6 small-12 column">
 				<label>Achternaam:
-					<input type="text" name="lname" value="{{ Input::old ('lname', $userInfo->lname) }}" required />
+					<input type="text" name="lname" value="{{ old ('lname', $userInfo->lname) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -51,7 +51,7 @@ Gebruiker valideren &bull; Staff
 		<div class="row">
 			<div class="large-4 medium-4 small-12 column">
 				<label>r-nummer:
-					<input type="text" name="rnummer" value="{{ Input::old ('rnummer', $userInfo->schoolnr) }}" required />
+					<input type="text" name="rnummer" value="{{ old ('rnummer', $userInfo->schoolnr) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -67,7 +67,7 @@ Gebruiker valideren &bull; Staff
 								'/bin/zsh' => 'ZSH',
 								'/bin/false' => 'Blokkeer toegang (/bin/false)'
 							),
-							Input::old ('shell', '/bin/bash')
+							old ('shell', '/bin/bash')
 						)
 					}}
 				</label>
@@ -84,7 +84,7 @@ Gebruiker valideren &bull; Staff
 								'1' => 'Aan',
 								'-1' => 'Blokkeren'
 							),
-							Input::old ('mailEnabled', 0)
+							old ('mailEnabled', 0)
 						)
 					}}
 				</label>

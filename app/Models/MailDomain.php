@@ -26,7 +26,7 @@ class MailDomain extends LimitedUserOwnedModel
 	
 	public function url ()
 	{
-		return action ('StaffMailDomainController@edit', $this->id);
+		return route ('staff.mail.domain.edit', $this->id);
 	}
 	
 	public function link ()

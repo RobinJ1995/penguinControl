@@ -11,7 +11,7 @@ Doorstuuradres bewerken &bull; Staff
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mailadres:
-					<input type="text" name="source" value="{{ Input::old ('source', $mFwd->source) }}" required />
+					<input type="text" name="source" value="{{ old ('source', $mFwd->source) }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -21,7 +21,7 @@ Doorstuuradres bewerken &bull; Staff
 						(
 							'domain',
 							$domains,
-							Input::old ('domain', $mFwd->mail_domain_virtual_id)
+							old ('domain', $mFwd->mail_domain_virtual_id)
 						)
 					}}
 				</label>
@@ -31,7 +31,7 @@ Doorstuuradres bewerken &bull; Staff
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Bestemming:
-					<input type="email" name="destination" value="{{ Input::old ('destination', $mFwd->destination) }}" required />
+					<input type="email" name="destination" value="{{ old ('destination', $mFwd->destination) }}" required />
 				</label>
 				<small class="error">Geef een geldig e-mailadres in</small>
 			</div>

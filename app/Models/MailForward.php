@@ -16,7 +16,7 @@ class MailForward extends LimitedUserOwnedModel
 	
 	public function url ()
 	{
-		return action ('StaffMailForwardingController@edit', $this->id);
+		return route ('staff.mail.forward.edit', $this->id);
 	}
 	
 	public function link ()

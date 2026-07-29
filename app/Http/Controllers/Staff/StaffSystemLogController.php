@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -35,7 +34,7 @@ class StaffSystemLogController extends Controller
 	
 	public function search ()
 	{
-		$userId = Input::get ('userId');
+		$userId = request ('userId');
 		
 		$logs = Log::where ('user_id', $userId)->orderBy ('created_at', 'desc')->paginate ();
 		

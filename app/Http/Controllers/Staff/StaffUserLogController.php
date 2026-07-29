@@ -21,7 +21,6 @@ use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,23 +39,23 @@ class StaffUserLogController extends Controller
 			->with ('userInfo.user')
 			->paginate ();
 
-		$searchUrl = action ('Staff\StaffUserLogController@search');
+		$searchUrl = route ('staff.user-log.search');
 		$statusMeaning = $this->statusMeaning;
 		return view ('staff.user.log.index', compact ('userlogs', 'searchUrl', 'statusMeaning'));
 	}
 
 	public function search ()
 	{
-		$username = Input::get ('username');
-		$name = Input::get ('name');
-		$email = Input::get ('email');
-		$gid = Input::get ('gid');
+		$username = request ('username');
+		$name = request ('name');
+		$email = request ('email');
+		$gid = request ('gid');
 
-		$time_van = Input::get ('time_van');
-		$time_tot = Input::get ('time_tot');
-		$new = Input::get ('new');
-		$status = Input::get ('status');
-		$pagination = Input::get ('pagination');
+		$time_van = request ('time_van');
+		$time_tot = request ('time_tot');
+		$new = request ('new');
+		$status = request ('status');
+		$pagination = request ('pagination');
 
 		$query = UserLog::with ('userInfo.user')
 			->whereHas
@@ -114,7 +113,7 @@ class StaffUserLogController extends Controller
 			$paginationOn = false;
 		}
 
-		$searchUrl = action ('Staff\StaffUserLogController@search');
+		$searchUrl = route ('staff.user-log.search');
 		$statusMeaning = $this->statusMeaning;
 
 		return view ('staff.user.log.search', compact ('count', 'userlogs', 'searchUrl', 'statusMeaning', 'paginationOn'));
@@ -122,10 +121,10 @@ class StaffUserLogController extends Controller
 
 	public function editChecked ()
 	{
-		if (! empty (Input::get ('userLogId')))
+		if (! empty (request ('userLogId')))
 		{
-			$userLogsIds = Input::get ('userLogId');
-			$status = Input::get ('status');
+			$userLogsIds = request ('userLogId');
+			$status = request ('status');
 
 			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 		}
@@ -136,13 +135,13 @@ class StaffUserLogController extends Controller
 
 		if (isset ($userLogs))
 		{
-			if (! empty (Input::get ('facturatie')))
+			if (! empty (request ('facturatie')))
 			{
 				$userLogs->update (array ('status' => $status));
 				$alert = 'Facturatie(s) gewijzigd';
 			}
 
-			if (! empty (Input::get ('export')))
+			if (! empty (request ('export')))
 			{
 				$statusMeaning = $this->statusMeaning;
 				return view ('staff.user.log.export', compact ('userLogsIds', 'statusMeaning'));
@@ -156,14 +155,14 @@ class StaffUserLogController extends Controller
 
 	public function export ()
 	{
-		if (!empty (Input::get ('userLogId')))
+		if (!empty (request ('userLogId')))
 		{
-			$userLogsIds = json_decode (Input::get ('userLogId'));
+			$userLogsIds = json_decode (request ('userLogId'));
 			$userLogs = UserLog::whereIn ('id', $userLogsIds);
 		}
 
-		$status = Input::get ('status');
-		$exportSeperator = Input::get ('seperator');
+		$status = request ('status');
+		$exportSeperator = request ('seperator');
 
 		$csvHeader = array
 		(
@@ -181,7 +180,7 @@ class StaffUserLogController extends Controller
 		);
 
 
-		$fields = Input::get ('exportFields');
+		$fields = request ('exportFields');
 
 		$output = array ();
 		$userLogsUserInfo = $userLogs->with ('userInfo')->get ();
@@ -263,10 +262,10 @@ class StaffUserLogController extends Controller
 		(
 			array
 		        (
-				'User' => Input::get ('user_info_id'),
-				'Date/Time' => Input::get ('time'),
-				'New' => Input::get ('new'),
-				'Billing status' => Input::get ('status')
+				'User' => request ('user_info_id'),
+				'Date/Time' => request ('time'),
+				'New' => request ('new'),
+				'Billing status' => request ('status')
 			),
 			array
 	                (
@@ -282,10 +281,10 @@ class StaffUserLogController extends Controller
 
 		$userLog = new UserLog ();
 
-		$userLog->user_info_id = Input::get ('user_info_id');
-		$userLog->time = Input::get ('time');
-		$userLog->new = Input::get ('new');
-		$userLog->status = Input::get ('status');
+		$userLog->user_info_id = request ('user_info_id');
+		$userLog->time = request ('time');
+		$userLog->new = request ('new');
+		$userLog->status = request ('status');
 
 		$userLog->save ();
 
@@ -307,7 +306,7 @@ class StaffUserLogController extends Controller
 		(
 			array
 			(
-				'Billing status' => Input::get ('status')
+				'Billing status' => request ('status')
 			),
 			array
 			(
@@ -318,7 +317,7 @@ class StaffUserLogController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/user/log/' . $userLog->id . '/edit')->withInput ()->withErrors ($validator);
 
-		$userLog->status = Input::get ('status');
+		$userLog->status = request ('status');
 		$userLog->save ();
 
 		Log::log ('Billing entry modified', NULL, $userLog);

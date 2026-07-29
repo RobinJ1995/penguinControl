@@ -31,7 +31,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -150,7 +149,7 @@ class StaffMaintenanceController extends Controller
 			DB::beginTransaction ();
 			
 			$alerts = array ();
-			$ignoreRNummers = Input::has ('ignorernummers');
+			$ignoreRNummers = request ()->filled ('ignorernummers');
 			
 			$users = User::all ();
 			foreach ($users as $user)

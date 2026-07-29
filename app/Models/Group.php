@@ -13,7 +13,7 @@ class Group extends BaseModel
 	
 	public function url ()
 	{
-		return action ('StaffGroupController@edit', $this->id);
+		return route ('staff.group.index');
 	}
 	
 	public function link ()

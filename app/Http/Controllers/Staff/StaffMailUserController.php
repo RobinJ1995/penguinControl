@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -32,7 +31,7 @@ class StaffMailUserController extends Controller
 			->with ('user')
 			->paginate ();
 		
-		$searchUrl = action ('Staff\StaffMailController@search');
+		$searchUrl = route ('staff.mail.search');
 		
 		return view ('staff.mail.user.index', compact ('mUsers', 'searchUrl'));
 	}
@@ -58,10 +57,10 @@ class StaffMailUserController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email'),
-				'E-maildomein' => Input::get ('domain'),
-				'Wachtwoord' => Input::get ('password'),
-				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
+				'E-mailadres' => request ('email'),
+				'E-maildomein' => request ('domain'),
+				'Wachtwoord' => request ('password'),
+				'Wachtwoord (bevestiging)' => request ('password_confirm')
 			),
 			array
 			(
@@ -76,13 +75,13 @@ class StaffMailUserController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/mail/user/create')->withInput ()->withErrors ($validator);
 		
-		$domain = MailUser::where ('domain', Input::get ('domain'))->firstOrFail ();
+		$domain = MailUser::where ('domain', request ('domain'))->firstOrFail ();
 		
 		$mUser = new MailUser ();
 		$mUser->uid = $domain->uid;
-		$mUser->email = Input::get ('email');
-		$mUser->mail_domain_virtual_id = Input::get ('domain');
-		$mUser->setPassword (Input::get ('password'));
+		$mUser->email = request ('email');
+		$mUser->mail_domain_virtual_id = request ('domain');
+		$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
 		
@@ -112,10 +111,10 @@ class StaffMailUserController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email'),
-				'E-maildomein' => Input::get ('domain'),
-				'Wachtwoord' => Input::get ('password'),
-				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
+				'E-mailadres' => request ('email'),
+				'E-maildomein' => request ('domain'),
+				'Wachtwoord' => request ('password'),
+				'Wachtwoord (bevestiging)' => request ('password_confirm')
 			),
 			array
 			(
@@ -131,13 +130,13 @@ class StaffMailUserController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$domain = MailDomain::where ('domain', Input::get ('domain'))->firstOrFail ();
+		$domain = MailDomain::where ('domain', request ('domain'))->firstOrFail ();
 		
-		$mUser->email = Input::get ('email');
-		$mUser->mail_domain_virtual_id = Input::get ('domain');
+		$mUser->email = request ('email');
+		$mUser->mail_domain_virtual_id = request ('domain');
 		$mUser->uid = $domain->uid;
-		if (! empty (Input::get ('password')))
-			$mUser->setPassword (Input::get ('password'));
+		if (! empty (request ('password')))
+			$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
 		

@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,17 +29,17 @@ class StaffVHostController extends Controller
 	{
 		$vhosts = Vhost::paginate ();
 		
-		$searchUrl = action ('Staff\StaffVHostController@search');
+		$searchUrl = route ('staff.vhost.search');
 		
 		return view ('staff.website.vhost.index', compact ('vhosts', 'searchUrl'));
 	}
 	
 	public function search ()
 	{
-		$host = Input::get ('host');
-		$docroot = Input::get ('docroot');
-		$basedir = Input::get ('basedir');
-		$username = Input::get ('username');
+		$host = request ('host');
+		$docroot = request ('docroot');
+		$basedir = request ('basedir');
+		$username = request ('username');
 		
 		$query = Vhost::where
 		(
@@ -88,7 +87,7 @@ class StaffVHostController extends Controller
 		$count = $query->count ();
 		$vhosts = $query->paginate ();
 		
-		$searchUrl = action ('Staff\StaffVHostController@search');
+		$searchUrl = route ('staff.vhost.search');
 		
 		return view ('staff.website.vhost.search', compact ('count', 'vhosts', 'searchUrl'));
 	}
@@ -110,20 +109,20 @@ class StaffVHostController extends Controller
 
 	public function store ()
 	{
-		$ownerUser = User::where ('uid', Input::get ('uid'))->firstOrFail ();
+		$ownerUser = User::where ('uid', request ('uid'))->firstOrFail ();
 		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Host' => Input::get ('servername'),
-				'Beheerder' => Input::get ('serveradmin'),
-				'Alias' => Input::get ('serveralias'),
-				'Document root' => Input::get ('docroot'),
-				'Basedir' => Input::get ('basedir'),
-				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi')
+				'Eigenaar' => request ('uid'),
+				'Host' => request ('servername'),
+				'Beheerder' => request ('serveradmin'),
+				'Alias' => request ('serveralias'),
+				'Document root' => request ('docroot'),
+				'Basedir' => request ('basedir'),
+				'Protocol' => request ('ssl'),
+				'CGI' => request ('cgi')
 			),
 			array
 			(
@@ -142,14 +141,14 @@ class StaffVHostController extends Controller
 			return Redirect::to ('/staff/website/vhost/create')->withInput ()->withErrors ($validator);
 		
 		$vhost = new Vhost ();
-		$vhost->uid = Input::get ('uid');
-		$vhost->docroot = Input::get ('docroot');
-		$vhost->servername = Input::get ('servername');
-		$vhost->serveralias = Input::get ('serveralias');
-		$vhost->serveradmin = Input::get ('serveradmin');
-		$vhost->basedir = Input::get ('basedir');
-		$vhost->ssl = (int) Input::get ('ssl');
-		$vhost->cgi = (bool) Input::get ('cgi');
+		$vhost->uid = request ('uid');
+		$vhost->docroot = request ('docroot');
+		$vhost->servername = request ('servername');
+		$vhost->serveralias = request ('serveralias');
+		$vhost->serveradmin = request ('serveradmin');
+		$vhost->basedir = request ('basedir');
+		$vhost->ssl = (int) request ('ssl');
+		$vhost->cgi = (bool) request ('cgi');
 		
 		$vhost->save ();
 		
@@ -182,13 +181,13 @@ class StaffVHostController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Beheerder' => Input::get ('serveradmin'),
-				'Alias' => Input::get ('serveralias'),
-				'Basedir' => Input::get ('basedir'),
-				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi'),
-				'Document root' => Input::get ('docroot')
+				'Eigenaar' => request ('uid'),
+				'Beheerder' => request ('serveradmin'),
+				'Alias' => request ('serveralias'),
+				'Basedir' => request ('basedir'),
+				'Protocol' => request ('ssl'),
+				'CGI' => request ('cgi'),
+				'Document root' => request ('docroot')
 			),
 			array
 			(
@@ -207,13 +206,13 @@ class StaffVHostController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$vhost->uid = Input::get ('uid');
-		$vhost->docroot = Input::get ('docroot');
-		$vhost->serveralias = Input::get ('serveralias');
-		$vhost->serveradmin = Input::get ('serveradmin');
-		$vhost->basedir = Input::get ('basedir');
-		$vhost->ssl = (int) Input::get ('ssl');
-		$vhost->cgi = (bool) Input::get ('cgi');
+		$vhost->uid = request ('uid');
+		$vhost->docroot = request ('docroot');
+		$vhost->serveralias = request ('serveralias');
+		$vhost->serveradmin = request ('serveradmin');
+		$vhost->basedir = request ('basedir');
+		$vhost->ssl = (int) request ('ssl');
+		$vhost->cgi = (bool) request ('cgi');
 		
 		$vhost->save ();
 		

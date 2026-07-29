@@ -17,7 +17,7 @@ class ProblemSolverController extends Controller
 	
 	public function schedule ()
 	{
-		$user = User::find (Input::get ('userId'));
+		$user = User::find (request ('userId'));
 		if ($user == NULL)
 			throw new Exception ('User does not exist');
 		
@@ -31,7 +31,7 @@ class ProblemSolverController extends Controller
 	
 	public function result ()
 	{
-		$task = SystemTask::find (Input::get ('taskId'));
+		$task = SystemTask::find (request ('taskId'));
 		
 		return $task;
 	}

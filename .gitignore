@@ -9,3 +9,7 @@ Homestead.json
 Homestead.yaml
 .env
 /nbproject/private/*
+/public/build
+/public/export
+/.phpunit.cache
+.phpunit.result.cache

@@ -24,7 +24,7 @@ Modify account
 							'/usr/bin/zsh' => 'ZSH',
 							'/usr/bin/tmux' => 'Tmux'
 						),
-						Input::old ('shell', $user->shell)
+						old ('shell', $user->shell)
 					)
 				}}
 			</label>
@@ -32,7 +32,7 @@ Modify account
 		</div>
 		<div class="large-7 medium-6 small-12 column">
 			<label>E-mail address:
-				<input type="email" name="email" required value="{{ Input::old ('email', $user->userInfo->email) }}" />
+				<input type="email" name="email" required value="{{ old ('email', $user->userInfo->email) }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>

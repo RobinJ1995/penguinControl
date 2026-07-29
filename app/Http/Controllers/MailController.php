@@ -6,7 +6,6 @@ use App\Alert;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 
 class MailController extends Controller
@@ -28,9 +27,9 @@ class MailController extends Controller
 		if (! Config::get ('penguin.mail', false))
 			return back ()->with ('alerts', array (new Alert ('E-mail management has been disabled.', Alert::TYPE_WARNING)));
 		
-		if (! empty (Input::get ('enable')))
+		if (! empty (request ('enable')))
 			$user->mail_enabled = true;
-		else if (! empty (Input::get ('disable')))
+		else if (! empty (request ('disable')))
 			$user->mail_enabled = false;
 		
 		$user->save ();

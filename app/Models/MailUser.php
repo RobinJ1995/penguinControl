@@ -23,7 +23,7 @@ class MailUser extends LimitedUserOwnedModel
 	
 	public function url ()
 	{
-		return action ('StaffMailUserController@edit', $this->id);
+		return route ('staff.mail.user.edit', $this->id);
 	}
 	
 	public function link ()

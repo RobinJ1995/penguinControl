@@ -14,7 +14,7 @@ FTP-account toevoegen &bull; Staff
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $user->uid)
+					old ('uid', $user->uid)
 				)
 				}}
 			</label>
@@ -26,7 +26,7 @@ FTP-account toevoegen &bull; Staff
 						<span class="prefix"><em>&lt;username&gt;</em>_</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="user" value="{{ Input::old ('user') }}" />
+						<input type="text" name="user" value="{{ old ('user') }}" />
 					</div>
 				</div>
 			</label>
@@ -46,7 +46,7 @@ FTP-account toevoegen &bull; Staff
 		</div>
 		<div>
 			<label>Map:
-				<input type="text" name="dir" value="{{ Input::old ('dir') }}" />
+				<input type="text" name="dir" value="{{ old ('dir') }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>

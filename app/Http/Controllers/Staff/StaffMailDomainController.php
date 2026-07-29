@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,7 +30,7 @@ class StaffMailDomainController extends Controller
 		$domains = MailDomain::with ('user')
 			->paginate ();
 		
-		$searchUrl = action ('Staff\StaffMailController@search');
+		$searchUrl = route ('staff.mail.search');
 		
 		return view ('staff.mail.domain.index', compact ('domains', 'searchUrl'));
 	}
@@ -57,8 +56,8 @@ class StaffMailDomainController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Domein' => Input::get ('domain')
+				'Eigenaar' => request ('uid'),
+				'Domein' => request ('domain')
 			),
 			array
 			(
@@ -71,8 +70,8 @@ class StaffMailDomainController extends Controller
 			return Redirect::to ('/staff/mail/domain/create')->withInput ()->withErrors ($validator);
 		
 		$domain = new MailDomain ();
-		$domain->uid = Input::get ('uid');
-		$domain->domain = Input::get ('domain');
+		$domain->uid = request ('uid');
+		$domain->domain = request ('domain');
 		
 		$domain->save ();
 		
@@ -101,8 +100,8 @@ class StaffMailDomainController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Domein' => Input::get ('domain')
+				'Eigenaar' => request ('uid'),
+				'Domein' => request ('domain')
 			),
 			array
 			(
@@ -117,8 +116,8 @@ class StaffMailDomainController extends Controller
 				->withErrors ($validator);
 		
 		
-		$domain->domain = Input::get('domain');
-		$domain->uid = Input::get ('uid');
+		$domain->domain = request ('domain');
+		$domain->uid = request ('uid');
 		
 		$domain->save ();
 		

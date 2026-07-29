@@ -68,7 +68,7 @@ Edit user
 								'/usr/bin/tmux' => 'Tmux',
 								'/bin/false' => 'Blokkeer toegang (/bin/false)'
 							),
-							Input::old ('shell', $user->shell)
+							old ('shell', $user->shell)
 						)
 					}}
 				</label>
@@ -85,7 +85,7 @@ Edit user
 								'1' => 'Aan',
 								'-1' => 'Blokkeren'
 							),
-							Input::old ('mailEnabled', $user->mail_enabled)
+							old ('mailEnabled', $user->mail_enabled)
 						)
 					}}
 				</label>

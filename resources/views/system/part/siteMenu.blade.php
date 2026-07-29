@@ -13,7 +13,7 @@
 			<ul>
 				@foreach ($siteMenu as $item)
 				<li>
-					<a data-id="{{ $item->id }}" data-name="{{ $item->name }}" href="{{ action ('PageController@show', array ($item->name)) }}">{{ $item->title }}</a>
+					<a data-id="{{ $item->id }}" data-name="{{ $item->name }}" href="{{ route ('page.show', $item->name) }}">{{ $item->title }}</a>
 				</li>
 				<li class="divider hide-for-small"></li>
 				@endforeach

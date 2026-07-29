@@ -18,7 +18,7 @@ class Ftp extends LimitedUserOwnedModel
 	
 	public function url ()
 	{
-		return action ('StaffFtpController@edit', $this->id);
+		return route ('staff.ftp.edit', $this->id);
 	}
 	
 	public function link ()

@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -32,7 +31,7 @@ class StaffMailForwardController extends Controller
 			->with ('user')
 			->paginate ();
 		
-		$searchUrl = action ('Staff\StaffMailController@search');
+		$searchUrl = route ('staff.mail.search');
 		
 		return view ('staff.mail.forwarding.index', compact ('mFwds', 'searchUrl'));
 	}
@@ -58,9 +57,9 @@ class StaffMailForwardController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('source'),
-				'E-maildomein' => Input::get ('domain'),
-				'Bestemming' => Input::get ('destination')
+				'E-mailadres' => request ('source'),
+				'E-maildomein' => request ('domain'),
+				'Bestemming' => request ('destination')
 			),
 			array
 			(
@@ -74,13 +73,13 @@ class StaffMailForwardController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/mail/forwarding/create')->withInput ()->withErrors ($validator);
 		
-		$domain = MailDomain::where ('domain', Input::get ('domain'))->firstOrFail ();
+		$domain = MailDomain::where ('domain', request ('domain'))->firstOrFail ();
 		
 		$mFwd = new MailForward ();
 		$mFwd->uid = $domain->uid;
-		$mFwd->source = Input::get ('source');
-		$mFwd->mail_domain_virtual_id = Input::get ('domain');
-		$mFwd->destination = Input::get ('destination');
+		$mFwd->source = request ('source');
+		$mFwd->mail_domain_virtual_id = request ('domain');
+		$mFwd->destination = request ('destination');
 		
 		$mFwd->save ();
 		
@@ -108,9 +107,9 @@ class StaffMailForwardController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('source'),
-				'E-maildomein' => Input::get ('domain'),
-				'Bestemming' => Input::get ('destination')
+				'E-mailadres' => request ('source'),
+				'E-maildomein' => request ('domain'),
+				'Bestemming' => request ('destination')
 			),
 			array
 			(
@@ -131,11 +130,11 @@ class StaffMailForwardController extends Controller
 				->withInput ()
 				->with ('alerts', array (new Alert ('U bent niet de eigenaar van dit doorstuuradres!', Alert::TYPE_ALERT)));
 		
-		$domain = MailDomain::where ('domain', Input::get ('domain'))->firstOrFail ();
+		$domain = MailDomain::where ('domain', request ('domain'))->firstOrFail ();
 		
-		$mFwd->source = Input::get ('source') . '@' . Input::get ('domain');
+		$mFwd->source = request ('source') . '@' . request ('domain');
 		$mFwd->uid = $domain->uid;
-		$mFwd->destination = Input::get ('destination');
+		$mFwd->destination = request ('destination');
 		
 		$mFwd->save ();
 		

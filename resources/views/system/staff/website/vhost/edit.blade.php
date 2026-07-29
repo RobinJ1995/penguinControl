@@ -14,38 +14,38 @@ vHost bewerken &bull; Staff
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $vhost->uid)
+					old ('uid', $vhost->uid)
 				)
 				}}
 			</label>
 		</div>
 		<div>
 			<label>Host:
-				<input type="text" name="servername" value="{{ Input::old ('servername', $vhost->servername) }}" required disabled/>
+				<input type="text" name="servername" value="{{ old ('servername', $vhost->servername) }}" required disabled/>
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
 			<label>Beheerder:
-				<input type="email" name="serveradmin" value="{{ Input::old ('serveradmin', $vhost->serveradmin) }}" required />
+				<input type="email" name="serveradmin" value="{{ old ('serveradmin', $vhost->serveradmin) }}" required />
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
 			<label>Alias:
-				<input type="text" name="serveralias" value="{{ Input::old ('serveralias', $vhost->serveralias) }}" />
+				<input type="text" name="serveralias" value="{{ old ('serveralias', $vhost->serveralias) }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
 		<div>
 			<label>Document root:
-				<input type="text" name="docroot" value="{{ Input::old ('docroot', $vhost->docroot) }}" />
+				<input type="text" name="docroot" value="{{ old ('docroot', $vhost->docroot) }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
 		<div>
 			<label>Basedir:
-				<input type="text" name="basedir" value="{{ Input::old ('basedir', $vhost->basedir) }}" />
+				<input type="text" name="basedir" value="{{ old ('basedir', $vhost->basedir) }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
@@ -61,7 +61,7 @@ vHost bewerken &bull; Staff
 							'1' => 'Enkel HTTPS',
 							'2' => 'HTTPS met redirect'
 						),
-						Input::old ('ssl', $vhost->ssl)
+						old ('ssl', $vhost->ssl)
 					)
 					}}
 				</label>
@@ -77,7 +77,7 @@ vHost bewerken &bull; Staff
 							'0' => 'Uit',
 							'1' => 'Aan'
 						),
-						Input::old ('cgi', $vhost->cgi)
+						old ('cgi', $vhost->cgi)
 					)
 					}}
 				</label>

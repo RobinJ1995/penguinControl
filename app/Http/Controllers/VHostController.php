@@ -7,7 +7,6 @@ use App\Models\Log;
 use App\Models\SystemTask;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,20 +50,20 @@ class VHostController extends Controller
 		if (! Vhost::allowNew ($user))
 			return Redirect::to ('/website/vhost/create')->withInput ()->with ('alerts', array (new Alert ('You are only allowed to create ' . Vhost::getLimit ($user) . ' vHosts.', Alert::TYPE_ALERT)));
 		
-		$servername = @strtolower (Input::get ('servername'));
-		$serveralias = @strtolower (Input::get ('serveralias'));
-		$docroot = @trailing_slash (Input::get ('docroot'));
+		$servername = @strtolower (request ('servername'));
+		$serveralias = @strtolower (request ('serveralias'));
+		$docroot = @trailing_slash (request ('docroot'));
 		
 		$validator = Validator::make
 		(
 			array
 			(
 				'Host' => $servername,
-				//'Beheerder' => Input::get ('serveradmin'),
+				//'Beheerder' => request ('serveradmin'),
 				'Aliases' => $serveralias,
 				'Document root' => $docroot,
-				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi')
+				'Protocol' => request ('ssl'),
+				'CGI' => request ('cgi')
 			),
 			array
 			(
@@ -88,8 +87,8 @@ class VHostController extends Controller
 		$vhost->servername = $servername;
 		$vhost->serveralias = $serveralias;
 		$vhost->serveradmin = $user->userInfo->username . '@' . $servername;
-		$vhost->ssl = (int) Input::get ('ssl');
-		$vhost->cgi = (bool) Input::get ('cgi');
+		$vhost->ssl = (int) request ('ssl');
+		$vhost->cgi = (bool) request ('cgi');
 		
 		$vhost->save ();
 		
@@ -122,9 +121,9 @@ class VHostController extends Controller
 	public function update ($vhost)
 	{
 		$user = Auth::user ();
-		$insideHomedir = (Input::get ('outsideHomedir') !== 'true');
-		$docroot = @trailing_slash (Input::get ('docroot'));
-		$serveralias = @strtolower (Input::get ('serveralias'));
+		$insideHomedir = (request ('outsideHomedir') !== 'true');
+		$docroot = @trailing_slash (request ('docroot'));
+		$serveralias = @strtolower (request ('serveralias'));
 		
 		$validator = Validator::make
 		(
@@ -132,8 +131,8 @@ class VHostController extends Controller
 			(
 				'Document root' => $docroot,
 				'Aliases' => $serveralias,
-				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi')
+				'Protocol' => request ('ssl'),
+				'CGI' => request ('cgi')
 			),
 			array
 			(
@@ -153,8 +152,8 @@ class VHostController extends Controller
 		if ($insideHomedir)
 			$vhost->docroot = $vhost->user->homedir . '/' . $docroot;
 		$vhost->serveralias = $serveralias;
-		$vhost->ssl = (int) Input::get ('ssl');
-		$vhost->cgi = (bool) Input::get ('cgi');
+		$vhost->ssl = (int) request ('ssl');
+		$vhost->cgi = (bool) request ('cgi');
 		
 		$vhost->save ();
 		

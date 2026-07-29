@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Str;
+
 class Plugin
 {
 	public $name;
@@ -19,7 +21,7 @@ class Plugin
 		
 		foreach (scandir ($path) as $folder)
 		{
-			if (is_dir ($path . $folder) && ! starts_with ($folder, '.'))
+			if (is_dir ($path . $folder) && ! Str::startsWith ($folder, '.'))
 				$plugins[$folder] = self::fromName ($folder);
 		}
 		

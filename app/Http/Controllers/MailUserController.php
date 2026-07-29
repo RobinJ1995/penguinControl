@@ -7,7 +7,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailUser;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -58,10 +57,10 @@ class MailUserController extends Controller
 		(
 			array
 			(
-				'E-mail address' => Input::get ('email'),
-				'E-mail domain' => Input::get ('domain'),
-				'Password' => Input::get ('password'),
-				'Password (confirmation)' => Input::get ('password_confirm')
+				'E-mail address' => request ('email'),
+				'E-mail domain' => request ('domain'),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm')
 			),
 			array
 			(
@@ -78,9 +77,9 @@ class MailUserController extends Controller
 		
 		$mUser = new MailUser ();
 		$mUser->uid = $user->uid;
-		$mUser->email = Input::get ('email');
-		$mUser->mail_domain_id = Input::get ('domain');
-		$mUser->setPassword (Input::get ('password'));
+		$mUser->email = request ('email');
+		$mUser->mail_domain_id = request ('domain');
+		$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
 		
@@ -113,10 +112,10 @@ class MailUserController extends Controller
 		(
 			array
 			(
-				'E-mail address' => Input::get ('email'),
-				'E-mail domain' => Input::get ('domain'),
-				'Password' => Input::get ('password'),
-				'Password (confirmation)' => Input::get ('password_confirm')
+				'E-mail address' => request ('email'),
+				'E-mail domain' => request ('domain'),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm')
 			),
 			array
 			(
@@ -134,10 +133,10 @@ class MailUserController extends Controller
 				->withErrors ($validator);
 		
 		
-		$mUser->email = Input::get ('email');
-		$mUser->mail_domain_id = Input::get ('domain');
-		if (! empty (Input::get ('password')))
-			$mUser->setPassword (Input::get ('password'));
+		$mUser->email = request ('email');
+		$mUser->mail_domain_id = request ('domain');
+		if (! empty (request ('password')))
+			$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
 		

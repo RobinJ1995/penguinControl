@@ -32,7 +32,7 @@ Gebruikershoudbaarheidsdatum &bull; Staff
 						(
 							'expire',
 							$expires,
-							Input::old ('expire', $validUntilUnix)
+							old ('expire', $validUntilUnix)
 						)
 					}}
 				</label>

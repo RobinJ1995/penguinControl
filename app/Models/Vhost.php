@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\LimitedUserOwnedModel;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 
 class Vhost extends LimitedUserOwnedModel
 {
@@ -123,7 +124,7 @@ class Vhost extends LimitedUserOwnedModel
 		$homedir = $this->user->homedir;
 		$docrootTop = $this->docroot;
 		
-		if (strlen (trailing_slash ($this->docroot)) > strlen (trailing_slash ($homedir)) && starts_with ($this->docroot, $homedir))
+		if (strlen (trailing_slash ($this->docroot)) > strlen (trailing_slash ($homedir)) && Str::startsWith ($this->docroot, $homedir))
 		{
 			$slashPos = strpos ($this->docroot, '/', strlen (trailing_slash ($homedir)));
 			$docrootTop = substr ($this->docroot, 0, $slashPos);
@@ -152,7 +153,7 @@ class Vhost extends LimitedUserOwnedModel
 	
 	public function url ()
 	{
-		return action ('StaffVHostController@edit', $this->id);
+		return route ('staff.vhost.edit', $this->id);
 	}
 	
 	public function link ()

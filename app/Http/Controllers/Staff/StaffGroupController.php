@@ -20,7 +20,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -66,8 +65,8 @@ class StaffGroupController extends Controller
 		(
 			array
 			(
-				'GID' => Input::get ('gid'),
-				'Naam' => Input::get ('name')
+				'GID' => request ('gid'),
+				'Naam' => request ('name')
 			),
 			array
 			(
@@ -80,8 +79,8 @@ class StaffGroupController extends Controller
 			return Redirect::to ('/staff/user/group/create')->withInput ()->withErrors ($validator);
 		
 		$group = new Group ();
-		$group->gid = Input::get ('gid');
-		$group->name = strtolower (Input::get ('name'));
+		$group->gid = request ('gid');
+		$group->name = strtolower (request ('name'));
 		
 		$group->save ();
 		

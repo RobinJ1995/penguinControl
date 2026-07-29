@@ -11,7 +11,7 @@ E-mailaccount bewerken &bull; Staff
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mailadres:
-					<input type="text" name="email" value="{{ Input::old ('email', $mUser->email) }}" required />
+					<input type="text" name="email" value="{{ old ('email', $mUser->email) }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -21,7 +21,7 @@ E-mailaccount bewerken &bull; Staff
 						(
 							'domain',
 							$domains,
-							Input::old ('domain', $mUser->mail_domain_virtual_id)
+							old ('domain', $mUser->mail_domain_virtual_id)
 						)
 					}}
 				</label>

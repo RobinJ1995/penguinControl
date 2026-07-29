@@ -11,7 +11,7 @@ Edit vHost
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
 				<label>Host:
-					<input type="text" name="servername" value="{{ Input::old ('servername', $vhost->servername) }}" required disabled/>
+					<input type="text" name="servername" value="{{ old ('servername', $vhost->servername) }}" required disabled/>
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -22,7 +22,7 @@ Edit vHost
 							<span class="prefix">{{ $insideHomedir ? $vhost->user->homedir : '' }}/</span>
 						</div>
 						<div class="large-7 medium-6 small-12 column">
-							<input type="text" name="docroot" {{ $insideHomedir ? '' : 'disabled' }} value="{{ Input::old ('docroot', substr ($vhost->docroot, ($insideHomedir ? strlen ($vhost->user->homedir): 0) + 1)) }}" />
+							<input type="text" name="docroot" {{ $insideHomedir ? '' : 'disabled' }} value="{{ old ('docroot', substr ($vhost->docroot, ($insideHomedir ? strlen ($vhost->user->homedir): 0) + 1)) }}" />
 						</div>
 					</div>
 				</label>
@@ -32,14 +32,14 @@ Edit vHost
 		<div class="row">
 			<div class="large-4 medium-12 small-12 column">
 				<label>Administrator:
-					<input type="email" name="serveradmin" value="{{ Input::old ('serveradmin', $vhost->serveradmin) }}" required disabled />
+					<input type="email" name="serveradmin" value="{{ old ('serveradmin', $vhost->serveradmin) }}" required disabled />
 				</label>
 				<small class="error">Required field</small>
 			</div>
 			<div class="large-8 medium-12 small-12 column">
 				<label>Aliases:
 					<small>(Separate multiple aliases with spaces.)</small>
-					<input type="text" name="serveralias" value="{{ Input::old ('serveralias', $vhost->serveralias) }}" />
+					<input type="text" name="serveralias" value="{{ old ('serveralias', $vhost->serveralias) }}" />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -56,7 +56,7 @@ Edit vHost
 							'1' => 'HTTP + HTTPS',
 							'2' => 'HTTPS with redirect'
 						),
-						Input::old ('ssl', $vhost->ssl)
+						old ('ssl', $vhost->ssl)
 					)
 					}}
 				</label>
@@ -72,7 +72,7 @@ Edit vHost
 							'0' => 'Off',
 							'1' => 'On'
 						),
-						Input::old ('cgi', $vhost->cgi)
+						old ('cgi', $vhost->cgi)
 					)
 					}}
 				</label>

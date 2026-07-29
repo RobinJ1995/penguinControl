@@ -18,7 +18,6 @@ use App\Models\UserInfo;
 use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -50,19 +49,19 @@ class StaffUserController extends Controller
 		$pendingCount = $pendingQ->count ();
 		$pending = $pendingQ->paginate ();
 
-		$url = action ('Staff\StaffUserController@index', $order);
-		$searchUrl = action ('Staff\StaffUserController@search', $order);
+		$url = route ('staff.user.index');
+		$searchUrl = route ('staff.user.search');
 
 		return view ('staff.user.user.index', compact ('usersCount', 'users', 'expiredCount', 'expired', 'pendingCount', 'pending', 'url', 'searchUrl'));
 	}
 
 	public function search ()
 	{
-		$username = Input::get ('username');
-		$name = Input::get ('name');
-		$email = Input::get ('email');
-		$unusedValidationCode = Input::get ('validationcode');
-		$unusedLoginToken = Input::get ('logintoken');
+		$username = request ('username');
+		$name = request ('name');
+		$email = request ('email');
+		$unusedValidationCode = request ('validationcode');
+		$unusedLoginToken = request ('logintoken');
 
 		$query = UserInfo::where ('validated', '1')
 			->where ('username', 'LIKE', '%' . $username . '%')
@@ -77,7 +76,7 @@ class StaffUserController extends Controller
 		$count = $query->count ();
 		$results = $query->paginate ();
 
-		$searchUrl = action ('Staff\StaffUserController@search');
+		$searchUrl = route ('staff.user.search');
 
 		return view ('staff.user.user.search', compact ('count', 'results', 'searchUrl'));
 	}
@@ -100,7 +99,7 @@ class StaffUserController extends Controller
 
 			$uid = User::max ('uid') + 1;
 
-			$inputHomedir = rtrim (Input::get ('homedir'), '/');
+			$inputHomedir = rtrim (request ('homedir'), '/');
 
 			$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 			$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
@@ -116,24 +115,24 @@ class StaffUserController extends Controller
 			}
 
 			$strReservedUsers = implode (',', $reservedUsers);
-			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
+			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
 			(
 				array
 				(
-					'UID' => Input::get ('uid'),
-					'Username' => Input::get ('username'),
+					'UID' => request ('uid'),
+					'Username' => request ('username'),
 					'Home directory' => $inputHomedir,
-					'E-mail address' => Input::get ('email'),
-					'First name' => Input::get ('fname'),
-					'Surname' => Input::get ('lname'),
-					'Shell' => Input::get ('shell'),
-					'E-mail' => Input::get ('mailEnabled'),
-					'Password' => Input::get ('password'),
-					'Password (confirmation)' => Input::get ('password_confirm'),
-					'Primary group' => Input::get ('groupPrimary'),
-					'Groups' => Input::get ('groups')
+					'E-mail address' => request ('email'),
+					'First name' => request ('fname'),
+					'Surname' => request ('lname'),
+					'Shell' => request ('shell'),
+					'E-mail' => request ('mailEnabled'),
+					'Password' => request ('password'),
+					'Password (confirmation)' => request ('password_confirm'),
+					'Primary group' => request ('groupPrimary'),
+					'Groups' => request ('groups')
 				),
 				array
 				(
@@ -161,21 +160,21 @@ class StaffUserController extends Controller
 			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
 
 			$user = new User ();
-			$user->uid = Input::get ('uid');
-			$user->setPassword (Input::get ('password'));
-			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
-			$user->gid = Input::get ('groupPrimary');
+			$user->uid = request ('uid');
+			$user->setPassword (request ('password'));
+			$user->gcos = request ('fname') . ' ' . request ('lname') . ', ' . request ('email');
+			$user->gid = request ('groupPrimary');
 			$user->homedir = $inputHomedir;
-			$user->shell = Input::get ('shell');
+			$user->shell = request ('shell');
 			$user->lastchange = ceil (time () / 60 / 60 / 24);
-			$user->mail_enabled = Input::get ('mailEnabled');
+			$user->mail_enabled = request ('mailEnabled');
 			$user->expire = $next1OctDays;
 
 			$userInfo = new UserInfo ();
-			$userInfo->username = Input::get ('username');
-			$userInfo->fname = Input::get ('fname');
-			$userInfo->lname = Input::get ('lname');
-			$userInfo->email = Input::get ('email');
+			$userInfo->username = request ('username');
+			$userInfo->fname = request ('fname');
+			$userInfo->lname = request ('lname');
+			$userInfo->email = request ('email');
 			$userInfo->lastchange = ceil (time () / 60 / 60 / 24);
 			$userInfo->validated = 1;
 
@@ -185,10 +184,10 @@ class StaffUserController extends Controller
 
 			$alerts = array
 			(
-				new Alert ('User created: ' . Input::get ('username'), Alert::TYPE_SUCCESS)
+				new Alert ('User created: ' . request ('username'), Alert::TYPE_SUCCESS)
 			);
 
-			foreach ((array) Input::get ('groups') as $gid)
+			foreach ((array) request ('groups') as $gid)
 			{
 				$assoc = new UserGroup ();
 				$assoc->uid = $user->uid;
@@ -224,7 +223,7 @@ class StaffUserController extends Controller
 
 			$alerts[] = new Alert ('Saved as "Not to be billed".', Alert::TYPE_SUCCESS);
 
-			DatabaseCredentials::forUserPrimary (Input::get ('username'), Input::get ('password'));
+			DatabaseCredentials::forUserPrimary (request ('username'), request ('password'));
 
 			DB::commit ();
 
@@ -256,22 +255,22 @@ class StaffUserController extends Controller
 		{
 			DB::beginTransaction ();
 
-			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
+			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
 			(
 				array
 				(
-					'E-mailadres' => Input::get ('email'),
-					'Voornaam' => Input::get ('fname'),
-					'Achternaam' => Input::get ('lname'),
-					'r-nummer' => Input::get ('rnummer'),
-					'Shell' => Input::get ('shell'),
-					'E-mail' => Input::get ('mailEnabled'),
-					'Wachtwoord' => Input::get ('password'),
-					'Wachtwoord (bevestiging)' => Input::get ('password_confirm'),
-					'Primaire groep' => Input::get ('groupPrimary'),
-					'Groepen' => Input::get ('groups')
+					'E-mailadres' => request ('email'),
+					'Voornaam' => request ('fname'),
+					'Achternaam' => request ('lname'),
+					'r-nummer' => request ('rnummer'),
+					'Shell' => request ('shell'),
+					'E-mail' => request ('mailEnabled'),
+					'Wachtwoord' => request ('password'),
+					'Wachtwoord (bevestiging)' => request ('password_confirm'),
+					'Primaire groep' => request ('groupPrimary'),
+					'Groepen' => request ('groups')
 				),
 				array
 				(
@@ -291,23 +290,23 @@ class StaffUserController extends Controller
 			if ($validator->fails ())
 				return Redirect::to ('/staff/user/user/' . $user->id . '/edit')->withInput ()->withErrors ($validator);
 
-			if (! empty (Input::get ('password')))
+			if (! empty (request ('password')))
 			{
-				$user->setPassword (Input::get ('password'));
+				$user->setPassword (request ('password'));
 				$user->lastchange = ceil (time () / 60 / 60 / 24);
 
 				$alerts[] = new Alert ('Enkel het gebruikerswachtwoord is veranderd. Wachtwoorden van FTP-accounts e.d. zijn apart opgeslagen.', Alert::TYPE_INFO);
 			}
-			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
-			$user->gid = Input::get ('groupPrimary');
-			$user->shell = Input::get ('shell');
-			$user->mail_enabled = Input::get ('mailEnabled');
+			$user->gcos = request ('fname') . ' ' . request ('lname') . ', ' . request ('email');
+			$user->gid = request ('groupPrimary');
+			$user->shell = request ('shell');
+			$user->mail_enabled = request ('mailEnabled');
 
 			$userInfo = $user->userInfo;
-			$userInfo->fname = Input::get ('fname');
-			$userInfo->lname = Input::get ('lname');
-			$userInfo->email = Input::get ('email');
-			$userInfo->schoolnr = Input::get ('rnummer');
+			$userInfo->fname = request ('fname');
+			$userInfo->lname = request ('lname');
+			$userInfo->email = request ('email');
+			$userInfo->schoolnr = request ('rnummer');
 			$userInfo->lastchange = ceil (time () / 60 / 60 / 24);
 
 			$userInfo->save ();
@@ -319,7 +318,7 @@ class StaffUserController extends Controller
 			);
 
 			$allGroups = Group::lists ('gid');
-			$inputGroups = (array) Input::get ('groups');
+			$inputGroups = (array) request ('groups');
 
 			foreach ($allGroups as $gid) // Let op; Dit gaat niet over de primaire groep //
 			{
@@ -371,7 +370,7 @@ class StaffUserController extends Controller
 	{
 		$alerts = array ();
 
-		if (Input::get ('confirm') === 'pizza') // Voor iets ernstig als het verwijderen van een gebruiker best niet enkel vertrouwen op Javascript confirm () //
+		if (request ('confirm') === 'pizza') // Voor iets ernstig als het verwijderen van een gebruiker best niet enkel vertrouwen op Javascript confirm () //
 		{
 			try
 			{
@@ -500,7 +499,7 @@ class StaffUserController extends Controller
 		(
 			array
 			(
-				'Vervaldatum' => Input::get ('expire')
+				'Vervaldatum' => request ('expire')
 			),
 			array
 			(
@@ -514,10 +513,10 @@ class StaffUserController extends Controller
 		$newExpireDays;
 		$newExpireDate;
 
-		if (Input::get ('expire') > 0)
+		if (request ('expire') > 0)
 		{
-			$newExpireDays = ceil (Input::get ('expire') / 60 / 60 / 24);
-			$newExpireDate = date ('D j F Y', Input::get ('expire'));
+			$newExpireDays = ceil (request ('expire') / 60 / 60 / 24);
+			$newExpireDate = date ('D j F Y', request ('expire'));
 		}
 		else
 		{
@@ -562,7 +561,7 @@ class StaffUserController extends Controller
 
 			$uid = User::max ('uid') + 1;
 
-			$inputHomedir = rtrim (Input::get ('homedir'), '/');
+			$inputHomedir = rtrim (request ('homedir'), '/');
 
 			$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 			$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
@@ -579,22 +578,22 @@ class StaffUserController extends Controller
 
 			$strReservedUsers = implode (',', $reservedUsers);
 
-			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
+			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
 			(
 				array
 				(
-					'UID' => Input::get ('uid'),
-					'Gebruikersnaam' => Input::get ('username'),
+					'UID' => request ('uid'),
+					'Gebruikersnaam' => request ('username'),
 					'Home directory' => $inputHomedir,
-					'E-mailadres' => Input::get ('email'),
-					'Voornaam' => Input::get ('fname'),
-					'Achternaam' => Input::get ('lname'),
-					'Shell' => Input::get ('shell'),
-					'E-mail' => Input::get ('mailEnabled'),
-					'Primaire groep' => Input::get ('groupPrimary'),
-					'Groepen' => Input::get ('groups')
+					'E-mailadres' => request ('email'),
+					'Voornaam' => request ('fname'),
+					'Achternaam' => request ('lname'),
+					'Shell' => request ('shell'),
+					'E-mail' => request ('mailEnabled'),
+					'Primaire groep' => request ('groupPrimary'),
+					'Groepen' => request ('groups')
 				),
 				array
 				(
@@ -622,20 +621,20 @@ class StaffUserController extends Controller
 			$etc = unserialize ($userInfo->etc);
 
 			$user = new User ();
-			$user->uid = Input::get ('uid');
+			$user->uid = request ('uid');
 			$user->crypt = $etc['password'];
-			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
-			$user->gid = Input::get ('groupPrimary');
+			$user->gcos = request ('fname') . ' ' . request ('lname') . ', ' . request ('email');
+			$user->gid = request ('groupPrimary');
 			$user->homedir = $inputHomedir;
-			$user->shell = Input::get ('shell');
+			$user->shell = request ('shell');
 			$user->lastchange = time () / 60 / 60 / 24;
-			$user->mail_enabled = Input::get ('mailEnabled');
+			$user->mail_enabled = request ('mailEnabled');
 			$user->expire = $next1OctDays;
 
-			$userInfo->username = Input::get ('username');
-			$userInfo->fname = Input::get ('fname');
-			$userInfo->lname = Input::get ('lname');
-			$userInfo->email = Input::get ('email');
+			$userInfo->username = request ('username');
+			$userInfo->fname = request ('fname');
+			$userInfo->lname = request ('lname');
+			$userInfo->email = request ('email');
 			$userInfo->lastchange = time () / 60 / 60 / 24;
 			$userInfo->etc = null;
 			$userInfo->validated = 1;
@@ -646,10 +645,10 @@ class StaffUserController extends Controller
 
 			$alerts = array
 			(
-				new Alert ('Gebruiker aangemaakt: ' . Input::get ('username'), Alert::TYPE_SUCCESS)
+				new Alert ('Gebruiker aangemaakt: ' . request ('username'), Alert::TYPE_SUCCESS)
 			);
 
-			foreach ((array) Input::get ('groups') as $gid)
+			foreach ((array) request ('groups') as $gid)
 			{
 				$assoc = new UserGroup ();
 				$assoc->uid = $user->uid;

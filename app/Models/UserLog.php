@@ -17,7 +17,7 @@ class UserLog extends BaseModel
 	
 	public function url ()
 	{
-		return action ('StaffUserLogController@edit', $this->id);
+		return route ('staff.user-log.edit', $this->id);
 	}
 	
 	public function link ()

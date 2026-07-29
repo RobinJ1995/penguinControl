@@ -97,7 +97,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	
 	public function url ()
 	{
-		return action ('StaffUserController@more', $this->id);
+		return route ('staff.user.more', $this->id);
 	}
 	
 	public function link ()

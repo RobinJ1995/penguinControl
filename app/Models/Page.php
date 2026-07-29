@@ -13,7 +13,7 @@ class Page extends BaseModel
 	
 	public function url ()
 	{
-		return action ('StaffPageController@edit', $this->id);
+		return route ('staff.page.edit', $this->name);
 	}
 	
 	public function link ()

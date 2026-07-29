@@ -8,7 +8,6 @@ use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -52,7 +51,7 @@ class MailDomainController extends Controller
 		(
 			array
 			(
-				'Domain' => Input::get ('domain')
+				'Domain' => request ('domain')
 			),
 			array
 			(
@@ -65,7 +64,7 @@ class MailDomainController extends Controller
 		
 		$domain = new MailDomain ();
 		$domain->uid = $user->uid;
-		$domain->domain = Input::get ('domain');
+		$domain->domain = request ('domain');
 		
 		$domain->save ();
 		
@@ -93,7 +92,7 @@ class MailDomainController extends Controller
 		(
 			array
 			(
-				'Domain' => Input::get ('domain')
+				'Domain' => request ('domain')
 			),
 			array
 			(
@@ -107,7 +106,7 @@ class MailDomainController extends Controller
 				->withErrors ($validator);
 		
 		
-		$domain->domain = Input::get('domain');
+		$domain->domain = request ('domain');
 		
 		$domain->save ();
 		

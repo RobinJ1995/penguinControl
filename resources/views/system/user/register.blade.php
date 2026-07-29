@@ -18,7 +18,7 @@ Sign up
 			<div class="row">
 				<div class="large-4 medium-6 small-12 column">
 					<label>Username:
-						<input type="text" name="username" value="{{ Input::old ('username') }}" required />
+						<input type="text" name="username" value="{{ old ('username') }}" required />
 					</label>
 					<small class="error">Invalid input</small>
 				</div>
@@ -52,13 +52,13 @@ Sign up
 			<div class="row">
 				<div class="large-6 medium-6 small-12 column">
 					<label>First name:
-						<input type="text" name="fname" value="{{ Input::old ('fname') }}" required />
+						<input type="text" name="fname" value="{{ old ('fname') }}" required />
 					</label>
 					<small class="error">Invalid input</small>
 				</div>
 				<div class="large-6 medium-6 small-12 column">
 					<label>Surname:
-						<input type="text" name="lname" value="{{ Input::old ('lname') }}" required />
+						<input type="text" name="lname" value="{{ old ('lname') }}" required />
 					</label>
 					<small class="error">Invalid input</small>
 				</div>
@@ -66,7 +66,7 @@ Sign up
 			<div class="row">
 				<div class="large-4 medium-6 small-12 column">
 					<label>E-mail address:
-						<input type="email" name="email" value="{{ Input::old ('email') }}" required />
+						<input type="email" name="email" value="{{ old ('email') }}" required />
 					</label>
 					<small class="error">Invalid input</small>
 				</div>

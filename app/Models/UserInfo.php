@@ -78,7 +78,7 @@ class UserInfo extends BaseModel
 	public function url ()
 	{
 		if ($this->user != NULL)
-			return action ('StaffUserController@more', $this->user->id);
+			return route ('staff.user.more', $this->user->id);
 		
 		return NULL;
 	}

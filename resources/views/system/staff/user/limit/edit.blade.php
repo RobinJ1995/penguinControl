@@ -14,7 +14,7 @@ Edit user limit exception
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $limit->uid),
+					old ('uid', $limit->uid),
 					array ('disabled')
 				)
 				}}
@@ -23,31 +23,31 @@ Edit user limit exception
 		<div class="row">
 			<div class="large-2 medium-4 small-12 column">
 				<label>FTP accounts:
-					<input type="number" name="ftp" value="{{ Input::old ('ftp', $limit->ftp) }}" min="0" max="25" required />
+					<input type="number" name="ftp" value="{{ old ('ftp', $limit->ftp) }}" min="0" max="25" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-2 medium-4 small-12 column">
 				<label>vHosts:
-					<input type="number" name="vhost" value="{{ Input::old ('vhost', $limit->vhost) }}" min="0" max="25" required />
+					<input type="number" name="vhost" value="{{ old ('vhost', $limit->vhost) }}" min="0" max="25" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-2 medium-4 small-12 column">
 				<label>E-mail domains:
-					<input type="number" name="maildomain" value="{{ Input::old ('maildomain', $limit->mail_domain) }}" min="0" max="25" required />
+					<input type="number" name="maildomain" value="{{ old ('maildomain', $limit->mail_domain) }}" min="0" max="25" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-2 medium-4 small-12 column">
 				<label>E-mail accounts:
-					<input type="number" name="mailuser" value="{{ Input::old ('mailuser', $limit->mail_user) }}" min="0" max="25" required />
+					<input type="number" name="mailuser" value="{{ old ('mailuser', $limit->mail_user) }}" min="0" max="25" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
 			<div class="large-2 medium-4 small-12 column">
 				<label>Forwarding addresses:
-					<input type="number" name="mailforward" value="{{ Input::old ('mailforward', $limit->mail_forward) }}" min="0" max="25" required />
+					<input type="number" name="mailforward" value="{{ old ('mailforward', $limit->mail_forward) }}" min="0" max="25" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -55,7 +55,7 @@ Edit user limit exception
 				<div class="row collapse">
 					<label>Storage space</label>
 					<div class="small-8 columns">
-						<input type="number" name="diskusage" value="{{ Input::old ('diskusage', $limit->diskusage) }}" min="10" max="500000" required />
+						<input type="number" name="diskusage" value="{{ old ('diskusage', $limit->diskusage) }}" min="10" max="500000" required />
 						<small class="error">Invalid input</small>
 					</div>
 					<div class="small-4 columns">

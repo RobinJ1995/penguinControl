@@ -14,7 +14,7 @@ FTP-account bewerken &bull; Staff
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $ftp->uid)
+					old ('uid', $ftp->uid)
 				)
 				}}
 			</label>
@@ -26,7 +26,7 @@ FTP-account bewerken &bull; Staff
 						<span class="prefix">{{ $ftp->user->userInfo->username }}_</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="user" value="{{ Input::old ('user', substr ($ftp->user, strlen ($ftp->user->userInfo->username) + 1)) }}" />
+						<input type="text" name="user" value="{{ old ('user', substr ($ftp->user, strlen ($ftp->user->userInfo->username) + 1)) }}" />
 					</div>
 				</div>
 			</label>
@@ -46,7 +46,7 @@ FTP-account bewerken &bull; Staff
 		</div>
 		<div>
 			<label>Map:
-				<input type="text" name="dir" value="{{ Input::old ('dir', $ftp->dir) }}" />
+				<input type="text" name="dir" value="{{ old ('dir', $ftp->dir) }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>

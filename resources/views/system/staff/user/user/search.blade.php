@@ -8,7 +8,7 @@ Gebruikers &bull; Staff
 <fieldset>
 	<legend>{{ $count }} zoekresultaten</legend>
 	
-	{{ $results->appends (Input::all ())->links () }}
+	{{ $results->withQueryString ()->links () }}
 	<table>
 		<thead>
 			<tr>
@@ -68,7 +68,7 @@ Gebruikers &bull; Staff
 			@endforeach
 		</tbody>
 	</table>
-	{{ $results->appends (Input::all ())->links () }}
+	{{ $results->withQueryString ()->links () }}
 </fieldset>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>

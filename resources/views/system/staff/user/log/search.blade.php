@@ -29,7 +29,7 @@ Facturatie &bull; Staff
 @section ('content')
 <p>{{ $count }} zoekresultaten</p>
 
-{{ $paginationOn ? $userlogs->appends (Input::all ())->links () : '' }}
+{{ $paginationOn ? $userlogs->withQueryString ()->links () : '' }}
 <form id="log" action="/staff/user/log/edit/checked" method="post">
 	<table>
 		<thead>
@@ -83,7 +83,7 @@ Facturatie &bull; Staff
 			@endforeach
 		</tbody>
 	</table>
-	{{ $paginationOn ? $userlogs->appends (Input::all ())->links () : '' }}
+	{{ $paginationOn ? $userlogs->withQueryString ()->links () : '' }}
 
 	<div class="right">
 		<label>

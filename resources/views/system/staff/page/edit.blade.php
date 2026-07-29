@@ -17,7 +17,7 @@ Pagina bewerken &bull; Staff
 		<div class="row">
 			<div class="large-6 medium-12 small-12 column">
 				<label>Titel:
-					<input type="text" name="title" value="{{ Input::old ('title', $page->title) }}" required />
+					<input type="text" name="title" value="{{ old ('title', $page->title) }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -32,7 +32,7 @@ Pagina bewerken &bull; Staff
 							'0' => 'Gepubliceerd',
 							'1' => 'Gepubliceerd met link in menu'
 						),
-						Input::old ('published', $page->published)
+						old ('published', $page->published)
 					)
 					}}
 				</label>
@@ -40,7 +40,7 @@ Pagina bewerken &bull; Staff
 			</div>
 			<div class="large-2 medium-6 small-12 column">
 				<label>Gewicht:
-					<input type="number" name="weight" value="{{ Input::old ('weight', $page->weight) }}" min="-127" max="127" required />
+					<input type="number" name="weight" value="{{ old ('weight', $page->weight) }}" min="-127" max="127" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -48,7 +48,7 @@ Pagina bewerken &bull; Staff
 		<div>
 			<label>Inhoud (HTML):
 				<div id="editor"></div>
-				<textarea name="content" required>{{ Input::old ('content', $page->content) }}</textarea>
+				<textarea name="content" required>{{ old ('content', $page->content) }}</textarea>
 			</label>
 			<small class="error">Required field</small>
 		</div>
