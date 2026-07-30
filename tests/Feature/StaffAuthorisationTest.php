@@ -28,7 +28,6 @@ class StaffAuthorisationTest extends TestCase
 		'/staff/user/user/create',
 		'/staff/user/limit',
 		'/staff/user/group',
-		'/staff/user/log',
 		'/staff/website/vhost',
 		'/staff/ftp',
 		'/staff/mail/domain',
@@ -125,6 +124,35 @@ class StaffAuthorisationTest extends TestCase
 		$this->actingAs ($admin)->get ('/staff/user/user/' . $penguin->id . '/edit')->assertOk ();
 		$this->actingAs ($admin)->get ('/staff/user/user/' . $penguin->id . '/more')->assertOk ();
 		$this->actingAs ($penguin)->get ('/user/edit')->assertOk ();
+	}
+
+	/**
+	 * These lost a table column, a form field or a view variable when the student number,
+	 * the billing ledger and the renewal flow came out, and a half-removed field leaves
+	 * markup that still parses but renders wrong //
+	 */
+	public function test_the_pages_the_removals_touched_render (): void
+	{
+		$admin = $this->user ('admin');
+		$penguin = $this->user ('penguin');
+
+		$this->actingAs ($admin)->get ('/staff/user/user')->assertOk ();
+		$this->actingAs ($admin)->get ('/staff/user/user/search')->assertOk ();
+		$this->actingAs ($admin)->get ('/staff/user/user/' . $penguin->id . '/expire')->assertOk ();
+		$this->get ('/user/' . $penguin->id . '/expired')->assertOk ();
+	}
+
+	public function test_nothing_still_offers_the_removed_pages (): void
+	{
+		$admin = $this->user ('admin');
+
+		// The billing ledger and the self-service renewal are gone, not hidden //
+		foreach (['/staff/user/log', '/staff/user/log/search'] as $uri)
+			$this->actingAs ($admin)->get ($uri)->assertNotFound ();
+
+		$this->assertStringNotContainsString ('staff/user/log',
+			$this->actingAs ($admin)->get ('/user/start')->getContent (),
+			'the menu still links to the billing ledger');
 	}
 
 	public function test_every_offered_shell_passes_the_shell_validation_rule (): void

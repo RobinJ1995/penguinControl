@@ -50,8 +50,6 @@ Validate user &bull; Staff
 		</div>
 		<div class="row">
 			<div class="large-4 medium-4 small-12 column">
-				<label>Student number:
-					<input type="text" name="rnummer" value="{{ old ('rnummer', $userInfo->schoolnr) }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>

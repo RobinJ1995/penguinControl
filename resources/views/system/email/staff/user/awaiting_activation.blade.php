@@ -15,8 +15,6 @@
 		<td>{{ $userInfo->email }}</td>
 	</tr>
 	<tr>
-		<th>Student number</th>
-		<td>{{ $userInfo->schoolnr }}</td>
 	</tr>
 </table>
 @endsection

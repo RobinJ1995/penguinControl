@@ -486,12 +486,6 @@ def step_dbms_account_grants(context, account):
     assert f'`{account}`.*' in flat, f'grants for {account} were: {flat}'
 
 
-@then('the billing log lists {count:d} entries')
-def step_billing_log_count(context, count):
-    rows = query(context, 'SELECT COUNT(*) AS n FROM user_log')
-    assert rows[0]['n'] == count, f'user_log holds {rows[0]["n"]} rows, expected {count}'
-
-
 @then('the log table records "{message}"')
 def step_log_records(context, message):
     def present():

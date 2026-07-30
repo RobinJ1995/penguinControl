@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserInfo;
 use App\Models\UserLimit;
-use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +42,7 @@ class StaffMailDomainController extends Controller
 		{
 			$objUser = $objUserInfo->getUser ();
 			if (! empty ($objUser))
-				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ', ' . $objUserInfo->schoolnr . ')';
+				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ')';
 		}
 		
 		return view ('staff.mail.domain.create', compact ('user', 'users'));
@@ -87,7 +86,7 @@ class StaffMailDomainController extends Controller
 		{
 			$objUser = $objUserInfo->getUser ();
 			if (! empty ($objUser))
-				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ', ' . $objUserInfo->schoolnr . ')';
+				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ')';
 		}
 		
 		return view ('staff.mail.domain.edit', compact ('domain', 'users'));

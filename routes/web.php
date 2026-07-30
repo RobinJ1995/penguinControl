@@ -23,7 +23,6 @@ use App\Http\Controllers\Staff\StaffSystemLogController;
 use App\Http\Controllers\Staff\StaffSystemSystemTaskController;
 use App\Http\Controllers\Staff\StaffUserController;
 use App\Http\Controllers\Staff\StaffUserLimitController;
-use App\Http\Controllers\Staff\StaffUserLogController;
 use App\Http\Controllers\Staff\StaffVHostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VHostController;
@@ -38,7 +37,6 @@ use App\Models\SystemTask;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\UserLimit;
-use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\Route;
 
@@ -61,7 +59,6 @@ Route::model ('mUser', MailUser::class);
 Route::model ('mFwd', MailForward::class);
 Route::model ('user', User::class);
 Route::model ('userInfo', UserInfo::class);
-Route::model ('userLog', UserLog::class);
 Route::model ('group', Group::class);
 Route::model ('limit', UserLimit::class);
 Route::model ('systemTask', SystemTask::class);
@@ -88,7 +85,6 @@ Route::pattern ('mFwd', '[0-9]+');
 
 Route::pattern ('user', '[0-9]+');
 Route::pattern ('userInfo', '[0-9]+');
-Route::pattern ('userLog', '[0-9]+');
 Route::pattern ('group', '[0-9]+');
 Route::pattern ('limit', '[0-9]+');
 Route::pattern ('systemTask', '[0-9]+');
@@ -110,12 +106,10 @@ Route::get ('/error', [ErrorController::class, 'show'])->name ('error');
 // User // Public //
 Route::get ('user/login', [UserController::class, 'getLogin'])->name ('user.login');
 Route::post ('user/login', [UserController::class, 'login'])->name ('user.login.submit');
-Route::get ('user/{user}/expired/renew/{validationcode}', [UserController::class, 'renew'])->name ('user.renew');
 Route::get ('user/amnesia', [UserController::class, 'getAmnesia'])->name ('user.amnesia');
 Route::post ('user/amnesia', [UserController::class, 'amnesia'])->name ('user.amnesia.submit');
 Route::get ('user/{user}/amnesia/login/{logintoken}', [UserController::class, 'loginWithToken'])->name ('user.amnesia.login');
 Route::get ('user/{user}/expired', [UserController::class, 'getExpired'])->name ('user.expired');
-Route::post ('user/{user}/expired', [UserController::class, 'expired'])->name ('user.expired.submit');
 if (config ('penguin.user_registration', false))
 {
 	Route::get ('user/register', [UserController::class, 'getRegister'])->name ('user.register');
@@ -300,16 +294,6 @@ Route::group
 		Route::post ('staff/user/group/create', [StaffGroupController::class, 'store'])->name ('staff.group.store');
 		Route::get ('staff/user/group/{group}/remove', [StaffGroupController::class, 'remove'])->name ('staff.group.remove');
 
-		// Staff // User // UserLog //
-		Route::get ('staff/user/log', [StaffUserLogController::class, 'index'])->name ('staff.user-log.index');
-		Route::get ('staff/user/log/search', [StaffUserLogController::class, 'search'])->name ('staff.user-log.search');
-		Route::get ('staff/user/log/create', [StaffUserLogController::class, 'create'])->name ('staff.user-log.create');
-		Route::post ('staff/user/log/create', [StaffUserLogController::class, 'store'])->name ('staff.user-log.store');
-		Route::get ('staff/user/log/{userLog}/edit', [StaffUserLogController::class, 'edit'])->name ('staff.user-log.edit');
-		Route::post ('staff/user/log/{userLog}/edit', [StaffUserLogController::class, 'update'])->name ('staff.user-log.update');
-		Route::get ('staff/user/log/{userLog}/remove', [StaffUserLogController::class, 'remove'])->name ('staff.user-log.remove');
-		Route::post ('staff/user/log/edit/checked', [StaffUserLogController::class, 'editChecked'])->name ('staff.user-log.edit-checked');
-		Route::post ('staff/user/log/export', [StaffUserLogController::class, 'export'])->name ('staff.user-log.export');
 
 		// Staff // Website // vHost //
 		Route::get ('staff/website/vhost', [StaffVHostController::class, 'index'])->name ('staff.vhost.index');

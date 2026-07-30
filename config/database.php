@@ -57,9 +57,11 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
-            // Strict mode must stay off: StaffUserController@index and
-            // StaffUserLogController@search order by a DB::raw() CONCAT expression that
-            // ONLY_FULL_GROUP_BY rejects // https://github.com/laravel/framework/issues/15232 //
+            // Strict mode is off for StaffUserController@search, which filters on a
+            // DB::raw() CONCAT expression // https://github.com/laravel/framework/issues/15232 //
+            // The other query this was justified by lived in StaffUserLogController,
+            // which no longer exists, so this is worth revisiting against a real
+            // MariaDB -- the end-to-end suite is where that can be proven //
             'strict' => false,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
@@ -80,9 +82,11 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
-            // Strict mode must stay off: StaffUserController@index and
-            // StaffUserLogController@search order by a DB::raw() CONCAT expression that
-            // ONLY_FULL_GROUP_BY rejects // https://github.com/laravel/framework/issues/15232 //
+            // Strict mode is off for StaffUserController@search, which filters on a
+            // DB::raw() CONCAT expression // https://github.com/laravel/framework/issues/15232 //
+            // The other query this was justified by lived in StaffUserLogController,
+            // which no longer exists, so this is worth revisiting against a real
+            // MariaDB -- the end-to-end suite is where that can be proven //
             'strict' => false,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([

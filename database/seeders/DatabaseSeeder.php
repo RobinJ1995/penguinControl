@@ -145,7 +145,6 @@ class DatabaseSeeder extends Seeder
 		$userInfo->fname = $fname;
 		$userInfo->lname = $lname;
 		$userInfo->email = $username . '@localhost';
-		$userInfo->schoolnr = '';
 		$userInfo->validated = 1;
 		$userInfo->save ();
 
@@ -156,8 +155,6 @@ class DatabaseSeeder extends Seeder
 		$user->gid = $group->gid;
 		$user->homedir = '/home/' . $username;
 		$user->shell = '/bin/bash';
-		$user->smb_lm = '';
-		$user->smb_nt = '';
 		$user->diskusage = 0;
 		$user->mail_enabled = 1;
 		// -1 means the account never expires // See User::hasExpired () //

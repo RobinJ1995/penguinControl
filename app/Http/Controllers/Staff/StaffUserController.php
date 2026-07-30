@@ -16,7 +16,6 @@ use App\Models\SystemTask;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserInfo;
-use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -61,7 +60,6 @@ class StaffUserController extends Controller
 		$username = request ('username');
 		$name = request ('name');
 		$email = request ('email');
-		$unusedValidationCode = request ('validationcode');
 		$unusedLoginToken = request ('logintoken');
 
 		$query = UserInfo::where ('validated', '1')
@@ -69,8 +67,6 @@ class StaffUserController extends Controller
 			->where (DB::raw ('CONCAT (fname, " ", lname)'), 'LIKE', '%' . $name . '%')
 			->where ('email', 'LIKE', '%' . $email . '%');
 
-		if (! empty ($unusedValidationCode))
-			$query = $query->whereNotNull ('validationcode');
 		if (! empty ($unusedLoginToken))
 			$query = $query->whereNotNull ('logintoken');
 
@@ -144,11 +140,6 @@ class StaffUserController extends Controller
 			if ($validator->fails ())
 				return Redirect::to ('/staff/user/user/create')->withInput ()->withErrors ($validator);
 
-			$septemberYet = (idate ('n') >= 9);
-			$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
-			$next1OctUnix = strtotime ('Oct 1,' . $nextYear);
-			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
-
 			$user = new User ();
 			$user->uid = request ('uid');
 			$user->setPassword (request ('password'));
@@ -158,7 +149,9 @@ class StaffUserController extends Controller
 			$user->shell = request ('shell');
 			$user->lastchange = ceil (time () / 60 / 60 / 24);
 			$user->mail_enabled = request ('mailEnabled');
-			$user->expire = $next1OctDays;
+			// -1 means never // Expiry is an administrator's decision now, not an
+			// academic year's // See the expire screen //
+			$user->expire = -1;
 
 			$userInfo = new UserInfo ();
 			$userInfo->username = request ('username');
@@ -205,19 +198,11 @@ class StaffUserController extends Controller
 			$task->data = json_encode (array ('userInfoId' => $userInfo->id, 'user' => $userInfo->username));
 			$task->save ();
 
-			$userLog = new UserLog ();
-			$userLog->user_info_id = $userInfo->id;
-			$userLog->new = 1;
-			$userLog->status = -1; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
-			$userLog->save ();
-
-			$alerts[] = new Alert ('Saved as "Not to be billed".', Alert::TYPE_SUCCESS);
-
 			DatabaseCredentials::forUserPrimary (request ('username'), request ('password'));
 
 			DB::commit ();
 
-			Log::log ('User created', NULL, $user, $userInfo, $userLog);
+			Log::log ('User created', NULL, $user, $userInfo);
 
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
@@ -254,7 +239,6 @@ class StaffUserController extends Controller
 					'E-mail address' => request ('email'),
 					'First name' => request ('fname'),
 					'Surname' => request ('lname'),
-					'Student number' => request ('rnummer'),
 					'Shell' => request ('shell'),
 					'E-mail' => request ('mailEnabled'),
 					'Password' => request ('password'),
@@ -267,7 +251,6 @@ class StaffUserController extends Controller
 					'E-mail address' => array ('required', 'email'),
 					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'Student number' => '',	//array ('regex:/^(r|s|u)\d\d\d\d\d\d\d$/'),
 					'Shell' => array ('required', allowed_shells_rule ()),
 					'E-mail' => array ('required', 'in:-1,0,1'),
 					'Password' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', 'required_with:Password (confirmation)'),
@@ -296,7 +279,6 @@ class StaffUserController extends Controller
 			$userInfo->fname = request ('fname');
 			$userInfo->lname = request ('lname');
 			$userInfo->email = request ('email');
-			$userInfo->schoolnr = request ('rnummer');
 			$userInfo->lastchange = ceil (time () / 60 / 60 / 24);
 
 			$userInfo->save ();
@@ -356,7 +338,7 @@ class StaffUserController extends Controller
 		}
 	}
 
-	public function remove ($user) // UserInfo is retained for UserLog //
+	public function remove ($user)
 	{
 		$alerts = array ();
 
@@ -449,11 +431,8 @@ class StaffUserController extends Controller
 		$stillValidUnix = $validUntilUnix - time ();
 		$stillValidDate = (int) ($stillValidUnix / 60 / 60 / 24) . ' days';
 
-		$septemberYet = (idate ('n') >= 9);
-
-		$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
-		$next1OctUnix = strtotime ('Oct 1,' . $nextYear);
-		$next1OctDate = date ('D j F Y', $next1OctUnix);
+		$inAYearUnix = strtotime ('+1 year');
+		$inAYearDate = date ('D j F Y', $inAYearUnix);
 
 		$nowUnix = time ();
 		$nowDate = date ('D j F Y', $nowUnix);
@@ -461,7 +440,7 @@ class StaffUserController extends Controller
 		$expires = array
 		(
 			$validUntilUnix => 'Current: ' . $validUntilDate,
-			$next1OctUnix => 'Next 1 October: ' . $next1OctDate,
+			$inAYearUnix => 'In a year: ' . $inAYearDate,
 			$nowUnix => 'Now: ' . $nowDate,
 			-1 * 24 * 60 * 60 => 'Never expires'
 		);
@@ -475,12 +454,7 @@ class StaffUserController extends Controller
 			$stillValidUnix = '';
 		}
 
-		$alerts = array
-		(
-			new Alert ('When an administrator changes the expiry date, the user will not be billed for it.', 'warning')
-		);
-
-		return view ('staff.user.user.expire', compact ('user', 'validUntilUnix', 'validUntilDate', 'stillValidUnix', 'stillValidDate', 'validUntilShortDate', 'expires', 'alerts'));
+		return view ('staff.user.user.expire', compact ('user', 'validUntilUnix', 'validUntilDate', 'stillValidUnix', 'stillValidDate', 'validUntilShortDate', 'expires'));
 	}
 
 	public function expire ($user)
@@ -590,11 +564,6 @@ class StaffUserController extends Controller
 			if ($validator->fails ())
 				return Redirect::to ('/staff/user/user/' . $userInfo->id . '/validate')->withInput ()->withErrors ($validator);
 
-			$septemberYet = (idate ('n') >= 9);
-			$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
-			$next1OctUnix = strtotime ('Oct 1,' . $nextYear);
-			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
-
 			$etc = unserialize ($userInfo->etc);
 
 			$user = new User ();
@@ -606,7 +575,8 @@ class StaffUserController extends Controller
 			$user->shell = request ('shell');
 			$user->lastchange = time () / 60 / 60 / 24;
 			$user->mail_enabled = request ('mailEnabled');
-			$user->expire = $next1OctDays;
+			// -1 means never // See the expire screen for changing it //
+			$user->expire = -1;
 
 			$userInfo->username = request ('username');
 			$userInfo->fname = request ('fname');
@@ -658,14 +628,6 @@ class StaffUserController extends Controller
 			$ftp->save ();
 
 			$alerts[] = new Alert ('FTP account added: ' . $ftp->username, Alert::TYPE_SUCCESS);
-
-			$userLog = new UserLog();
-			$userLog->user_info_id = $userInfo->id;
-			$userLog->new = 1;
-			$userLog->status = 0; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
-			$userLog->save ();
-
-			$alerts[] = new Alert ('Saved to the log as "To be billed"', Alert::TYPE_SUCCESS);
 
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;

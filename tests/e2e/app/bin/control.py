@@ -43,7 +43,6 @@ READABLE_PREFIXES = (
     '/var/log/apache2/',
     '/var/log/certbot-invocations.log',
     APP_DIR + '/storage/logs/',
-    APP_DIR + '/public/export/',
     '/home/',
 )
 

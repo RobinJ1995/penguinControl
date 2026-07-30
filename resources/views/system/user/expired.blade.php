@@ -6,36 +6,20 @@ Account expired
 
 @section ('content')
 <div class="large-3 medium-3 hide-for-small-down column">
-        <br />
+	<br />
 </div>
 <div class="large-6 medium-6 small-12 column">
-	<p>Please enter your username and password to renew your account. An e-mail will be sent to your e-mail address containing further instructions.</p>
-
-        <form method="POST" data-abide>
-                <div>
-                        <label>Username:
-                                <input type="text" name="username" value="{{ old ('username') }}" required />
-                        </label>
-                        <small class="error">Enter your username.</small>
-                </div>
-                <div>
-                        <label>Password:
-                                <input type="password" name="password" required />
-                        </label>
-                        <small class="error">Enter your password.</small>
-                </div>
-                <div>
-                    <input type="checkbox" name="renew" value="yes" /> I wish to extend my account
-                </div>
-                @section ('custom_fields')
-                @show
-                <div>
-                        {{ Form::token () }}
-                        <button name="time" value="{{ time () }}">Confirm</button>
-                </div>
-        </form>
+	{{--
+		This used to be a self-service renewal form: a user confirmed their password,
+		was mailed a confirmation link, and following it moved their expiry to the next
+		1 October. That date was the start of an academic year and the renewal existed
+		to track a yearly membership fee, so neither survives here //
+	--}}
+	<p class="alert-box info">
+		This account has expired. Contact an administrator to have it reactivated.
+	</p>
 </div>
 <div class="large-3 medium-3 hide-for-small-down column">
-        <br />
+	<br />
 </div>
 @endsection

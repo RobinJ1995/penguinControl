@@ -25,7 +25,6 @@ use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserInfo;
 use App\Models\UserLimit;
-use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
@@ -146,7 +145,6 @@ class StaffMaintenanceController extends Controller
 			DB::beginTransaction ();
 			
 			$alerts = array ();
-			$ignoreRNummers = request ()->filled ('ignorernummers');
 			
 			$users = User::all ();
 			foreach ($users as $user)
@@ -177,13 +175,7 @@ class StaffMaintenanceController extends Controller
 					break;
 				}
 				
-				/*
-				$nUserLogs = UserLog::where ('user_info_id', $userInfo->id)->count ();
-				if ($nUserLogs < 1)
-					$alerts[] = new Alert ('User has no logged billing entries: ' . $user->id, 'secondary');
-				*/
-				
-				if (! is_dir ($user->homedir))
+					if (! is_dir ($user->homedir))
 					$alerts[] = new Alert ('User exists but their home directory does not: ' . $user->link (), Alert::TYPE_ALERT);
 				
 				if (is_dir ($user->homedir)){
@@ -207,12 +199,6 @@ class StaffMaintenanceController extends Controller
 				)
 				{
 					$alerts[] = new Alert ('User information has missing fields: ' . $userInfo->link (), 'warning');
-				}
-				
-				if (! $ignoreRNummers)
-				{
-					if (empty ($userInfo->schoolnr)) // Happens often, so a less critical notice //
-						$alerts[] = new Alert ('User information is missing a student number: ' . $userInfo->link (), 'secondary');
 				}
 				
 				if ($userInfo->validated == 1 && ( !$userInfo->userExists ()))

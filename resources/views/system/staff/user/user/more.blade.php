@@ -76,11 +76,6 @@ More user options &bull; Staff
 	</div>
 	<div class="row">
 		<div class="large-4 medium-4 small-12 column">
-			<label>Student number:
-				<input type="text" name="rnummer" value="{{ $userInfo->schoolnr }}" readonly />
-			</label>
-		</div>
-		<div class="large-4 medium-4 small-12 column">
 			<label>Shell:
 				<input type="text" name="shell" value="{{ $user->shell }}" readonly />
 			</label>
@@ -104,16 +99,7 @@ More user options &bull; Staff
 		</div>
 	</div>
 	<div class="row">
-		<div class="large-6 medium-6 small-12 column">
-			<label>Validation link (for renewal):
-				@if (empty ($userInfo->validationcode))
-				<p class="alert-box info">User has not requested a renewal</p>
-				@else
-				<input type="text" name="validationcode" value="{{ url ('/user/' . $user->id . '/expired/renew/' . $userInfo->validationcode) }}" readonly />
-				@endif
-			</label>
-		</div>
-		<div class="large-6 medium-6 small-12 column">
+		<div class="large-12 column">
 			<label>Single-use login link:
 				@if (empty ($userInfo->logintoken))
 					@if (empty ($user) || $userInfo->validated == 0)

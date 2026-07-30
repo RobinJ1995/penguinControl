@@ -6,14 +6,12 @@ use App\Alert;
 use App\DatabaseCredentials;
 use App\Models\Ftp;
 use App\Mail\AccountLoginLink;
-use App\Mail\AccountRenewal;
 use App\Mail\AccountTemporaryPassword;
 use App\Mail\UserAwaitingActivation;
 use App\Models\Log;
 use App\Models\User;
 use App\Models\SystemTask;
 use App\Models\UserInfo;
-use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -82,7 +80,7 @@ class UserController extends Controller
 
 		$now = ceil (time () / 60 / 60 / 24);
 		if ($user->expire <= $now && $user->expire != -1)
-			return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Your account has expired. Please renew your account to continue,', Alert::TYPE_INFO)));
+			return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Your account has expired. Contact an administrator to have it reactivated.', Alert::TYPE_INFO)));
 
 		Auth::login ($user);
 
@@ -94,7 +92,7 @@ class UserController extends Controller
 
 		$expiresIn = $user->expire - $now;
 		if ($expiresIn <= 14 && $user->expire != -1)
-			$alerts[] = new Alert ('Warning: Your account will expire in ' . $expiresIn . ' days. <a href="/user/' . $user->id . '/expired">Click here</a> to renew your account.', Alert::TYPE_WARNING);
+			$alerts[] = new Alert ('Warning: Your account will expire in ' . $expiresIn . ' days. Contact an administrator to have it extended.', Alert::TYPE_WARNING);
 
 		Log::log ('User logged in', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
@@ -234,10 +232,6 @@ class UserController extends Controller
 		$userInfo->fname = request ('fname');
 		$userInfo->lname = request ('lname');
 		$userInfo->email = request ('email');
-		// The registration form has no student-number field -- staff fill it in when
-		// they validate the account -- and schoolnr is NOT NULL, so an explicit NULL
-		// here fails on any MariaDB regardless of strict mode //
-		$userInfo->schoolnr = request ('rnummer') ?? '';
 		$userInfo->lastchange = time () / 60 / 60 / 24;
 		$userInfo->etc = serialize ($etc); // After all the dirty hacks that were pulled with the old SINControl, I'm allowed to sin once too... //
 		$userInfo->validated = 0;
@@ -253,102 +247,14 @@ class UserController extends Controller
 
 	public function getExpired ($user)
 	{
-		$septemberYet = (idate ('n') >= 9);
-		$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
-
-		return view ('user.expired', compact ('user', 'nextYear'));
-	}
-
-	public function expired ($user)
-	{
-		$validator = Validator::make
-		(
-			array
-			(
-				'Username' => request ('username'),
-				'Password' => request ('password'),
-				'Renew' => request ('renew')
-			),
-			array
-			(
-				'Username' => array ('required', 'exists:user_info,username'),
-				'Password' => 'required',
-				'Renew' => array ('required', 'accepted')
-			)
-		);
-
-		if ($validator->fails ())
-			return view ('user.expired', compact ('user'))->withErrors ($validator);
-
-		$userInfo = UserInfo::where ('username', request ('username'))->first ();
-		if (empty ($userInfo))
-			return view ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Account information could not be found', Alert::TYPE_ALERT)));
-
-		$now = ceil (time () / 60 / 60 / 24);
-		if ($user->expire > ($now + 14))
-			return view ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Your account is not about to expire yet. Account renewal can only be done less than 14 days before your account is set to expire.', Alert::TYPE_ALERT)));
-
-		$hashedPass = crypt (request ('password'), $user->crypt);
-		if ($hashedPass !== $user->crypt)
-			return view ('user.expired', compact ('user'))
-				->withInput (request ()->only ('username'))
-				->with ('alerts', array (new Alert ('Invalid password for user ' . $userInfo->username, Alert::TYPE_ALERT)));
-
-		$userInfo->generateValidationCode ();
-		$userInfo->save ();
-
-		$url = url ('user/' . $user->id . '/expired/renew/' . $userInfo->validationcode);
-		Mail::send (new AccountRenewal ($userInfo, $url));
-
-		Log::log ('Account renewal requested', $user->id, $userInfo);
-
-		return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('An e-mail has been sent to ' . $userInfo->email . ' containing further instructions to confirm the renewal of your account.', Alert::TYPE_INFO)));
-	}
-
-	public function renew ($user, $validationcode)
-	{
-		$userInfo = $user->userInfo;
-
-		if ($validationcode == $userInfo->validationcode && (! empty ($userInfo->validationcode)))
-		{
-			$userLog = new UserLog ();
-			$userLog->user_info_id = $userInfo->id;
-			$userLog->new = 0;
-			$userLog->status = 0; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
-
-			$userInfo->validationcode = null;
-
-			$septemberYet = (idate ('n') >= 9);
-			$nextYear = idate ('y', time ()) + ($septemberYet ? 1 : 0);
-			$next1OctUnix = strtotime ('Oct 1,' . $nextYear);
-			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
-
-			$user->expire = $next1OctDays;
-			if ($user->shell == '/bin/false')
-				$user->shell = '/bin/bash';
-
-			$userLog->save ();
-			$userInfo->save ();
-			$user->save ();
-
-			$vhosts = Vhost::where ('uid', $user->uid)->get ();
-			foreach ($vhosts as $vhost)
-				$vhost->save (); // save () checks whether the user has expired //
-
-			$task = new SystemTask ();
-			$task->type = SystemTask::TYPE_APACHE_RELOAD;
-			$task->save ();
-
-			Log::log ('Account renewed', $user->id, $userInfo, $userLog);
-
-			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('Your account has been renewed until 1 October 20' . $nextYear . '!', Alert::TYPE_SUCCESS)));
-		}
-		else
-		{
-			Log::log ('Account renewal confirmation code refused', $user->id, $user, $validationcode, $_SERVER['REMOTE_ADDR']);
-
-			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('This link is not valid for user ' . $userInfo->username, Alert::TYPE_ALERT)));
-		}
+		/*
+		 * Renewal used to be self-service: an expired user asked for a renewal, got a
+		 * mailed confirmation link, and following it pushed their expiry to the next
+		 * 1 October -- the start of the Belgian academic year, because members were
+		 * students paying a yearly fee. None of that generalises, so expiry is now
+		 * whatever an administrator sets and this page only says so //
+		 */
+		return view ('user.expired', compact ('user'));
 	}
 
 	public function getAmnesia ()
@@ -425,7 +331,7 @@ class UserController extends Controller
 
 			$now = ceil (time () / 60 / 60 / 24);
 			if ($user->expire <= $now && $user->expire != -1)
-				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Your account has expired. Renew it to continue.<br />Your username is <kbd>' . $userInfo->username . '</kbd>. If you no longer know your password, <a href="/page/contact">contact us</a>.', Alert::TYPE_INFO)));
+				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Your account has expired. Your username is <kbd>' . $userInfo->username . '</kbd>. Contact an administrator to have it reactivated.', Alert::TYPE_INFO)));
 
 			Auth::login ($user);
 

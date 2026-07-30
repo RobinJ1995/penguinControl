@@ -85,8 +85,8 @@ RUN chmod +x /usr/local/bin/systemctl /usr/local/bin/certbot /usr/local/bin/entr
  && a2ensite 000-penguincontrol
 
 # What docs/setup/apache.md says has to exist and be writable.
-RUN mkdir -p /var/log/apache2/vhost public/export storage/framework/cache/data \
- && chown -R www-data:www-data storage bootstrap/cache public/export \
+RUN mkdir -p /var/log/apache2/vhost storage/framework/cache/data \
+ && chown -R www-data:www-data storage bootstrap/cache \
  # The panel writes vHost files straight from HTTP requests, so the web user
  # needs these two directories. This is the documented deployment requirement.
  && chown -R root:www-data /etc/apache2/sites-available /etc/apache2/sites-enabled /var/log/apache2/vhost \

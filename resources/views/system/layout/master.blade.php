@@ -150,9 +150,6 @@
 												<a href="/staff/user/user">Users</a>
 											</li>
 											<li>
-												<a href="/staff/user/log">Billing</a>
-											</li>
-											<li>
 												<a href="/staff/user/limit">Limits</a>
 											</li>
 											<li>

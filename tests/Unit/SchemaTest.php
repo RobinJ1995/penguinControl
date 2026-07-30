@@ -18,7 +18,7 @@ class SchemaTest extends TestCase
 	public function test_the_baseline_migration_creates_every_table_the_models_use (): void
 	{
 		$expected = [
-			'user', 'user_info', 'user_group', 'user_limit', 'user_log', 'group',
+			'user', 'user_info', 'user_group', 'user_limit', 'group',
 			'log', 'page', 'system_task', 'vhost', 'ftp',
 			'mail_domain', 'mail_user', 'mail_forward',
 		];
@@ -55,8 +55,16 @@ class SchemaTest extends TestCase
 		$this->assertTrue (Schema::hasColumn ('ftp', 'passwd'));
 	}
 
-	public function test_the_billing_log_uses_the_english_column_names (): void
+	/**
+	 * The billing ledger, the student number and the Samba hashes are gone. Asserting
+	 * their absence keeps a stray reference from quietly reintroducing the columns //
+	 */
+	public function test_the_original_deployments_columns_have_been_removed (): void
 	{
-		$this->assertTrue (Schema::hasColumns ('user_log', ['user_info_id', 'time', 'new', 'status']));
+		$this->assertFalse (Schema::hasTable ('user_log'),
+			'the billing ledger should have been dropped');
+		$this->assertFalse (Schema::hasColumn ('user_info', 'schoolnr'));
+		$this->assertFalse (Schema::hasColumn ('user', 'smb_lm'));
+		$this->assertFalse (Schema::hasColumn ('user', 'smb_nt'));
 	}
 }

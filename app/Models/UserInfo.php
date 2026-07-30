@@ -22,11 +22,6 @@ class UserInfo extends BaseModel
 		return (User::where ('user_info_id', $this->id)->count () > 0);
 	}
 	
-	public function userLog ()
-	{
-		return $this->hasMany (UserLog::class);
-	}
-	
 	public function user ()
 	{
 		return $this->hasOne (User::class);
@@ -35,13 +30,6 @@ class UserInfo extends BaseModel
 	public function getFullName ()
 	{
 		return $this->fname . ' ' . $this->lname;
-	}
-	
-	public function generateValidationCode ()
-	{
-		$this->validationcode = bin2hex (random_bytes (16));
-		
-		return $this->validationcode;
 	}
 	
 	public function generateLoginToken ()

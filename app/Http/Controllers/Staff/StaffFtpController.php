@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserInfo;
 use App\Models\UserLimit;
-use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
@@ -77,7 +76,7 @@ class StaffFtpController extends Controller
 		{
 			$objUser = $objUserInfo->getUser ();
 			if (! empty ($objUser))
-				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ', ' . $objUserInfo->schoolnr . ')';
+				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ')';
 		}
 		
 		return view ('staff.ftp.create', compact ('user', 'users'));
@@ -130,7 +129,7 @@ class StaffFtpController extends Controller
 		{
 			$objUser = $objUserInfo->getUser ();
 			if (! empty ($objUser))
-				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ', ' . $objUserInfo->schoolnr . ')';
+				$users[$objUser->uid] = $objUserInfo->username . ' (' . $objUserInfo->getFullName () . ')';
 		}
 		
 		return view ('staff.ftp.edit', compact ('ftp', 'users'));

@@ -77,7 +77,6 @@ default except `WEBSITE`.
 These have to exist and be writable by the web server user:
 
 * `storage/` and `bootstrap/cache/` — the framework's own writable paths
-* `public/export/` — where the billing CSV export is written
 * `/var/log/apache2/vhost/` — where generated vHosts send their access logs.
   The panel creates this if it can, but Apache refuses to start if a
   `CustomLog` directory is missing, so create it up front.

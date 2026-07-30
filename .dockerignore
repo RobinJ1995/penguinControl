@@ -5,7 +5,6 @@
 /public/build
 /public/hot
 /public/storage
-/public/export
 
 # Local state
 /.git

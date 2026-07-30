@@ -37,9 +37,6 @@ Users &bull; Staff
 					Name
 				</th>
 				<th>
-					Student number
-				</th>
-				<th>
 					<a href="{{ $url }}/order/gid">Primary group</a>
 				</th>
 			</tr>
@@ -61,7 +58,6 @@ Users &bull; Staff
 				<td>{{ $user->uid }}</td>
 				<td>{{ $user->userInfo->username }}</td>
 				<td>{{ $user->userInfo->getFullName () }}</td>
-				<td>{{ $user->userInfo->schoolnr }}</td>
 				<td>
 					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->primaryGroup->name) }}</span>
 				</td>
@@ -95,9 +91,6 @@ Users &bull; Staff
 					Name
 				</th>
 				<th>
-					Student number
-				</th>
-				<th>
 					<a href="{{ $url }}/order/gid">Primary group</a>
 				</th>
 			</tr>
@@ -119,7 +112,6 @@ Users &bull; Staff
 				<td>{{ $user->uid }}</td>
 				<td>{{ $user->userInfo->username }}</td>
 				<td>{{ $user->userInfo->getFullName () }}</td>
-				<td>{{ $user->userInfo->schoolnr }}</td>
 				<td>
 					<span class="{{ $user->gid < Group::where ('name', 'user')->firstOrFail ()->gid ? 'label' : '' }}">{{ ucfirst ($user->primaryGroup->name) }}</span>
 				</td>
@@ -141,7 +133,6 @@ Users &bull; Staff
 				<th>Username</th>
 				<th>Name</th>
 				<th>E-mail address</th>
-				<th>Student number</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -159,7 +150,6 @@ Users &bull; Staff
 				<td>{{ $user->username }}</td>
 				<td>{{ $user->getFullName () }}</td>
 				<td>{{ $user->email }}</td>
-				<td>{{ $user->schoolnr }}</td>
 			</tr>
 			@endforeach
 		</tbody>
@@ -179,12 +169,6 @@ Users &bull; Staff
 		</label>
 		<label>E-mail address:
 			<input type="text" name="email" />
-		</label>
-		<label>Student number:
-			<input type="text" name="schoolnr" />
-		</label>
-		<label>
-			<input type="checkbox" name="validationcode" /> Has an unused renewal validation code
 		</label>
 		<label>
 			<input type="checkbox" name="logintoken" /> Has an unused one-time login link

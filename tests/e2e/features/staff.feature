@@ -21,7 +21,6 @@ Feature: The staff area
     Then a user_info row exists for "newcomer" that is not yet validated
     And the log table records "Account registration"
 
-  Scenario: The billing log starts empty on a fresh install
+  Scenario: The billing ledger is gone
     When I visit "/staff/user/log"
-    Then the response status is 200
-    And the billing log lists 0 entries
+    Then the response status is 404

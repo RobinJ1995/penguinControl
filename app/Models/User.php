@@ -29,7 +29,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	 *
 	 * @var array
 	 */
-	protected $hidden = array ('crypt', 'smb_lm', 'smb_nt', 'remember_token');
+	protected $hidden = array ('crypt', 'remember_token');
 	
 	public function setPassword ($password)
 	{
