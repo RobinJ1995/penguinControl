@@ -1,7 +1,6 @@
 Feature: The staff area
-  Every staff screen was still in Dutch before this change, and several of them
-  referred to tables and columns that no longer exist, so these scenarios walk
-  the whole area.
+  Several staff screens referred to tables and columns that no longer exist, so
+  these scenarios walk the whole area.
 
   Background:
     Given the panel is freshly installed

@@ -41,3 +41,8 @@ Feature: Signing in
     When I visit "/staff/user/user"
     Then the response status is 200
     And the page mentions "Users"
+
+  Scenario: An ordinary user reaches every page their own menu offers
+    Given I am logged in as "penguin"
+    When I visit "/user/start"
+    Then every page reachable from the menu renders
