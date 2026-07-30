@@ -9,9 +9,9 @@ Logs &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
-			<th>Datum/Tijd</th>
+			<th>Date/time</th>
 			<th>User</th>
-			<th>Gebeurtenis</th>
+			<th>Event</th>
 		</tr>
 	</thead>
 	<tbody>

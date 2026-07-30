@@ -105,4 +105,4 @@ Apache -- so scenarios cannot leak into one another.
 | `ftp_and_mail.feature` | FTP and mail rows are written in the shape the FTP daemon and Postfix read, including `mail_forward.mail_domain_id` |
 | `staff.feature` | Every page the menu offers renders, the system check runs, and a registration waits for validation |
 | `certbot.feature` | The certificate request path reaches certbot |
-| `english.feature` | No Dutch remains on any page either kind of user can reach -- a regression guard for the translation |
+| `english.feature` | No Dutch remains on any page either kind of user can reach -- a regression guard for the translation. It follows the menu and one hop past it, because several screens are only linked from inside another page, and that is how the last few Dutch strings survived the first pass |

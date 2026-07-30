@@ -26,7 +26,7 @@ Add billing entry
 		</div>
 		<div class="row">
 			<div class="large-4 medium-4 small-12 column">
-				<label>Datum/tijd:
+				<label>Date/time:
 					<input type="text" name="time" value="{{ old ('time') }}" required />
 				</label>
 				<small class="error">Invalid input</small>

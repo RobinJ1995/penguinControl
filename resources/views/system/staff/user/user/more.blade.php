@@ -93,7 +93,7 @@ More user options &bull; Staff
 	</div>
 	<div class="row">
 		<div class="large-4 medium-4 small-12 column">
-			<label>Hashing-algoritme:
+			<label>Hashing algorithm:
 				<input type="text" name="algorithm" value="{{ $cryptAlgorithmPretty }}" readonly />
 			</label>
 		</div>
@@ -105,7 +105,7 @@ More user options &bull; Staff
 	</div>
 	<div class="row">
 		<div class="large-6 medium-6 small-12 column">
-			<label>Validatielink (voor verlenging):
+			<label>Validation link (for renewal):
 				@if (empty ($userInfo->validationcode))
 				<p class="alert-box info">User has not requested a renewal</p>
 				@else
@@ -114,7 +114,7 @@ More user options &bull; Staff
 			</label>
 		</div>
 		<div class="large-6 medium-6 small-12 column">
-			<label>Eenmalige loginlink:
+			<label>Single-use login link:
 				@if (empty ($userInfo->logintoken))
 					@if (empty ($user) || $userInfo->validated == 0)
 					<p class="alert-box info">User has not been validated yet</p>

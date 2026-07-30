@@ -522,24 +522,59 @@ DUTCH_MARKERS = [
     'gepubliceerd', 'valideren', 'weigeren', 'aangemaakt', 'bijgewerkt',
     'gegenereerd', 'houdbaarheid', 'blokkeer', 'onbekend', 'hieronder',
     'ongeldig', 'verlengen', 'welkom', 'systeemtaak', 'zoekresultaten',
+    # Added after a word-by-word sweep of the templates turned these up: a
+    # hand-written marker list only catches what someone thought of, and
+    # compounds like "validatielink" are exactly what it misses
+    'gebeurtenis', 'validatielink', 'algoritme', 'eenmalige', 'verlenging',
+    'serverinformatie', 'laatste', 'keer', 'huidig', 'datum', 'tijd', 'voor de',
+    'instellingen', 'gegevens', 'overzicht', 'aantal', 'melding', 'geslaagd',
+    'schijfruimte', 'bestand', 'groepen', 'rechten', 'toegang',
 ]
+
+
+def in_page_links(context, selector='#content a, .staffUserMore a'):
+    hrefs = context.page.eval_on_selector_all(
+        selector, 'els => els.map(e => e.getAttribute("href"))')
+    # Anything that would take the session down with it, or leave state behind,
+    # is not something a read-only sweep should follow
+    forbidden = ('logout', '/remove', '/delete', '/login', '/approve', '/reject',
+                 '/validate', '/expire', '/nuke', 'sudo-fix-problem', 'loginToken')
+    return {h for h in hrefs
+            if h and h.startswith('/') and not any(f in h for f in forbidden)}
 
 
 @then('no page reachable from the menu contains Dutch text')
 def step_no_dutch(context):
     hrefs = context.page.eval_on_selector_all(
         '#controlMenu a', 'els => els.map(e => e.getAttribute("href"))')
-    targets = sorted({h for h in hrefs if h and h.startswith('/') and 'logout' not in h})
-    assert targets, 'the menu exposed no links to check'
+    menu = sorted({h for h in hrefs if h and h.startswith('/') and 'logout' not in h})
+    assert menu, 'the menu exposed no links to check'
 
+    # One hop past the menu as well. Several screens are only linked from within
+    # another page -- the per-user "more" panel, the create forms, phpinfo -- and
+    # a menu-only sweep is how "Validatielink (voor verlenging)" survived the
+    # first pass at the translation
     offences = []
-    for href in targets:
+    visited = set()
+    frontier = list(menu)
+    while frontier:
+        href = frontier.pop(0)
+        if href in visited:
+            continue
+        visited.add(href)
+
         response = context.page.goto(href)
         if response.status >= 400:
             continue
+        if href in menu:
+            frontier.extend(sorted(in_page_links(context) - visited))
+
         # Only the rendered text, so that vendored library source cannot trip it
         body = context.page.inner_text('body').lower()
         for marker in DUTCH_MARKERS:
             if re.search(r'\b' + re.escape(marker), body):
                 offences.append(f'{href}: {marker}')
+
+    assert len(visited) > len(menu), \
+        f'the sweep never got past the menu: {len(visited)} pages for {len(menu)} menu entries'
     assert not offences, 'Dutch text found:\n' + '\n'.join(offences)

@@ -471,9 +471,9 @@ class StaffUserController extends Controller
 
 		$expires = array
 		(
-			$validUntilUnix => 'Huidig: ' . $validUntilDate,
+			$validUntilUnix => 'Current: ' . $validUntilDate,
 			$next1OctUnix => 'Next 1 October: ' . $next1OctDate,
-			$nowUnix => 'Nu: ' . $nowDate,
+			$nowUnix => 'Now: ' . $nowDate,
 			-1 * 24 * 60 * 60 => 'Never expires'
 		);
 

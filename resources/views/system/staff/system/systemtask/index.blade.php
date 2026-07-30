@@ -12,7 +12,7 @@ System tasks &bull; Staff
 			<th>Task</th>
 			<th>Start</th>
 			<th>End</th>
-			<th>Laatste keer</th>
+			<th>Last run</th>
 			<th>Interval</th>
 			<th>Status</th>
 		</tr>
