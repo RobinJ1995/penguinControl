@@ -24,7 +24,6 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/problem-solver.js',
                 'resources/js/vhost-create.js',
-                'resources/js/register.js',
                 'resources/js/page-editor.js',
             ],
             refresh: true,

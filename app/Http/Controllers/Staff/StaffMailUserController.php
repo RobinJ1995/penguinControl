@@ -42,7 +42,6 @@ class StaffMailUserController extends Controller
 		$objDomains = MailDomain::where ('uid', $user->uid)->get ();
 		$domains = array
 		(
-			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
 			$domains[$objDomain->id] = '@' . $objDomain->domain;
@@ -96,7 +95,6 @@ class StaffMailUserController extends Controller
 		$objDomains = MailDomain::all ();
 		$domains = array
 		(
-			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
 			$domains[$objDomain->id] = '@' . $objDomain->domain;

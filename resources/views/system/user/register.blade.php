@@ -6,7 +6,6 @@ Sign up
 
 @section ('js')
 @parent
-@vite ('resources/js/register.js')
 @endsection
 
 @section ('content')

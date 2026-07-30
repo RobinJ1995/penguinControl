@@ -128,7 +128,7 @@ class UserController extends Controller
 			),
 			array
 			(
-				'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
+				'Shell' => array ('required', allowed_shells_rule ()),
 				'E-mail address' => array ('required', 'email'),
 				'Current password' => ($isLoggedInWithToken === true ? '' : array ('required')),
 				'New password' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', ($isLoggedInWithToken === true ? '' : 'different:Current password'),  'required_with:New password (confirmation)'),

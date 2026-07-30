@@ -39,6 +39,10 @@
 		<script src="/js/foundation/foundation.alert.js"></script>
 		<script src="/js/foundation/foundation.magellan.js"></script>
 		<script src="/js/foundation/foundation.reveal.js"></script>
+		{{-- Konami code handler and the Clippy it summons. Off unless penguin.easter_eggs
+		     is on: they came from the original deployment and a new one should not
+		     inherit somebody else's in-jokes --}}
+		@if (config ('penguin.easter_eggs'))
 		<script src="/js/a29uYW1p.js"></script>
 		<script>
 			$(document).ready
@@ -76,6 +80,7 @@
 				}
 			);
 		</script>
+		@endif
 		@show
 		@section ('holidays')
 		@include ('layout.holidays')

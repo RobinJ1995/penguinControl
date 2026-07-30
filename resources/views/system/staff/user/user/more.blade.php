@@ -109,7 +109,7 @@ More user options &bull; Staff
 				@if (empty ($userInfo->validationcode))
 				<p class="alert-box info">User has not requested a renewal</p>
 				@else
-				<input type="text" name="validationcode" value="https://sinners.be/user/{{ $user->id }}/expired/renew/{{ $userInfo->validationcode }}" readonly />
+				<input type="text" name="validationcode" value="{{ url ('/user/' . $user->id . '/expired/renew/' . $userInfo->validationcode) }}" readonly />
 				@endif
 			</label>
 		</div>
@@ -125,7 +125,7 @@ More user options &bull; Staff
 					<a href="/staff/user/user/{{ $user->id }}/more/loginToken" class="button radius"><img src="/img/icons/generate.png" alt="" /> Generate</a>
 					@endif
 				@else
-					<input type="text" name="logintoken" value="https://sinners.be/user/{{ $user->id }}/amnesia/login/{{ $userInfo->logintoken }}" readonly />
+					<input type="text" name="logintoken" value="{{ url ('/user/' . $user->id . '/amnesia/login/' . $userInfo->logintoken) }}" readonly />
 				@endif
 			</label>
 		</div>

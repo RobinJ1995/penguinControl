@@ -13,12 +13,37 @@ class Vhost extends LimitedUserOwnedModel
 	
 	const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Must end with a `/` //
 	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Must end with a `/` //
-	//DEV// const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Must end with a `/` //
-	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Must end with a `/` //
 	const VHOSTLOGDIR = '/var/log/apache2/vhost/';
 	const SSLCERT = '/etc/apache2/ssl/wildcard.cert';
 	const SSLKEY = '/etc/apache2/ssl/wildcard.key';
 	const EXPIRED_DOCROOT = '/opt/penguincontrol/static/expired/';
+
+	/*
+	 * The vHost a user gets when staff approve them, or NULL when the install has no
+	 * default domain configured -- in which case staff add one by hand.
+	 *
+	 * The domain was hardcoded to the original deployment's, in both of the two places
+	 * that build this, so a new install created vHosts for a domain it did not own //
+	 */
+	public static function makeDefaultFor (User $user, UserInfo $userInfo)
+	{
+		$domain = trim ((string) Config::get ('penguin.default_vhost_domain'));
+
+		if ($domain === '')
+			return NULL;
+
+		$vhost = new self ();
+		$vhost->uid = $user->uid;
+		$vhost->docroot = $user->homedir . '/public_html';
+		$vhost->servername = $userInfo->username . '.' . $domain;
+		$vhost->serveralias = 'www.' . $userInfo->username . '.' . $domain;
+		$vhost->serveradmin = $userInfo->username . '@' . $domain;
+		$vhost->cgi = 1;
+		$vhost->ssl = 0;
+		$vhost->locked = 1; // Only editable by staff //
+
+		return $vhost;
+	}
 
 	public function save (array $options = array ())
 	{

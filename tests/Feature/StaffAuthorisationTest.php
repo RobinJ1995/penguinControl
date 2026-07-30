@@ -110,4 +110,32 @@ class StaffAuthorisationTest extends TestCase
 
 		$this->actingAs ($admin)->get ('/staff/user/user')->assertOk ();
 	}
+
+	/**
+	 * The shell dropdowns and the login-link fields read from configuration and helpers
+	 * now rather than from literals repeated per view, so a mistake in one of them is a
+	 * Blade error at render time and nothing catches it until somebody opens the page //
+	 */
+	public function test_the_pages_that_offer_a_shell_render (): void
+	{
+		$admin = $this->user ('admin');
+		$penguin = $this->user ('penguin');
+
+		$this->actingAs ($admin)->get ('/staff/user/user/create')->assertOk ();
+		$this->actingAs ($admin)->get ('/staff/user/user/' . $penguin->id . '/edit')->assertOk ();
+		$this->actingAs ($admin)->get ('/staff/user/user/' . $penguin->id . '/more')->assertOk ();
+		$this->actingAs ($penguin)->get ('/user/edit')->assertOk ();
+	}
+
+	public function test_every_offered_shell_passes_the_shell_validation_rule (): void
+	{
+		$shells = allowed_shells ();
+
+		$this->assertNotEmpty ($shells);
+
+		// The three lists this replaced disagreed, so "Fish" offered by the staff create
+		// screen was rejected by that same screen's validator //
+		foreach (array_keys ($shells) as $shell)
+			$this->assertStringContainsString ($shell, allowed_shells_rule ());
+	}
 }

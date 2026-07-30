@@ -102,20 +102,9 @@ class StaffUserController extends Controller
 
 			$inputHomedir = rtrim (request ('homedir'), '/');
 
-			$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
-			$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
-
-			foreach ($etcPasswd as $entry)
-			{
-				if (! empty ($entry))
-				{
-					$fields = explode (':', $entry, 2);
-
-					$reservedUsers[] = $fields[0];
-				}
-			}
-
-			$strReservedUsers = implode (',', $reservedUsers);
+			// This used to be a third copy of the list, disagreeing with the other two and
+			// reserving names belonging to the original deployment //
+			$strReservedUsers = prohibited_usernames (true);
 			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
@@ -143,7 +132,7 @@ class StaffUserController extends Controller
 					'E-mail address' => array ('required', 'email'),
 					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
+					'Shell' => array ('required', allowed_shells_rule ()),
 					'E-mail' => array ('required', 'in:-1,0,1'),
 					'Password' => array ('required', 'not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8'),
 					'Password (confirmation)' => 'same:Password',
@@ -279,7 +268,7 @@ class StaffUserController extends Controller
 					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Student number' => '',	//array ('regex:/^(r|s|u)\d\d\d\d\d\d\d$/'),
-					'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
+					'Shell' => array ('required', allowed_shells_rule ()),
 					'E-mail' => array ('required', 'in:-1,0,1'),
 					'Password' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', 'required_with:Password (confirmation)'),
 					'Password (confirmation)' => array ('same:Password', 'required_with:Password'),
@@ -562,20 +551,9 @@ class StaffUserController extends Controller
 
 			$inputHomedir = rtrim (request ('homedir'), '/');
 
-			$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
-			$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
-
-			foreach ($etcPasswd as $entry)
-			{
-				if (! empty ($entry))
-				{
-					$fields = explode (':', $entry, 2);
-
-					$reservedUsers[] = $fields[0];
-				}
-			}
-
-			$strReservedUsers = implode (',', $reservedUsers);
+			// This used to be a third copy of the list, disagreeing with the other two and
+			// reserving names belonging to the original deployment //
+			$strReservedUsers = prohibited_usernames (true);
 
 			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
@@ -602,7 +580,7 @@ class StaffUserController extends Controller
 					'E-mail address' => array ('required', 'email'),
 					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'Shell' => array ('required', 'in:/bin/bash,/bin/fish,/bin/zsh,/bin/false,/usr/bin/tmux'),
+					'Shell' => array ('required', allowed_shells_rule ()),
 					'E-mail' => array ('required', 'in:-1,0,1'),
 					'Primary group' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
 					'Groups' => array ('array', 'exists:group,gid')
@@ -660,18 +638,16 @@ class StaffUserController extends Controller
 				$alerts[] = new Alert ('User ' . $userInfo->username . ' assigned to group: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
 			}
 
-			$vhost = new Vhost (); // User's default vHost //
-			$vhost->uid = $user->uid;
-			$vhost->docroot = $user->homedir . '/public_html';
-			$vhost->servername = $userInfo->username . '.sinners.be';
-			$vhost->serveralias = 'www.' . $userInfo->username . '.sinners.be';
-			$vhost->serveradmin = $userInfo->username . '@sinners.be';
-			$vhost->cgi = 1;
-			$vhost->ssl = 0;
-			$vhost->locked = 1; // Only editable by staff //
-			$vhost->save ();
+			$vhost = Vhost::makeDefaultFor ($user, $userInfo);
 
-			$alerts[] = new Alert ('vHost added: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+			if ($vhost === NULL)
+				$alerts[] = new Alert ('No default vHost was created: penguin.default_vhost_domain is not set.', 'warning');
+			else
+			{
+				$vhost->save ();
+
+				$alerts[] = new Alert ('vHost added: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+			}
 
 			$ftp = new Ftp (); // User's default FTP account //
 			$ftp->username = $userInfo->username;

@@ -4,8 +4,8 @@ namespace App;
 
 use App\Models\Log;
 use App\Models\User;
-use App\Models\UserInfo;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 
 class ProblemSolver
 {
@@ -55,9 +55,9 @@ class ProblemSolver
 				'name' => 'USER_NOT_VALIDATED',
 				'message' => 'User has not yet been activated'
 			),
-			'RETARDED_MEDEWERKER' => array
+			'HOMEDIR_ABSENT' => array
 			(
-				'name' => 'RETARDED_MEDEWERKER',
+				'name' => 'HOMEDIR_ABSENT',
 				'message' => 'A user was validated without following the documentation: the home directory is missing.'
 			),
 		);
@@ -74,7 +74,7 @@ class ProblemSolver
 		}
 		else if (! file_exists ($this->user->homedir) && ! App::environment ('local')) // Otherwise this would trigger constantly in a local dev environment //
 		{
-			$problems[] = array ('RETARDED_MEDEWERKER');
+			$problems[] = array ('HOMEDIR_ABSENT');
 		}
 		else
 		{
@@ -97,11 +97,9 @@ class ProblemSolver
 				
 				if (! (file_exists ($vhost->docroot) && is_dir ($vhost->docroot)))
 				{
-					$referenceUserInfo = UserInfo::where ('username', 'sin')->first ();
-					$referenceUser = $referenceUserInfo === NULL ? NULL : $referenceUserInfo->user;
-					if ($referenceUser !== NULL && ! (file_exists ($referenceUser->homedir) && is_dir ($referenceUser->homedir)))
+					if (! self::homedirStorageAvailable ($this->user))
 					{
-						$problems[] = array ('HOMEDIR_STORAGE_UNAVAILABLE'); // Trouble with the NAS? The home directories don't look available... //
+						$problems[] = array ('HOMEDIR_STORAGE_UNAVAILABLE');
 					}
 					else
 					{
@@ -146,6 +144,31 @@ class ProblemSolver
 		return $data;
 	}
 	
+	/**
+	 * Whether home directory storage looks mounted.
+	 *
+	 * This gates creating a missing document root, and the gate matters: if the
+	 * filesystem home directories live on is not mounted, every docroot on the server
+	 * looks missing at once, and without this the fix would create all of them on
+	 * whatever is underneath the mountpoint.
+	 *
+	 * The old check asked whether a user named `sin` had a home directory -- a canary
+	 * account from the original deployment, which no other install has. A user's own
+	 * home directory answers the same question without naming anybody: if it is there,
+	 * storage is mounted and a missing docroot is genuinely missing. Installs where
+	 * that is not enough -- a per-user NAS mount, say -- can point
+	 * penguin.storage_check_path at something that only exists when storage is up //
+	 */
+	private static function homedirStorageAvailable (User $user)
+	{
+		$checkPath = trim ((string) Config::get ('penguin.storage_check_path'));
+
+		if ($checkPath !== '')
+			return file_exists ($checkPath) && is_dir ($checkPath);
+
+		return file_exists ($user->homedir) && is_dir ($user->homedir);
+	}
+
 	private function createDirectory ($directory, ?User $owner = NULL, $permissions = NULL)
 	{
 		$output = array ();

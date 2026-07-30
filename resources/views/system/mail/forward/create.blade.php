@@ -21,7 +21,7 @@ Create forwarding address
 						(
 							'domain',
 							$domains,
-							old ('domain', '@' . $userInfo->username . '.sinners.be')
+							old ('domain')
 						)
 					}}
 				</label>

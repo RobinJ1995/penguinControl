@@ -60,14 +60,7 @@ Edit user
 					{{ Form::select
 						(
 							'shell',
-							array
-							(
-								'/bin/bash' => 'Bash',
-								'/usr/bin/fish' => 'Fish',
-								'/usr/bin/zsh' => 'ZSH',
-								'/usr/bin/tmux' => 'Tmux',
-								'/bin/false' => 'Deny shell access (/bin/false)'
-							),
+							allowed_shells (),
 							old ('shell', $user->shell)
 						)
 					}}

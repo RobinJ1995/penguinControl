@@ -12,8 +12,10 @@ generated from the `vhost` table. Privileged work is queued in `system_task` and
 drained by a cron job.
 
 Originally written for [a student organisation at Thomas More
-Kempen](https://sinners.be/). Some of its needs are still baked in — see
-`ProblemSolver` and the default vHost names in `StaffMaintenanceController`.
+Kempen](https://sinners.be/), and now being generalised so anyone can deploy it.
+What used to be that organisation's assumptions are configuration; see
+`config/penguin.php` and `.env.example`. Set `DEFAULT_VHOST_DOMAIN` to the domain
+you host users under, or leave it empty and add each vHost by hand.
 
 ## Requirements
 

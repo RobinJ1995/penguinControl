@@ -60,9 +60,32 @@ function is_owner ($resource, $user = NULL)
 	return ($user !== NULL && $user->uid === $resource->uid);
 }
 
+/**
+ * The login shells a user may be given, as path => label.
+ *
+ * There used to be three lists that disagreed about whether fish and zsh live in /bin or
+ * /usr/bin: two validators said /usr/bin, a third said /bin, and the dropdowns offered a
+ * third combination again -- so picking "Fish" on the staff create screen failed that
+ * screen's own validation //
+ */
+function allowed_shells ()
+{
+	return (array) \Illuminate\Support\Facades\Config::get ('penguin.shells', array ());
+}
+
+/**
+ * The same list as a validation rule.
+ */
+function allowed_shells_rule ()
+{
+	return 'in:' . implode (',', array_keys (allowed_shells ()));
+}
+
 function prohibited_usernames (bool $returnString = false)
 {
-	$reservedUsernames = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'control', 'penguincontrol', 'admin', 'administrator', 'root', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'ssh', 'shell', 'cloud', 'voice', 'docu');
+	// There used to be a second, longer copy of this list in StaffUserController, which
+	// reserved names belonging to the original deployment. See penguin.reserved_usernames //
+	$reservedUsernames = (array) \Illuminate\Support\Facades\Config::get ('penguin.reserved_usernames', array ());
 	$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
 	
 	foreach ($etcPasswd as $entry)

@@ -17,13 +17,7 @@ Modify account
 				{{ Form::select
 					(
 						'shell',
-						array
-						(
-							'/bin/bash' => 'Bash',
-							'/usr/bin/fish' => 'Fish',
-							'/usr/bin/zsh' => 'ZSH',
-							'/usr/bin/tmux' => 'Tmux'
-						),
+						allowed_shells (),
 						old ('shell', $user->shell)
 					)
 				}}

@@ -103,18 +103,16 @@ class StaffMaintenanceController extends Controller
 			{
 				$userInfo = $user->userInfo;
 				
-				$vhost = new Vhost (); // User's default vHost //
-				$vhost->uid = $user->uid;
-				$vhost->docroot = $user->homedir . '/public_html';
-				$vhost->servername = $userInfo->username . '.sinners.be';
-				$vhost->serveralias = 'www.' . $userInfo->username . '.sinners.be';
-				$vhost->serveradmin = $userInfo->username . '@sinners.be';
-				$vhost->cgi = 1;
-				$vhost->ssl = 0;
-				$vhost->locked = 1; // Only editable by staff //
-				$vhost->save ();
+				$vhost = Vhost::makeDefaultFor ($user, $userInfo);
 
-				$alerts[] = new Alert ('vHost added: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+				if ($vhost === NULL)
+					$alerts[] = new Alert ('No default vHost was created for ' . $userInfo->username . ': penguin.default_vhost_domain is not set.', 'warning');
+				else
+				{
+					$vhost->save ();
+
+					$alerts[] = new Alert ('vHost added: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+				}
 
 				$ftp = new Ftp (); // User's default FTP account //
 				$ftp->username = $userInfo->username;

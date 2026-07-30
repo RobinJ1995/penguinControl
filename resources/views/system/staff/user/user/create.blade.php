@@ -54,14 +54,7 @@ Create user
 					{{ Form::select
 						(
 							'shell',
-							array
-							(
-								'/bin/bash' => 'Bash',
-								'/bin/fish' => 'Fish',
-								'/bin/zsh' => 'ZSH',
-								'/usr/bin/tmux' => 'Tmux',
-								'/bin/false' => 'Deny shell access (/bin/false)'
-							),
+							allowed_shells (),
 							old ('shell', '/bin/bash')
 						)
 					}}

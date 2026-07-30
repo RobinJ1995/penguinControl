@@ -42,7 +42,6 @@ class StaffMailForwardController extends Controller
 		$objDomains = MailDomain::all ();
 		$domains = array
 		(
-			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
 			$domains[$objDomain->id] = '@' . $objDomain->domain;
@@ -92,7 +91,6 @@ class StaffMailForwardController extends Controller
 		$objDomains = MailDomain::all ();
 		$domains = array
 		(
-			//$userInfo->username . '.sinners.be' => '@' . $userInfo->username . '.sinners.be'
 		);
 		foreach ($objDomains as $objDomain)
 			$domains[$objDomain->id] = '@' . $objDomain->domain;

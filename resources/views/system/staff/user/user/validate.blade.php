@@ -60,13 +60,7 @@ Validate user &bull; Staff
 					{{ Form::select
 						(
 							'shell',
-							array
-							(
-								'/bin/bash' => 'Bash',
-								'/bin/fish' => 'Fish',
-								'/bin/zsh' => 'ZSH',
-								'/bin/false' => 'Deny shell access (/bin/false)'
-							),
+							allowed_shells (),
 							old ('shell', '/bin/bash')
 						)
 					}}
