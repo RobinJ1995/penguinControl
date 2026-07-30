@@ -18,8 +18,9 @@ import requests
 from behave import given, when, then, step
 from playwright.sync_api import expect
 
+# Mirrors Database\Seeders\DatabaseSeeder
 SEEDED = {
-    'admin': {'password': 'admin', 'uid': 5000, 'group': 'staff', 'gid': 1000},
+    'admin': {'password': 'admin', 'uid': 5000, 'group': 'panel', 'gid': 1000},
     'penguin': {'password': 'penguin', 'uid': 5001, 'group': 'user', 'gid': 2000},
 }
 

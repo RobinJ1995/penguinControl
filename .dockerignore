@@ -2,7 +2,10 @@
 /node_modules
 
 # vendor/ is deliberately NOT excluded: see tests/e2e/app/Dockerfile, which
-# installs it only when the build context does not already carry one.
+# installs it only when the build context does not already carry one. Its git
+# metadata is, though: when composer has to fall back to source downloads it
+# leaves full clones behind, which run to gigabytes and are useless at runtime.
+/vendor/**/.git
 /public/build
 /public/hot
 /public/storage

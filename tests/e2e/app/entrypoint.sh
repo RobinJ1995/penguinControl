@@ -71,5 +71,4 @@ echo "==> Starting the test control plane on :9000"
 python3 /usr/local/bin/control.py &
 
 echo "==> Starting Apache"
-. /etc/apache2/envvars
 exec apache2ctl -DFOREGROUND

@@ -136,7 +136,11 @@ def ensure_unix_account(username, uid, group, gid, homedir):
                  'stdout': '', 'stderr': 'rejected username ' + username}]
 
     try:
-        grp.getgrgid(int(gid))
+        existing = grp.getgrnam(group)
+        if existing.gr_gid != int(gid):
+            return [{'command': 'ensure_unix_account', 'exitcode': 1, 'stdout': '',
+                     'stderr': (f'the group {group} already exists at gid {existing.gr_gid}, '
+                                f'but the panel expects gid {gid}')}]
     except KeyError:
         results.append(run(['groupadd', '-g', str(gid), group]))
 

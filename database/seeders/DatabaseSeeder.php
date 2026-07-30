@@ -31,10 +31,13 @@ class DatabaseSeeder extends Seeder
 
 	/**
 	 * The staff views compare a user's gid against the gid of the group named
-	 * "user" to decide whether to render them as staff, so that group has to
+	 * "user" to decide whether to render someone as staff, so that group has to
 	 * exist under exactly that name.
+	 *
+	 * These names double as Unix group names, so neither may collide with a
+	 * distribution's own groups -- which rules out "staff".
 	 */
-	const ADMIN_GROUP = 'staff';
+	const ADMIN_GROUP = 'panel';
 
 	const USER_GROUP = 'user';
 
