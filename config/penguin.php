@@ -25,6 +25,36 @@ return [
 	'default_vhost_domain' => env ('DEFAULT_VHOST_DOMAIN', ''),
 
 	/*
+	 * Where the panel expects the things it manages to live. These were constants on
+	 * App\Models\Vhost, so relocating any of them meant editing the source //
+	 */
+	'paths' => [
+		'vhost_available' => env ('VHOST_DIR_AVAILABLE', '/etc/apache2/sites-available/'),
+		'vhost_enabled' => env ('VHOST_DIR_ENABLED', '/etc/apache2/sites-enabled/'),
+		'vhost_log' => env ('VHOST_LOG_DIR', '/var/log/apache2/vhost/'),
+		'skel' => env ('SKEL_DIR', '/etc/skel/'),
+
+		/*
+		 * Served in place of an expired user's site. The constant this replaces pointed
+		 * at /opt/penguincontrol/static/expired/ -- lower-case c, where every install
+		 * path in the docs is /opt/penguinControl -- and no such directory has ever
+		 * shipped, so an expired user's vHost named a document root that could not
+		 * exist. Empty means the copy that ships in static/expired //
+		 */
+		'expired_docroot' => env ('EXPIRED_DOCROOT', '')
+	],
+
+	'apache' => [
+		/*
+		 * What a user's .htaccess is allowed to override. `All` is what this has always
+		 * generated, and stays the default so that upgrading does not change what
+		 * existing sites may do. `FileInfo Indexes Limit AuthConfig` is the safer choice
+		 * for a new install //
+		 */
+		'allow_override' => env ('APACHE_ALLOW_OVERRIDE', 'All')
+	],
+
+	/*
 	 * Optional. A path that exists only when home directory storage is mounted, used
 	 * by ProblemSolver before it creates a missing document root. Leave it unset and
 	 * the user's own home directory answers the same question.

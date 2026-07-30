@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\LimitedUserOwnedModel;
+use App\Provisioning\VhostRenderer;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
@@ -11,12 +12,36 @@ class Vhost extends LimitedUserOwnedModel
 	protected $table = 'vhost';
 	public $timestamps = false;
 	
-	const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Must end with a `/` //
-	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Must end with a `/` //
-	const VHOSTLOGDIR = '/var/log/apache2/vhost/';
-	const SSLCERT = '/etc/apache2/ssl/wildcard.cert';
-	const SSLKEY = '/etc/apache2/ssl/wildcard.key';
-	const EXPIRED_DOCROOT = '/opt/penguincontrol/static/expired/';
+	/*
+	 * These were constants. SSLCERT and SSLKEY pointed at a wildcard certificate from
+	 * before Certbot and were referenced by nothing at all, so they are gone rather than
+	 * relocated. The rest are penguin.paths.* now // See App\Provisioning\VhostRenderer //
+	 */
+	public static function dirAvailable ()
+	{
+		return trailing_slash (VhostRenderer::path ('vhost_available'));
+	}
+
+	public static function dirEnabled ()
+	{
+		return trailing_slash (VhostRenderer::path ('vhost_enabled'));
+	}
+
+	public static function logDir ()
+	{
+		return trailing_slash (VhostRenderer::path ('vhost_log'));
+	}
+
+	/**
+	 * Whether the owner of this vHost has expired, in which case it serves the expired
+	 * placeholder instead of the user's own document root //
+	 */
+	public function hasExpired ()
+	{
+		$user = User::where ('uid', $this->uid)->first ();
+
+		return $user !== NULL && $user->hasExpired ();
+	}
 
 	/*
 	 * The vHost a user gets when staff approve them, or NULL when the install has no
@@ -47,86 +72,44 @@ class Vhost extends LimitedUserOwnedModel
 
 	public function save (array $options = array ())
 	{
-		// Input should be sanitised in VHostController //
-		$user = User::where ('uid', $this->uid)->first ();
-		$username = $user->userInfo->username;
-		$homedir = $user->homedir;
-		$group = Group::where ('gid', $user->gid)->first ()->name;
-		
-		$identification = $this->identification ();
 		$filename = $this->filename ();
-		
-		$now = ceil (time () / 60 / 60 / 24);
-		$expired = false;
-		if ($user->expire <= $now && $user->expire != -1)
-			$expired = true;
-		
-		$template =
-'<VirtualHost *:80>
-	ServerName {:servername:}
-	ServerAdmin {:serveradmin:}
-	ServerAlias {:serveralias:}
-	AssignUserID {:username:} {:group:}
-	
-	CustomLog "{:logdir:}{:identification:}.log" combined
-	ErrorLog "{:homedir:}/logs/{:identification:}_errors.log"
-	php_admin_value open_basedir "{:docroot:}:{:homedir:}:/tmp:/usr/share/php{:basedir:}"
 
-	DocumentRoot "{:docroot:}"
-	<Directory "{:docroot:}">
-		{:cgiHandler:}
-		Options {:execCGI:} +FollowSymLinks
-		AllowOverride {:overrides:}
-		Require all granted
-	</Directory>
+		// Rendering lives in VhostRenderer, which validates every value it interpolates.
+		// This used to build the file inline with str_replace () and no checks //
+		$file = (new VhostRenderer ())->render ($this);
 
-</VirtualHost>
-'; // Needs an empty line at the end, otherwise Certbot has issues //
-		
-		$file = str_replace ('{:servername:}', $this->servername, $template);
-		$file = str_replace ('{:serveralias:}', $this->serveralias, $file);
-		$file = str_replace ('{:username:}', $username, $file);
-		$file = str_replace ('{:homedir:}', $homedir, $file);
-		$file = str_replace ('{:group:}', $group, $file);
-		$file = str_replace ('{:serveradmin:}', $this->serveradmin, $file);
-		$file = str_replace ('{:docroot:}', $expired ? self::EXPIRED_DOCROOT : $this->docroot, $file);
-		$file = str_replace ('{:identification:}', $identification, $file);
-		$file = str_replace ('{:logdir:}', self::VHOSTLOGDIR, $file);
-		$file = str_replace ('{:execCGI:}', ($this->cgi ? '+ExecCGI' : ''), $file);
-		$file = str_replace ('{:cgiHandler:}', ($this->cgi ? 'AddHandler cgi-script .cgi' : ''), $file);
-		$file = str_replace ('{:basedir:}', empty ($this->basedir) ? '' : ':' . $this->basedir, $file);
-		//$file = str_replace ('{:overrides:}', 'FileInfo Indexes Limit AuthConfig Options', $file);
-		$file = str_replace ('{:overrides:}', 'All', $file);
-		
+		$available = self::dirAvailable () . $filename;
+		$enabled = self::dirEnabled () . $filename;
+
 		// Apache refuses to start if a CustomLog directory is missing //
-		if (! is_dir (self::VHOSTLOGDIR))
-			@mkdir (self::VHOSTLOGDIR, 0755, true);
-		
-		@unlink (self::VHOSTDIRAVAILABLE . $filename);
-		@unlink (self::VHOSTDIRENABLED . $filename);
-		
-		$ok1 = file_put_contents (self::VHOSTDIRAVAILABLE . $filename, $file); // Overwrites the file if it already exists //
-		$ok2 = symlink (self::VHOSTDIRAVAILABLE . $filename, self::VHOSTDIRENABLED . $filename);
-		
+		if (! is_dir (self::logDir ()))
+			@mkdir (self::logDir (), 0755, true);
+
+		@unlink ($available);
+		@unlink ($enabled);
+
+		$ok1 = file_put_contents ($available, $file); // Overwrites the file if it already exists //
+		$ok2 = symlink ($available, $enabled);
+
 		if ($ok1 === false) // Use strict comparison (===)! //
-			throw new \Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+			throw new \Exception ('Can\'t write to file. `' . $available . '`');
 		if ($ok2 === false) // Use strict comparison (===)! //
-			throw new \Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
-		
+			throw new \Exception ('Can\'t write symlink to `' . $enabled . '`');
+
 		return parent::save ($options);
 	}
-	
+
 	public function delete ()
 	{
 		$filename = $this->filename ();
 		
-		$ok1 = unlink (self::VHOSTDIRAVAILABLE . $filename);
-		$ok2 = unlink (self::VHOSTDIRENABLED . $filename);
+		$ok1 = unlink (self::dirAvailable () . $filename);
+		$ok2 = unlink (self::dirEnabled () . $filename);
 		
 		if ($ok1 === false) // Use strict comparison (===)! //
-			throw new \Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+			throw new \Exception ('Can\'t remove file `' . self::dirAvailable () . $filename . '`');
 		if ($ok2 === false) // Use strict comparison (===)! //
-			throw new \Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '`');
+			throw new \Exception ('Can\'t remove file `' . self::dirEnabled () . $filename . '`');
 		
 		return parent::delete ();
 	}
@@ -202,7 +185,7 @@ class Vhost extends LimitedUserOwnedModel
 	
 	public function path ()
 	{
-		return self::VHOSTDIRENABLED . $this->filename ();
+		return self::dirEnabled () . $this->filename ();
 	}
 	
 	public function __toString ()
