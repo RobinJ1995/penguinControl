@@ -249,6 +249,22 @@ Route::group
 		Route::get ('problem-solver/{user?}', [ProblemSolverController::class, 'start'])->name ('problem-solver.start');
 		Route::get ('problem-solver/schedule', [ProblemSolverController::class, 'schedule'])->name ('problem-solver.schedule');
 		Route::get ('problem-solver/result', [ProblemSolverController::class, 'result'])->name ('problem-solver.result');
+	}
+);
+
+// Everything below is the staff area. It is gated on `admin` as well as `auth`: without
+// that, any authenticated user could reach staff/user/user/{user}/login and be logged in
+// as whoever they named. is_admin() is used in the views to decide what to draw, which is
+// not authorisation //
+Route::group
+(
+	array
+	(
+		'middleware' => array ('auth', 'admin')
+	),
+	function ()
+	{
+		// Problem solver // Scans every user, so it is staff-only //
 		Route::get ('problem-solver/all/dry', [ProblemSolverController::class, 'allDry'])->name ('problem-solver.all-dry');
 
 		// Staff // User // User //

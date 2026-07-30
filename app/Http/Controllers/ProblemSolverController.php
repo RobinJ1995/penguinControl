@@ -12,21 +12,38 @@ use Illuminate\Support\Facades\Response;
 
 class ProblemSolverController extends Controller
 {
+	/**
+	 * The problem solver runs as root: it creates directories and chowns them to the user
+	 * it was pointed at. Naming somebody else was unchecked, so any authenticated user
+	 * could queue that against any account //
+	 */
+	private static function authoriseFor (User $user)
+	{
+		$actor = Auth::user ();
+
+		if ($actor === NULL || (! $actor->isAdmin () && $actor->id !== $user->id))
+			abort (403, 'You don\'t have access to the requested resource!');
+	}
+
 	public function start ($user = NULL)
 	{
 		if ($user == NULL)
 			$user = Auth::user ();
+		else
+			self::authoriseFor ($user);
 		$userId = $user->id;
-		
+
 		return view ('problem-solver.start', compact ('userId'));
 	}
-	
+
 	public function schedule ()
 	{
 		$user = User::find (request ('userId'));
 		if ($user == NULL)
 			throw new \Exception ('User does not exist');
-		
+
+		self::authoriseFor ($user);
+
 		$task = new SystemTask ();
 		$task->type = SystemTask::TYPE_PROBLEM_SOLVER;
 		$task->data = json_encode (array ('userId' => $user->id));

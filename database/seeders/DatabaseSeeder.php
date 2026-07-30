@@ -9,6 +9,7 @@ use App\Models\UserGroup;
 use App\Models\UserInfo;
 use App\Models\UserLimit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 /**
  * Seeds the minimum a penguinControl install needs in order to work at all,
@@ -54,8 +55,36 @@ class DatabaseSeeder extends Seeder
 		$adminGroup = $this->seedGroup (self::ADMIN_GROUP, self::ADMIN_GID);
 		$userGroup = $this->seedGroup (self::USER_GROUP, self::USER_GID);
 
-		$this->seedUser ('admin', 'Ada', 'Lovelace', $adminGroup, 5000, 'admin');
-		$this->seedUser ('penguin', 'Pingu', 'Pinguin', $userGroup, 5001, 'penguin');
+		$this->seedUser ('admin', 'Ada', 'Lovelace', $adminGroup, 5000,
+			$this->passwordFor ('SEED_ADMIN_PASSWORD', 'admin'));
+		$this->seedUser ('penguin', 'Pingu', 'Pinguin', $userGroup, 5001,
+			$this->passwordFor ('SEED_USER_PASSWORD', 'penguin'));
+	}
+
+	/**
+	 * The seeded accounts used to ship with their username as their password, and
+	 * README.md tells operators to run `db:seed --force` while installing -- so a stock
+	 * install answered to admin/admin on the public internet.
+	 *
+	 * A password is now taken from the environment, and generated if none was given. The
+	 * generated one is printed once, because it is not recoverable afterwards: `crypt` is
+	 * one-way and nothing else stores it //
+	 */
+	private function passwordFor ($variable, $username)
+	{
+		$password = env ($variable);
+
+		if (! empty ($password))
+			return $password;
+
+		$password = Str::password (20);
+
+		$this->command?->warn (sprintf (
+			'Generated a password for "%s": %s', $username, $password));
+		$this->command?->warn (sprintf (
+			'Set %s to choose your own. This is shown once.', $variable));
+
+		return $password;
 	}
 
 	private function seedLimits ()

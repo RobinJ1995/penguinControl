@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\FeatureEnabled;
 use App\Http\Middleware\OwnershipMiddleware;
 use App\Http\Middleware\PluginActionsMiddleware;
@@ -35,6 +36,7 @@ return Application::configure (basePath: dirname (__DIR__))
 			(
 				[
 					'guest' => RedirectIfAuthenticated::class,
+					'admin' => AdminMiddleware::class,
 					'owner' => OwnershipMiddleware::class,
 					'locked' => ResourceLockedMiddleware::class,
 					'feature_enabled' => FeatureEnabled::class

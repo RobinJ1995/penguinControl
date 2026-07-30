@@ -28,5 +28,9 @@
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
+        <!-- The seeder generates a random password when these are unset, which is right
+             for an install and useless for a test that has to log in. -->
+        <env name="SEED_ADMIN_PASSWORD" value="admin"/>
+        <env name="SEED_USER_PASSWORD" value="penguin"/>
     </php>
 </phpunit>

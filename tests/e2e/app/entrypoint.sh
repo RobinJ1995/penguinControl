@@ -38,6 +38,10 @@ fi
 	echo "SERVER_IP=127.0.0.1"
 	# No SMTP server here; the Mailables still render, they just are not delivered
 	echo "MAIL_MAILER=log"
+	# Without these the seeder generates random passwords, and the behave suite logs in
+	# with fixed ones. See DatabaseSeeder::passwordFor ()
+	echo "SEED_ADMIN_PASSWORD=admin"
+	echo "SEED_USER_PASSWORD=penguin"
 } >> .env
 php artisan key:generate --force
 
