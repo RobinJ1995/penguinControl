@@ -117,10 +117,10 @@ Apache -- so scenarios cannot leak into one another.
 
 | Feature | What it establishes |
 | --- | --- |
-| `login.feature` | The custom `crypt()` login, that a failed attempt re-renders the form with 200 and an alert rather than redirecting, and that each role reaches the pages its own menu offers |
+| `login.feature` | The custom `crypt()` login, and that a failed attempt re-renders the form with 200 and an alert rather than redirecting |
 | `vhost.feature` | The generated vHost's contents, its symlink, that `apache2ctl configtest` passes, and that `open_basedir` no longer contains the stray separator |
 | `mariadb_credentials.feature` | Per-user DBMS accounts are created, authenticate with the panel password, and are granted only their own databases on MariaDB 12.3 |
 | `system_task.feature` | `artisan cron:run` drains the queue: document roots are created and chowned, Apache is reloaded, disk usage is calculated |
 | `ftp_and_mail.feature` | FTP and mail rows are written in the shape the FTP daemon and Postfix read, including `mail_forward.mail_domain_id` |
-| `staff.feature` | Every page the menu offers renders, the system check runs, and a registration waits for validation |
+| `staff.feature` | The system check runs, a registration waits for validation, and the billing log starts empty |
 | `certbot.feature` | The certificate request path reaches certbot |

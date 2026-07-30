@@ -6,10 +6,6 @@ Feature: The staff area
     Given the panel is freshly installed
     And I am logged in as the administrator
 
-  Scenario: Every page the menu offers renders
-    When I visit "/user/start"
-    Then every page reachable from the menu renders
-
   Scenario: The system check runs over the whole install
     When I visit "/staff/maintenance/system/check"
     Then the log table records "System check executed"

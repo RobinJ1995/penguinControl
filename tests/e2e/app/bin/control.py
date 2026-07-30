@@ -18,6 +18,7 @@ Endpoints:
     GET  /configtest       apache2ctl configtest
     GET  /file?path=...    read a file, from an allow-list of prefixes
     GET  /ls?path=...      list a directory, same allow-list
+    GET  /stat?path=...    owner, group and mode of a path, same allow-list
     GET  /logs             the tail of storage/logs/laravel.log
     POST /unix-user        create a Unix user and group for a panel user
     GET  /health
@@ -206,6 +207,34 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, {'contents': ''})
             with open(log, errors='replace') as fh:
                 return self._send(200, {'contents': fh.read()[-20000:]})
+
+        if url.path == '/stat':
+            path = (query.get('path') or [''])[0]
+            if not self._readable(path):
+                return self._send(403, {'error': 'path not permitted', 'path': path})
+            if not os.path.exists(path):
+                return self._send(404, {'error': 'not found', 'path': path})
+            info = os.stat(path)
+            # A uid with no passwd entry is itself worth reporting rather than
+            # raising: it is what a chown to a user that was never created looks
+            # like from here
+            try:
+                owner = pwd.getpwuid(info.st_uid).pw_name
+            except KeyError:
+                owner = None
+            try:
+                group = grp.getgrgid(info.st_gid).gr_name
+            except KeyError:
+                group = None
+            return self._send(200, {
+                'path': path,
+                'uid': info.st_uid,
+                'gid': info.st_gid,
+                'owner': owner,
+                'group': group,
+                'mode': oct(info.st_mode & 0o7777),
+                'isdir': os.path.isdir(path),
+            })
 
         if url.path in ('/file', '/ls'):
             path = (query.get('path') or [''])[0]
