@@ -42,32 +42,34 @@ RUN a2enmod rewrite \
 
 WORKDIR ${APP_DIR}
 
-# Dependencies first, so that source edits do not invalidate them. The caches are
-# dropped in the same layer, or they end up in the image -- composer's alone is
-# several gigabytes.
+# Both dependency installs are keyed on their lockfile alone, above the source
+# copy, so editing a controller or a template does not re-resolve and
+# re-download the framework. Their caches live on BuildKit cache mounts, which
+# survive rebuilds without ever landing in a layer -- composer's ran to several
+# gigabytes when it did.
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_CACHE_DIR=/tmp/composer-cache \
     npm_config_cache=/tmp/npm-cache
 
 COPY package.json package-lock.json* ./
-RUN npm ci --no-audit --no-fund && rm -rf /tmp/npm-cache
+RUN --mount=type=cache,target=/tmp/npm-cache \
+    npm ci --no-audit --no-fund
+
+# --no-autoloader because an optimised autoloader has to classmap app/, which is
+# not here yet; the dump below does that once the source has been copied.
+# Stripping .git matters when --prefer-dist cannot reach GitHub and composer
+# falls back to full clones: the metadata is useless at runtime and enormous.
+COPY composer.json composer.lock ./
+RUN --mount=type=cache,target=/tmp/composer-cache \
+    composer install --no-dev --no-autoloader --no-scripts --no-interaction --prefer-dist \
+ && find vendor -type d -name .git -prune -exec rm -rf {} +
 
 COPY . .
 
-# Normally the dependencies are installed here. A build context that already
-# carries vendor/ -- a CI cache, or a network where composer cannot reach
-# GitHub -- is taken as-is instead.
-RUN if [ -f vendor/autoload.php ]; then \
-      echo '==> Using the vendor directory from the build context' ; \
-    else \
-      composer install --no-dev --no-scripts --no-interaction --prefer-dist \
-        && composer clear-cache ; \
-    fi \
- && composer dump-autoload --optimize \
- && rm -rf /tmp/composer-cache
+RUN composer dump-autoload --optimize --no-dev
 
 # node_modules is only needed to produce public/build, so it goes afterwards.
-RUN npm run build && rm -rf node_modules /tmp/npm-cache
+RUN npm run build && rm -rf node_modules
 
 # The application drives `systemctl reload apache2` through App\ServiceApache and
 # shells out to certbot for certificates. Neither works in a container, so both

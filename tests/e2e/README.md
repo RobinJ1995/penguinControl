@@ -40,6 +40,25 @@ docker compose -f tests/e2e/docker-compose.yml up --no-build --exit-code-from ru
 
 Without the secret the step is skipped and the build behaves normally.
 
+### In CI
+
+`.github/workflows/tests.yml` runs this suite on every pull request. It builds the
+two images with buildx against the GitHub Actions layer cache and then runs the
+same `--no-build` command as above, so the local and CI paths do not diverge.
+
+### Keep the dependency installs above the source copy
+
+`app/Dockerfile` installs the npm and Composer dependencies from the lockfiles
+*before* it copies the application in, and generates the optimised autoloader
+after. This is load-bearing, not stylistic: with `composer install` below
+`COPY . .` a one-line change to a controller re-downloads the whole framework,
+which cost about five minutes per build here and would cost it on every pull
+request. Keeping the order, a source-only rebuild is around fifteen seconds.
+
+Relatedly, `.dockerignore` excludes `/vendor`. Without that, a development
+`vendor/` on the host is copied straight into an image that runs with
+`APP_ENV=production`, dev dependencies and all.
+
 ## What the containers are
 
 **db** -- `mariadb:12.3`, started with `NO_AUTO_CREATE_USER` in `sql_mode`, which

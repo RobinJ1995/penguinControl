@@ -56,6 +56,8 @@ The first is a fast smoke suite against SQLite. The second stands up a real
 install — Debian 13, Apache with mpm-itk and mod_php, cron, MariaDB 12.3 — and
 drives it with behave and Playwright. See `tests/e2e/README.md`.
 
+Both run on every pull request through `.github/workflows/tests.yml`.
+
 ## Contributors
 
 * [Robin Jacobs](https://github.com/RobinJ1995)

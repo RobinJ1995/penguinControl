@@ -1,11 +1,7 @@
-# Built inside the image, and host copies would shadow it
+# Built inside the image, and host copies would shadow it. A development vendor/
+# in particular carries the dev dependencies, and this image runs as production.
 /node_modules
-
-# vendor/ is deliberately NOT excluded: see tests/e2e/app/Dockerfile, which
-# installs it only when the build context does not already carry one. Its git
-# metadata is, though: when composer has to fall back to source downloads it
-# leaves full clones behind, which run to gigabytes and are useless at runtime.
-/vendor/**/.git
+/vendor
 /public/build
 /public/hot
 /public/storage
@@ -22,7 +18,16 @@
 /.phpunit.cache
 .phpunit.result.cache
 
-# Test artefacts
+# The parts of tests/ this image has no use for, so that editing a feature file
+# or a step definition does not invalidate the source copy. tests/e2e/app is
+# needed and stays: the Dockerfile copies the shims, the control plane, the vHost
+# config and the entrypoint out of it. The runner image builds from a different
+# context (tests/e2e) that this file does not govern.
+/tests/Unit
+/tests/Feature
+/tests/TestCase.php
+/tests/e2e/features
+/tests/e2e/runner
 /tests/e2e/reports
 
 # Python bytecode from running the harness locally
