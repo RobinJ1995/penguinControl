@@ -24,12 +24,12 @@ class UserInfo extends BaseModel
 	
 	public function userLog ()
 	{
-		return $this->hasMany ('\App\Models\UserLog');
+		return $this->hasMany (UserLog::class);
 	}
 	
 	public function user ()
 	{
-		return $this->hasOne ('\App\Models\User');
+		return $this->hasOne (User::class);
 	}
 
 	public function getFullName ()
@@ -39,25 +39,25 @@ class UserInfo extends BaseModel
 	
 	public function generateValidationCode ()
 	{
-		$this->validationcode = bin2hex (openssl_random_pseudo_bytes (16));
+		$this->validationcode = bin2hex (random_bytes (16));
 		
 		return $this->validationcode;
 	}
 	
 	public function generateLoginToken ()
 	{
-		$this->logintoken = bin2hex (openssl_random_pseudo_bytes (16));
+		$this->logintoken = bin2hex (random_bytes (16));
 		
 		return $this->logintoken;
 	}
 	
-	public function prepareHomedir () // Hoort aangeroepen te worden als root vanuit een SystemTask //
+	public function prepareHomedir () // Should be called as root, from a SystemTask //
 	{
 		$group = $this->user->primaryGroup;
 		$homedir = $this->user->homedir;
 		
 		if ($group == NULL)
-			throw new Exception ('Group unknown');
+			throw new \Exception ('Group unknown');
 		
 		$cmd1 = 'cp -R /etc/skel/ ' . escapeshellarg ($homedir) . ' 2>&1';
 		$cmd2 = 'chown ' . escapeshellarg ($this->username) . ':' . escapeshellarg ($group->name) . ' ' . escapeshellarg ($homedir) . ' -R 2>&1';
@@ -78,7 +78,7 @@ class UserInfo extends BaseModel
 	public function url ()
 	{
 		if ($this->user != NULL)
-			return action ('StaffUserController@more', $this->user->id);
+			return route ('staff.user.more', $this->user->id);
 		
 		return NULL;
 	}
@@ -86,7 +86,7 @@ class UserInfo extends BaseModel
 	public function link ()
 	{
 		$url = $this->url ();
-		$caption = get_class () . '#' . $this->id . ' (' . $this->username . ')';
+		$caption = class_basename (static::class) . '#' . $this->id . ' (' . $this->username . ')';
 		
 		if ($url == NULL)
 			return $caption;

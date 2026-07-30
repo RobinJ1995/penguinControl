@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -35,7 +33,7 @@ class StaffSystemLogController extends Controller
 	
 	public function search ()
 	{
-		$userId = Input::get ('userId');
+		$userId = request ('userId');
 		
 		$logs = Log::where ('user_id', $userId)->orderBy ('created_at', 'desc')->paginate ();
 		
@@ -52,7 +50,7 @@ class StaffSystemLogController extends Controller
 	
 	public function laravel ()
 	{
-		$laravelRaw = file_get_contents ('../app/storage/logs/laravel.log');
+		$laravelRaw = file_get_contents (storage_path ('logs/laravel.log'));
 		$laravelRaw = explode (PHP_EOL . '[', $laravelRaw);
 		$laravel = array ();
 		foreach ($laravelRaw as $i => $trace)

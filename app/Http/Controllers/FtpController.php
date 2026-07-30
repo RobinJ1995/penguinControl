@@ -7,7 +7,6 @@ use App\Models\Ftp;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,8 +39,8 @@ class FtpController extends Controller
 		if (! Ftp::allowNew ($user))
 			return Redirect::to ('/ftp')->with ('alerts', array (new Alert ('You are only allowed to create ' . Ftp::getLimit ($user) . ' FTP accounts.', Alert::TYPE_ALERT)));
 		
-		$dir = @ltrim (trailing_slash (Input::get ('dir')), '/');
-		$username = $user->userInfo->username . '_' . Input::get ('username');
+		$dir = @ltrim (trailing_slash (request ('dir')), '/');
+		$username = $user->userInfo->username . '_' . request ('username');
 		if (is_admin () && $user->userInfo->username . '_' == $username)
 			$username = $user->userInfo->username;
 		
@@ -50,13 +49,13 @@ class FtpController extends Controller
 			array
 			(
 				'Username' => $username,
-				'Password' => Input::get ('passwd'),
-				'Password (confirmation)' => Input::get ('passwd_confirm'),
+				'Password' => request ('passwd'),
+				'Password (confirmation)' => request ('passwd_confirm'),
 				'Directory' => $dir
 			),
 			array
 			(
-				'Username' => array ('required', 'unique:ftp,username', 'alpha_dash', 'not_in:' . $ftp->user->userInfo->username . '_,' . prohibited_usernames (true)),
+				'Username' => array ('required', 'unique:ftp,username', 'alpha_dash', 'not_in:' . $user->userInfo->username . '_,' . prohibited_usernames (true)),
 				'Password' => array ('required', 'min:8'),
 				'Password (confirmation)' => 'same:Password',
 				'Directory' => array ('regex:/^([a-zA-Z0-9\_\.\-]+\/)*$/')
@@ -69,7 +68,7 @@ class FtpController extends Controller
 		$ftp = new Ftp ();
 		$ftp->uid = $user->uid;
 		$ftp->username = $username;
-		$ftp->setPassword (Input::get ('passwd'));
+		$ftp->setPassword (request ('passwd'));
 		$ftp->dir = $user->homedir . '/' . $dir;
 		
 		$ftp->save ();
@@ -91,8 +90,8 @@ class FtpController extends Controller
 	{
 		$user = Auth::user ();
 		
-		$dir = @ltrim (trailing_slash (Input::get ('dir')), '/');
-		$username = $ftp->user->userInfo->username . '_' . Input::get ('username');
+		$dir = @ltrim (trailing_slash (request ('dir')), '/');
+		$username = $ftp->user->userInfo->username . '_' . request ('username');
 		if (is_admin () && $ftp->user->userInfo->username . '_' == $username)
 			$username = $ftp->user->userInfo->username;
 		
@@ -101,8 +100,8 @@ class FtpController extends Controller
 			array
 			(
 				'Username' => $username,
-				'Password' => Input::get ('passwd'),
-				'Password (confirmation)' => Input::get ('passwd_confirm'),
+				'Password' => request ('passwd'),
+				'Password (confirmation)' => request ('passwd_confirm'),
 				'Directory' => $dir
 			),
 			array
@@ -121,11 +120,11 @@ class FtpController extends Controller
 		
 		$ftp->username = $username;
 		$ftp->dir = $ftp->user->homedir . '/' . $dir;
-		if (! empty (Input::get ('passwd')))
+		if (! empty (request ('passwd')))
 		{
 			Log::log ('FTP account password changed', $user->id, $ftp);
 			
-			$ftp->setPassword (Input::get ('passwd'));
+			$ftp->setPassword (request ('passwd'));
 		}
 		
 		$ftp->save ();

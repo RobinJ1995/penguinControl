@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Probleemoplosser (overzicht)
+Problem solver (overview)
 @endsection
 
 @section ('content')
@@ -12,8 +12,8 @@ Probleemoplosser (overzicht)
 	
 	<table>
 		<tr>
-			<th>Probleem</th>
-			<th>Onderdeel</th>
+			<th>Problem</th>
+			<th>Component</th>
 		</tr>
 		@foreach ($results as $result)
 		<tr>

@@ -1,43 +1,85 @@
 <?php
 
+use App\Http\Controllers\DatabaseController;
+use App\Http\Controllers\ErrorController;
+use App\Http\Controllers\FtpController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\MailDomainController;
+use App\Http\Controllers\MailForwardController;
+use App\Http\Controllers\MailUserController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProblemSolverController;
+use App\Http\Controllers\Staff\StaffFtpController;
+use App\Http\Controllers\Staff\StaffGroupController;
+use App\Http\Controllers\Staff\StaffMailController;
+use App\Http\Controllers\Staff\StaffMailDomainController;
+use App\Http\Controllers\Staff\StaffMailForwardController;
+use App\Http\Controllers\Staff\StaffMailUserController;
+use App\Http\Controllers\Staff\StaffMaintenanceController;
+use App\Http\Controllers\Staff\StaffPageController;
+use App\Http\Controllers\Staff\StaffSystemController;
+use App\Http\Controllers\Staff\StaffSystemLogController;
+use App\Http\Controllers\Staff\StaffSystemSystemTaskController;
+use App\Http\Controllers\Staff\StaffUserController;
+use App\Http\Controllers\Staff\StaffUserLimitController;
+use App\Http\Controllers\Staff\StaffUserLogController;
+use App\Http\Controllers\Staff\StaffVHostController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VHostController;
+use App\Models\Ftp;
+use App\Models\Group;
+use App\Models\Log;
+use App\Models\MailDomain;
+use App\Models\MailForward;
+use App\Models\MailUser;
+use App\Models\Page;
+use App\Models\SystemTask;
+use App\Models\User;
+use App\Models\UserInfo;
+use App\Models\UserLimit;
+use App\Models\UserLog;
+use App\Models\Vhost;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| routes are all assigned the "web" middleware group by the framework.
+| Now create something great!
 |
 */
 
-// Route Model Binding // http://laravel.com/docs/routing#route-model-binding //
-Route::model ('vhost', '\App\Models\Vhost');
-Route::model ('ftp', '\App\Models\Ftp');
-Route::model ('mDomain', '\App\Models\MailDomain');
-Route::model ('mUser', '\App\Models\MailUser');
-Route::model ('mFwd', '\App\Models\MailForward');
-Route::model ('user', '\App\Models\User');
-Route::model ('userInfo', '\App\Models\UserInfo');
-Route::model ('userLog', '\App\Models\UserLog');
-Route::model ('group', '\App\Models\Group');
-Route::model ('limit', '\App\Models\UserLimit');
-Route::model ('systemTask', '\App\Models\SystemTask');
-Route::model ('log', '\App\Models\Log');
+// Route Model Binding // https://laravel.com/docs/routing#route-model-binding //
+Route::model ('vhost', Vhost::class);
+Route::model ('ftp', Ftp::class);
+Route::model ('mDomain', MailDomain::class);
+Route::model ('mUser', MailUser::class);
+Route::model ('mFwd', MailForward::class);
+Route::model ('user', User::class);
+Route::model ('userInfo', UserInfo::class);
+Route::model ('userLog', UserLog::class);
+Route::model ('group', Group::class);
+Route::model ('limit', UserLimit::class);
+Route::model ('systemTask', SystemTask::class);
+Route::model ('log', Log::class);
 
 Route::bind ('page',
 	function ($value, $route)
 	{
-		$page = \App\Models\Page::where ('name', $value)->first ();
-		
+		$page = Page::where ('name', $value)->first ();
+
 		if (empty ($page))
 			throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException ();
-		
+
 		return $page;
 	}
 );
 
-// Route Constraint Pattern // http://laravel.com/docs/routing#route-parameters //
+// Route Constraint Pattern // https://laravel.com/docs/routing#parameters-regular-expression-constraints //
 Route::pattern ('vhost', '[0-9]+');
 Route::pattern ('ftp', '[0-9]+');
 Route::pattern ('mDomain', '[0-9]+');
@@ -55,32 +97,32 @@ Route::pattern ('log', '[0-9]+');
 Route::pattern ('order', '[a-zA-Z\_]+');
 
 // Home //
-Route::get ('/', 'HomeController@show');
-Route::get ('/home', 'HomeController@show');
+Route::get ('/', [HomeController::class, 'show'])->name ('root');
+Route::get ('/home', [HomeController::class, 'show'])->name ('home');
 
-// Pagina's //
-if (Config::get ('penguin.website', false))
-	Route::get ('/page/{page}', 'PageController@show');
+// Pages //
+if (config ('penguin.website', false))
+	Route::get ('/page/{page}', [PageController::class, 'show'])->name ('page.show');
 
 // Error //
-Route::get ('/error', 'ErrorController@show');
+Route::get ('/error', [ErrorController::class, 'show'])->name ('error');
 
 // User // Public //
-Route::get ('user/login', 'UserController@getLogin');
-Route::post ('user/login', 'UserController@login');
-Route::get ('user/{user}/expired/renew/{validationcode}', 'UserController@renew');
-Route::get ('user/amnesia', 'UserController@getAmnesia');
-Route::post ('user/amnesia', 'UserController@amnesia');
-Route::get ('user/{user}/amnesia/login/{logintoken}', 'UserController@loginWithToken');
-Route::get ('user/{user}/expired', 'UserController@getExpired');
-Route::post ('user/{user}/expired', 'UserController@expired');
-if (Config::get ('penguin.user_registration', false))
+Route::get ('user/login', [UserController::class, 'getLogin'])->name ('user.login');
+Route::post ('user/login', [UserController::class, 'login'])->name ('user.login.submit');
+Route::get ('user/{user}/expired/renew/{validationcode}', [UserController::class, 'renew'])->name ('user.renew');
+Route::get ('user/amnesia', [UserController::class, 'getAmnesia'])->name ('user.amnesia');
+Route::post ('user/amnesia', [UserController::class, 'amnesia'])->name ('user.amnesia.submit');
+Route::get ('user/{user}/amnesia/login/{logintoken}', [UserController::class, 'loginWithToken'])->name ('user.amnesia.login');
+Route::get ('user/{user}/expired', [UserController::class, 'getExpired'])->name ('user.expired');
+Route::post ('user/{user}/expired', [UserController::class, 'expired'])->name ('user.expired.submit');
+if (config ('penguin.user_registration', false))
 {
-	Route::get ('user/register', 'UserController@getRegister');
-	Route::post ('user/register', 'UserController@register');
+	Route::get ('user/register', [UserController::class, 'getRegister'])->name ('user.register');
+	Route::post ('user/register', [UserController::class, 'register'])->name ('user.register.submit');
 }
 
-// Afscherming van routes met Route Filters // http://laravel.com/docs/routing#route-filters //
+// Protecting routes with route middleware // https://laravel.com/docs/middleware //
 Route::group
 (
 	[
@@ -89,108 +131,108 @@ Route::group
 	function ()
 	{
 		// User //
-		Route::get ('user/start', 'UserController@start');
-		Route::get ('user/edit', 'UserController@edit');
-		Route::post ('user/edit', 'UserController@update');
-		Route::get ('user/logout', 'UserController@logout');
-		
+		Route::get ('user/start', [UserController::class, 'start'])->name ('user.start');
+		Route::get ('user/edit', [UserController::class, 'edit'])->name ('user.edit');
+		Route::post ('user/edit', [UserController::class, 'update'])->name ('user.update');
+		Route::get ('user/logout', [UserController::class, 'logout'])->name ('user.logout');
+
 		// vHost //
 		Route::group
 		(
 			['middleware' => ['owner:vhost', 'feature_enabled:vhost', 'locked:vhost']],
 			function ()
 			{
-				Route::get ('website/vhost', 'VHostController@index');
-				Route::get ('website/vhost/create', 'VHostController@create');
-				Route::post ('website/vhost/create', 'VHostController@store');
-				Route::get ('website/vhost/{vhost}/edit', 'VHostController@edit');
-				Route::post ('website/vhost/{vhost}/edit', 'VHostController@update');
-				Route::get ('website/vhost/{vhost}/remove', 'VHostController@remove');
+				Route::get ('website/vhost', [VHostController::class, 'index'])->name ('vhost.index');
+				Route::get ('website/vhost/create', [VHostController::class, 'create'])->name ('vhost.create');
+				Route::post ('website/vhost/create', [VHostController::class, 'store'])->name ('vhost.store');
+				Route::get ('website/vhost/{vhost}/edit', [VHostController::class, 'edit'])->name ('vhost.edit');
+				Route::post ('website/vhost/{vhost}/edit', [VHostController::class, 'update'])->name ('vhost.update');
+				Route::get ('website/vhost/{vhost}/remove', [VHostController::class, 'remove'])->name ('vhost.remove');
 			}
 		);
-		
+
 		// FTP //
 		Route::group
 		(
 			['middleware' => ['owner:ftp', 'feature_enabled:ftp', 'locked:ftp']],
 			function ()
 			{
-				Route::get ('ftp', 'FtpController@index');
-				Route::get ('ftp/create', 'FtpController@create');
-				Route::post ('ftp/create', 'FtpController@store');
-				Route::get ('ftp/{ftp}/edit', 'FtpController@edit');
-				Route::post ('ftp/{ftp}/edit', 'FtpController@update');
-				Route::get ('ftp/{ftp}/remove', 'FtpController@remove');
+				Route::get ('ftp', [FtpController::class, 'index'])->name ('ftp.index');
+				Route::get ('ftp/create', [FtpController::class, 'create'])->name ('ftp.create');
+				Route::post ('ftp/create', [FtpController::class, 'store'])->name ('ftp.store');
+				Route::get ('ftp/{ftp}/edit', [FtpController::class, 'edit'])->name ('ftp.edit');
+				Route::post ('ftp/{ftp}/edit', [FtpController::class, 'update'])->name ('ftp.update');
+				Route::get ('ftp/{ftp}/remove', [FtpController::class, 'remove'])->name ('ftp.remove');
 			}
 		);
-		
-		// Mail // Algemeen //
+
+		// Mail // General //
 		Route::group
 		(
 			['middleware' => ['feature_enabled:mail']],
 			function ()
 			{
-				Route::get ('mail', 'MailController@show');
-				Route::post ('mail', 'MailController@update');
-				
+				Route::get ('mail', [MailController::class, 'show'])->name ('mail.show');
+				Route::post ('mail', [MailController::class, 'update'])->name ('mail.update');
+
 				// Mail // Domain //
 				Route::group
 				(
 					['middleware' => ['owner:mDomain', 'locked:mDomain']],
 					function ()
 					{
-						Route::get ('mail/domain', 'MailDomainController@index');
-						Route::get ('mail/domain/create', 'MailDomainController@create');
-						Route::post ('mail/domain/create', 'MailDomainController@store');
-						Route::get ('mail/domain/{mDomain}/edit', 'MailDomainController@edit');
-						Route::post ('mail/domain/{mDomain}/edit', 'MailDomainController@update');
-						Route::get ('mail/domain/{mDomain}/remove', 'MailDomainController@remove');
+						Route::get ('mail/domain', [MailDomainController::class, 'index'])->name ('mail.domain.index');
+						Route::get ('mail/domain/create', [MailDomainController::class, 'create'])->name ('mail.domain.create');
+						Route::post ('mail/domain/create', [MailDomainController::class, 'store'])->name ('mail.domain.store');
+						Route::get ('mail/domain/{mDomain}/edit', [MailDomainController::class, 'edit'])->name ('mail.domain.edit');
+						Route::post ('mail/domain/{mDomain}/edit', [MailDomainController::class, 'update'])->name ('mail.domain.update');
+						Route::get ('mail/domain/{mDomain}/remove', [MailDomainController::class, 'remove'])->name ('mail.domain.remove');
 					}
 				);
-				
+
 				// Mail // User //
 				Route::group
 				(
 					['middleware' => ['owner:mUser', 'feature_enabled:mail_user', 'locked:mUser']],
 					function ()
 					{
-						Route::get ('mail/user', 'MailUserController@index');
-						Route::get ('mail/user/create', 'MailUserController@create');
-						Route::post ('mail/user/create', 'MailUserController@store');
-						Route::get ('mail/user/{mUser}/edit', 'MailUserController@edit');
-						Route::post ('mail/user/{mUser}/edit', 'MailUserController@update');
-						Route::get ('mail/user/{mUser}/remove', 'MailUserController@remove');
+						Route::get ('mail/user', [MailUserController::class, 'index'])->name ('mail.user.index');
+						Route::get ('mail/user/create', [MailUserController::class, 'create'])->name ('mail.user.create');
+						Route::post ('mail/user/create', [MailUserController::class, 'store'])->name ('mail.user.store');
+						Route::get ('mail/user/{mUser}/edit', [MailUserController::class, 'edit'])->name ('mail.user.edit');
+						Route::post ('mail/user/{mUser}/edit', [MailUserController::class, 'update'])->name ('mail.user.update');
+						Route::get ('mail/user/{mUser}/remove', [MailUserController::class, 'remove'])->name ('mail.user.remove');
 					}
 				);
-				
+
 				// Mail // Forward //
 				Route::group
 				(
 					['middleware' => ['owner:mFwd', 'feature_enabled:mail_forward', 'locked:mFwd']],
 					function ()
 					{
-						Route::get ('mail/forward', 'MailForwardController@index');
-						Route::get ('mail/forward/create', 'MailForwardController@create');
-						Route::post ('mail/forward/create', 'MailForwardController@store');
-						Route::get ('mail/forward/{mFwd}/edit', 'MailForwardController@edit');
-						Route::post ('mail/forward/{mFwd}/edit', 'MailForwardController@update');
-						Route::get ('mail/forward/{mFwd}/remove', 'MailForwardController@remove');
+						Route::get ('mail/forward', [MailForwardController::class, 'index'])->name ('mail.forward.index');
+						Route::get ('mail/forward/create', [MailForwardController::class, 'create'])->name ('mail.forward.create');
+						Route::post ('mail/forward/create', [MailForwardController::class, 'store'])->name ('mail.forward.store');
+						Route::get ('mail/forward/{mFwd}/edit', [MailForwardController::class, 'edit'])->name ('mail.forward.edit');
+						Route::post ('mail/forward/{mFwd}/edit', [MailForwardController::class, 'update'])->name ('mail.forward.update');
+						Route::get ('mail/forward/{mFwd}/remove', [MailForwardController::class, 'remove'])->name ('mail.forward.remove');
 					}
 				);
 			}
 		);
-		
-		// Databases // Databasebeheer via PHPMyAdmin //
+
+		// Databases // Database management via PHPMyAdmin //
 		Route::group
 		(
 			['middleware' => ['feature_enabled:database']],
 			function ()
 			{
-				Route::get ('database', 'DatabaseController@show');
+				Route::get ('database', [DatabaseController::class, 'show'])->name ('database.show');
 			}
 		);
-		
-		Route::get ('system/systemtask/{systemTask}/show', 'Staff\StaffSystemSystemTaskController@show');
+
+		Route::get ('system/systemtask/{systemTask}/show', [StaffSystemSystemTaskController::class, 'show'])->name ('systemtask.show');
 	}
 );
 
@@ -198,142 +240,134 @@ Route::group
 (
 	array
 	(
-		'middleware' => 'auth',
-		'namespace' => 'Staff'
+		'middleware' => 'auth'
 	),
 	function ()
 	{
 		// Problem solver //
-		Route::get ('sudo-fix-problem/{user?}', 'ProblemSolverController@start');
-		Route::get ('problem-solver/{user?}', 'ProblemSolverController@start');
-		Route::get ('problem-solver/schedule', 'ProblemSolverController@schedule');
-		Route::get ('problem-solver/result', 'ProblemSolverController@result');
-		Route::get ('problem-solver/all/dry', 'ProblemSolverController@allDry');
-		
+		Route::get ('sudo-fix-problem/{user?}', [ProblemSolverController::class, 'start'])->name ('problem-solver.start.alias');
+		Route::get ('problem-solver/{user?}', [ProblemSolverController::class, 'start'])->name ('problem-solver.start');
+		Route::get ('problem-solver/schedule', [ProblemSolverController::class, 'schedule'])->name ('problem-solver.schedule');
+		Route::get ('problem-solver/result', [ProblemSolverController::class, 'result'])->name ('problem-solver.result');
+		Route::get ('problem-solver/all/dry', [ProblemSolverController::class, 'allDry'])->name ('problem-solver.all-dry');
+
 		// Staff // User // User //
-		Route::get ('staff/user/user', 'StaffUserController@index');
-		Route::get ('staff/user/user/search', 'StaffUserController@search');
-		Route::get ('staff/user/user/order/{order}', 'StaffUserController@index');
-		Route::get ('staff/user/user/create', 'StaffUserController@create');
-		Route::post ('staff/user/user/create', 'StaffUserController@store');
-		Route::get ('staff/user/user/{user}/edit', 'StaffUserController@edit');
-		Route::post ('staff/user/user/{user}/edit', 'StaffUserController@update');
-		Route::get ('staff/user/user/{user}/remove', 'StaffUserController@remove');
-		Route::get ('staff/user/user/{user}/login', 'StaffUserController@login');
-		Route::get ('staff/user/user/{user}/expire', 'StaffUserController@getExpire');
-		Route::post ('staff/user/user/{user}/expire', 'StaffUserController@expire');
-		Route::get ('staff/user/user/{userInfo}/approve', 'StaffUserController@getApprove');
-		Route::post ('staff/user/user/{userInfo}/approve', 'StaffUserController@approve');
-		Route::get ('staff/user/user/{userInfo}/reject', 'StaffUserController@reject');
-		Route::get ('staff/user/user/{user}/more', 'StaffUserController@more');
-		Route::get ('staff/user/user/{user}/more/loginToken', 'StaffUserController@generateLoginToken');
-		
+		Route::get ('staff/user/user', [StaffUserController::class, 'index'])->name ('staff.user.index');
+		Route::get ('staff/user/user/search', [StaffUserController::class, 'search'])->name ('staff.user.search');
+		Route::get ('staff/user/user/order/{order}', [StaffUserController::class, 'index'])->name ('staff.user.index.ordered');
+		Route::get ('staff/user/user/create', [StaffUserController::class, 'create'])->name ('staff.user.create');
+		Route::post ('staff/user/user/create', [StaffUserController::class, 'store'])->name ('staff.user.store');
+		Route::get ('staff/user/user/{user}/edit', [StaffUserController::class, 'edit'])->name ('staff.user.edit');
+		Route::post ('staff/user/user/{user}/edit', [StaffUserController::class, 'update'])->name ('staff.user.update');
+		Route::get ('staff/user/user/{user}/remove', [StaffUserController::class, 'remove'])->name ('staff.user.remove');
+		Route::get ('staff/user/user/{user}/login', [StaffUserController::class, 'login'])->name ('staff.user.login');
+		Route::get ('staff/user/user/{user}/expire', [StaffUserController::class, 'getExpire'])->name ('staff.user.expire');
+		Route::post ('staff/user/user/{user}/expire', [StaffUserController::class, 'expire'])->name ('staff.user.expire.submit');
+		Route::get ('staff/user/user/{userInfo}/approve', [StaffUserController::class, 'getApprove'])->name ('staff.user.approve');
+		Route::post ('staff/user/user/{userInfo}/approve', [StaffUserController::class, 'approve'])->name ('staff.user.approve.submit');
+		Route::get ('staff/user/user/{userInfo}/reject', [StaffUserController::class, 'reject'])->name ('staff.user.reject');
+		Route::get ('staff/user/user/{user}/more', [StaffUserController::class, 'more'])->name ('staff.user.more');
+		Route::get ('staff/user/user/{user}/more/loginToken', [StaffUserController::class, 'generateLoginToken'])->name ('staff.user.login-token');
+
 		// Staff // User // Limit //
-		Route::get ('staff/user/limit', 'StaffUserLimitController@index');
-		Route::get ('staff/user/limit/order/{order}', 'StaffUserLimitController@index');
-		Route::get ('staff/user/limit/create', 'StaffUserLimitController@create');
-		Route::post ('staff/user/limit/create', 'StaffUserLimitController@store');
-		Route::get ('staff/user/limit/{limit}/edit', 'StaffUserLimitController@edit');
-		Route::post ('staff/user/limit/{limit}/edit', 'StaffUserLimitController@update');
-		Route::get ('staff/user/limit/{limit}/remove', 'StaffUserLimitController@remove');
-		
+		Route::get ('staff/user/limit', [StaffUserLimitController::class, 'index'])->name ('staff.limit.index');
+		Route::get ('staff/user/limit/order/{order}', [StaffUserLimitController::class, 'index'])->name ('staff.limit.index.ordered');
+		Route::get ('staff/user/limit/create', [StaffUserLimitController::class, 'create'])->name ('staff.limit.create');
+		Route::post ('staff/user/limit/create', [StaffUserLimitController::class, 'store'])->name ('staff.limit.store');
+		Route::get ('staff/user/limit/{limit}/edit', [StaffUserLimitController::class, 'edit'])->name ('staff.limit.edit');
+		Route::post ('staff/user/limit/{limit}/edit', [StaffUserLimitController::class, 'update'])->name ('staff.limit.update');
+		Route::get ('staff/user/limit/{limit}/remove', [StaffUserLimitController::class, 'remove'])->name ('staff.limit.remove');
+
 		// Staff // User // Group //
-		Route::get ('staff/user/group', 'StaffGroupController@index');
-		Route::get ('staff/user/group/create', 'StaffGroupController@create');
-		Route::post ('staff/user/group/create', 'StaffGroupController@store');
-		Route::get ('staff/user/group/{group}/remove', 'StaffGroupController@remove');
-		
-		// Staff // User // Abuse //
-		Route::get ('staff/user/abuse', 'StaffAbuseController@index');
-		Route::post ('staff/user/abuse/multi', 'StaffAbuseController@multi');
-		
+		Route::get ('staff/user/group', [StaffGroupController::class, 'index'])->name ('staff.group.index');
+		Route::get ('staff/user/group/create', [StaffGroupController::class, 'create'])->name ('staff.group.create');
+		Route::post ('staff/user/group/create', [StaffGroupController::class, 'store'])->name ('staff.group.store');
+		Route::get ('staff/user/group/{group}/remove', [StaffGroupController::class, 'remove'])->name ('staff.group.remove');
+
 		// Staff // User // UserLog //
-		Route::get ('staff/user/log', 'StaffUserLogController@index');
-		Route::get ('staff/user/log/search', 'StaffUserLogController@search');
-		Route::get ('staff/user/log/create', 'StaffUserLogController@create');
-		Route::post ('staff/user/log/create', 'StaffUserLogController@store');
-		Route::get ('staff/user/log/{userLog}/edit', 'StaffUserLogController@edit');
-		Route::post ('staff/user/log/{userLog}/edit', 'StaffUserLogController@update');
-		Route::get ('staff/user/log/{userLog}/remove', 'StaffUserLogController@remove');
-		Route::post ('staff/user/log/edit/checked', 'StaffUserLogController@editChecked');
-		Route::post ('staff/user/log/export', 'StaffUserLogController@export');
-		
+		Route::get ('staff/user/log', [StaffUserLogController::class, 'index'])->name ('staff.user-log.index');
+		Route::get ('staff/user/log/search', [StaffUserLogController::class, 'search'])->name ('staff.user-log.search');
+		Route::get ('staff/user/log/create', [StaffUserLogController::class, 'create'])->name ('staff.user-log.create');
+		Route::post ('staff/user/log/create', [StaffUserLogController::class, 'store'])->name ('staff.user-log.store');
+		Route::get ('staff/user/log/{userLog}/edit', [StaffUserLogController::class, 'edit'])->name ('staff.user-log.edit');
+		Route::post ('staff/user/log/{userLog}/edit', [StaffUserLogController::class, 'update'])->name ('staff.user-log.update');
+		Route::get ('staff/user/log/{userLog}/remove', [StaffUserLogController::class, 'remove'])->name ('staff.user-log.remove');
+		Route::post ('staff/user/log/edit/checked', [StaffUserLogController::class, 'editChecked'])->name ('staff.user-log.edit-checked');
+		Route::post ('staff/user/log/export', [StaffUserLogController::class, 'export'])->name ('staff.user-log.export');
+
 		// Staff // Website // vHost //
-		Route::get ('staff/website/vhost', 'StaffVHostController@index');
-		Route::get ('staff/website/vhost/search', 'StaffVHostController@search');
-		Route::get ('staff/website/vhost/create', 'StaffVHostController@create');
-		Route::post ('staff/website/vhost/create', 'StaffVHostController@store');
-		Route::get ('staff/website/vhost/{vhost}/edit', 'StaffVHostController@edit');
-		Route::post ('staff/website/vhost/{vhost}/edit', 'StaffVHostController@update');
-		Route::get ('staff/website/vhost/{vhost}/remove', 'StaffVHostController@remove');
-		
+		Route::get ('staff/website/vhost', [StaffVHostController::class, 'index'])->name ('staff.vhost.index');
+		Route::get ('staff/website/vhost/search', [StaffVHostController::class, 'search'])->name ('staff.vhost.search');
+		Route::get ('staff/website/vhost/create', [StaffVHostController::class, 'create'])->name ('staff.vhost.create');
+		Route::post ('staff/website/vhost/create', [StaffVHostController::class, 'store'])->name ('staff.vhost.store');
+		Route::get ('staff/website/vhost/{vhost}/edit', [StaffVHostController::class, 'edit'])->name ('staff.vhost.edit');
+		Route::post ('staff/website/vhost/{vhost}/edit', [StaffVHostController::class, 'update'])->name ('staff.vhost.update');
+		Route::get ('staff/website/vhost/{vhost}/remove', [StaffVHostController::class, 'remove'])->name ('staff.vhost.remove');
+
 		// Staff // FTP //
-		Route::get ('staff/ftp', 'StaffFtpController@index');
-		Route::get ('staff/ftp/search', 'StaffFtpController@search');
-		Route::get ('staff/ftp/create', 'StaffFtpController@create');
-		Route::post ('staff/ftp/create', 'StaffFtpController@store');
-		Route::get ('staff/ftp/{ftp}/edit', 'StaffFtpController@edit');
-		Route::post ('staff/ftp/{ftp}/edit', 'StaffFtpController@update');
-		Route::get ('staff/ftp/{ftp}/remove', 'StaffFtpController@remove');
-		
+		Route::get ('staff/ftp', [StaffFtpController::class, 'index'])->name ('staff.ftp.index');
+		Route::get ('staff/ftp/search', [StaffFtpController::class, 'search'])->name ('staff.ftp.search');
+		Route::get ('staff/ftp/create', [StaffFtpController::class, 'create'])->name ('staff.ftp.create');
+		Route::post ('staff/ftp/create', [StaffFtpController::class, 'store'])->name ('staff.ftp.store');
+		Route::get ('staff/ftp/{ftp}/edit', [StaffFtpController::class, 'edit'])->name ('staff.ftp.edit');
+		Route::post ('staff/ftp/{ftp}/edit', [StaffFtpController::class, 'update'])->name ('staff.ftp.update');
+		Route::get ('staff/ftp/{ftp}/remove', [StaffFtpController::class, 'remove'])->name ('staff.ftp.remove');
+
 		// Staff // Mail // Domain //
-		Route::get ('staff/mail/domain', 'StaffMailDomainController@index');
-		Route::get ('staff/mail/domain/create', 'StaffMailDomainController@create');
-		Route::post ('staff/mail/domain/create', 'StaffMailDomainController@store');
-		Route::get ('staff/mail/domain/{mDomain}/edit', 'StaffMailDomainController@edit');
-		Route::post ('staff/mail/domain/{mDomain}/edit', 'StaffMailDomainController@update');
-		Route::get ('staff/mail/domain/{mDomain}/remove', 'StaffMailDomainController@remove');
-		
+		Route::get ('staff/mail/domain', [StaffMailDomainController::class, 'index'])->name ('staff.mail.domain.index');
+		Route::get ('staff/mail/domain/create', [StaffMailDomainController::class, 'create'])->name ('staff.mail.domain.create');
+		Route::post ('staff/mail/domain/create', [StaffMailDomainController::class, 'store'])->name ('staff.mail.domain.store');
+		Route::get ('staff/mail/domain/{mDomain}/edit', [StaffMailDomainController::class, 'edit'])->name ('staff.mail.domain.edit');
+		Route::post ('staff/mail/domain/{mDomain}/edit', [StaffMailDomainController::class, 'update'])->name ('staff.mail.domain.update');
+		Route::get ('staff/mail/domain/{mDomain}/remove', [StaffMailDomainController::class, 'remove'])->name ('staff.mail.domain.remove');
+
 		// Staff // Mail //
-		Route::get ('staff/mail/search', 'StaffMailController@search');
-		
+		Route::get ('staff/mail/search', [StaffMailController::class, 'search'])->name ('staff.mail.search');
+
 		// Staff // Mail // User //
-		Route::get ('staff/mail/user', 'StaffMailUserController@index');
-		Route::get ('staff/mail/user/create', 'StaffMailUserController@create');
-		Route::post ('staff/mail/user/create', 'StaffMailUserController@store');
-		Route::get ('staff/mail/user/{mUser}/edit', 'StaffMailUserController@edit');
-		Route::post ('staff/mail/user/{mUser}/edit', 'StaffMailUserController@update');
-		Route::get ('staff/mail/user/{mUser}/remove', 'StaffMailUserController@remove');
-		
+		Route::get ('staff/mail/user', [StaffMailUserController::class, 'index'])->name ('staff.mail.user.index');
+		Route::get ('staff/mail/user/create', [StaffMailUserController::class, 'create'])->name ('staff.mail.user.create');
+		Route::post ('staff/mail/user/create', [StaffMailUserController::class, 'store'])->name ('staff.mail.user.store');
+		Route::get ('staff/mail/user/{mUser}/edit', [StaffMailUserController::class, 'edit'])->name ('staff.mail.user.edit');
+		Route::post ('staff/mail/user/{mUser}/edit', [StaffMailUserController::class, 'update'])->name ('staff.mail.user.update');
+		Route::get ('staff/mail/user/{mUser}/remove', [StaffMailUserController::class, 'remove'])->name ('staff.mail.user.remove');
+
 		// Staff // Mail // Forward //
-		Route::get ('staff/mail/forward', 'StaffMailForwardController@index');
-		Route::get ('staff/mail/forward/create', 'StaffMailForwardController@create');
-		Route::post ('staff/mail/forward/create', 'StaffMailForwardController@store');
-		Route::get ('staff/mail/forward/{mFwd}/edit', 'StaffMailForwardController@edit');
-		Route::post ('staff/mail/forward/{mFwd}/edit', 'StaffMailForwardController@update');
-		Route::get ('staff/mail/forward/{mFwd}/remove', 'StaffMailForwardController@remove');
-		
+		Route::get ('staff/mail/forward', [StaffMailForwardController::class, 'index'])->name ('staff.mail.forward.index');
+		Route::get ('staff/mail/forward/create', [StaffMailForwardController::class, 'create'])->name ('staff.mail.forward.create');
+		Route::post ('staff/mail/forward/create', [StaffMailForwardController::class, 'store'])->name ('staff.mail.forward.store');
+		Route::get ('staff/mail/forward/{mFwd}/edit', [StaffMailForwardController::class, 'edit'])->name ('staff.mail.forward.edit');
+		Route::post ('staff/mail/forward/{mFwd}/edit', [StaffMailForwardController::class, 'update'])->name ('staff.mail.forward.update');
+		Route::get ('staff/mail/forward/{mFwd}/remove', [StaffMailForwardController::class, 'remove'])->name ('staff.mail.forward.remove');
+
 		// Staff // Maintenance //
-		Route::get ('staff/maintenance/vhost/generate', 'StaffMaintenanceController@generateVHosts');
-		Route::get ('staff/maintenance/vhost/save/all', 'StaffMaintenanceController@saveAllVHosts');
-		Route::get ('staff/maintenance/service/generate', 'StaffMaintenanceController@generateServiceData');
-		Route::get ('staff/maintenance/system/check', 'StaffMaintenanceController@systemCheck');
-		
+		Route::get ('staff/maintenance/vhost/generate', [StaffMaintenanceController::class, 'generateVHosts'])->name ('staff.maintenance.vhost.generate');
+		Route::get ('staff/maintenance/vhost/save/all', [StaffMaintenanceController::class, 'saveAllVHosts'])->name ('staff.maintenance.vhost.save-all');
+		Route::get ('staff/maintenance/service/generate', [StaffMaintenanceController::class, 'generateServiceData'])->name ('staff.maintenance.service.generate');
+		Route::get ('staff/maintenance/system/check', [StaffMaintenanceController::class, 'systemCheck'])->name ('staff.maintenance.system.check');
+
 		// Staff // Page //
-		Route::get ('staff/page', 'StaffPageController@index');
-		Route::get ('staff/page/create', 'StaffPageController@create');
-		Route::post ('staff/page/create', 'StaffPageController@store');
-		Route::get ('staff/page/{page}/edit', 'StaffPageController@edit');
-		Route::post ('staff/page/{page}/edit', 'StaffPageController@update');
-		Route::get ('staff/page/{page}/remove', 'StaffPageController@remove');
-		
+		Route::get ('staff/page', [StaffPageController::class, 'index'])->name ('staff.page.index');
+		Route::get ('staff/page/create', [StaffPageController::class, 'create'])->name ('staff.page.create');
+		Route::post ('staff/page/create', [StaffPageController::class, 'store'])->name ('staff.page.store');
+		Route::get ('staff/page/{page}/edit', [StaffPageController::class, 'edit'])->name ('staff.page.edit');
+		Route::post ('staff/page/{page}/edit', [StaffPageController::class, 'update'])->name ('staff.page.update');
+		Route::get ('staff/page/{page}/remove', [StaffPageController::class, 'remove'])->name ('staff.page.remove');
+
 		// Staff // System //
-		Route::get ('staff/system/phpinfo', 'StaffSystemController@phpinfo');
-		
+		Route::get ('staff/system/phpinfo', [StaffSystemController::class, 'phpinfo'])->name ('staff.system.phpinfo');
+
 		// Staff // System // Log //
-		Route::get ('staff/system/log', 'StaffSystemLogController@index');
-		Route::get ('staff/system/log/search', 'StaffSystemLogController@search');
-		Route::get ('staff/system/log/{log}/show', 'StaffSystemLogController@show');
-		Route::get ('staff/system/log/laravel', 'StaffSystemLogController@laravel');
-		
+		Route::get ('staff/system/log', [StaffSystemLogController::class, 'index'])->name ('staff.system.log.index');
+		Route::get ('staff/system/log/search', [StaffSystemLogController::class, 'search'])->name ('staff.system.log.search');
+		Route::get ('staff/system/log/laravel', [StaffSystemLogController::class, 'laravel'])->name ('staff.system.log.laravel');
+		Route::get ('staff/system/log/{log}/show', [StaffSystemLogController::class, 'show'])->name ('staff.system.log.show');
+
 		// Staff // System // SystemTask //
-		Route::get ('staff/system/systemtask', 'StaffSystemSystemTaskController@index');
-		Route::get ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@create');
-		Route::post ('staff/system/systemtask/create', 'StaffSystemSystemTaskController@store');
-		Route::get ('staff/system/systemtask/{systemTask}/show', 'StaffSystemSystemTaskController@show');
-		Route::get ('staff/system/systemtask/{systemTask}/remove', 'StaffSystemSystemTaskController@remove');
-		
-		// Staff // Virtualisation //
-		Route::get ('staff/virtualisation', 'StaffVirtualisationController@index');
+		Route::get ('staff/system/systemtask', [StaffSystemSystemTaskController::class, 'index'])->name ('staff.system.systemtask.index');
+		Route::get ('staff/system/systemtask/create', [StaffSystemSystemTaskController::class, 'create'])->name ('staff.system.systemtask.create');
+		Route::post ('staff/system/systemtask/create', [StaffSystemSystemTaskController::class, 'store'])->name ('staff.system.systemtask.store');
+		Route::get ('staff/system/systemtask/{systemTask}/show', [StaffSystemSystemTaskController::class, 'show'])->name ('staff.system.systemtask.show');
+		Route::get ('staff/system/systemtask/{systemTask}/remove', [StaffSystemSystemTaskController::class, 'remove'])->name ('staff.system.systemtask.remove');
 	}
 );

@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,8 +26,8 @@ class StaffMailController extends Controller
 {
 	public function search ()
 	{
-		$term = Input::get ('term');
-		$username = Input::get ('username');
+		$term = request ('term');
+		$username = request ('username');
 		
 		$mUsersQuery = MailUser::with ('user');
 		$mFwdsQuery = MailForward::with ('user');
@@ -77,7 +75,7 @@ class StaffMailController extends Controller
 		$mFwds = $mFwdsQuery->paginate ();
 		$domains = $domainsQuery->paginate ();
 		
-		$searchUrl = action ('Staff\StaffMailController@search');
+		$searchUrl = route ('staff.mail.search');
 		
 		return view ('staff.mail.search', compact ('mUsers', 'mFwds', 'domains', 'mUsersCount', 'mFwdsCount', 'domainsCount', 'searchUrl'));
 	}

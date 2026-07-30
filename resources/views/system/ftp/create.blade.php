@@ -15,7 +15,7 @@
 						<span class="prefix">{{ $userInfo->username }}_</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="username" value="{{ Input::old ('username') }}" />
+						<input type="text" name="username" value="{{ old ('username') }}" />
 					</div>
 				</div>
 			</label>
@@ -40,7 +40,7 @@
 						<span class="prefix">{{ $user->homedir }}/</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="dir" value="{{ Input::old ('dir') }}" />
+						<input type="text" name="dir" value="{{ old ('dir') }}" />
 					</div>
 				</div>
 			</label>

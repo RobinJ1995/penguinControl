@@ -6,16 +6,16 @@ FTP-accounts &bull; Staff
 
 @section ('content')
 <fieldset>
-	<legend>{{ $count }} zoekresultaten</legend>
+	<legend>{{ $count }} search results</legend>
 	
 	{{ $ftps->links () }}
 	<table>
 		<thead>
 			<tr>
 				<th></th>
-				<th>Gebruikersnaam</th>
-				<th>Map</th>
-				<th>Eigenaar</th>
+				<th>Username</th>
+				<th>Directory</th>
+				<th>Owner</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -23,10 +23,10 @@ FTP-accounts &bull; Staff
 			<tr>
 				<td>
 					<div class="button-group radius">
-						<a href="/staff/ftp/{{ $ftp->id }}/edit" title="Bewerken" class="button tiny">
-							<img src="/img/icons/edit.png" alt="Bewerken" />
-						</a><a href="/staff/ftp/{{ $ftp->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-							<img src="/img/icons/remove.png" alt="Verwijderen" />
+						<a href="/staff/ftp/{{ $ftp->id }}/edit" title="Edit" class="button tiny">
+							<img src="/img/icons/edit.png" alt="Edit" />
+						</a><a href="/staff/ftp/{{ $ftp->id }}/remove" title="Remove" class="button tiny alert remove">
+							<img src="/img/icons/remove.png" alt="Remove" />
 						</a>
 					</div>
 				</td>
@@ -34,7 +34,7 @@ FTP-accounts &bull; Staff
 					@if ($ftp->locked)
 						<img src="/img/icons/locked.png" alt="[Locked]" />
 					@endif
-					{{ $ftp->user }}
+					{{ $ftp->username }}
 				</td>
 				<td>{{ $ftp->dir }}</td>
 				<td>
@@ -48,20 +48,20 @@ FTP-accounts &bull; Staff
 </fieldset>
 
 <div id="modalSearch" class="reveal-modal" data-reveal>
-	<h2>Zoeken</h2>
+	<h2>Search</h2>
 	
 	<form action="{{ $searchUrl }}" method="GET">
-		<label>Gebruikernaam:
+		<label>Username:
 			<input type="text" name="user" />
 		</label>
-		<label>Map:
+		<label>Directory:
 			<input type="text" name="dir" />
 		</label>
-		<label>Gebruiker:
+		<label>User:
 			<input type="text" name="username" />
 		</label>
 		
-		<button>Zoeken</button>
+		<button>Search</button>
 	</form>
 	
 	<a class="close-reveal-modal">&#215;</a>

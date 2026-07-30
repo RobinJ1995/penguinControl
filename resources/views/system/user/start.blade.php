@@ -64,7 +64,7 @@ Start
 			<td>?</td> <!-- //TODO// -->
 		</tr>
 		<tr>
-			<th>Databasegebruikers</th>
+			<th>Database users</th>
 			<td>
 				<div class="progress">
 					<span class="meter" style="width: 33%"></span>

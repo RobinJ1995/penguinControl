@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Doorstuuradressen &bull; Staff
+Forwarding addresses &bull; Staff
 @endsection
 
 @section ('content')
@@ -10,9 +10,9 @@ Doorstuuradressen &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
-			<th>E-mailadres</th>
-			<th>Bestemming</th>
-			<th>Gebruiker</th>
+			<th>E-mail address</th>
+			<th>Destination</th>
+			<th>User</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,10 +20,10 @@ Doorstuuradressen &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/mail/forwarding/{{ $mFwd->id }}/edit" title="Bewerken" class="button tiny">
-						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/staff/mail/forwarding/{{ $mFwd->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/staff/mail/forward/{{ $mFwd->id }}/edit" title="Edit" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Edit" />
+					</a><a href="/staff/mail/forward/{{ $mFwd->id }}/remove" title="Remove" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 			</td>
@@ -52,8 +52,8 @@ Doorstuuradressen &bull; Staff
 </table>
 {{ $mFwds->links () }}
 <div class="right">
-	<a href="/staff/mail/forwarding/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/mail/forward/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 

@@ -1,5 +1,33 @@
+# Unix users and groups from the database
+
+penguinControl does not create Unix accounts. It stores them in its own tables
+and lets glibc read them through an NSS module, so that `getpwnam`, `getgrnam`
+and the shadow lookups all resolve against `user`, `user_info`, `group` and
+`user_group`. This is what makes `AssignUserID` in the generated vHosts, and
+`chown` in the system tasks, refer to real users.
+
+## The module is no longer packaged
+
+The original instructions used `libnss-mysql-bg`, which has been **removed from
+Debian and Ubuntu** and is not available on any current release. The
+configuration file format below is unchanged, so the options are:
+
+* Build `libnss-mysql` from upstream source
+  (<https://github.com/saknopper/libnss-mysql>) and install `libnss_mysql.so.2`
+  into the system library directory. The two configuration files below are read
+  as-is.
+* Or replace this layer entirely — SSSD, or generating flat files consumed by
+  `libnss-extrausers` from the same tables — at the cost of no longer resolving
+  accounts live.
+
+Whichever you choose, the queries below define what the panel expects to be
+served, and are worth keeping as the reference.
+
+`nscd` is still packaged, but is deprecated upstream; `unscd` is the maintained
+drop-in replacement and is what these instructions now assume.
+
 ```
-apt install libnss-mysql-bg nscd
+apt install unscd
 ```
 
 # `/etc/libnss-mysql.cfg`
@@ -76,5 +104,17 @@ shadow:         compat mysql
 
 When finished:
 ```
-service nscd restart
+systemctl restart unscd
 ```
+
+## Verifying
+
+```
+getent passwd <username>
+getent group <groupname>
+id <username>
+```
+
+All three must resolve for a panel user before their vHost will start: Apache
+fails to load a vHost whose `AssignUserID` names an account the system cannot
+see.

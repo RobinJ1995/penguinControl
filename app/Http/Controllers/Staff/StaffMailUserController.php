@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -32,7 +30,7 @@ class StaffMailUserController extends Controller
 			->with ('user')
 			->paginate ();
 		
-		$searchUrl = action ('Staff\StaffMailController@search');
+		$searchUrl = route ('staff.mail.search');
 		
 		return view ('staff.mail.user.index', compact ('mUsers', 'searchUrl'));
 	}
@@ -54,41 +52,43 @@ class StaffMailUserController extends Controller
 
 	public function store ()
 	{
+		$user = Auth::user ();
+
 		$validator = Validator::make
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email'),
-				'E-maildomein' => Input::get ('domain'),
-				'Wachtwoord' => Input::get ('password'),
-				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
+				'E-mail address' => request ('email'),
+				'E-mail domain' => request ('domain'),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email', 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mail address' => array ('required', 'unique:mail_user,email', 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
 				// old mail@domain.com regex: regex:/^[a-zA-Z0-9\.\_\-]+\@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id,uid,' . $user->uid),
-				'Wachtwoord' => array ('required', 'min:8'),
-				'Wachtwoord (bevestiging)' => 'same:Wachtwoord'
+				'E-mail domain' => array ('required', 'exists:mail_domain,id,uid,' . $user->uid),
+				'Password' => array ('required', 'min:8'),
+				'Password (confirmation)' => 'same:Password'
 			)
 		);
 		
 		if ($validator->fails ())
 			return Redirect::to ('/staff/mail/user/create')->withInput ()->withErrors ($validator);
 		
-		$domain = MailUser::where ('domain', Input::get ('domain'))->firstOrFail ();
+		$domain = MailUser::where ('domain', request ('domain'))->firstOrFail ();
 		
 		$mUser = new MailUser ();
 		$mUser->uid = $domain->uid;
-		$mUser->email = Input::get ('email');
-		$mUser->mail_domain_virtual_id = Input::get ('domain');
-		$mUser->setPassword (Input::get ('password'));
+		$mUser->email = request ('email');
+		$mUser->mail_domain_id = request ('domain');
+		$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
 		
-		Log::log ('E-mailadres aangemaakt', NULL, $mUser);
+		Log::log ('E-mail address created', NULL, $mUser);
 		
-		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mail account added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($mUser)
@@ -101,7 +101,7 @@ class StaffMailUserController extends Controller
 		foreach ($objDomains as $objDomain)
 			$domains[$objDomain->id] = '@' . $objDomain->domain;
 		
-		return view ('staff.mail.user.edit', compact ('mUser', 'domains'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', Alert::TYPE_INFO)));
+		return view ('staff.mail.user.edit', compact ('mUser', 'domains'))->with ('alerts', array (new Alert ('Leave the password fields empty if you do not wish to change the current password.', Alert::TYPE_INFO)));
 	}
 	
 	public function update ($mUser)
@@ -112,17 +112,17 @@ class StaffMailUserController extends Controller
 		(
 			array
 			(
-				'E-mailadres' => Input::get ('email'),
-				'E-maildomein' => Input::get ('domain'),
-				'Wachtwoord' => Input::get ('password'),
-				'Wachtwoord (bevestiging)' => Input::get ('password_confirm')
+				'E-mail address' => request ('email'),
+				'E-mail domain' => request ('domain'),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm')
 			),
 			array
 			(
-				'E-mailadres' => array ('required', 'unique:mail_user_virtual,email,' . $mUser->id, 'unique:mail_forwarding_virtual,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
-				'E-maildomein' => array ('required', 'exists:mail_domain_virtual,id'),
-				'Wachtwoord' => array ('required_with:Wachtwoord (bevestiging)', 'min:8'),
-				'Wachtwoord (bevestiging)' => array ('required_with:Wachtwoord', 'same:Wachtwoord')
+				'E-mail address' => array ('required', 'unique:mail_user,email,' . $mUser->id, 'unique:mail_forward,source', 'regex:/^[a-zA-Z0-9\.\_\-]+$/'),
+				'E-mail domain' => array ('required', 'exists:mail_domain,id'),
+				'Password' => array ('required_with:Password (confirmation)', 'min:8'),
+				'Password (confirmation)' => array ('required_with:Password', 'same:Password')
 			)
 		);
 		
@@ -131,28 +131,28 @@ class StaffMailUserController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$domain = MailDomain::where ('domain', Input::get ('domain'))->firstOrFail ();
+		$domain = MailDomain::findOrFail (request ('domain'));
 		
-		$mUser->email = Input::get ('email');
-		$mUser->mail_domain_virtual_id = Input::get ('domain');
+		$mUser->email = request ('email');
+		$mUser->mail_domain_id = request ('domain');
 		$mUser->uid = $domain->uid;
-		if (! empty (Input::get ('password')))
-			$mUser->setPassword (Input::get ('password'));
+		if (! empty (request ('password')))
+			$mUser->setPassword (request ('password'));
 		
 		$mUser->save ();
 		
-		Log::log ('E-mailadres bijgewerkt', NULL, $mUser);
+		Log::log ('E-mail address updated', NULL, $mUser);
 		
-		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mail account updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($mUser)
 	{
 		$mUser->delete ();
 		
-		Log::log ('E-mailadres verwijderd', NULL, $mUser);
+		Log::log ('E-mail address removed', NULL, $mUser);
 		
-		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mailaccount verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/mail/user')->with ('alerts', array (new Alert ('E-mail account removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

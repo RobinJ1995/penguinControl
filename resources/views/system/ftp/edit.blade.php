@@ -16,14 +16,14 @@ Edit FTP account
 		<div>
 			<label>Username:
 				@if (is_admin () && $ftp->user->userInfo->username == $ftp->username)
-					<input type="text" name="username" value="{{ Input::old ('username', $ftp->username) }}" disabled />
+					<input type="text" name="username" value="{{ old ('username', $ftp->username) }}" disabled />
 				@else
 					<div class="row collapse">
 						<div class="large-4 medium-6 small-12 column">
 							<span class="prefix">{{ $ftp->user->userInfo->username }}_</span>
 						</div>
 						<div class="large-8 medium-6 small-12 column">
-							<input type="text" name="username" value="{{ Input::old ('username', substr ($ftp->username, strlen ($ftp->user->userInfo->username) + 1)) }}" />
+							<input type="text" name="username" value="{{ old ('username', substr ($ftp->username, strlen ($ftp->user->userInfo->username) + 1)) }}" />
 						</div>
 					</div>
 				@endif
@@ -48,7 +48,7 @@ Edit FTP account
 						<span class="prefix">{{ $ftp->user->homedir }}/</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="dir" value="{{ Input::old ('dir', substr ($ftp->dir, strlen ($ftp->user->homedir) + 1)) }}" />
+						<input type="text" name="dir" value="{{ old ('dir', substr ($ftp->dir, strlen ($ftp->user->homedir) + 1)) }}" />
 					</div>
 				</div>
 			</label>

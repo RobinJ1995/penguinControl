@@ -1,58 +1,58 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-FTP-account bewerken &bull; Staff
+Edit FTP account &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/ftp/{{ $ftp->id }}/edit" method="POST" data-abide>
 	<fieldset>
-		<legend>FTP-account bewerken</legend>
+		<legend>Edit FTP account</legend>
 		<div>
-			<label>Eigenaar:
+			<label>Owner:
 				{{ Form::select
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $ftp->uid)
+					old ('uid', $ftp->uid)
 				)
 				}}
 			</label>
 		</div>
 		<div>
-			<label>Gebruikersnaam:
+			<label>Username:
 				<div class="row collapse">
 					<div class="large-4 medium-6 small-12 column">
 						<span class="prefix">{{ $ftp->user->userInfo->username }}_</span>
 					</div>
 					<div class="large-8 medium-6 small-12 column">
-						<input type="text" name="user" value="{{ Input::old ('user', substr ($ftp->user, strlen ($ftp->user->userInfo->username) + 1)) }}" />
+						<input type="text" name="user" value="{{ old ('user', substr ($ftp->username, strlen ($ftp->user->userInfo->username) + 1)) }}" />
 					</div>
 				</div>
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Wachtwoord:
+			<label>Password:
 				<input type="password" name="passwd" id="newPass" value="" />
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Wachtwoord (bevestiging):
+			<label>Password (confirmation):
 				<input type="password" name="passwd_confirm" value="" data-equalto="newPass" />
 			</label>
-			<small class="error">Bevestig uw nieuwe wachtwoord door het een tweede keer in te geven.</small>
+			<small class="error">Confirm your new password by entering it a second time.</small>
 		</div>
 		<div>
-			<label>Map:
-				<input type="text" name="dir" value="{{ Input::old ('dir', $ftp->dir) }}" />
+			<label>Directory:
+				<input type="text" name="dir" value="{{ old ('dir', $ftp->dir) }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

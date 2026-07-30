@@ -1,51 +1,51 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-vHost toevoegen &bull; Staff
+Add vHost &bull; Staff
 @endsection
 
 @section ('content')
 <form action="/staff/website/vhost/create" method="POST" data-abide>
 	<fieldset>
-		<legend>vHost toevoegen</legend>
+		<legend>Add vHost</legend>
 		<div>
-			<label>Eigenaar:
+			<label>Owner:
 				{{ Form::select
 				(
 					'uid',
 					$users,
-					Input::old ('uid', $user->uid)
+					old ('uid', $user->uid)
 				)
 				}}
 			</label>
 		</div>
 		<div>
 			<label>Host:
-				<input type="text" name="servername" value="{{ Input::old ('servername') }}" required />
+				<input type="text" name="servername" value="{{ old ('servername') }}" required />
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
-			<label>Beheerder:
-				<input type="email" name="serveradmin" value="{{ Input::old ('serveradmin') }}" required />
+			<label>Administrator:
+				<input type="email" name="serveradmin" value="{{ old ('serveradmin') }}" required />
 			</label>
 			<small class="error">Required field</small>
 		</div>
 		<div>
 			<label>Alias:
-				<input type="text" name="serveralias" value="{{ Input::old ('serveralias') }}" />
+				<input type="text" name="serveralias" value="{{ old ('serveralias') }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
 		<div>
 			<label>Document root:
-				<input type="text" name="docroot" value="{{ Input::old ('docroot') }}" />
+				<input type="text" name="docroot" value="{{ old ('docroot') }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
 		<div>
 			<label>Basedir:
-				<input type="text" name="basedir" value="{{ Input::old ('basedir') }}" />
+				<input type="text" name="basedir" value="{{ old ('basedir') }}" />
 			</label>
 			<small class="error">Invalid input</small>
 		</div>
@@ -61,7 +61,7 @@ vHost toevoegen &bull; Staff
 							'1' => 'Enkel HTTPS',
 							'2' => 'HTTPS met redirect'
 						),
-						Input::old ('ssl', 0)
+						old ('ssl', 0)
 					)
 					}}
 				</label>
@@ -74,10 +74,10 @@ vHost toevoegen &bull; Staff
 						'cgi',
 						array
 						(
-							'0' => 'Uit',
-							'1' => 'Aan'
+							'0' => 'Disabled',
+							'1' => 'Enabled'
 						),
-						Input::old ('cgi', 0)
+						old ('cgi', 0)
 					)
 					}}
 				</label>
@@ -86,7 +86,7 @@ vHost toevoegen &bull; Staff
 		</div>
 		<div>
 			{{ Form::token () }}
-			<button name="save" value="{{ time () }}">Opslaan</button>
+			<button name="save" value="{{ time () }}">Save</button>
 		</div>
 	</fieldset>
 </form>

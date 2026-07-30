@@ -11,7 +11,7 @@ Create e-mail account
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mail address:
-					<input type="text" name="email" value="{{ Input::old ('email') }}" required />
+					<input type="text" name="email" value="{{ old ('email') }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -21,7 +21,7 @@ Create e-mail account
 						(
 							'domain',
 							$domains,
-							Input::old ('domain')
+							old ('domain')
 						)
 					}}
 				</label>

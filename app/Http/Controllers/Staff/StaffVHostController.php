@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,17 +28,17 @@ class StaffVHostController extends Controller
 	{
 		$vhosts = Vhost::paginate ();
 		
-		$searchUrl = action ('Staff\StaffVHostController@search');
+		$searchUrl = route ('staff.vhost.search');
 		
 		return view ('staff.website.vhost.index', compact ('vhosts', 'searchUrl'));
 	}
 	
 	public function search ()
 	{
-		$host = Input::get ('host');
-		$docroot = Input::get ('docroot');
-		$basedir = Input::get ('basedir');
-		$username = Input::get ('username');
+		$host = request ('host');
+		$docroot = request ('docroot');
+		$basedir = request ('basedir');
+		$username = request ('username');
 		
 		$query = Vhost::where
 		(
@@ -88,7 +86,7 @@ class StaffVHostController extends Controller
 		$count = $query->count ();
 		$vhosts = $query->paginate ();
 		
-		$searchUrl = action ('Staff\StaffVHostController@search');
+		$searchUrl = route ('staff.vhost.search');
 		
 		return view ('staff.website.vhost.search', compact ('count', 'vhosts', 'searchUrl'));
 	}
@@ -110,27 +108,27 @@ class StaffVHostController extends Controller
 
 	public function store ()
 	{
-		$ownerUser = User::where ('uid', Input::get ('uid'))->firstOrFail ();
+		$ownerUser = User::where ('uid', request ('uid'))->firstOrFail ();
 		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Host' => Input::get ('servername'),
-				'Beheerder' => Input::get ('serveradmin'),
-				'Alias' => Input::get ('serveralias'),
-				'Document root' => Input::get ('docroot'),
-				'Basedir' => Input::get ('basedir'),
-				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi')
+				'Owner' => request ('uid'),
+				'Host' => request ('servername'),
+				'Administrator' => request ('serveradmin'),
+				'Alias' => request ('serveralias'),
+				'Document root' => request ('docroot'),
+				'Basedir' => request ('basedir'),
+				'Protocol' => request ('ssl'),
+				'CGI' => request ('cgi')
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Host' => array ('required', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
-				'Beheerder' => array ('required', 'email'),
-				'Alias' => array ('different:Host', 'unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'), //'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Host' => array ('required', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
+				'Administrator' => array ('required', 'email'),
+				'Alias' => array ('different:Host', 'unique:vhost,servername', 'unique:vhost,serveralias', 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+(\s[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+)*$/'), //'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
 				'Document root' => array ('required', 'regex:/^([a-zA-Z0-9\_\.\-\/]+)?$/'),
 				'Basedir' => array ('regex:/^([a-zA-Z0-9\_\.\-\/\:]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
@@ -142,20 +140,20 @@ class StaffVHostController extends Controller
 			return Redirect::to ('/staff/website/vhost/create')->withInput ()->withErrors ($validator);
 		
 		$vhost = new Vhost ();
-		$vhost->uid = Input::get ('uid');
-		$vhost->docroot = Input::get ('docroot');
-		$vhost->servername = Input::get ('servername');
-		$vhost->serveralias = Input::get ('serveralias');
-		$vhost->serveradmin = Input::get ('serveradmin');
-		$vhost->basedir = Input::get ('basedir');
-		$vhost->ssl = (int) Input::get ('ssl');
-		$vhost->cgi = (bool) Input::get ('cgi');
+		$vhost->uid = request ('uid');
+		$vhost->docroot = request ('docroot');
+		$vhost->servername = request ('servername');
+		$vhost->serveralias = request ('serveralias');
+		$vhost->serveradmin = request ('serveradmin');
+		$vhost->basedir = request ('basedir');
+		$vhost->ssl = (int) request ('ssl');
+		$vhost->cgi = (bool) request ('cgi');
 		
 		$vhost->save ();
 		
-		Log::log ('vHost aangemaakt', NULL, $vhost);
+		Log::log ('vHost created', NULL, $vhost);
 		
-		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($vhost)
@@ -171,7 +169,7 @@ class StaffVHostController extends Controller
 		}
 		
 		if ($vhost->locked)
-			$alerts[] = new Alert ('Deze vHost is vergrendeld en kan niet door de gebruiker zelf worden bewerkt.', 'warning');
+			$alerts[] = new Alert ('This vHost is locked and cannot be edited by the user themselves.', 'warning');
 		
 		return view ('staff.website.vhost.edit', compact ('vhost', 'users', 'alerts'));
 	}
@@ -182,19 +180,19 @@ class StaffVHostController extends Controller
 		(
 			array
 			(
-				'Eigenaar' => Input::get ('uid'),
-				'Beheerder' => Input::get ('serveradmin'),
-				'Alias' => Input::get ('serveralias'),
-				'Basedir' => Input::get ('basedir'),
-				'Protocol' => Input::get ('ssl'),
-				'CGI' => Input::get ('cgi'),
-				'Document root' => Input::get ('docroot')
+				'Owner' => request ('uid'),
+				'Administrator' => request ('serveradmin'),
+				'Alias' => request ('serveralias'),
+				'Basedir' => request ('basedir'),
+				'Protocol' => request ('ssl'),
+				'CGI' => request ('cgi'),
+				'Document root' => request ('docroot')
 			),
 			array
 			(
-				'Eigenaar' => array ('required', 'integer', 'exists:user,uid'),
-				'Beheerder' => array ('required', 'email'),
-				'Alias' => array ('unique:apache_vhost_virtual,servername', 'unique:apache_vhost_virtual,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
+				'Owner' => array ('required', 'integer', 'exists:user,uid'),
+				'Administrator' => array ('required', 'email'),
+				'Alias' => array ('unique:vhost,servername', 'unique:vhost,serveralias,' . $vhost->id, 'regex:/^[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9\.\_\-]+$/'), //'vhost_subdomain:' . $ownerUser->userInfo->username),
 				'Basedir' => array ('regex:/^([a-zA-Z0-9\_\.\-\/\:]+)?$/'),
 				'Protocol' => array ('required', 'in:0,1,2'),
 				'CGI' => array ('required', 'in:0,1'),
@@ -207,28 +205,28 @@ class StaffVHostController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$vhost->uid = Input::get ('uid');
-		$vhost->docroot = Input::get ('docroot');
-		$vhost->serveralias = Input::get ('serveralias');
-		$vhost->serveradmin = Input::get ('serveradmin');
-		$vhost->basedir = Input::get ('basedir');
-		$vhost->ssl = (int) Input::get ('ssl');
-		$vhost->cgi = (bool) Input::get ('cgi');
+		$vhost->uid = request ('uid');
+		$vhost->docroot = request ('docroot');
+		$vhost->serveralias = request ('serveralias');
+		$vhost->serveradmin = request ('serveradmin');
+		$vhost->basedir = request ('basedir');
+		$vhost->ssl = (int) request ('ssl');
+		$vhost->cgi = (bool) request ('cgi');
 		
 		$vhost->save ();
 		
-		Log::log ('vHost bijgewerkt', NULL, $vhost);
+		Log::log ('vHost updated', NULL, $vhost);
 		
-		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($vhost)
 	{
 		$vhost->delete ();
 		
-		Log::log ('vHost verwijderd', NULL, $vhost);
+		Log::log ('vHost removed', NULL, $vhost);
 		
-		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/website/vhost')->with ('alerts', array (new Alert ('vHost removed', Alert::TYPE_SUCCESS)));
 	}
 
 }

@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,25 +38,25 @@ class StaffPageController extends Controller
 
 	public function store ()
 	{
-		$name = snake_case (preg_replace ('/[^A-Za-z0-9\-\_\ ]/', '', strtolower (Input::get ('title'))));
+		$name = Str::snake (preg_replace ('/[^A-Za-z0-9\-\_\ ]/', '', strtolower (request ('title'))));
 		
 		$validator = Validator::make
 		(
 			array
 			(
-				'Titel' => Input::get ('title'),
-				'Naam' => $name,
-				'Status' => Input::get ('published'),
-				'Gewicht' => Input::get ('weight'),
-				'Inhoud' => Input::get ('content')
+				'Title' => request ('title'),
+				'Name' => $name,
+				'Status' => request ('published'),
+				'Weight' => request ('weight'),
+				'Content' => request ('content')
 			),
 			array
 			(
-				'Titel' => array ('required', 'max:64', 'unique:page,title'),
-				'Naam' => array ('required', 'max:64', 'unique:page,name', 'alpha_dash'),
+				'Title' => array ('required', 'max:64', 'unique:page,title'),
+				'Name' => array ('required', 'max:64', 'unique:page,name', 'alpha_dash'),
 				'Status' => array ('required', 'integer', 'in:-1,0,1'),
-				'Gewicht' => array ('required', 'integer', 'min:-127', 'max:127'),
-				'Inhoud' => 'required'
+				'Weight' => array ('required', 'integer', 'min:-127', 'max:127'),
+				'Content' => 'required'
 			)
 		);
 		
@@ -66,17 +64,17 @@ class StaffPageController extends Controller
 			return Redirect::to ('/staff/page/create')->withInput ()->withErrors ($validator);
 		
 		$page = new Page ();
-		$page->title = Input::get ('title');
+		$page->title = request ('title');
 		$page->name = $name;
-		$page->published = Input::get ('published');
-		$page->weight = Input::get ('weight');
-		$page->content = Input::get ('content');
+		$page->published = request ('published');
+		$page->weight = request ('weight');
+		$page->content = request ('content');
 		
 		$page->save ();
 		
-		Log::log ('Pagina aangemaakt', NULL, $page);
+		Log::log ('Page created', NULL, $page);
 		
-		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina toegevoegd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Page added', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function edit ($page)
@@ -90,38 +88,38 @@ class StaffPageController extends Controller
 		(
 			array
 			(
-				'Status' => Input::get ('published'),
-				'Gewicht' => Input::get ('weight'),
-				'Inhoud' => Input::get ('content')
+				'Status' => request ('published'),
+				'Weight' => request ('weight'),
+				'Content' => request ('content')
 			),
 			array
 			(
 				'Status' => array ('required', 'integer', 'in:-1,0,1'),
-				'Gewicht' => array ('required', 'integer', 'min:-127', 'max:127'),
-				'Inhoud' => 'required'
+				'Weight' => array ('required', 'integer', 'min:-127', 'max:127'),
+				'Content' => 'required'
 			)
 		);
 		
 		if ($validator->fails ())
 			return Redirect::to ('/staff/page/'. $page->id . '/edit')->withInput ()->withErrors ($validator);
 		
-		$page->published = Input::get ('published');
-		$page->weight = Input::get ('weight');
-		$page->content = Input::get ('content');
+		$page->published = request ('published');
+		$page->weight = request ('weight');
+		$page->content = request ('content');
 		
 		$page->save ();
 		
-		Log::log ('Pagina bijgewerkt', NULL, $page);
+		Log::log ('Page updated', NULL, $page);
 		
-		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina bijgewerkt', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Page updated', Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($page)
 	{
 		$page->delete ();
 		
-		Log::log ('Pagina verwijderd', NULL, $page);
+		Log::log ('Page removed', NULL, $page);
 		
-		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Pagina verwijderd', Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/page')->with ('alerts', array (new Alert ('Page removed', Alert::TYPE_SUCCESS)));
 	}
 }

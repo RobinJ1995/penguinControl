@@ -10,7 +10,7 @@ Edit e-mail domain
 		<legend>Edit e-mail domain</legend>
 		<div>
 			<label>Domain:
-				<input type="text" name="domain" value="{{ Input::old ('domain', $domain->domain) }}" required />
+				<input type="text" name="domain" value="{{ old ('domain', $domain->domain) }}" required />
 			</label>
 			<small class="error">Required field</small>
 		</div>

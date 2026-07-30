@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-E-mailaccounts &bull; Staff
+E-mail accounts &bull; Staff
 @endsection
 
 @section ('content')
@@ -10,8 +10,8 @@ E-mailaccounts &bull; Staff
 	<thead>
 		<tr>
 			<th></th>
-			<th>E-mailadres</th>
-			<th>Gebruiker</th>
+			<th>E-mail address</th>
+			<th>User</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,10 +19,10 @@ E-mailaccounts &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/mail/user/{{ $mUser->id }}/edit" title="Bewerken" class="button tiny">
-						<img src="/img/icons/edit.png" alt="Bewerken" />
-					</a><a href="/staff/mail/user/{{ $mUser->id }}/remove" title="Verwijderen" class="button tiny alert remove">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/staff/mail/user/{{ $mUser->id }}/edit" title="Edit" class="button tiny">
+						<img src="/img/icons/edit.png" alt="Edit" />
+					</a><a href="/staff/mail/user/{{ $mUser->id }}/remove" title="Remove" class="button tiny alert remove">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 			</td>
@@ -50,8 +50,8 @@ E-mailaccounts &bull; Staff
 </table>
 {{ $mUsers->links () }}
 <div class="right">
-	<a href="/staff/mail/user/create" title="Toevoegen" class="button radius">
-		<img src="/img/icons/add.png" alt="Toevoegen" />
+	<a href="/staff/mail/user/create" title="Add" class="button radius">
+		<img src="/img/icons/add.png" alt="Add" />
 	</a>
 </div>
 

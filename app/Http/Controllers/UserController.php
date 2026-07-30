@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\Alert;
 use App\DatabaseCredentials;
 use App\Models\Ftp;
+use App\Mail\AccountLoginLink;
+use App\Mail\AccountRenewal;
+use App\Mail\AccountTemporaryPassword;
+use App\Mail\UserAwaitingActivation;
 use App\Models\Log;
 use App\Models\User;
+use App\Models\SystemTask;
 use App\Models\UserInfo;
+use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -44,8 +49,8 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username' => Input::get ('username'),
-				'Password' => Input::get ('password')
+				'Username' => request ('username'),
+				'Password' => request ('password')
 			),
 			array
 			(
@@ -57,7 +62,7 @@ class UserController extends Controller
 		if ($validator->fails ())
 			return view ('user.login')->withErrors ($validator);
 
-		$userInfo = UserInfo::where ('username', Input::get ('username'))->first ();
+		$userInfo = UserInfo::where ('username', request ('username'))->first ();
 		if (empty ($userInfo))
 			return view ('user.login')->with ('alerts', array (new Alert ('Invalid username', Alert::TYPE_ALERT)));
 
@@ -65,13 +70,13 @@ class UserController extends Controller
 		if (empty ($user))
 			return view ('user.login')->with ('alerts', array (new Alert ('Your account has not yet been activated.', Alert::TYPE_ALERT)));
 
-		$hashedPass = crypt (Input::get ('password'), $user->crypt);
+		$hashedPass = crypt (request ('password'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
 		{
 			Log::log ('Login attempt with wrong password', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
 			return view ('user.login')
-				->withInput (Input::only ('username'))
+				->withInput (request ()->only ('username'))
 				->with ('alerts', array (new Alert ('Invalid password for user ' . $userInfo->username, Alert::TYPE_ALERT)));
 		}
 
@@ -81,7 +86,7 @@ class UserController extends Controller
 
 		Auth::login ($user);
 
-		$hash = DatabaseCredentials::getHash (Input::get ('password'));
+		$hash = DatabaseCredentials::getHash (request ('password'));
 		if (! empty ($hash))
 			DatabaseCredentials::forUserPrimary_hash ($userInfo->username, $hash);
 
@@ -115,11 +120,11 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Shell' => Input::get ('shell'),
-				'E-mail address' => Input::get ('email'),
-				'Current password' => Input::get ('currentPass'),
-				'New password' => Input::get ('newPass'),
-				'New password (confirmation)' => Input::get ('newPassConfirm')
+				'Shell' => request ('shell'),
+				'E-mail address' => request ('email'),
+				'Current password' => request ('currentPass'),
+				'New password' => request ('newPass'),
+				'New password (confirmation)' => request ('newPassConfirm')
 			),
 			array
 			(
@@ -136,24 +141,24 @@ class UserController extends Controller
 
 		if ($isLoggedInWithToken !== true)
 		{
-			$hashedPass = crypt (Input::get ('currentPass'), $user->crypt);
+			$hashedPass = crypt (request ('currentPass'), $user->crypt);
 			if ($hashedPass !== $user->crypt && !$isLoggedInWithToken)
 				return Redirect::to ('/user/edit')->with ('alerts', array (new Alert ('The entered current password is incorrect.', Alert::TYPE_ALERT)));
 		}
 
 		$userInfo = $user->userInfo;
-		$userInfo->email = Input::get ('email');
+		$userInfo->email = request ('email');
 
-		if (! empty (Input::get ('newPass')))
+		if (! empty (request ('newPass')))
 		{
-			$user->setPassword (Input::get ('newPass'));
-			DatabaseCredentials::forUserPrimary($userInfo->username, Input::get ('newPass'));
+			$user->setPassword (request ('newPass'));
+			DatabaseCredentials::forUserPrimary($userInfo->username, request ('newPass'));
 
 			$ftp = Ftp::where ('user', $userInfo->username)->where ('locked', '1')->first ();
 			$ftpPasswordChanged = false;
 			if (! empty ($ftp))
 			{
-				$ftp->setPassword (Input::get ('newPass'));
+				$ftp->setPassword (request ('newPass'));
 				$ftpPasswordChanged = true;
 
 				$ftp->save ();
@@ -163,7 +168,7 @@ class UserController extends Controller
 
 			Log::log ('Password changed', $user->id, compact ('isLoggedInWithToken', 'ftpPasswordChanged'));
 		}
-		$user->shell = Input::get ('shell');
+		$user->shell = request ('shell');
 
 		$userInfo->save ();
 		$user->save ();
@@ -195,13 +200,13 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username' => strtolower (Input::get ('username')),
-				'Password' => Input::get ('password'),
-				'Password (confirmation)' => Input::get ('password_confirm'),
-				'First name' => Input::get ('fname'),
-				'Surname' => Input::get ('lname'),
-				'E-mail address' => Input::get ('email'),
-				'Terms and conditions' => Input::get ('termsAgree')
+				'Username' => strtolower (request ('username')),
+				'Password' => request ('password'),
+				'Password (confirmation)' => request ('password_confirm'),
+				'First name' => request ('fname'),
+				'Surname' => request ('lname'),
+				'E-mail address' => request ('email'),
+				'Terms and conditions' => request ('termsAgree')
 			),
 			array
 			(
@@ -220,27 +225,26 @@ class UserController extends Controller
 
 		$etc = array
 		(
-			'password' => crypt (Input::get ('password'), '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$'),
-			'mysql_hash' => DatabaseCredentials::getHash (Input::get ('password'))
+			'password' => crypt (request ('password'), '$6$rounds=' . random_int (8000, 12000) . '$' . bin2hex (random_bytes (8)) . '$'),
+			'mysql_hash' => DatabaseCredentials::getHash (request ('password'))
 		);
 
 		$userInfo = new UserInfo ();
-		$userInfo->username = strtolower (Input::get ('username'));
-		$userInfo->fname = Input::get ('fname');
-		$userInfo->lname = Input::get ('lname');
-		$userInfo->email = Input::get ('email');
-		$userInfo->schoolnr = Input::get ('rnummer');
+		$userInfo->username = strtolower (request ('username'));
+		$userInfo->fname = request ('fname');
+		$userInfo->lname = request ('lname');
+		$userInfo->email = request ('email');
+		// The registration form has no student-number field -- staff fill it in when
+		// they validate the account -- and schoolnr is NOT NULL, so an explicit NULL
+		// here fails on any MariaDB regardless of strict mode //
+		$userInfo->schoolnr = request ('rnummer') ?? '';
 		$userInfo->lastchange = time () / 60 / 60 / 24;
-		$userInfo->etc = serialize ($etc); // Na al de dirty hacks die Runes uitgehaald heeft met de oude SINControl mag ik ook wel eens zondigen zeker... //
+		$userInfo->etc = serialize ($etc); // After all the dirty hacks that were pulled with the old SINControl, I'm allowed to sin once too... //
 		$userInfo->validated = 0;
 
 		$userInfo->save ();
 
-		Mail::send ('email.staff.user.awaiting_activation', compact ('userInfo'), function ($msg) use ($userInfo)
-			{
-				$msg->to (Config::get ('penguin.admin_email', '🐧control')->subject ('User awaiting activation'));
-			}
-		);
+		Mail::send (new UserAwaitingActivation ($userInfo));
 
 		Log::log ('Account registration', NULL, $userInfo);
 
@@ -261,22 +265,22 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username' => Input::get ('username'),
-				'Password' => Input::get ('password'),
-				'Verlengen' => Input::get ('renew')
+				'Username' => request ('username'),
+				'Password' => request ('password'),
+				'Renew' => request ('renew')
 			),
 			array
 			(
 				'Username' => array ('required', 'exists:user_info,username'),
 				'Password' => 'required',
-				'Verlengen' => array ('required', 'accepted')
+				'Renew' => array ('required', 'accepted')
 			)
 		);
 
 		if ($validator->fails ())
 			return view ('user.expired', compact ('user'))->withErrors ($validator);
 
-		$userInfo = UserInfo::where ('username', Input::get ('username'))->first ();
+		$userInfo = UserInfo::where ('username', request ('username'))->first ();
 		if (empty ($userInfo))
 			return view ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Account information could not be found', Alert::TYPE_ALERT)));
 
@@ -284,21 +288,17 @@ class UserController extends Controller
 		if ($user->expire > ($now + 14))
 			return view ('user.expired', compact ('user'))->with ('alerts', array (new Alert ('Your account is not about to expire yet. Account renewal can only be done less than 14 days before your account is set to expire.', Alert::TYPE_ALERT)));
 
-		$hashedPass = crypt (Input::get ('password'), $user->crypt);
+		$hashedPass = crypt (request ('password'), $user->crypt);
 		if ($hashedPass !== $user->crypt)
 			return view ('user.expired', compact ('user'))
-				->withInput (Input::only ('username'))
+				->withInput (request ()->only ('username'))
 				->with ('alerts', array (new Alert ('Invalid password for user ' . $userInfo->username, Alert::TYPE_ALERT)));
 
 		$userInfo->generateValidationCode ();
 		$userInfo->save ();
 
 		$url = url ('user/' . $user->id . '/expired/renew/' . $userInfo->validationcode);
-		Mail::send ('email.user.expired', compact ('userInfo', 'url'), function ($msg) use ($userInfo)
-			{
-				$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Account renewal');
-			}
-		);
+		Mail::send (new AccountRenewal ($userInfo, $url));
 
 		Log::log ('Account renewal requested', $user->id, $userInfo);
 
@@ -314,7 +314,7 @@ class UserController extends Controller
 			$userLog = new UserLog ();
 			$userLog->user_info_id = $userInfo->id;
 			$userLog->new = 0;
-			$userLog->status = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			$userLog->status = 0; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
 
 			$userInfo->validationcode = null;
 
@@ -333,7 +333,7 @@ class UserController extends Controller
 
 			$vhosts = Vhost::where ('uid', $user->uid)->get ();
 			foreach ($vhosts as $vhost)
-				$vhost->save (); // In save () wordt nagekeken of user expired is //
+				$vhost->save (); // save () checks whether the user has expired //
 
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_APACHE_RELOAD;
@@ -362,7 +362,7 @@ class UserController extends Controller
 		(
 			array
 			(
-				'Username/e-mail address' => Input::get ('something')
+				'Username/e-mail address' => request ('something')
 			),
 			array
 			(
@@ -373,7 +373,7 @@ class UserController extends Controller
 		if ($validator->fails ())
 			return view ('user.amnesia')->withErrors ($validator);
 
-		$something = Input::get ('something');
+		$something = request ('something');
 
 		$userInfo = UserInfo::where ('username', $something)->orWhere ('email', $something)->first ();
 		if (empty ($userInfo))
@@ -389,15 +389,11 @@ class UserController extends Controller
 		{
 			$expired = true;
 
-			$random = bin2hex (openssl_random_pseudo_bytes (8));
-			$user->setPassword ($random); //TODO// Dit kan misbruikt worden om wachtwoorden van willekeurige gebruikers te wijzigen //
+			$random = bin2hex (random_bytes (8));
+			$user->setPassword ($random); //TODO// This can be abused to change arbitrary users' passwords //
 			$user->save ();
 
-			Mail::send ('email.user.amnesia_expired', compact ('userInfo', 'random'), function ($msg) use ($userInfo)
-				{
-					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Account login information');
-				}
-			);
+			Mail::send (new AccountTemporaryPassword ($userInfo, $random));
 
 			Log::log ('Temporary password sent', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
@@ -409,13 +405,9 @@ class UserController extends Controller
 
 		$url = url ('user/' . $user->id . '/amnesia/login/' . $userInfo->logintoken);
 
-		Mail::send ('email.user.amnesia', compact ('userInfo', 'url'), function ($msg) use ($userInfo)
-			{
-				$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Account login information');
-			}
-		);
+		Mail::send (new AccountLoginLink ($userInfo, $url));
 
-		Log::info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
+		logger ()->info ('Amnesia: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR'] . ($expired ? ' (expired)' : ''));
 
 		Log::log ('One-time login link sent', $user->id, $user, $_SERVER['REMOTE_ADDR']);
 
@@ -433,28 +425,28 @@ class UserController extends Controller
 
 			$now = ceil (time () / 60 / 60 / 24);
 			if ($user->expire <= $now && $user->expire != -1)
-				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Uw account is vervallen. Verleng uw account om verder te gaan.<br />Uw gebruikersnaam is <kbd>' . $userInfo->username . '</kbd>. Indien u uw wachtwoord niet meer weet, <a href="/page/contact">neem contact met ons op</a>.', Alert::TYPE_INFO)));
+				return Redirect::to ('/user/' . $user->id . '/expired')->with ('alerts', array (new Alert ('Your account has expired. Renew it to continue.<br />Your username is <kbd>' . $userInfo->username . '</kbd>. If you no longer know your password, <a href="/page/contact">contact us</a>.', Alert::TYPE_INFO)));
 
 			Auth::login ($user);
 
 			Session::put ('isLoggedInWithToken', true);
 
-			$alerts[] = new Alert ('Welkom, ' . $userInfo->fname . '!', Alert::TYPE_SUCCESS);
-			$alerts[] = new Alert ('U bent ingelogd via een <em>login token</em>. Vergeet niet dat u deze link slechts één keer kon gebruiken. Indien gewenst kunt u uw wachtwoord wijzigen via <a href="/user/edit">Gebruiker &raquo; Gegevens wijzigen</a>.', Alert::TYPE_INFO);
+			$alerts[] = new Alert ('Welcome, ' . $userInfo->fname . '!', Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('You are logged in via a <em>login token</em>. Remember that the link could only be used once. If you wish, you can change your password via <a href="/user/edit">User &raquo; Modify account</a>.', Alert::TYPE_INFO);
 
-			Log::info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			logger ()->info ('Login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
-			Log::log ('Gebruiker ingelogd met eenmalige loginlink', $user->id, $user);
+			Log::log ('User logged in with a one-time login link', $user->id, $user);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}
 		else
 		{
-			Log::info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
+			logger ()->info ('Failed attempt to login with token: ' . $userInfo->username . ' from ' . $_SERVER['REMOTE_ADDR']);
 
-			Log::log ('Eenmalige login token geweigerd', $user->id, $userInfo, $logintoken, $_SERVER['REMOTE_ADDR']);
+			Log::log ('One-time login token refused', $user->id, $userInfo, $logintoken, $_SERVER['REMOTE_ADDR']);
 
-			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('De opgegeven link is ongeldig voor gebruiker ' . $userInfo->username, Alert::TYPE_ALERT)));
+			return Redirect::to ('/page/home')->with ('alerts', array (new Alert ('The supplied link is not valid for user ' . $userInfo->username, Alert::TYPE_ALERT)));
 		}
 	}
 }

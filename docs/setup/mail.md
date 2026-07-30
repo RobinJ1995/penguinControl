@@ -1,10 +1,21 @@
+# Mail
+
+Postfix reads penguinControl's `mail_domain`, `mail_user` and `mail_forward`
+tables directly through MySQL map files, so there is nothing for the panel to
+reload when a mailbox changes.
+
 ```
-apt install postfix-mysql
+apt install postfix postfix-mysql
 ```
 
-# MySQL permissions
+# Database permissions
+
+`GRANT ... IDENTIFIED BY` still works on MariaDB, but creating the account
+explicitly is portable and is what current versions expect:
+
 ```
-GRANT USAGE ON *.* TO 'postfix'@'%' IDENTIFIED BY '***********';
+CREATE USER IF NOT EXISTS 'postfix'@'%' IDENTIFIED BY '***********';
+GRANT USAGE ON *.* TO 'postfix'@'%';
 
 GRANT SELECT, REFERENCES ON `penguincontrol`.`mail_domain` TO 'postfix'@'%';
 
@@ -50,3 +61,23 @@ hosts = 127.0.0.1
 dbname = penguincontrol
 query = select 1 from mail_user INNER JOIN mail_domain ON mail_user.mail_domain_id = mail_domain.id WHERE CONCAT(mail_user.email, '@', mail_domain.domain) = '%s';
 ```
+
+# Dovecot
+
+Mailbox delivery and IMAP are not configured by penguinControl and have never
+been documented here. `mail_user.password` holds a SHA-512 `crypt()` hash, so a
+Dovecot `password_query` against the same table is the intended shape:
+
+```
+driver = mysql
+connect = host=127.0.0.1 dbname=penguincontrol user=dovecot password=**********
+default_pass_scheme = CRYPT
+password_query = SELECT CONCAT(mail_user.email, '@', mail_domain.domain) AS user, \
+                        mail_user.password AS password \
+                 FROM mail_user \
+                 INNER JOIN mail_domain ON mail_user.mail_domain_id = mail_domain.id \
+                 WHERE CONCAT(mail_user.email, '@', mail_domain.domain) = '%u';
+```
+
+Grant the `dovecot` account `SELECT` on `mail_user` and `mail_domain` the same
+way as `postfix` above.

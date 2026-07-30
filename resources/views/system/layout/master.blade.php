@@ -10,14 +10,13 @@
 		<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
 		@section ('css')
 		<link rel="stylesheet" href="/css/foundation.css" />
-		<link rel="stylesheet" href="/css/stylesheet.css" />
 		<link rel="stylesheet" href="/foundation-icons/foundation-icons.css" />
+		@vite (['resources/css/app.css', 'resources/js/app.js'])
 		@if (App::environment ('local'))
 		<style type="text/css">
 			/*
-			 * Gewoon om verwarring te voorkomen en een duidelijke
-			 * indicatie te geven dat in deze tab de lokale versie
-			 * draait ;-)
+			 * Just to avoid confusion, and to make it obvious that this
+			 * tab is running the local version ;-)
 			 */
 			
 			h1 img
@@ -30,7 +29,6 @@
 		@section ('js')
 		<script src="/js/vendor/modernizr.js"></script>
 		<script src="/js/vendor/jquery.js"></script>
-		<script src="/js/removeConfirm.js"></script>
 		<script src="/js/foundation/foundation.js"></script>
 		<script src="/js/foundation/foundation.interchange.js"></script>
 		<script src="/js/foundation/foundation.dropdown.js"></script>
@@ -41,7 +39,6 @@
 		<script src="/js/foundation/foundation.alert.js"></script>
 		<script src="/js/foundation/foundation.magellan.js"></script>
 		<script src="/js/foundation/foundation.reveal.js"></script>
-		<script src="/js/browserUpdate.js"></script>
 		<script src="/js/a29uYW1p.js"></script>
 		<script>
 			$(document).ready
@@ -247,7 +244,6 @@
 			{!! $alert !!}
 			@endforeach
 			@endif
-			@section ('alerts')
 			@if (! empty (Session::get ('alerts')))
 			@foreach (Session::get ('alerts') as $alert)
 			{!! $alert !!}

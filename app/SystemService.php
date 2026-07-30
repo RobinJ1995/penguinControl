@@ -6,18 +6,16 @@ abstract class SystemService
 {
 	protected $name; //EXAMPLE// Web server //
 	protected $serverName; //EXAMPLE// Xena //
-	protected $software; //EXAMPLE// apache2 // Service-naam //
-	protected $ssh; //EXAMPLE// squid // app/config/remote.php //
-	protected $needsSudo = false; // Of sudo voor het commando moet worden gezet //
+	protected $software; //EXAMPLE// apache2 // Service name //
+	protected $needsSudo = false; // Whether sudo must be prefixed to the command //
 	
 	const INIT = 'systemd';
 	
 	public function status ()
 	{
-		$output = $this->cmd ('status');
-		$ok = substr ($output[0], -strlen(' is running')) === ' is running.';
-		
-		return $ok;
+		// `systemctl is-active` answers through its exit code. The old check read
+		// sysvinit's " is running." wording, which systemd never prints //
+		return $this->cmd ('is-active')['exitcode'] === 0;
 	}
 	
 	protected function cmd ($command, $returnAsString = false)
@@ -40,21 +38,10 @@ abstract class SystemService
 		$cmd = str_replace ('{:cmd:}', escapeshellcmd ($command), $cmd);
 		
 		$output = array ();
-		if (! empty ($this->ssh))
-		{
-			SSH::into ($this->ssh)->run (array ($cmd),
-				function ($line)
-				{
-					$output[] = trim ($line);
-				}
-			);
-		}
-		else
-		{
-			exec ($cmd . ' 2>&1', $output, $exitCode);
-			foreach ($output as $line)
-				$line = trim ($line);
-		}
+		$exitCode = NULL;
+
+		exec ($cmd . ' 2>&1', $output, $exitCode);
+		$output = array_map ('trim', $output);
 
 		if ($returnAsString)
 			return implode (PHP_EOL, $output);

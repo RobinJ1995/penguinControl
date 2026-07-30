@@ -1,12 +1,11 @@
 <?php
 /*
- * Doe jezelf een groot plezier en roep deze methods niet aan als je niet 100%
- * begrijpt wat ze doen. Er is een reden dat er geen gebruiksvriendelijke knop
- * is in SINControl die toegang biedt tot deze functies. Deze ethods hebben
- * allemaal een nut en kunnen op een eenvoudige manier veel problemen oplossen,
- * maar kunnen nog veel makkelijker veel problemen veroorzaken wanneer ze
- * verkeerd gebruikt worden.
- * 
+ * Do yourself a big favour and don't call these methods unless you understand
+ * exactly what they do. There is a reason no user-friendly button in the panel
+ * exposes them. They all serve a purpose and can solve a lot of problems
+ * easily, but they can cause a great many more, even more easily, when used
+ * incorrectly.
+ *
  * -- Robin Jacobs (robinj1995)
  */
 
@@ -20,7 +19,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -31,7 +29,7 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,23 +46,23 @@ class StaffMaintenanceController extends Controller
 			{
 				$vhost->save ();
 
-				$alerts[] = new Alert ('vHost aangemaakt: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('vHost created: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 			}
 			
 			$user = Auth::user ();
 			$userInfo = $user->userInfo;
 			
-			Log::log ('vHosts opnieuw gegenereerd');
+			Log::log ('vHosts regenerated');
 
 			return view ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex));
 		}
 	}
 	
-	public function saveAllVHosts () // Er... waarom bestaat deze functie? Tenzij ik blind ben vanavond doet die exact hetzelfde als generateVHosts ()? //
+	public function saveAllVHosts () // Er... why does this function exist? Unless I'm blind tonight it does exactly the same as generateVHosts ()? //
 	{
 		try
 		{
@@ -75,17 +73,17 @@ class StaffMaintenanceController extends Controller
 			{
 				$vhost->save ();
 				
-				$alerts[] = new Alert ('vHost opnieuw opgeslagen: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('vHost re-saved: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 			}
 			
 			$user = Auth::user ();
 			$userInfo = $user->userInfo;
 			
-			Log::log ('vHosts opnieuw opgeslagen');
+			Log::log ('vHosts re-saved');
 			
 			return view ('user.start', compact ('alerts', 'user', 'userInfo'));
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			return Redirect::to ('/error')->with ('ex', new AppException ($ex));
 		}
@@ -113,33 +111,33 @@ class StaffMaintenanceController extends Controller
 				$vhost->serveradmin = $userInfo->username . '@sinners.be';
 				$vhost->cgi = 1;
 				$vhost->ssl = 0;
-				$vhost->locked = 1; // Enkel bewerkbaar door staff //
+				$vhost->locked = 1; // Only editable by staff //
 				$vhost->save ();
 
-				$alerts[] = new Alert ('vHost toegevoegd: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('vHost added: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 
 				$ftp = new Ftp (); // User's default FTP account //
-				$ftp->user = $userInfo->username;
+				$ftp->username = $userInfo->username;
 				$ftp->uid = $user->uid;
 				$ftp->passwd = $user->crypt;
 				$ftp->dir = $user->homedir;
-				$ftp->locked = 1; // Enkel bewerkbaar door staff //
+				$ftp->locked = 1; // Only editable by staff //
 				$ftp->save ();
 
-				$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('FTP account added: ' . $ftp->username, Alert::TYPE_SUCCESS);
 			}
 			
 			DB::commit ();
 			
-			Log::log ('Service data gegenereerd');
+			Log::log ('Service data generated');
 			
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex) // ->with ('ex', $ex) kan blijkbaar niet // Serialization of 'Closure' is not allowed //
+		catch (\Exception $ex) // ->with ('ex', $ex) apparently doesn't work // Serialization of 'Closure' is not allowed //
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruikersdata is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Creating the user data failed. All database transactions have been rolled back.', Alert::TYPE_ALERT)));
 		}
 	}
 	
@@ -150,7 +148,7 @@ class StaffMaintenanceController extends Controller
 			DB::beginTransaction ();
 			
 			$alerts = array ();
-			$ignoreRNummers = Input::has ('ignorernummers');
+			$ignoreRNummers = request ()->filled ('ignorernummers');
 			
 			$users = User::all ();
 			foreach ($users as $user)
@@ -169,14 +167,14 @@ class StaffMaintenanceController extends Controller
 					|| empty ($user->expire)
 				)
 				{
-					$alerts[] = new Alert ('Gebruiker heeft ontbrekende velden: ' . $user->link (), 'warning');
+					$alerts[] = new Alert ('User has missing fields: ' . $user->link (), 'warning');
 				}
 				
 				$userInfo = $user->userInfo;
 				
 				if (empty ($userInfo))
 				{
-					$alerts[] = new Alert ('Gebruiker heeft geen geassociëerde rij in de <kbd>user_info</kbd>-tabel: ' . $user->link (), Alert::TYPE_ALERT);
+					$alerts[] = new Alert ('User has no associated row in the <kbd>user_info</kbd> table: ' . $user->link (), Alert::TYPE_ALERT);
 					
 					break;
 				}
@@ -184,15 +182,15 @@ class StaffMaintenanceController extends Controller
 				/*
 				$nUserLogs = UserLog::where ('user_info_id', $userInfo->id)->count ();
 				if ($nUserLogs < 1)
-					$alerts[] = new Alert ('Gebruiker heeft geen gelogde facturaties: ' . $user->id, 'secondary');
+					$alerts[] = new Alert ('User has no logged billing entries: ' . $user->id, 'secondary');
 				*/
 				
 				if (! is_dir ($user->homedir))
-					$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory niet: ' . $user->link (), Alert::TYPE_ALERT);
+					$alerts[] = new Alert ('User exists but their home directory does not: ' . $user->link (), Alert::TYPE_ALERT);
 				
 				if (is_dir ($user->homedir)){
 					if (fileowner ($user->homedir) != $user->uid)
-						$alerts[] = new Alert ('Gebruiker bestaat maar zijn/haar home directory heeft niet de juiste eigenaar: ' . $user->link (), Alert::TYPE_ALERT);
+						$alerts[] = new Alert ('User exists but their home directory has the wrong owner: ' . $user->link (), Alert::TYPE_ALERT);
 				}
 				
 				
@@ -210,17 +208,17 @@ class StaffMaintenanceController extends Controller
 					|| empty ($userInfo->email)
 				)
 				{
-					$alerts[] = new Alert ('Gebruikersinformatie heeft ontbrekende velden: ' . $userInfo->link (), 'warning');
+					$alerts[] = new Alert ('User information has missing fields: ' . $userInfo->link (), 'warning');
 				}
 				
 				if (! $ignoreRNummers)
 				{
-					if (empty ($userInfo->schoolnr)) // Komt vaak voor, dus minder kritieke melding //
-						$alerts[] = new Alert ('Gebruikersinformatie mist r-nummer: ' . $userInfo->link (), 'secondary');
+					if (empty ($userInfo->schoolnr)) // Happens often, so a less critical notice //
+						$alerts[] = new Alert ('User information is missing a student number: ' . $userInfo->link (), 'secondary');
 				}
 				
 				if ($userInfo->validated == 1 && ( !$userInfo->userExists ()))
-					$alerts[] = new Alert ('Gebruikersinformatie zegt dat gebruiker gevalideerd is, maar er is geen rij aanwezig in de <kbd>user</kbd>-tabel voor de gebruiker in kwestie: ' . $userInfo->link (), Alert::TYPE_ALERT);
+					$alerts[] = new Alert ('User information says the user is validated, but there is no row in the <kbd>user</kbd> table for that user: ' . $userInfo->link (), Alert::TYPE_ALERT);
 			}
 			
 			$groups = Group::all ();
@@ -234,7 +232,7 @@ class StaffMaintenanceController extends Controller
 					|| $group->passwd == 'x'
 				)
 				{
-					$alerts[] = new Alert ('Gebruikersgroep heeft ontbrekende velden: ' . $group->link (), 'warning');
+					$alerts[] = new Alert ('User group has missing fields: ' . $group->link (), 'warning');
 				}
 			}
 			
@@ -245,12 +243,12 @@ class StaffMaintenanceController extends Controller
 				(
 					empty ($ftp->id)
 					|| empty ($ftp->uid)
-					|| empty ($ftp->user)
+					|| empty ($ftp->username)
 					|| empty ($ftp->passwd)
 					|| empty ($ftp->dir)
 				)
 				{
-					$alerts[] = new Alert ('FTP-account heeft ontbrekende velden: ' . $ftp->link (), 'warning');
+					$alerts[] = new Alert ('FTP account has missing fields: ' . $ftp->link (), 'warning');
 				}
 			}
 			
@@ -264,7 +262,7 @@ class StaffMaintenanceController extends Controller
 					|| empty ($domain->domain)
 				)
 				{
-					$alerts[] = new Alert ('E-maildomein heeft ontbrekende velden: ' . $domain->link (), 'warning');
+					$alerts[] = new Alert ('E-mail domain has missing fields: ' . $domain->link (), 'warning');
 				}
 			}
 			
@@ -279,7 +277,7 @@ class StaffMaintenanceController extends Controller
 				    	|| empty ($mUser->password)
 				)
 				{
-					$alerts[] = new Alert ('E-mailgebruiker heeft ontbrekende velden: ' . $mUser->link (), 'warning');
+					$alerts[] = new Alert ('E-mail user has missing fields: ' . $mUser->link (), 'warning');
 				}
 			}
 			
@@ -294,7 +292,7 @@ class StaffMaintenanceController extends Controller
 				    	|| empty ($mFwd->destination)
 				)
 				{
-					$alerts[] = new Alert ('Doorstuurdadres heeft ontbrekende velden: ' . $mFwd->link (), 'warning');
+					$alerts[] = new Alert ('Forwarding address has missing fields: ' . $mFwd->link (), 'warning');
 				}
 			}
 			
@@ -309,7 +307,7 @@ class StaffMaintenanceController extends Controller
 				    	|| empty ($page->content)
 				)
 				{
-					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->link (), 'warning');
+					$alerts[] = new Alert ('Page has missing fields: ' . $page->link (), 'warning');
 				}
 			}
 			
@@ -322,26 +320,26 @@ class StaffMaintenanceController extends Controller
 					|| empty ($task->type)
 				)
 				{
-					$alerts[] = new Alert ('Pagina heeft ontbrekende velden: ' . $page->link (), 'warning');
+					$alerts[] = new Alert ('System task has missing fields: ' . $task->link (), 'warning');
 				}
 				
 				if ($task->started == 1 && (time () + 5 > $task->start) && empty ($task->exitcode))
-					$alerts[] = new Alert ('Systeemtaak zou gestart moeten zijn maar heeft geen exit code: ' . $task->link (), 'warning');
+					$alerts[] = new Alert ('System task should have started but has no exit code: ' . $task->link (), 'warning');
 			}
 			
 			DB::commit ();
 			
-			$alerts[] = new Alert ('Systeemcheck succesvol beëindigd', Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('System check completed successfully', Alert::TYPE_SUCCESS);
 			
-			Log::log ('Systeemcheck uitgevoerd', NULL, $alerts);
+			Log::log ('System check executed', NULL, $alerts);
 
 			return Redirect::to ('/user/start')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			DB::rollback ();
 			
-			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Systeemcheck mislukt. Als dat ondertussen al fatsoenlijk werkt zouden alle databasetransacties moeten zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('System check failed. If that works properly by now, all database transactions should have been rolled back.', Alert::TYPE_ALERT)));
 		}
 	}
 }

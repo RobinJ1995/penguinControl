@@ -11,17 +11,17 @@ class MailForward extends LimitedUserOwnedModel
 	
 	public function mailDomain()
 	{
-		return $this->belongsTo ('\App\Models\MailDomain');
+		return $this->belongsTo (MailDomain::class);
 	}
 	
 	public function url ()
 	{
-		return action ('StaffMailForwardingController@edit', $this->id);
+		return route ('staff.mail.forward.edit', $this->id);
 	}
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 
 }

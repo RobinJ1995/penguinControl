@@ -6,7 +6,7 @@ Create vHost
 
 @section ('js')
 @parent
-<script src="/js/vhost_create.js"></script>
+@vite ('resources/js/vhost-create.js')
 @endsection
 
 @section ('content')
@@ -16,7 +16,7 @@ Create vHost
 		<div class="row">
 			<div class="large-5 medium-12 small-12 column">
 				<label>Host:
-					<input type="text" name="servername" value="{{ Input::old ('servername') }}" required />
+					<input type="text" name="servername" value="{{ old ('servername') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -27,7 +27,7 @@ Create vHost
 							<span class="prefix">{{ $user->homedir }}/</span>
 						</div>
 						<div class="large-7 medium-7 small-12 column">
-							<input type="text" name="docroot" value="{{ Input::old ('docroot') }}" />
+							<input type="text" name="docroot" value="{{ old ('docroot') }}" />
 						</div>
 					</div>
 				</label>
@@ -38,7 +38,7 @@ Create vHost
 			<div class="large-12 column">
 				<label>Aliases:
 					<small>(Separate multiple aliases with spaces.)</small>
-					<input type="text" name="serveralias" value="{{ Input::old ('serveralias') }}" />
+					<input type="text" name="serveralias" value="{{ old ('serveralias') }}" />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -56,7 +56,7 @@ Create vHost
 							'1' => 'HTTP + HTTPS',
 							'2' => 'HTTPS with redirect'
 						),
-						Input::old ('ssl', 0)
+						old ('ssl', 0)
 					)
 					}}
 				</label>
@@ -72,7 +72,7 @@ Create vHost
 							'0' => 'Off',
 							'1' => 'On'
 						),
-						Input::old ('cgi', 0)
+						old ('cgi', 0)
 					)
 					}}
 				</label>

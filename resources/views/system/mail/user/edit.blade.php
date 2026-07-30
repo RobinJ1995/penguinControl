@@ -16,7 +16,7 @@
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mail address:
-					<input type="text" name="email" value="{{ Input::old ('email', substr ($mUser->email, 0, strpos ($mUser->email, '@'))) }}" required />
+					<input type="text" name="email" value="{{ old ('email', substr ($mUser->email, 0, strpos ($mUser->email, '@'))) }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -26,7 +26,7 @@
 						(
 							'domain',
 							$domains,
-							Input::old ('domain', $mUser->mail_domain_id)
+							old ('domain', $mUser->mail_domain_id)
 						)
 					}}
 				</label>

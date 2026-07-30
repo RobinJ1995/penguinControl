@@ -4,16 +4,18 @@ namespace App\Models;
 
 use App\LimitedUserOwnedModel;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 
 class Vhost extends LimitedUserOwnedModel
 {
 	protected $table = 'vhost';
 	public $timestamps = false;
 	
-	const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Eindigen met een `/` //
-	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
-	//DEV// const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Eindigen met een `/` //
-	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Eindigen met een `/` //
+	const VHOSTDIRAVAILABLE = '/etc/apache2/sites-available/'; // Must end with a `/` //
+	const VHOSTDIRENABLED = '/etc/apache2/sites-enabled/'; // Must end with a `/` //
+	//DEV// const VHOSTDIRAVAILABLE = '/home/sincontrol/test/etc/apache2/sites-available/'; // Must end with a `/` //
+	//DEV// const VHOSTDIRENABLED = '/home/sincontrol/test/etc/apache2/sites-enabled/'; // Must end with a `/` //
+	const VHOSTLOGDIR = '/var/log/apache2/vhost/';
 	const SSLCERT = '/etc/apache2/ssl/wildcard.cert';
 	const SSLKEY = '/etc/apache2/ssl/wildcard.key';
 	const EXPIRED_DOCROOT = '/opt/penguincontrol/static/expired/';
@@ -41,9 +43,9 @@ class Vhost extends LimitedUserOwnedModel
 	ServerAlias {:serveralias:}
 	AssignUserID {:username:} {:group:}
 	
-	CustomLog "/var/log/apache2/vhost/{:identification:}.log" combined
+	CustomLog "{:logdir:}{:identification:}.log" combined
 	ErrorLog "{:homedir:}/logs/{:identification:}_errors.log"
-	php_admin_value open_basedir "{:docroot:}:{:homedir:}:/tmp:/usr/share/php/{:basedir:}"
+	php_admin_value open_basedir "{:docroot:}:{:homedir:}:/tmp:/usr/share/php{:basedir:}"
 
 	DocumentRoot "{:docroot:}"
 	<Directory "{:docroot:}">
@@ -64,24 +66,27 @@ class Vhost extends LimitedUserOwnedModel
 		$file = str_replace ('{:serveradmin:}', $this->serveradmin, $file);
 		$file = str_replace ('{:docroot:}', $expired ? self::EXPIRED_DOCROOT : $this->docroot, $file);
 		$file = str_replace ('{:identification:}', $identification, $file);
+		$file = str_replace ('{:logdir:}', self::VHOSTLOGDIR, $file);
 		$file = str_replace ('{:execCGI:}', ($this->cgi ? '+ExecCGI' : ''), $file);
 		$file = str_replace ('{:cgiHandler:}', ($this->cgi ? 'AddHandler cgi-script .cgi' : ''), $file);
-		$file = str_replace ('{:sslcert:}', self::SSLCERT, $file);
-		$file = str_replace ('{:sslkey:}', self::SSLKEY, $file);
 		$file = str_replace ('{:basedir:}', empty ($this->basedir) ? '' : ':' . $this->basedir, $file);
 		//$file = str_replace ('{:overrides:}', 'FileInfo Indexes Limit AuthConfig Options', $file);
 		$file = str_replace ('{:overrides:}', 'All', $file);
 		
+		// Apache refuses to start if a CustomLog directory is missing //
+		if (! is_dir (self::VHOSTLOGDIR))
+			@mkdir (self::VHOSTLOGDIR, 0755, true);
+		
 		@unlink (self::VHOSTDIRAVAILABLE . $filename);
 		@unlink (self::VHOSTDIRENABLED . $filename);
 		
-		$ok1 = file_put_contents (self::VHOSTDIRAVAILABLE . $filename, $file); // Bestand wordt overschreven wanneer reeds bestaat //
+		$ok1 = file_put_contents (self::VHOSTDIRAVAILABLE . $filename, $file); // Overwrites the file if it already exists //
 		$ok2 = symlink (self::VHOSTDIRAVAILABLE . $filename, self::VHOSTDIRENABLED . $filename);
 		
-		if ($ok1 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
-		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
+		if ($ok1 === false) // Use strict comparison (===)! //
+			throw new \Exception ('Can\'t write to file. `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+		if ($ok2 === false) // Use strict comparison (===)! //
+			throw new \Exception ('Can\'t write symlink to `' . self::VHOSTDIRENABLED . $filename . '`');
 		
 		return parent::save ($options);
 	}
@@ -93,10 +98,10 @@ class Vhost extends LimitedUserOwnedModel
 		$ok1 = unlink (self::VHOSTDIRAVAILABLE . $filename);
 		$ok2 = unlink (self::VHOSTDIRENABLED . $filename);
 		
-		if ($ok1 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
-		if ($ok2 === false) // Strict comparison (===) gebruiken! //
-			throw new Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '` niet verwijderen');
+		if ($ok1 === false) // Use strict comparison (===)! //
+			throw new \Exception ('Can\'t remove file `' . self::VHOSTDIRAVAILABLE . $filename . '`');
+		if ($ok2 === false) // Use strict comparison (===)! //
+			throw new \Exception ('Can\'t remove file `' . self::VHOSTDIRENABLED . $filename . '`');
 		
 		return parent::delete ();
 	}
@@ -123,7 +128,7 @@ class Vhost extends LimitedUserOwnedModel
 		$homedir = $this->user->homedir;
 		$docrootTop = $this->docroot;
 		
-		if (strlen (trailing_slash ($this->docroot)) > strlen (trailing_slash ($homedir)) && starts_with ($this->docroot, $homedir))
+		if (strlen (trailing_slash ($this->docroot)) > strlen (trailing_slash ($homedir)) && Str::startsWith ($this->docroot, $homedir))
 		{
 			$slashPos = strpos ($this->docroot, '/', strlen (trailing_slash ($homedir)));
 			$docrootTop = substr ($this->docroot, 0, $slashPos);
@@ -147,17 +152,17 @@ class Vhost extends LimitedUserOwnedModel
 	
 	public function user ()
 	{
-		return $this->hasOne ('\App\Models\User', 'uid', 'uid');
+		return $this->hasOne (User::class, 'uid', 'uid');
 	}
 	
 	public function url ()
 	{
-		return action ('StaffVHostController@edit', $this->id);
+		return route ('staff.vhost.edit', $this->id);
 	}
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 	
 	public function identification ()

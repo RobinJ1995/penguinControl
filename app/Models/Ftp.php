@@ -9,20 +9,20 @@ class Ftp extends LimitedUserOwnedModel
 	protected $table = 'ftp';
 	public $timestamps = false;
 	
-	protected $hidden = array ('password');
+	protected $hidden = array ('passwd');
 
 	public function setPassword ($password)
 	{
-		$this->password = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
+		$this->passwd = crypt ($password, '$6$rounds=' . random_int (8000, 12000) . '$' . bin2hex (random_bytes (8)) . '$');
 	}
 	
 	public function url ()
 	{
-		return action ('StaffFtpController@edit', $this->id);
+		return route ('staff.ftp.edit', $this->id);
 	}
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 }

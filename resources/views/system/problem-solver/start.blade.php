@@ -1,12 +1,12 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Probleemoplosser
+Problem solver
 @endsection
 
 @section ('js')
 @parent
-<script src="/js/ProblemSolver.js"></script>
+@vite ('resources/js/problem-solver.js')
 <script type="text/javascript">
 	$(document).ready
 	(
@@ -27,7 +27,7 @@ Probleemoplosser
 @endsection
 
 @section ('content')
-<p>De probleemoplosser kan automatisch veelvoorkomende problemen voor u proberen op te lossen. Klik op de knop hieronder om de probleemoplosser te starten.</p>
+<p>The problem solver can try to fix common problems for you automatically. Click the button below to start it.</p>
 <div id="problemSolverContainer">
 	<p class="button" id="problemSolverStart">Start</p>
 </div>

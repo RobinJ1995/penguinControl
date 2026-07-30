@@ -13,21 +13,21 @@ class MailUser extends LimitedUserOwnedModel
 
 	public function setPassword ($password)
 	{
-		$this->password = crypt ($password, '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$');
+		$this->password = crypt ($password, '$6$rounds=' . random_int (8000, 12000) . '$' . bin2hex (random_bytes (8)) . '$');
 	}
 	
 	public function mailDomain()
 	{
-		return $this->belongsTo ('\App\Models\MailDomain');
+		return $this->belongsTo (MailDomain::class);
 	}
 	
 	public function url ()
 	{
-		return action ('StaffMailUserController@edit', $this->id);
+		return route ('staff.mail.user.edit', $this->id);
 	}
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 }

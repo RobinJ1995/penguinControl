@@ -2,13 +2,14 @@
 
 namespace App;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 abstract class UserOwnedModel extends BaseModel
 {
 	public function user ()
 	{
-		return $this->belongsTo ('\App\Models\User', 'uid', 'uid');
+		return $this->belongsTo (User::class, 'uid', 'uid');
 	}
 	
 	public static function accessible ()

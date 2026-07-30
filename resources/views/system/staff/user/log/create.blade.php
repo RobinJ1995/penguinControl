@@ -10,14 +10,14 @@ Add billing entry
 		<legend>Add billing entry</legend>
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
-				<label>Gebruiker:
-					<!--<input type="number" name="user_info_id" value="{{ Input::old ('user_info_id') }}" required />-->
+				<label>User:
+					<!--<input type="number" name="user_info_id" value="{{ old ('user_info_id') }}" required />-->
 
 					{{ Form::select
 				(
 					'user_info_id',
 					$users,
-					Input::old ('user_info_id')
+					old ('user_info_id')
 				)
 				}}
 				</label>
@@ -26,8 +26,8 @@ Add billing entry
 		</div>
 		<div class="row">
 			<div class="large-4 medium-4 small-12 column">
-				<label>Datum/tijd:
-					<input type="text" name="time" value="{{ Input::old ('time') }}" required />
+				<label>Date/time:
+					<input type="text" name="time" value="{{ old ('time') }}" required />
 				</label>
 				<small class="error">Invalid input</small>
 			</div>
@@ -41,7 +41,7 @@ Add billing entry
 								'0' => 'No',
 								'1' => 'Yes',
 							),
-							Input::old ('new', 0)
+							old ('new', 0)
 						)
 					}}
 				</label>
@@ -53,7 +53,7 @@ Add billing entry
 						(
 							'status',
 							$statusMeaning,
-							Input::old ('status', 0)
+							old ('status', 0)
 						)
 					}}
 				</label>

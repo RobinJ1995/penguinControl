@@ -7,7 +7,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -58,9 +57,9 @@ class MailForwardController extends Controller
 		(
 			array
 			(
-				'E-mail address' => Input::get ('source'),
-				'E-mail domain' => Input::get ('domain'),
-				'Destination' => Input::get ('destination')
+				'E-mail address' => request ('source'),
+				'E-mail domain' => request ('domain'),
+				'Destination' => request ('destination')
 			),
 			array
 			(
@@ -76,9 +75,9 @@ class MailForwardController extends Controller
 		
 		$mFwd = new MailForward ();
 		$mFwd->uid = $user->uid;
-		$mFwd->source = Input::get ('source');
-		$mFwd->mail_domain_id = Input::get ('domain');
-		$mFwd->destination = Input::get ('destination');
+		$mFwd->source = request ('source');
+		$mFwd->mail_domain_id = request ('domain');
+		$mFwd->destination = request ('destination');
 		
 		$mFwd->save ();
 		
@@ -114,9 +113,9 @@ class MailForwardController extends Controller
 		(
 			array
 			(
-				'E-mail address' => Input::get ('source'),
-				'E-mail domain' => Input::get ('domain'),
-				'Destination' => Input::get ('destination')
+				'E-mail address' => request ('source'),
+				'E-mail domain' => request ('domain'),
+				'Destination' => request ('destination')
 			),
 			array
 			(
@@ -132,9 +131,9 @@ class MailForwardController extends Controller
 				->withInput ()
 				->withErrors ($validator);
 		
-		$mFwd->source = Input::get ('source');
-		$mFwd->mail_domain_id = Input::get ('domain');
-		$mFwd->destination = Input::get ('destination');
+		$mFwd->source = request ('source');
+		$mFwd->mail_domain_id = request ('domain');
+		$mFwd->destination = request ('destination');
 		
 		$mFwd->save ();
 		

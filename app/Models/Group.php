@@ -13,12 +13,12 @@ class Group extends BaseModel
 	
 	public function url ()
 	{
-		return action ('StaffGroupController@edit', $this->id);
+		return route ('staff.group.index');
 	}
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 
 }

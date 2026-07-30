@@ -11,26 +11,26 @@ class MailDomain extends LimitedUserOwnedModel
 	
 	public function mailForward ()
 	{
-		return $this->hasMany ('\App\Models\MailForward');
+		return $this->hasMany (MailForward::class);
 	}
 	
 	public function mailUser ()
 	{
-		return $this->hasMany ('\App\Models\MailUser');
+		return $this->hasMany (MailUser::class);
 	}
 	
 	public function user ()
 	{
-		return $this->belongsTo ('\App\Models\User', 'uid', 'uid');
+		return $this->belongsTo (User::class, 'uid', 'uid');
 	}
 	
 	public function url ()
 	{
-		return action ('StaffMailDomainController@edit', $this->id);
+		return route ('staff.mail.domain.edit', $this->id);
 	}
 	
 	public function link ()
 	{
-		return '<a href="' . $this->url () . '">' . get_class () . '#' . $this->id . '</a>';
+		return '<a href="' . $this->url () . '">' . class_basename (static::class) . '#' . $this->id . '</a>';
 	}
 }

@@ -7,6 +7,7 @@ use App\DatabaseCredentials;
 use App\Http\Controllers\Controller;
 use App\Models\Ftp;
 use App\Models\Group;
+use App\Mail\AccountActivated;
 use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
@@ -18,7 +19,6 @@ use App\Models\UserInfo;
 use App\Models\UserLog;
 use App\Models\Vhost;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -50,19 +50,19 @@ class StaffUserController extends Controller
 		$pendingCount = $pendingQ->count ();
 		$pending = $pendingQ->paginate ();
 
-		$url = action ('Staff\StaffUserController@index', $order);
-		$searchUrl = action ('Staff\StaffUserController@search', $order);
+		$url = route ('staff.user.index');
+		$searchUrl = route ('staff.user.search');
 
 		return view ('staff.user.user.index', compact ('usersCount', 'users', 'expiredCount', 'expired', 'pendingCount', 'pending', 'url', 'searchUrl'));
 	}
 
 	public function search ()
 	{
-		$username = Input::get ('username');
-		$name = Input::get ('name');
-		$email = Input::get ('email');
-		$unusedValidationCode = Input::get ('validationcode');
-		$unusedLoginToken = Input::get ('logintoken');
+		$username = request ('username');
+		$name = request ('name');
+		$email = request ('email');
+		$unusedValidationCode = request ('validationcode');
+		$unusedLoginToken = request ('logintoken');
 
 		$query = UserInfo::where ('validated', '1')
 			->where ('username', 'LIKE', '%' . $username . '%')
@@ -77,7 +77,7 @@ class StaffUserController extends Controller
 		$count = $query->count ();
 		$results = $query->paginate ();
 
-		$searchUrl = action ('Staff\StaffUserController@search');
+		$searchUrl = route ('staff.user.search');
 
 		return view ('staff.user.user.search', compact ('count', 'results', 'searchUrl'));
 	}
@@ -100,7 +100,7 @@ class StaffUserController extends Controller
 
 			$uid = User::max ('uid') + 1;
 
-			$inputHomedir = rtrim (Input::get ('homedir'), '/');
+			$inputHomedir = rtrim (request ('homedir'), '/');
 
 			$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 			$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
@@ -116,24 +116,24 @@ class StaffUserController extends Controller
 			}
 
 			$strReservedUsers = implode (',', $reservedUsers);
-			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
+			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
 			(
 				array
 				(
-					'UID' => Input::get ('uid'),
-					'Username' => Input::get ('username'),
+					'UID' => request ('uid'),
+					'Username' => request ('username'),
 					'Home directory' => $inputHomedir,
-					'E-mail address' => Input::get ('email'),
-					'First name' => Input::get ('fname'),
-					'Surname' => Input::get ('lname'),
-					'Shell' => Input::get ('shell'),
-					'E-mail' => Input::get ('mailEnabled'),
-					'Password' => Input::get ('password'),
-					'Password (confirmation)' => Input::get ('password_confirm'),
-					'Primary group' => Input::get ('groupPrimary'),
-					'Groups' => Input::get ('groups')
+					'E-mail address' => request ('email'),
+					'First name' => request ('fname'),
+					'Surname' => request ('lname'),
+					'Shell' => request ('shell'),
+					'E-mail' => request ('mailEnabled'),
+					'Password' => request ('password'),
+					'Password (confirmation)' => request ('password_confirm'),
+					'Primary group' => request ('groupPrimary'),
+					'Groups' => request ('groups')
 				),
 				array
 				(
@@ -161,21 +161,21 @@ class StaffUserController extends Controller
 			$next1OctDays = ceil ($next1OctUnix / 60 / 60 / 24);
 
 			$user = new User ();
-			$user->uid = Input::get ('uid');
-			$user->setPassword (Input::get ('password'));
-			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
-			$user->gid = Input::get ('groupPrimary');
+			$user->uid = request ('uid');
+			$user->setPassword (request ('password'));
+			$user->gcos = request ('fname') . ' ' . request ('lname') . ', ' . request ('email');
+			$user->gid = request ('groupPrimary');
 			$user->homedir = $inputHomedir;
-			$user->shell = Input::get ('shell');
+			$user->shell = request ('shell');
 			$user->lastchange = ceil (time () / 60 / 60 / 24);
-			$user->mail_enabled = Input::get ('mailEnabled');
+			$user->mail_enabled = request ('mailEnabled');
 			$user->expire = $next1OctDays;
 
 			$userInfo = new UserInfo ();
-			$userInfo->username = Input::get ('username');
-			$userInfo->fname = Input::get ('fname');
-			$userInfo->lname = Input::get ('lname');
-			$userInfo->email = Input::get ('email');
+			$userInfo->username = request ('username');
+			$userInfo->fname = request ('fname');
+			$userInfo->lname = request ('lname');
+			$userInfo->email = request ('email');
 			$userInfo->lastchange = ceil (time () / 60 / 60 / 24);
 			$userInfo->validated = 1;
 
@@ -185,10 +185,10 @@ class StaffUserController extends Controller
 
 			$alerts = array
 			(
-				new Alert ('User created: ' . Input::get ('username'), Alert::TYPE_SUCCESS)
+				new Alert ('User created: ' . request ('username'), Alert::TYPE_SUCCESS)
 			);
 
-			foreach ((array) Input::get ('groups') as $gid)
+			foreach ((array) request ('groups') as $gid)
 			{
 				$assoc = new UserGroup ();
 				$assoc->uid = $user->uid;
@@ -202,14 +202,14 @@ class StaffUserController extends Controller
 			}
 
 			$ftp = new Ftp (); // User's default FTP account //
-			$ftp->user = $userInfo->username;
+			$ftp->username = $userInfo->username;
 			$ftp->uid = $user->uid;
-			$ftp->password = $user->crypt;
+			$ftp->passwd = $user->crypt;
 			$ftp->dir = $user->homedir;
-			$ftp->locked = 1; // Enkel bewerkbaar door staff //
+			$ftp->locked = 1; // Only editable by staff //
 			$ftp->save ();
 
-			$alerts[] = new Alert ('FTP account created: ' . $ftp->user, Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('FTP account created: ' . $ftp->username, Alert::TYPE_SUCCESS);
 
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
@@ -219,12 +219,12 @@ class StaffUserController extends Controller
 			$userLog = new UserLog ();
 			$userLog->user_info_id = $userInfo->id;
 			$userLog->new = 1;
-			$userLog->status = -1; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			$userLog->status = -1; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
 			$userLog->save ();
 
 			$alerts[] = new Alert ('Saved as "Not to be billed".', Alert::TYPE_SUCCESS);
 
-			DatabaseCredentials::forUserPrimary (Input::get ('username'), Input::get ('password'));
+			DatabaseCredentials::forUserPrimary (request ('username'), request ('password'));
 
 			DB::commit ();
 
@@ -232,11 +232,11 @@ class StaffUserController extends Controller
 
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (\Exception $ex) // ->with ('ex', $ex) kan blijkbaar niet // Serialization of 'Closure' is not allowed //
+		catch (\Exception $ex) // ->with ('ex', $ex) apparently doesn't work // Serialization of 'Closure' is not allowed //
 		{
 			DB::rollback ();
 
-			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het aanmaken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Creating the user failed. All database transactions have been rolled back.', Alert::TYPE_ALERT)));
 		}
 	}
 
@@ -245,7 +245,7 @@ class StaffUserController extends Controller
 		$userInfo = $user->userInfo;
 		$groups = Group::all ();
 
-		return view ('staff.user.user.edit', compact ('user', 'userInfo', 'groups'))->with ('alerts', array (new Alert ('Laat de wachtwoord-velden leeg indien u het huidige wachtwoord niet wenst te wijzigen.', Alert::TYPE_INFO)));
+		return view ('staff.user.user.edit', compact ('user', 'userInfo', 'groups'))->with ('alerts', array (new Alert ('Leave the password fields empty if you do not wish to change the current password.', Alert::TYPE_INFO)));
 	}
 
 	public function update ($user)
@@ -256,58 +256,58 @@ class StaffUserController extends Controller
 		{
 			DB::beginTransaction ();
 
-			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
+			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
 			(
 				array
 				(
-					'E-mailadres' => Input::get ('email'),
-					'Voornaam' => Input::get ('fname'),
-					'Achternaam' => Input::get ('lname'),
-					'r-nummer' => Input::get ('rnummer'),
-					'Shell' => Input::get ('shell'),
-					'E-mail' => Input::get ('mailEnabled'),
-					'Wachtwoord' => Input::get ('password'),
-					'Wachtwoord (bevestiging)' => Input::get ('password_confirm'),
-					'Primaire groep' => Input::get ('groupPrimary'),
-					'Groepen' => Input::get ('groups')
+					'E-mail address' => request ('email'),
+					'First name' => request ('fname'),
+					'Surname' => request ('lname'),
+					'Student number' => request ('rnummer'),
+					'Shell' => request ('shell'),
+					'E-mail' => request ('mailEnabled'),
+					'Password' => request ('password'),
+					'Password (confirmation)' => request ('password_confirm'),
+					'Primary group' => request ('groupPrimary'),
+					'Groups' => request ('groups')
 				),
 				array
 				(
-					'E-mailadres' => array ('required', 'email'),
-					'Voornaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'Achternaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'r-nummer' => '',	//array ('regex:/^(r|s|u)\d\d\d\d\d\d\d$/'),
+					'E-mail address' => array ('required', 'email'),
+					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+					'Student number' => '',	//array ('regex:/^(r|s|u)\d\d\d\d\d\d\d$/'),
 					'Shell' => array ('required', 'in:/bin/bash,/usr/bin/fish,/usr/bin/zsh,/bin/false,/usr/bin/tmux'),
 					'E-mail' => array ('required', 'in:-1,0,1'),
-					'Wachtwoord' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', 'required_with:Wachtwoord (bevestiging)'),
-					'Wachtwoord (bevestiging)' => array ('same:Wachtwoord', 'required_with:Wachtwoord'),
-					'Primaire groep' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
-					'Groepen' => array ('array', 'exists:group,gid')
+					'Password' => array ('not_in:12345678,01234567,azertyui,qwertyui,aaaaaaaa,00000000,11111111', 'min:8', 'required_with:Password (confirmation)'),
+					'Password (confirmation)' => array ('same:Password', 'required_with:Password'),
+					'Primary group' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
+					'Groups' => array ('array', 'exists:group,gid')
 				)
 			);
 
 			if ($validator->fails ())
 				return Redirect::to ('/staff/user/user/' . $user->id . '/edit')->withInput ()->withErrors ($validator);
 
-			if (! empty (Input::get ('password')))
+			if (! empty (request ('password')))
 			{
-				$user->setPassword (Input::get ('password'));
+				$user->setPassword (request ('password'));
 				$user->lastchange = ceil (time () / 60 / 60 / 24);
 
-				$alerts[] = new Alert ('Enkel het gebruikerswachtwoord is veranderd. Wachtwoorden van FTP-accounts e.d. zijn apart opgeslagen.', Alert::TYPE_INFO);
+				$alerts[] = new Alert ('Only the account password was changed. FTP account passwords and the like are stored separately.', Alert::TYPE_INFO);
 			}
-			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
-			$user->gid = Input::get ('groupPrimary');
-			$user->shell = Input::get ('shell');
-			$user->mail_enabled = Input::get ('mailEnabled');
+			$user->gcos = request ('fname') . ' ' . request ('lname') . ', ' . request ('email');
+			$user->gid = request ('groupPrimary');
+			$user->shell = request ('shell');
+			$user->mail_enabled = request ('mailEnabled');
 
 			$userInfo = $user->userInfo;
-			$userInfo->fname = Input::get ('fname');
-			$userInfo->lname = Input::get ('lname');
-			$userInfo->email = Input::get ('email');
-			$userInfo->schoolnr = Input::get ('rnummer');
+			$userInfo->fname = request ('fname');
+			$userInfo->lname = request ('lname');
+			$userInfo->email = request ('email');
+			$userInfo->schoolnr = request ('rnummer');
 			$userInfo->lastchange = ceil (time () / 60 / 60 / 24);
 
 			$userInfo->save ();
@@ -315,19 +315,19 @@ class StaffUserController extends Controller
 
 			$alerts = array
 			(
-				new Alert ('Gebruiker bijgewerkt: ' . $userInfo->username, Alert::TYPE_SUCCESS)
+				new Alert ('User updated: ' . $userInfo->username, Alert::TYPE_SUCCESS)
 			);
 
-			$allGroups = Group::lists ('gid');
-			$inputGroups = (array) Input::get ('groups');
+			$allGroups = Group::pluck ('gid');
+			$inputGroups = (array) request ('groups');
 
-			foreach ($allGroups as $gid) // Let op; Dit gaat niet over de primaire groep //
+			foreach ($allGroups as $gid) // Note: this does not cover the primary group //
 			{
 				$userGroup = UserGroup::where ('uid', $user->uid)->where ('gid', $gid);
 
-				if ($userGroup->count () < 1) // Geen  lid van groep //
+				if ($userGroup->count () < 1) // Not a member of the group //
 				{
-					if (in_array ($gid, $inputGroups)) // Wel aangevinkt in form //
+					if (in_array ($gid, $inputGroups)) // Was ticked in the form //
 					{
 						$assoc = new UserGroup ();
 						$assoc->uid = $user->uid;
@@ -337,41 +337,41 @@ class StaffUserController extends Controller
 
 						$group = Group::where ('gid', $gid)->first ();
 
-						$alerts[] = new Alert ('Gebruiker ' . $userInfo->username . ' toegewezen aan groep: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
+						$alerts[] = new Alert ('User ' . $userInfo->username . ' assigned to group: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
 					}
 				}
-				else // Reeds lid van groep //
+				else // Already a member of the group //
 				{
-					if (! in_array ($gid, $inputGroups)) // Niet aangevinkt in form //
+					if (! in_array ($gid, $inputGroups)) // Not ticked in the form //
 					{
 						$userGroup->firstOrFail ()->delete ();
 
 						$group = Group::where ('gid', $gid)->first ();
 
-						$alerts[] = new Alert ('Gebruiker ' . $userInfo->username . ' verwijderd uit groep: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
+						$alerts[] = new Alert ('User ' . $userInfo->username . ' removed from group: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
 					}
 				}
 			}
 
 			DB::commit ();
 
-			Log::log ('Gebruiker bijgewerkt', NULL, $user, $userInfo);
+			Log::log ('User updated', NULL, $user, $userInfo);
 
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			DB::rollback ();
 
-			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Updating the user failed. All database transactions have been rolled back.', Alert::TYPE_ALERT)));
 		}
 	}
 
-	public function remove ($user) // UserInfo blijft behouden voor UserLog //
+	public function remove ($user) // UserInfo is retained for UserLog //
 	{
 		$alerts = array ();
 
-		if (Input::get ('confirm') === 'pizza') // Voor iets ernstig als het verwijderen van een gebruiker best niet enkel vertrouwen op Javascript confirm () //
+		if (request ('confirm') === 'pizza') // For something as serious as removing a user, better not to rely on Javascript confirm () alone //
 		{
 			try
 			{
@@ -381,63 +381,63 @@ class StaffUserController extends Controller
 				$userInfo = $user->userInfo;
 
 				/*
-				 * Andere dingen verwijderen gebeurt normaalgesproken al via de CASCADE DELETE in de database.
-				 * Dit gebeurt echter niet via de de ->remove () method.
-				 * Ik ga deze dus manueel verwijderen, want sommige entities (zoals de vHosts) hebben custom code
-				 * in hun ->remove () method zitten die best uitgevoerd wordt bij verwijdering.
+				 * Removing the rest normally happens through the database's CASCADE DELETE,
+				 * but that does not go through the ->remove () method. So they are removed
+				 * by hand here, because some entities -- the vHosts, for instance -- carry
+				 * custom code in ->remove () that really should run on deletion.
 				 */
 
 				foreach (Ftp::where ('uid', $user->uid)->get () as $ftp)
 				{
 					$ftp->delete ();
-					$alerts[] = new Alert ('FTP-account verwijderd: ' . $ftp->user, Alert::TYPE_SUCCESS);
+					$alerts[] = new Alert ('FTP account removed: ' . $ftp->username, Alert::TYPE_SUCCESS);
 				}
 
 				foreach (Vhost::where ('uid', $user->uid)->get () as $vhost)
 				{
 					$vhost->delete ();
-					$alerts[] = new Alert ('vHost verwijderd: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+					$alerts[] = new Alert ('vHost removed: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 				}
 
 				foreach (MailUser::where ('uid', $user->uid)->get () as $mUser)
 				{
 					$mUser->delete ();
-					$alerts[] = new Alert ('E-mailaccount verwijderd: ' . $mUser->email, Alert::TYPE_SUCCESS);
+					$alerts[] = new Alert ('E-mail account removed: ' . $mUser->email, Alert::TYPE_SUCCESS);
 				}
 
 				foreach (MailForward::where ('uid', $user->uid)->get () as $mFwd)
 				{
 					$mFwd->delete ();
-					$alerts[] = new Alert ('Doorstuuradres verwijderd: ' . $mFwd->source, Alert::TYPE_SUCCESS);
+					$alerts[] = new Alert ('Forwarding address removed: ' . $mFwd->source, Alert::TYPE_SUCCESS);
 				}
 
 				foreach (MailDomain::where ('uid', $user->uid)->get () as $domain)
 				{
 					$domain->delete ();
-					$alerts[] = new Alert ('E-maildomein verwijderd: ' . $domain->domain, Alert::TYPE_SUCCESS);
+					$alerts[] = new Alert ('E-mail domain removed: ' . $domain->domain, Alert::TYPE_SUCCESS);
 				}
 
 				$user->delete ();
 				//$userInfo->delete ();
 
-				$alerts[] = new Alert ('Gebruiker verwijderd: ' . $userInfo->username, Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('User removed: ' . $userInfo->username, Alert::TYPE_SUCCESS);
 
 				DB::commit ();
 
-				Log::log ('Gebruiker verwijderd', NULL, $user, $userInfo);
+				Log::log ('User removed', NULL, $user, $userInfo);
 
 				return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 			}
-			catch (Exception $ex)
+			catch (\Exception $ex)
 			{
 				DB::rollback ();
 
-				return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het verwijderen van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+				return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Removing the user failed. All database transactions have been rolled back.', Alert::TYPE_ALERT)));
 			}
 		}
 		else
 		{
-			die ('Een gebruiker verwijderen? Dat is toch wel vrij drastisch. Deze (ietwat ruw geïmplementeerde) beveiliging is er om er voor te zorgen dat een gebruiker niet plots zijn account kwijt is als iemand zijn muisvinger even slipt en de Javascript `alert ()` dialog er geen zin in heeft. Indien je toch wil doorgaan, zet `?confirm=pizza` achter de URL.');
+			die ('Removing a user? That is rather drastic. This (somewhat crudely implemented) safeguard is here so that nobody loses their account because a mouse finger slipped and the Javascript `alert ()` dialog did not feel like showing up. If you really do want to go ahead, append `?confirm=pizza` to the URL.');
 		}
 	}
 
@@ -445,11 +445,11 @@ class StaffUserController extends Controller
 	{
 		$userInfo = $user->userInfo;
 
-		Log::log ('Ingelogd als gebruiker', NULL, $user); // Hier moet de log vóór de effectieve actie gebeuren, anders klopt de user_id in de log entry niet //
+		Log::log ('Logged in as user', NULL, $user); // The log entry has to be written before the action itself, or its user_id will be wrong //
 
 		Auth::login ($user);
 
-		return Redirect::to ('/user/start')->with ('alerts', array (new Alert ('Ingelogd als gebruiker: ' . $userInfo->username . ' (' . $userInfo->fname . ' ' . $userInfo->lname . ')')));
+		return Redirect::to ('/user/start')->with ('alerts', array (new Alert ('Logged in as user: ' . $userInfo->username . ' (' . $userInfo->fname . ' ' . $userInfo->lname . ')')));
 	}
 
 	public function getExpire ($user)
@@ -458,7 +458,7 @@ class StaffUserController extends Controller
 		$validUntilDate = date ('D j F Y', $validUntilUnix);
 		$validUntilShortDate = date ('d-m-Y', $validUntilUnix);
 		$stillValidUnix = $validUntilUnix - time ();
-		$stillValidDate = (int) ($stillValidUnix / 60 / 60 / 24) . ' dagen';
+		$stillValidDate = (int) ($stillValidUnix / 60 / 60 / 24) . ' days';
 
 		$septemberYet = (idate ('n') >= 9);
 
@@ -471,16 +471,16 @@ class StaffUserController extends Controller
 
 		$expires = array
 		(
-			$validUntilUnix => 'Huidig: ' . $validUntilDate,
-			$next1OctUnix => 'Volgende 1 oktober: ' . $next1OctDate,
-			$nowUnix => 'Nu: ' . $nowDate,
-			-1 * 24 * 60 * 60 => 'Vervalt nooit'
+			$validUntilUnix => 'Current: ' . $validUntilDate,
+			$next1OctUnix => 'Next 1 October: ' . $next1OctDate,
+			$nowUnix => 'Now: ' . $nowDate,
+			-1 * 24 * 60 * 60 => 'Never expires'
 		);
 
 		if ($user->expire === -1)
 		{
-			$validUntilDate = 'Altijd';
-			$validUntilUnix = 'Niet van toepassing';
+			$validUntilDate = 'Always';
+			$validUntilUnix = 'Not applicable';
 			$validUntilShortDate = '';
 			$stillValidDate = '&infin;';
 			$stillValidUnix = '';
@@ -488,7 +488,7 @@ class StaffUserController extends Controller
 
 		$alerts = array
 		(
-			new Alert ('Wanneer de vervaldatum door een medewerker wordt gewijzigd zal de gebruiker hiervoor niet gefactureerd worden.', 'warning')
+			new Alert ('When an administrator changes the expiry date, the user will not be billed for it.', 'warning')
 		);
 
 		return view ('staff.user.user.expire', compact ('user', 'validUntilUnix', 'validUntilDate', 'stillValidUnix', 'stillValidDate', 'validUntilShortDate', 'expires', 'alerts'));
@@ -500,45 +500,43 @@ class StaffUserController extends Controller
 		(
 			array
 			(
-				'Vervaldatum' => Input::get ('expire')
+				'Expiry date' => request ('expire')
 			),
 			array
 			(
-				'Vervaldatum' => array ('integer')
+				'Expiry date' => array ('integer')
 			)
 		);
 
 		if ($validator->fails ())
 			return Redirect::to ('/staff/user/user/' . $user->id . '/expire')->withInput ()->withErrors ($validator);
 
-		$newExpireDays;
-		$newExpireDate;
 
-		if (Input::get ('expire') > 0)
+		if (request ('expire') > 0)
 		{
-			$newExpireDays = ceil (Input::get ('expire') / 60 / 60 / 24);
-			$newExpireDate = date ('D j F Y', Input::get ('expire'));
+			$newExpireDays = ceil (request ('expire') / 60 / 60 / 24);
+			$newExpireDate = date ('D j F Y', request ('expire'));
 		}
 		else
 		{
 			$newExpireDays = -1;
-			$newExpireDate = 'Vervalt nooit';
+			$newExpireDate = 'Never expires';
 		}
 
 		$user->expire = $newExpireDays;
 		$user->save ();
 
 		/*
-		 * Alle vHosts voor gebruiker ophalen en en terug opslaan aangezien
-		 * in Vhost->save () de check gebeurt of de gebruiker expired
-		 * en of dus de expired document root moet worden ingesteld of de echte document root.
+		 * Fetch and re-save all of the user's vHosts: Vhost->save () decides whether
+		 * to point the document root at the expired placeholder or at the real one,
+		 * based on whether the user has expired.
 		 */
 		foreach ($user->vhost as $vhost)
 			$vhost->save ();
 
-		Log::log ('Vervaltdatum bijgewerkt', NULL, $user);
+		Log::log ('Expiry date updated', NULL, $user);
 
-		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Vervaldatum van ' . $user->userInfo->username . ' (' . $user->userInfo->getFullName () . ') ingesteld: ' . $newExpireDate)));
+		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Expiry date for ' . $user->userInfo->username . ' (' . $user->userInfo->getFullName () . ') set to: ' . $newExpireDate)));
 	}
 
 	public function getApprove ($userInfo)
@@ -556,13 +554,13 @@ class StaffUserController extends Controller
 		try
 		{
 			if ($userInfo->validated == 1)
-				return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Gebruiker is al gevalideerd', Alert::TYPE_ALERT)));
+				return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('User has already been validated', Alert::TYPE_ALERT)));
 
 			DB::beginTransaction ();
 
 			$uid = User::max ('uid') + 1;
 
-			$inputHomedir = rtrim (Input::get ('homedir'), '/');
+			$inputHomedir = rtrim (request ('homedir'), '/');
 
 			$reservedUsers = array ('ns', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'sin', 'control', 'sincontrol', 'admin', 'root', 'stamper', 'srv', 'intern', 'extern', 'git', 'svn', 'db', 'database', 'web', 'mail', 'shell', 'cloud', 'voice', 'docu');
 			$etcPasswd = explode (PHP_EOL, file_get_contents ('/etc/passwd'));
@@ -579,35 +577,35 @@ class StaffUserController extends Controller
 
 			$strReservedUsers = implode (',', $reservedUsers);
 
-			$strSecondaryGroups = implode (',', (array) Input::get ('groups'));
+			$strSecondaryGroups = implode (',', (array) request ('groups'));
 
 			$validator = Validator::make
 			(
 				array
 				(
-					'UID' => Input::get ('uid'),
-					'Gebruikersnaam' => Input::get ('username'),
+					'UID' => request ('uid'),
+					'Username' => request ('username'),
 					'Home directory' => $inputHomedir,
-					'E-mailadres' => Input::get ('email'),
-					'Voornaam' => Input::get ('fname'),
-					'Achternaam' => Input::get ('lname'),
-					'Shell' => Input::get ('shell'),
-					'E-mail' => Input::get ('mailEnabled'),
-					'Primaire groep' => Input::get ('groupPrimary'),
-					'Groepen' => Input::get ('groups')
+					'E-mail address' => request ('email'),
+					'First name' => request ('fname'),
+					'Surname' => request ('lname'),
+					'Shell' => request ('shell'),
+					'E-mail' => request ('mailEnabled'),
+					'Primary group' => request ('groupPrimary'),
+					'Groups' => request ('groups')
 				),
 				array
 				(
 					'UID' => array ('required', 'unique:user,uid', 'integer', 'min:' . $uid, 'max:' . $uid),
-					'Gebruikersnaam' => array ('required', 'alpha_num', 'min:4', 'max:14', 'not_in:' . $strReservedUsers),
+					'Username' => array ('required', 'alpha_num', 'min:4', 'max:14', 'not_in:' . $strReservedUsers),
 					'Home directory' => array ('unique:user,homedir', 'regex:/^\/home\/[^\/]+\/[a-z0-9]\/[a-z0-9]+$/'),
-					'E-mailadres' => array ('required', 'email'),
-					'Voornaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
-					'Achternaam' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+					'E-mail address' => array ('required', 'email'),
+					'First name' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
+					'Surname' => array ('required', 'regex:/^[^\,\;\\\]+$/'),
 					'Shell' => array ('required', 'in:/bin/bash,/bin/fish,/bin/zsh,/bin/false,/usr/bin/tmux'),
 					'E-mail' => array ('required', 'in:-1,0,1'),
-					'Primaire groep' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
-					'Groepen' => array ('array', 'exists:group,gid')
+					'Primary group' => array ('required', 'exists:group,gid', 'not_in:' . $strSecondaryGroups),
+					'Groups' => array ('array', 'exists:group,gid')
 				)
 			);
 
@@ -622,20 +620,20 @@ class StaffUserController extends Controller
 			$etc = unserialize ($userInfo->etc);
 
 			$user = new User ();
-			$user->uid = Input::get ('uid');
+			$user->uid = request ('uid');
 			$user->crypt = $etc['password'];
-			$user->gcos = Input::get ('fname') . ' ' . Input::get ('lname') . ', ' . Input::get ('email');
-			$user->gid = Input::get ('groupPrimary');
+			$user->gcos = request ('fname') . ' ' . request ('lname') . ', ' . request ('email');
+			$user->gid = request ('groupPrimary');
 			$user->homedir = $inputHomedir;
-			$user->shell = Input::get ('shell');
+			$user->shell = request ('shell');
 			$user->lastchange = time () / 60 / 60 / 24;
-			$user->mail_enabled = Input::get ('mailEnabled');
+			$user->mail_enabled = request ('mailEnabled');
 			$user->expire = $next1OctDays;
 
-			$userInfo->username = Input::get ('username');
-			$userInfo->fname = Input::get ('fname');
-			$userInfo->lname = Input::get ('lname');
-			$userInfo->email = Input::get ('email');
+			$userInfo->username = request ('username');
+			$userInfo->fname = request ('fname');
+			$userInfo->lname = request ('lname');
+			$userInfo->email = request ('email');
 			$userInfo->lastchange = time () / 60 / 60 / 24;
 			$userInfo->etc = null;
 			$userInfo->validated = 1;
@@ -646,10 +644,10 @@ class StaffUserController extends Controller
 
 			$alerts = array
 			(
-				new Alert ('Gebruiker aangemaakt: ' . Input::get ('username'), Alert::TYPE_SUCCESS)
+				new Alert ('User created: ' . request ('username'), Alert::TYPE_SUCCESS)
 			);
 
-			foreach ((array) Input::get ('groups') as $gid)
+			foreach ((array) request ('groups') as $gid)
 			{
 				$assoc = new UserGroup ();
 				$assoc->uid = $user->uid;
@@ -659,7 +657,7 @@ class StaffUserController extends Controller
 
 				$group = Group::where ('gid', $gid)->first ();
 
-				$alerts[] = new Alert ('Gebruiker ' . $userInfo->username . ' toegewezen aan groep: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
+				$alerts[] = new Alert ('User ' . $userInfo->username . ' assigned to group: ' . ucfirst ($group->name), Alert::TYPE_SUCCESS);
 			}
 
 			$vhost = new Vhost (); // User's default vHost //
@@ -670,55 +668,51 @@ class StaffUserController extends Controller
 			$vhost->serveradmin = $userInfo->username . '@sinners.be';
 			$vhost->cgi = 1;
 			$vhost->ssl = 0;
-			$vhost->locked = 1; // Enkel bewerkbaar door staff //
+			$vhost->locked = 1; // Only editable by staff //
 			$vhost->save ();
 
-			$alerts[] = new Alert ('vHost toegevoegd: ' . $vhost->servername, Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('vHost added: ' . $vhost->servername, Alert::TYPE_SUCCESS);
 
 			$ftp = new Ftp (); // User's default FTP account //
-			$ftp->user = $userInfo->username;
+			$ftp->username = $userInfo->username;
 			$ftp->uid = $user->uid;
 			$ftp->passwd = $user->crypt;
 			$ftp->dir = $user->homedir;
-			$ftp->locked = 1; // Enkel bewerkbaar door staff //
+			$ftp->locked = 1; // Only editable by staff //
 			$ftp->save ();
 
-			$alerts[] = new Alert ('FTP-account toegevoegd: ' . $ftp->user, Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('FTP account added: ' . $ftp->username, Alert::TYPE_SUCCESS);
 
 			$userLog = new UserLog();
 			$userLog->user_info_id = $userInfo->id;
 			$userLog->new = 1;
-			$userLog->status = 0; // -1 = Niet te factureren // 0 = Nog te factureren // 1 = Gefactureerd //
+			$userLog->status = 0; // -1 = Not to be billed // 0 = To be billed // 1 = Billed //
 			$userLog->save ();
 
-			$alerts[] = new Alert ('Opgeslagen in log als nog te factureren', Alert::TYPE_SUCCESS);
+			$alerts[] = new Alert ('Saved to the log as "To be billed"', Alert::TYPE_SUCCESS);
 
 			$task = new SystemTask ();
 			$task->type = SystemTask::TYPE_HOMEDIR_PREPARE;
 			$task->data = json_encode (array ('userInfoId' => $userInfo->id, 'user' => $userInfo->username));
 			$task->save ();
 
-			$alerts[] = new Alert ('Home directory zal bij de volgende SystemTask-uitvoeringscyclus aangemaakt worden. Vergeet de <a href="/staff/system/systemtask">status</a> niet in de gaten te houden.', 'warning');
+			$alerts[] = new Alert ('The home directory will be created during the next SystemTask run. Don\'t forget to keep an eye on the <a href="/staff/system/systemtask">status</a>.', 'warning');
 
 			DatabaseCredentials::forUserPrimary_hash ($userInfo->username, $etc['mysql_hash']);
 
 			DB::commit ();
 
-			Mail::send ('email.user.activated', compact ('userInfo'), function ($msg) use ($userInfo)
-				{
-					$msg->to ($userInfo->email, $userInfo->getFullName ())->subject ('Uw SIN-account is geactiveerd');
-				}
-			);
+			Mail::send (new AccountActivated ($userInfo));
 
-			Log::log ('Gebruiker gevalideerd', NULL, $user, $userInfo);
+			Log::log ('User validated', NULL, $user, $userInfo);
 
 			return Redirect::to ('/staff/user/user')->with ('alerts', $alerts);
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			DB::rollback ();
 
-			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Het bijwerken van de gebruiker is mislukt. Alle databasetransacties zijn teruggerold.', Alert::TYPE_ALERT)));
+			return Redirect::to ('/error')->with ('ex', new AppException ($ex))->with ('alerts', array (new Alert ('Updating the user failed. All database transactions have been rolled back.', Alert::TYPE_ALERT)));
 		}
 	}
 
@@ -726,9 +720,9 @@ class StaffUserController extends Controller
 	{
 		$userInfo->delete ();
 
-		Log::log ('Gebruikersregistratie geweigerd', NULL, $userInfo);
+		Log::log ('User registration rejected', NULL, $userInfo);
 
-		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Validatie geweigerd: ' . $userInfo->username . PHP_EOL . '</br />Gebruikersinformatie verwijderd.<br />Let op: Er is <strong>geen</strong> geautomatiseerde e-mail verstuurd naar de gebruiker in kwestie. Gelieve (indien het om een gebruiker ging, en geen bot o.i.d.) zelf even een e-mail naar de gebruiker in kwestie te sturen en er ook duidelijk bij te zeggen <strong>waarom</strong> zijn registratie geweigerd is.')));
+		return Redirect::to ('/staff/user/user')->with ('alerts', array (new Alert ('Validation rejected: ' . $userInfo->username . PHP_EOL . '</br />User information removed.<br />Note: <strong>no</strong> automated e-mail has been sent to the user in question. If this was a real person rather than a bot, please e-mail them yourself and state clearly <strong>why</strong> their registration was rejected.')));
 	}
 
 	public function more ($user)
@@ -740,13 +734,13 @@ class StaffUserController extends Controller
 		{
 			$userMailEnabledMap = array
 			(
-				'0' => 'Uit',
-				'1' => 'Aan',
-				'-1' => 'Blokkeren'
+				'0' => 'Disabled',
+				'1' => 'Enabled',
+				'-1' => 'Blocked'
 			);
 			$userMailEnabledPretty = $userMailEnabledMap[$user->mail_enabled] . ' (' . $user->mail_enabled . ')';
 		}
-		catch (Exception $ex)
+		catch (\Exception $ex)
 		{
 			$userMailEnabledPretty = $user->mail_enabled;
 		}
@@ -767,7 +761,7 @@ class StaffUserController extends Controller
 				$cryptAlgorithmPretty = 'SHA-512';
 				break;
 			default:
-				$cryptAlgorithmPretty = 'Onbekend';
+				$cryptAlgorithmPretty = 'Unknown';
 		}
 		$cryptAlgorithmPretty .= ' ($' . $cryptAlgorithm . '$)';
 
@@ -781,8 +775,8 @@ class StaffUserController extends Controller
 		$userInfo->generateLoginToken ();
 		$userInfo->save ();
 
-		Log::log ('Eenmalige login token gegenereerd', NULL, $user, $userInfo);
+		Log::log ('One-time login token generated', NULL, $user, $userInfo);
 
-		return Redirect::to ('staff/user/user/' . $user->id . '/more')->with ('alerts', array (new Alert ('Eenmalige login token gegenereerd. Deze kan doorgegeven worden aan de gebruiker in kwestie zodat deze zelf via <em>Gebruiker</em> -> <em>Gegevens wijzigen</em> een nieuw wachtwoord kan instellen voor zijn/haar account.<br />Deze link zal automatisch vervallen wanneer deze gebruikt wordt.', Alert::TYPE_INFO)));
+		return Redirect::to ('staff/user/user/' . $user->id . '/more')->with ('alerts', array (new Alert ('One-time login token generated. It can be passed to the user so that they can set a new password themselves via <em>User</em> -> <em>Modify account</em>.<br />The link expires automatically once it has been used.', Alert::TYPE_INFO)));
 	}
 }

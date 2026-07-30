@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -66,13 +64,13 @@ class StaffGroupController extends Controller
 		(
 			array
 			(
-				'GID' => Input::get ('gid'),
-				'Naam' => Input::get ('name')
+				'GID' => request ('gid'),
+				'Name' => request ('name')
 			),
 			array
 			(
 				'GID' => array ('required', 'unique:group,gid', 'integer', 'not_in:' . $strReservedGids),
-				'Naam' => array ('required', 'unique:group,name', 'alpha', 'max:30', 'not_in:' . $strReservedGroups)
+				'Name' => array ('required', 'unique:group,name', 'alpha', 'max:30', 'not_in:' . $strReservedGroups)
 			)
 		);
 		
@@ -80,23 +78,23 @@ class StaffGroupController extends Controller
 			return Redirect::to ('/staff/user/group/create')->withInput ()->withErrors ($validator);
 		
 		$group = new Group ();
-		$group->gid = Input::get ('gid');
-		$group->name = strtolower (Input::get ('name'));
+		$group->gid = request ('gid');
+		$group->name = strtolower (request ('name'));
 		
 		$group->save ();
 		
-		Log::log ('Gebruikersgroep aangemaakt', NULL, $group);
+		Log::log ('User group created', NULL, $group);
 		
-		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep aangemaakt: ' . $group->name, Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Group created: ' . $group->name, Alert::TYPE_SUCCESS)));
 	}
 	
 	public function remove ($group)
 	{
 		$group->delete ();
 		
-		Log::log ('Gebruikersgroep verwijderd', NULL, $group);
+		Log::log ('User group removed', NULL, $group);
 		
-		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Groep verwijderd: ' . $group->name, Alert::TYPE_SUCCESS)));
+		return Redirect::to ('/staff/user/group')->with ('alerts', array (new Alert ('Group removed: ' . $group->name, Alert::TYPE_SUCCESS)));
 	}
 
 }

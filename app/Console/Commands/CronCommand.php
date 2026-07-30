@@ -5,12 +5,12 @@ namespace App\Console\Commands;
 use App\Certbot;
 use App\Models\Log;
 use App\Models\SystemTask;
+use App\ProblemSolver;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\Vhost;
 use App\Plugin;
 use App\ServiceApache;
-use App\WordpressManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -126,8 +126,10 @@ class CronCommand extends Command
 					
 					break;
 				default:
+					// A task type no core case handles is offered to the plugins. None of
+					// them claiming it leaves nothing to merge //
 					$pluginStatuses = Plugin::executeAllSystemTasks ($task->type, $data);
-					$status = array_merge (...$pluginStatuses);
+					$status = empty ($pluginStatuses) ? NULL : array_merge (...$pluginStatuses);
 			}
 			
 			if (is_array ($status))

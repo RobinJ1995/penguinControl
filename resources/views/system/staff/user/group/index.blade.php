@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Groepen &bull; Staff
+Groups &bull; Staff
 @endsection
 
 @section ('content')
@@ -19,8 +19,8 @@ Groepen &bull; Staff
 		<tr>
 			<td>
 				<div class="button-group radius">
-					<a href="/staff/user/group/{{ $group->id }}/remove" title="Verwijderen" class="button tiny alert remove confirm">
-						<img src="/img/icons/remove.png" alt="Verwijderen" />
+					<a href="/staff/user/group/{{ $group->id }}/remove" title="Remove" class="button tiny alert remove confirm">
+						<img src="/img/icons/remove.png" alt="Remove" />
 					</a>
 				</div>
 			</td>

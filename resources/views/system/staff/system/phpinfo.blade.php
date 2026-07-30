@@ -1,7 +1,7 @@
 @extends ('layout.master')
 
 @section ('pageTitle')
-Serverinformatie &bull; Staff
+Server information &bull; Staff
 @endsection
 
 @section ('content')

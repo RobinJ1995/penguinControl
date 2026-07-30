@@ -9,7 +9,6 @@ use App\Models\Log;
 use App\Models\MailDomain;
 use App\Models\MailForward;
 use App\Models\MailUser;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\SystemTask;
 use App\Models\User;
@@ -20,7 +19,6 @@ use App\Models\UserLog;
 use App\Models\Vhost;
 use App\Alert;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,7 +29,7 @@ class StaffUserLimitController extends Controller
 		$global = UserLimit::whereNull ('uid')->first ();
 		$limits = UserLimit::whereNotNull ('user_limit.uid')->orderBy ($order)->paginate ();
 		
-		$url = action ('Staff\StaffUserLimitController@index', $order);
+		$url = route ('staff.limit.index');
 		
 		return view ('staff.user.limit.index', compact ('global', 'limits', 'url'));
 	}
@@ -57,13 +55,13 @@ class StaffUserLimitController extends Controller
 		(
 			array
 			(
-				'User' => Input::get ('uid'),
-				'FTP accounts' => Input::get ('ftp'),
-				'vHosts' => Input::get ('vhost'),
-				'E-mail domains' => Input::get ('maildomain'),
-				'E-mail accounts' => Input::get ('mailuser'),
-				'Forwarding addresses' => Input::get ('mailforward'),
-				'Storage space' => Input::get ('diskusage')
+				'User' => request ('uid'),
+				'FTP accounts' => request ('ftp'),
+				'vHosts' => request ('vhost'),
+				'E-mail domains' => request ('maildomain'),
+				'E-mail accounts' => request ('mailuser'),
+				'Forwarding addresses' => request ('mailforward'),
+				'Storage space' => request ('diskusage')
 			),
 			array
 			(
@@ -81,13 +79,13 @@ class StaffUserLimitController extends Controller
 			return Redirect::to ('/staff/user/limit/create')->withInput ()->withErrors ($validator);
 		
 		$limit = new UserLimit ();
-		$limit->uid = Input::get ('uid');
-		$limit->ftp = Input::get ('ftp');
-		$limit->vhost = Input::get ('vhost');
-		$limit->mail_domain = Input::get ('maildomain');
-		$limit->mail_user = Input::get ('mailuser');
-		$limit->mail_forward = Input::get ('mailforward');
-		$limit->diskusage = Input::get ('diskusage');
+		$limit->uid = request ('uid');
+		$limit->ftp = request ('ftp');
+		$limit->vhost = request ('vhost');
+		$limit->mail_domain = request ('maildomain');
+		$limit->mail_user = request ('mailuser');
+		$limit->mail_forward = request ('mailforward');
+		$limit->diskusage = request ('diskusage');
 		$limit->save ();
 		
 		Log::log ('User limit exception created', NULL, $limit);
@@ -115,12 +113,12 @@ class StaffUserLimitController extends Controller
 		(
 			array
 			(
-				'FTP accounts' => Input::get ('ftp'),
-				'vHosts' => Input::get ('vhost'),
-				'E-mail domains' => Input::get ('maildomain'),
-				'E-mail accounts' => Input::get ('mailuser'),
-				'Forwarding addresses' => Input::get ('mailforward'),
-				'Storage space' => Input::get ('diskusage')
+				'FTP accounts' => request ('ftp'),
+				'vHosts' => request ('vhost'),
+				'E-mail domains' => request ('maildomain'),
+				'E-mail accounts' => request ('mailuser'),
+				'Forwarding addresses' => request ('mailforward'),
+				'Storage space' => request ('diskusage')
 			),
 			array
 			(
@@ -136,12 +134,12 @@ class StaffUserLimitController extends Controller
 		if ($validator->fails ())
 			return Redirect::to ('/staff/user/limit/' . $limit->id . '/edit')->withInput ()->withErrors ($validator);
 		
-		$limit->ftp = Input::get ('ftp');
-		$limit->vhost = Input::get ('vhost');
-		$limit->mail_domain = Input::get ('maildomain');
-		$limit->mail_user = Input::get ('mailuser');
-		$limit->mail_forward = Input::get ('mailforward');
-		$limit->diskusage = Input::get ('diskusage');
+		$limit->ftp = request ('ftp');
+		$limit->vhost = request ('vhost');
+		$limit->mail_domain = request ('maildomain');
+		$limit->mail_user = request ('mailuser');
+		$limit->mail_forward = request ('mailforward');
+		$limit->diskusage = request ('diskusage');
 		$limit->save ();
 		
 		Log::log ('User limit exception modified', NULL, $limit);

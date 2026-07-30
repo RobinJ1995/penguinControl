@@ -11,7 +11,7 @@ Edit forwarding address
 		<div class="row">
 			<div class="large-7 medium-6 small-12 column">
 				<label>E-mail address:
-					<input type="text" name="source" value="{{ Input::old ('source', $mFwd->source) }}" required />
+					<input type="text" name="source" value="{{ old ('source', $mFwd->source) }}" required />
 				</label>
 				<small class="error">Required field</small>
 			</div>
@@ -21,7 +21,7 @@ Edit forwarding address
 						(
 							'domain',
 							$domains,
-							Input::old ('domain', substr ($mFwd->source, strpos ($mFwd->email, '@')))
+							old ('domain', substr ($mFwd->source, strpos ($mFwd->email, '@')))
 						)
 					}}
 				</label>
@@ -31,7 +31,7 @@ Edit forwarding address
 		<div class="row">
 			<div class="large-12 medium-12 small-12 column">
 				<label>Destination:
-					<input type="email" name="destination" value="{{ Input::old ('destination', $mFwd->destination) }}" required />
+					<input type="email" name="destination" value="{{ old ('destination', $mFwd->destination) }}" required />
 				</label>
 				<small class="error">Enter a valid e-mail address.</small>
 			</div>

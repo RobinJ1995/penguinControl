@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Alert;
+use App\ProblemSolver;
+use App\Models\SystemTask;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
 
 class ProblemSolverController extends Controller
@@ -17,9 +23,9 @@ class ProblemSolverController extends Controller
 	
 	public function schedule ()
 	{
-		$user = User::find (Input::get ('userId'));
+		$user = User::find (request ('userId'));
 		if ($user == NULL)
-			throw new Exception ('User does not exist');
+			throw new \Exception ('User does not exist');
 		
 		$task = new SystemTask ();
 		$task->type = SystemTask::TYPE_PROBLEM_SOLVER;
@@ -31,7 +37,7 @@ class ProblemSolverController extends Controller
 	
 	public function result ()
 	{
-		$task = SystemTask::find (Input::get ('taskId'));
+		$task = SystemTask::find (request ('taskId'));
 		
 		return $task;
 	}

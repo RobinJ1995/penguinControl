@@ -11,6 +11,10 @@ return [
     | an array of paths that should be checked for your views. Of course
     | the usual Laravel view path has already been registered for you.
     |
+    | "views/system" comes first so that view names may omit the "system."
+    | prefix, and so that App\Providers\PluginViewPathServiceProvider can
+    | prepend plugin view directories ahead of it.
+    |
     */
 
     'paths' => [
@@ -29,6 +33,9 @@ return [
     |
     */
 
-    'compiled' => realpath(storage_path('framework/views')),
+    'compiled' => env(
+        'VIEW_COMPILED_PATH',
+        storage_path('framework/views')
+    ),
 
 ];

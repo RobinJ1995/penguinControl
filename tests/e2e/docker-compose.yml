@@ -1,0 +1,76 @@
+# A single-box penguinControl install, which is what the application assumes:
+# Apache, PHP and cron on one host, with MariaDB over the network.
+services:
+  db:
+    image: mariadb:12.3
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpw
+      MARIADB_DATABASE: penguincontrol
+      MARIADB_USER: penguincontrol
+      MARIADB_PASSWORD: pcpw
+    # The panel manages each user's own DBMS account, so its account needs
+    # CREATE USER and GRANT OPTION on top of rights to its own schema.
+    command: >
+      --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-uroot", "-prootpw", "--silent"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  # Deliberately not called "app": .app is an HSTS-preloaded TLD, so Chromium
+  # rewrites http://app/ to https://app/ and every request is refused.
+  panel:
+    image: penguincontrol-e2e-app
+    build:
+      context: ../..
+      dockerfile: tests/e2e/app/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: penguincontrol
+      DB_USERNAME: penguincontrol
+      DB_PASSWORD: pcpw
+      DB_ROOT_PASSWORD: rootpw
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost/user/login"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    # mpm-itk switches each worker's uid per request, which a container's default
+    # capability set does not allow: Apache answers 500 and logs
+    # "initgroups(www-data, 33): Operation not permitted". Granting SETUID,
+    # SETGID and SETPCAP individually is not enough -- the workers have those
+    # already and still lose them across the uid change. A real server does not
+    # need this; it is the price of running mpm-itk inside a container, and it is
+    # confined to this test harness.
+    privileged: true
+
+  runner:
+    image: penguincontrol-e2e-runner
+    build:
+      context: .
+      dockerfile: runner/Dockerfile
+    depends_on:
+      panel:
+        condition: service_healthy
+    environment:
+      PENGUIN_BASE_URL: http://panel
+      PENGUIN_DB_HOST: db
+      PENGUIN_DB_USER: penguincontrol
+      PENGUIN_DB_PASSWORD: pcpw
+      PENGUIN_DB_ROOT_PASSWORD: rootpw
+      PENGUIN_DB_NAME: penguincontrol
+      PENGUIN_APP_CONTAINER_HOST: panel
+      # The runner only ever talks to the app and db containers, so no proxy the
+      # host may have configured applies. Chromium is told so explicitly at launch
+      # (see features/environment.py) rather than through these variables, because
+      # it reads an empty http_proxy as a proxy of "" and refuses every connection.
+      NO_PROXY: "*"
+      no_proxy: "*"
+    volumes:
+      - ./features:/work/features:ro
+      - ./reports:/work/reports
