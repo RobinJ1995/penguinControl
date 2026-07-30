@@ -47,13 +47,17 @@ is the default on this version and the reason `DatabaseCredentials` has to issue
 `CREATE USER IF NOT EXISTS` before it can `GRANT`. The panel's own account is
 granted `GRANT OPTION`, as `docs/setup/apache.md` says a real install requires.
 
-**app** -- the panel, installed at `/opt/penguinControl` exactly as documented:
+**panel** -- the application, installed at `/opt/penguinControl` exactly as documented:
 `composer install`, `npm run build`, `migrate`, `db:seed`, the crontab line from
 the setup instructions, and Apache in the foreground. It runs with `APP_ENV`
 set to production, which matters: `DatabaseCredentials` skips managing DBMS
 accounts entirely when the environment is `local`.
 
 **runner** -- Python with behave and Playwright driving Chromium.
+
+The panel's service is called `panel` rather than `app` on purpose: `.app` is an
+HSTS-preloaded TLD, so Chromium rewrites `http://app/` to `https://app/` and every
+request is refused.
 
 ## The three things a container cannot do honestly
 
@@ -80,7 +84,7 @@ configuration is valid *and* loadable on current Apache -- could not be made.
 
 ## The test control plane
 
-`app/bin/control.py` listens on port 9000 inside the app container and exists
+`app/bin/control.py` listens on port 9000 inside the panel container and exists
 only in the test image; Apache never sees it. behave uses it to reset state
 between scenarios and to inspect what the panel wrote to the host: the generated
 vHost files, `apache2ctl configtest`, the certbot log, and `laravel.log` when a

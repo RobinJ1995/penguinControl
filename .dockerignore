@@ -24,3 +24,6 @@
 
 # Test artefacts
 /tests/e2e/reports
+
+# Python bytecode from running the harness locally
+__pycache__/

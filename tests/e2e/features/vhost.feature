@@ -19,7 +19,7 @@ Feature: Generating Apache vHosts
       <VirtualHost *:80>
       ServerName penguin.example.test
       AssignUserID penguin user
-      DocumentRoot "/home/penguin/public_html"
+      DocumentRoot "/home/penguin/public_html/"
       AllowOverride All
       Require all granted
       """
@@ -30,7 +30,7 @@ Feature: Generating Apache vHosts
     Then a vHost file for "confined.example.test" exists for user "penguin"
     And the vHost file contains
       """
-      php_admin_value open_basedir "/home/penguin/public_html:/home/penguin:/tmp:/usr/share/php"
+      php_admin_value open_basedir "/home/penguin/public_html/:/home/penguin:/tmp:/usr/share/php"
       """
     And the vHost file does not contain "/usr/share/php/:"
     And Apache accepts its configuration

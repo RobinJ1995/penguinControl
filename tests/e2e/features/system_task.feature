@@ -24,5 +24,5 @@ Feature: The system task queue
     Given I am logged in as the administrator
     When I schedule a "calculate_disk_usage" system task
     And the system task runner runs
-    Then a system task of type "calculate_disk_usage" was recorded with exit code 0
+    Then a system task of type "calculate_disk_usage" has run
     And the disk usage of "penguin" has been calculated

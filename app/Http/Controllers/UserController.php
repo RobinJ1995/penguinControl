@@ -234,7 +234,10 @@ class UserController extends Controller
 		$userInfo->fname = request ('fname');
 		$userInfo->lname = request ('lname');
 		$userInfo->email = request ('email');
-		$userInfo->schoolnr = request ('rnummer');
+		// The registration form has no student-number field -- staff fill it in when
+		// they validate the account -- and schoolnr is NOT NULL, so an explicit NULL
+		// here fails on any MariaDB regardless of strict mode //
+		$userInfo->schoolnr = request ('rnummer') ?? '';
 		$userInfo->lastchange = time () / 60 / 60 / 24;
 		$userInfo->etc = serialize ($etc); // After all the dirty hacks that were pulled with the old SINControl, I'm allowed to sin once too... //
 		$userInfo->validated = 0;

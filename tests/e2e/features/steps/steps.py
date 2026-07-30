@@ -47,17 +47,20 @@ def db(context, root=False):
 def query(context, sql, args=None, root=False):
     with db(context, root=root) as connection:
         with connection.cursor() as cursor:
-            cursor.execute(sql, args or ())
+            # Only pass args when there are some: otherwise PyMySQL runs the SQL
+            # through %-formatting, and statements like SHOW GRANTS FOR 'x'@'%'
+            # blow up on their own wildcard
+            cursor.execute(sql, args) if args else cursor.execute(sql)
             return cursor.fetchall()
 
 
-def control_get(context, path, **params):
-    response = requests.get(context.control + path, params=params, timeout=120)
-    return response
+def control_get(context, endpoint, **params):
+    # Not named "path": /file and /ls take a query parameter of that name
+    return requests.get(context.control + endpoint, params=params, timeout=120)
 
 
-def control_post(context, path, payload=None):
-    return requests.post(context.control + path, json=payload or {}, timeout=300)
+def control_post(context, endpoint, payload=None):
+    return requests.post(context.control + endpoint, json=payload or {}, timeout=300)
 
 
 def read_host_file(context, path):
@@ -72,7 +75,11 @@ def log_in(context, username, password):
     context.page.goto('/user/login')
     context.page.fill('input[name="username"]', username)
     context.page.fill('input[name="password"]', password)
-    context.page.click('button[name="time"]')
+    # The response is captured because a failed login is a 200 re-render of the
+    # form rather than a redirect, and the scenarios assert on that
+    with context.page.expect_navigation() as navigation:
+        context.page.click('button[name="time"]')
+    context.response = navigation.value
     context.page.wait_for_load_state()
 
 
@@ -80,6 +87,31 @@ def run_cron(context):
     result = control_post(context, '/cron').json()
     context.last_cron = result
     return result
+
+
+def pending_tasks(context):
+    return query(
+        context,
+        'SELECT COUNT(*) AS n FROM system_task WHERE lastRun IS NULL AND `interval` IS NULL'
+    )[0]['n']
+
+
+def drain_queue(context, attempts=4, pause=1.5):
+    """
+    Run cron until the one-off queue is empty.
+
+    More than one pass can be needed even for a single task: CronCommand only
+    picks up rows whose `start` is strictly in the past, and the staff form
+    stamps `start` with time(), so a task created in the same second as the run
+    is not eligible until the clock ticks. Real cron fires a minute later and
+    never notices; a test that schedules and runs back to back does.
+    """
+    for _ in range(attempts):
+        run_cron(context)
+        if pending_tasks(context) == 0:
+            return
+        time.sleep(pause)
+    raise AssertionError(f'system tasks were still pending after {attempts} runs')
 
 
 def wait_for(predicate, timeout=30, interval=0.5, description='condition'):
@@ -216,19 +248,12 @@ def step_schedule_task(context, task_type):
 
 @when('the system task runner runs')
 def step_run_cron(context):
-    run_cron(context)
+    drain_queue(context)
 
 
 @when('the system task runner runs until the queue is idle')
 def step_run_cron_until_idle(context):
-    for _ in range(6):
-        run_cron(context)
-        pending = query(
-            context,
-            'SELECT COUNT(*) AS n FROM system_task WHERE lastRun IS NULL AND `interval` IS NULL')
-        if pending[0]['n'] == 0:
-            return
-    raise AssertionError('system tasks were still pending after six runs')
+    drain_queue(context, attempts=6)
 
 
 @when('I register as "{username}" with e-mail "{email}"')
@@ -268,9 +293,10 @@ def step_page_not_mentions(context, text):
 
 @then('the response status is {status:d}')
 def step_status(context, status):
-    assert context.response is not None, 'no navigation was recorded'
-    assert context.response.status == status, \
-        f'expected {status}, got {context.response.status} for {context.page.url}'
+    response = getattr(context, 'response', None)
+    assert response is not None, 'no navigation was recorded'
+    assert response.status == status, \
+        f'expected {status}, got {response.status} for {context.page.url}'
 
 
 @then('every page reachable from the menu renders')
@@ -398,16 +424,30 @@ def step_mail_forward_row(context, source, destination):
         'mail_forward.mail_domain_id was not set, so Postfix could not resolve the domain'
 
 
-@then('a system task of type "{task_type}" was recorded with exit code {code:d}')
-def step_task_exit_code(context, task_type, code):
+def completed_task(context, task_type):
     def task():
         rows = query(context,
                      'SELECT * FROM system_task WHERE type = %s AND lastRun IS NOT NULL',
                      (task_type,))
         return rows[0] if rows else None
-    row = wait_for(task, description=f'a completed {task_type} task')
+    return wait_for(task, description=f'a completed {task_type} task')
+
+
+@then('a system task of type "{task_type}" was recorded with exit code {code:d}')
+def step_task_exit_code(context, task_type, code):
+    row = completed_task(context, task_type)
     assert row['exitcode'] == code, \
         f'{task_type} finished with exit code {row["exitcode"]}, expected {code}: {row["data"]}'
+
+
+@then('a system task of type "{task_type}" has run')
+def step_task_ran(context, task_type):
+    # Not every task type reports an exit code: the ones that call into the
+    # application rather than shelling out -- calculate_disk_usage is the one in
+    # the queue today -- return nothing for CronCommand to record, so the fact
+    # that lastRun was stamped is all there is to assert on. What the task did is
+    # asserted separately, on its effect
+    completed_task(context, task_type)
 
 
 @then('the disk usage of "{username}" has been calculated')

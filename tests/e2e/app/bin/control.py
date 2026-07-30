@@ -23,12 +23,14 @@ Endpoints:
     GET  /health
 """
 
+import grp
 import json
 import os
 import pwd
 import re
 import subprocess
-import grp
+import sys
+import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -70,12 +72,12 @@ def drop_panel_dbms_accounts():
     logging in provisions an account would pass on a leftover from an earlier
     one.
     """
+    database = os.environ.get('DB_DATABASE', 'penguincontrol')
     sql = (
         "SELECT CONCAT('DROP USER IF EXISTS ', QUOTE(User), '@', QUOTE(Host), ';') "
         "FROM mysql.user "
         "WHERE User LIKE 'pc\\_u%' "
-        "   OR User IN (SELECT username FROM `%s`.user_info);"
-        % os.environ.get('DB_DATABASE', 'penguincontrol')
+        f"   OR User IN (SELECT username FROM `{database}`.user_info);"
     )
     listing = run(mariadb_root_command(sql))
     statements = [line for line in listing['stdout'].splitlines() if line.strip()]
@@ -164,6 +166,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         pass
+
+    def handle_one_request(self):
+        """Answer with the traceback rather than dropping the connection."""
+        try:
+            super().handle_one_request()
+        except Exception:                                          # noqa: BLE001
+            trace = traceback.format_exc()
+            print(trace, file=sys.stderr)
+            try:
+                self._send(500, {'error': 'control plane exception', 'traceback': trace})
+            except Exception:                                      # noqa: BLE001
+                pass
 
     def _send(self, status, payload):
         body = json.dumps(payload, indent=1).encode()

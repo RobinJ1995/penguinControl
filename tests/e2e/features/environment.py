@@ -12,7 +12,7 @@ import time
 import requests
 from playwright.sync_api import sync_playwright
 
-BASE_URL = os.environ.get('PENGUIN_BASE_URL', 'http://app')
+BASE_URL = os.environ.get('PENGUIN_BASE_URL', 'http://panel')
 CONTROL_URL = BASE_URL.rsplit(':', 1)[0] if BASE_URL.count(':') > 1 else BASE_URL
 CONTROL = os.environ.get('PENGUIN_CONTROL_URL', CONTROL_URL + ':9000')
 
@@ -33,7 +33,10 @@ def wait_for_control(timeout=120):
 def before_all(context):
     wait_for_control()
     context.playwright = sync_playwright().start()
-    context.browser = context.playwright.chromium.launch()
+    # --no-proxy-server because the app and db containers are reachable directly.
+    # Chromium otherwise picks up whatever proxy the host has configured, and
+    # treats an empty http_proxy as a proxy of "" -- refusing every connection.
+    context.browser = context.playwright.chromium.launch (args=['--no-proxy-server'])
     context.base_url = BASE_URL
     context.control = CONTROL
 
