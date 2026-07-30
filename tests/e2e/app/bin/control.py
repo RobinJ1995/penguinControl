@@ -11,8 +11,9 @@ Rather than reach into the container from outside, the test image runs this on
 port 9000. It exists only in the test image and Apache never sees it.
 
 Endpoints:
-    POST /reset            re-migrate and re-seed, and mirror the seeded panel
-                           users into real Unix users and groups
+    POST /reset            drop the DBMS accounts the panel created, re-migrate
+                           and re-seed, and mirror the seeded panel users into
+                           real Unix users and groups
     POST /cron             run one pass of `artisan cron:run`
     GET  /configtest       apache2ctl configtest
     GET  /file?path=...    read a file, from an allow-list of prefixes
@@ -59,6 +60,39 @@ def run(cmd, cwd=None):
 
 def artisan(*args):
     return run(['php', 'artisan', *args], cwd=APP_DIR)
+
+
+def drop_panel_dbms_accounts():
+    """
+    Remove the DBMS accounts the panel created for its users.
+
+    Without this they would survive a reset, and a scenario asserting that
+    logging in provisions an account would pass on a leftover from an earlier
+    one.
+    """
+    sql = (
+        "SELECT CONCAT('DROP USER IF EXISTS ', QUOTE(User), '@', QUOTE(Host), ';') "
+        "FROM mysql.user "
+        "WHERE User LIKE 'pc\\_u%' "
+        "   OR User IN (SELECT username FROM `%s`.user_info);"
+        % os.environ.get('DB_DATABASE', 'penguincontrol')
+    )
+    listing = run(mariadb_root_command(sql))
+    statements = [line for line in listing['stdout'].splitlines() if line.strip()]
+    if not statements:
+        return [listing]
+    return [listing, run(mariadb_root_command(' '.join(statements)))]
+
+
+def mariadb_root_command(sql):
+    return [
+        'mariadb',
+        '-h', os.environ.get('DB_HOST', 'db'),
+        '-uroot',
+        '-p' + os.environ.get('DB_ROOT_PASSWORD', ''),
+        '-N', '-B',
+        '-e', sql,
+    ]
 
 
 def seeded_accounts():
@@ -177,7 +211,9 @@ class Handler(BaseHTTPRequestHandler):
         payload = json.loads(raw) if raw else {}
 
         if url.path == '/reset':
-            steps = [artisan('migrate:fresh', '--seed', '--force')]
+            # Before the schema goes, while user_info can still be read
+            steps = drop_panel_dbms_accounts()
+            steps.append(artisan('migrate:fresh', '--seed', '--force'))
 
             for username, uid, group, gid, homedir in seeded_accounts():
                 steps.extend(ensure_unix_account(username, uid, group, gid, homedir))

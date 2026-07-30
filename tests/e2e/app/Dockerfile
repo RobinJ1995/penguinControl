@@ -40,19 +40,6 @@ RUN a2enmod rewrite \
  && a2enmod mpm_prefork \
  && a2enmod mpm_itk
 
-# The application drives `systemctl reload apache2` through App\ServiceApache and
-# shells out to certbot for certificates. Neither works in a container, so both
-# are shimmed -- the reload really does reload Apache, and the certbot stub
-# records the arguments it was called with so tests can assert on them.
-COPY tests/e2e/app/bin/systemctl /usr/local/bin/systemctl
-COPY tests/e2e/app/bin/certbot /usr/local/bin/certbot
-COPY tests/e2e/app/bin/control.py /usr/local/bin/control.py
-COPY tests/e2e/app/vhost-penguincontrol.conf /etc/apache2/sites-available/000-penguincontrol.conf
-COPY tests/e2e/app/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/systemctl /usr/local/bin/certbot /usr/local/bin/entrypoint.sh \
- && a2dissite 000-default \
- && a2ensite 000-penguincontrol
-
 WORKDIR ${APP_DIR}
 
 # Dependencies first, so that source edits do not invalidate them. The caches are
@@ -81,6 +68,19 @@ RUN if [ -f vendor/autoload.php ]; then \
 
 # node_modules is only needed to produce public/build, so it goes afterwards.
 RUN npm run build && rm -rf node_modules /tmp/npm-cache
+
+# The application drives `systemctl reload apache2` through App\ServiceApache and
+# shells out to certbot for certificates. Neither works in a container, so both
+# are shimmed -- the reload really does reload Apache, and the certbot stub
+# records the arguments it was called with so tests can assert on them.
+COPY tests/e2e/app/bin/systemctl /usr/local/bin/systemctl
+COPY tests/e2e/app/bin/certbot /usr/local/bin/certbot
+COPY tests/e2e/app/bin/control.py /usr/local/bin/control.py
+COPY tests/e2e/app/vhost-penguincontrol.conf /etc/apache2/sites-available/000-penguincontrol.conf
+COPY tests/e2e/app/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/systemctl /usr/local/bin/certbot /usr/local/bin/entrypoint.sh \
+ && a2dissite 000-default \
+ && a2ensite 000-penguincontrol
 
 # What docs/setup/apache.md says has to exist and be writable.
 RUN mkdir -p /var/log/apache2/vhost public/export storage/framework/cache/data \
