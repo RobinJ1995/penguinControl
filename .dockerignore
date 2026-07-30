@@ -1,0 +1,23 @@
+# Built inside the image, and host copies would shadow it
+/node_modules
+
+# vendor/ is deliberately NOT excluded: see tests/e2e/app/Dockerfile, which
+# installs it only when the build context does not already carry one.
+/public/build
+/public/hot
+/public/storage
+/public/export
+
+# Local state
+/.git
+/.env
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+/.phpunit.cache
+.phpunit.result.cache
+
+# Test artefacts
+/tests/e2e/reports

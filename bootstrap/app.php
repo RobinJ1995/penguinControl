@@ -21,6 +21,10 @@ return Application::configure (basePath: dirname (__DIR__))
 	(
 		function (Middleware $middleware): void
 		{
+			// This application rolls its own login flow rather than using Laravel's
+			// scaffolding, so there is no route named "login" to fall back on //
+			$middleware->redirectGuestsTo ('/user/login');
+
 			// This app's own TrimStrings subclass exempts this app's password field names //
 			$middleware->replace (\Illuminate\Foundation\Http\Middleware\TrimStrings::class, TrimStrings::class);
 

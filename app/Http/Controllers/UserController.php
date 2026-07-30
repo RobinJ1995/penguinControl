@@ -225,7 +225,7 @@ class UserController extends Controller
 
 		$etc = array
 		(
-			'password' => crypt (request ('password'), '$6$rounds=' . mt_rand (8000, 12000) . '$' . bin2hex (openssl_random_pseudo_bytes (64)) . '$'),
+			'password' => crypt (request ('password'), '$6$rounds=' . random_int (8000, 12000) . '$' . bin2hex (random_bytes (8)) . '$'),
 			'mysql_hash' => DatabaseCredentials::getHash (request ('password'))
 		);
 

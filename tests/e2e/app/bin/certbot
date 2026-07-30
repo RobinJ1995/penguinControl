@@ -1,0 +1,7 @@
+#!/bin/sh
+# Stand-in for certbot: a container cannot complete an ACME challenge. Records
+# the arguments so that tests can assert on the command the panel built, then
+# reports success.
+printf '%s\n' "$*" >> /var/log/certbot-invocations.log
+echo "certbot stub: would have requested a certificate for: $*"
+exit 0

@@ -39,14 +39,14 @@ class UserInfo extends BaseModel
 	
 	public function generateValidationCode ()
 	{
-		$this->validationcode = bin2hex (openssl_random_pseudo_bytes (16));
+		$this->validationcode = bin2hex (random_bytes (16));
 		
 		return $this->validationcode;
 	}
 	
 	public function generateLoginToken ()
 	{
-		$this->logintoken = bin2hex (openssl_random_pseudo_bytes (16));
+		$this->logintoken = bin2hex (random_bytes (16));
 		
 		return $this->logintoken;
 	}

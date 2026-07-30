@@ -1,0 +1,65 @@
+# A single-box penguinControl install, which is what the application assumes:
+# Apache, PHP and cron on one host, with MariaDB over the network.
+services:
+  db:
+    image: mariadb:12.3
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpw
+      MARIADB_DATABASE: penguincontrol
+      MARIADB_USER: penguincontrol
+      MARIADB_PASSWORD: pcpw
+    # The panel manages each user's own DBMS account, so its account needs
+    # CREATE USER and GRANT OPTION on top of rights to its own schema.
+    command: >
+      --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-uroot", "-prootpw", "--silent"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  app:
+    image: penguincontrol-e2e-app
+    build:
+      context: ../..
+      dockerfile: tests/e2e/app/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: penguincontrol
+      DB_USERNAME: penguincontrol
+      DB_PASSWORD: pcpw
+      DB_ROOT_PASSWORD: rootpw
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost/user/login"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    # mpm-itk switches the worker's uid per vHost, which needs the capability
+    # even though the master process is root.
+    cap_add:
+      - SETUID
+      - SETGID
+
+  runner:
+    image: penguincontrol-e2e-runner
+    build:
+      context: .
+      dockerfile: runner/Dockerfile
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      PENGUIN_BASE_URL: http://app
+      PENGUIN_DB_HOST: db
+      PENGUIN_DB_USER: penguincontrol
+      PENGUIN_DB_PASSWORD: pcpw
+      PENGUIN_DB_ROOT_PASSWORD: rootpw
+      PENGUIN_DB_NAME: penguincontrol
+      PENGUIN_APP_CONTAINER_HOST: app
+    volumes:
+      - ./features:/work/features:ro
+      - ./reports:/work/reports

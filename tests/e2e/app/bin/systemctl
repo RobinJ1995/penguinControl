@@ -1,0 +1,28 @@
+#!/bin/sh
+# Stand-in for systemctl, which needs an init system a container does not have.
+# App\SystemService issues `systemctl reload apache2` and `systemctl is-active
+# apache2`, so those two really do act on Apache; anything else is a no-op.
+action="$1"
+unit="$2"
+
+case "$action:$unit" in
+	reload:apache2|reload-or-restart:apache2)
+		exec apachectl -k graceful
+		;;
+	restart:apache2)
+		exec apachectl -k restart
+		;;
+	is-active:apache2)
+		# apachectl has no status verb without mod_status, so ask the pidfile
+		if [ -f /var/run/apache2/apache2.pid ] && kill -0 "$(cat /var/run/apache2/apache2.pid)" 2>/dev/null; then
+			echo active
+			exit 0
+		fi
+		echo inactive
+		exit 3
+		;;
+	*)
+		echo "systemctl shim: ignoring '$*'" >&2
+		exit 0
+		;;
+esac
