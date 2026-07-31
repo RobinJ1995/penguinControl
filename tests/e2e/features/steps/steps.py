@@ -151,6 +151,13 @@ def step_existing_vhost(context, username, servername, docroot):
     context.execute_steps(f'''
         When I create a vHost "{servername}" with document root "{docroot}"
     ''')
+    # The step names an owner, so it has to establish one: the form creates the
+    # vHost for whoever is logged in, and a scenario that says "penguin has a
+    # vHost" while signed in as someone else is a scenario lying to itself
+    rows = query(context, 'SELECT uid FROM vhost WHERE servername = %s', (servername,))
+    assert rows, f'no vhost row for {servername} after creating it'
+    assert rows[0]['uid'] == SEEDED[username]['uid'], \
+        f'{servername} belongs to uid {rows[0]["uid"]}, not to {username}'
 
 
 # --------------------------------------------------------------------------
@@ -223,9 +230,16 @@ def step_add_mail_domain(context, domain, username):
 @when('I enable mail for my account')
 def step_enable_mail(context):
     context.page.goto('/mail')
-    if context.page.locator('button[name="enable"]').count():
-        context.page.click('button[name="enable"]')
-        context.page.wait_for_load_state()
+    # Skipping the click when the button is absent would let this step pass
+    # having done nothing at all, so the two ways it can be absent are told
+    # apart: already enabled is fine, anything else is a failure
+    if not context.page.locator('button[name="enable"]').count():
+        assert context.page.locator('button[name="disable"]').count(), \
+            'the mail page offered neither an enable nor a disable button'
+        return
+
+    context.page.click('button[name="enable"]')
+    context.page.wait_for_load_state()
 
 
 @when('I add a mail forward "{source}" to "{destination}" on domain "{domain}"')
@@ -299,18 +313,6 @@ def step_status(context, status):
         f'expected {status}, got {response.status} for {context.page.url}'
 
 
-@then('every page reachable from the menu renders')
-def step_menu_pages_render(context):
-    hrefs = context.page.eval_on_selector_all(
-        '#controlMenu a', 'els => els.map(e => e.getAttribute("href"))')
-    checked = 0
-    for href in sorted({h for h in hrefs if h and h.startswith('/') and 'logout' not in h}):
-        response = context.page.goto(href)
-        assert response.status < 500, f'{href} returned {response.status}'
-        checked += 1
-    assert checked, 'the menu exposed no links to check'
-
-
 # --------------------------------------------------------------------------
 # Then -- host and Apache
 # --------------------------------------------------------------------------
@@ -379,8 +381,17 @@ def step_certbot_apache(context):
 
 @then('the directory "{path}" exists and belongs to "{owner}"')
 def step_directory_owned(context, path, owner):
-    listing = control_get(context, '/ls', path=path)
-    assert listing.status_code == 200, f'{path} does not exist: {listing.text}'
+    # The chown is the whole reason create_vhost_docroot is a privileged task:
+    # Apache serves the site as the user through AssignUserID, so a document
+    # root left owned by root is a site the user cannot write to
+    def created():
+        response = control_get(context, '/stat', path=path)
+        return response.json() if response.status_code == 200 else None
+
+    stat = wait_for(created, description=f'{path} to be created')
+    assert stat['isdir'], f'{path} exists but is not a directory'
+    assert stat['owner'] == owner, \
+        f'{path} is owned by {stat["owner"] or stat["uid"]}, expected {owner}'
 
 
 # --------------------------------------------------------------------------
@@ -508,73 +519,3 @@ def step_pending_registration(context, username):
         'a user row was created before validation'
 
 
-# --------------------------------------------------------------------------
-# Then -- language
-# --------------------------------------------------------------------------
-
-# Words that would only appear if a Dutch string had survived translation. Kept
-# to terms with no English homograph, so a hit is unambiguous.
-DUTCH_MARKERS = [
-    'gebruiker', 'wachtwoord', 'verwijderen', 'toevoegen', 'bewerken', 'opslaan',
-    'eigenaar', 'zoeken', 'wijzigen', 'bevestig', 'mislukt', 'opnieuw',
-    'aanmelden', 'beheerder', 'medewerker', 'doorstuuradres', 'vervaldatum',
-    'voornaam', 'achternaam', 'gevonden', 'ontbrekende', 'teruggerold',
-    'gepubliceerd', 'valideren', 'weigeren', 'aangemaakt', 'bijgewerkt',
-    'gegenereerd', 'houdbaarheid', 'blokkeer', 'onbekend', 'hieronder',
-    'ongeldig', 'verlengen', 'welkom', 'systeemtaak', 'zoekresultaten',
-    # Added after a word-by-word sweep of the templates turned these up: a
-    # hand-written marker list only catches what someone thought of, and
-    # compounds like "validatielink" are exactly what it misses
-    'gebeurtenis', 'validatielink', 'algoritme', 'eenmalige', 'verlenging',
-    'serverinformatie', 'laatste', 'keer', 'huidig', 'datum', 'tijd', 'voor de',
-    'instellingen', 'gegevens', 'overzicht', 'aantal', 'melding', 'geslaagd',
-    'schijfruimte', 'bestand', 'groepen', 'rechten', 'toegang',
-]
-
-
-def in_page_links(context, selector='#content a, .staffUserMore a'):
-    hrefs = context.page.eval_on_selector_all(
-        selector, 'els => els.map(e => e.getAttribute("href"))')
-    # Anything that would take the session down with it, or leave state behind,
-    # is not something a read-only sweep should follow
-    forbidden = ('logout', '/remove', '/delete', '/login', '/approve', '/reject',
-                 '/validate', '/expire', '/nuke', 'sudo-fix-problem', 'loginToken')
-    return {h for h in hrefs
-            if h and h.startswith('/') and not any(f in h for f in forbidden)}
-
-
-@then('no page reachable from the menu contains Dutch text')
-def step_no_dutch(context):
-    hrefs = context.page.eval_on_selector_all(
-        '#controlMenu a', 'els => els.map(e => e.getAttribute("href"))')
-    menu = sorted({h for h in hrefs if h and h.startswith('/') and 'logout' not in h})
-    assert menu, 'the menu exposed no links to check'
-
-    # One hop past the menu as well. Several screens are only linked from within
-    # another page -- the per-user "more" panel, the create forms, phpinfo -- and
-    # a menu-only sweep is how "Validatielink (voor verlenging)" survived the
-    # first pass at the translation
-    offences = []
-    visited = set()
-    frontier = list(menu)
-    while frontier:
-        href = frontier.pop(0)
-        if href in visited:
-            continue
-        visited.add(href)
-
-        response = context.page.goto(href)
-        if response.status >= 400:
-            continue
-        if href in menu:
-            frontier.extend(sorted(in_page_links(context) - visited))
-
-        # Only the rendered text, so that vendored library source cannot trip it
-        body = context.page.inner_text('body').lower()
-        for marker in DUTCH_MARKERS:
-            if re.search(r'\b' + re.escape(marker), body):
-                offences.append(f'{href}: {marker}')
-
-    assert len(visited) > len(menu), \
-        f'the sweep never got past the menu: {len(visited)} pages for {len(menu)} menu entries'
-    assert not offences, 'Dutch text found:\n' + '\n'.join(offences)

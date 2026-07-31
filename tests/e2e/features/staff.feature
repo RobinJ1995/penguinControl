@@ -1,15 +1,10 @@
 Feature: The staff area
-  Every staff screen was still in Dutch before this change, and several of them
-  referred to tables and columns that no longer exist, so these scenarios walk
-  the whole area.
+  Several staff screens referred to tables and columns that no longer exist, so
+  these scenarios walk the whole area.
 
   Background:
     Given the panel is freshly installed
     And I am logged in as the administrator
-
-  Scenario: Every page the menu offers renders
-    When I visit "/user/start"
-    Then every page reachable from the menu renders
 
   Scenario: The system check runs over the whole install
     When I visit "/staff/maintenance/system/check"

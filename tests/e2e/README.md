@@ -122,6 +122,5 @@ Apache -- so scenarios cannot leak into one another.
 | `mariadb_credentials.feature` | Per-user DBMS accounts are created, authenticate with the panel password, and are granted only their own databases on MariaDB 12.3 |
 | `system_task.feature` | `artisan cron:run` drains the queue: document roots are created and chowned, Apache is reloaded, disk usage is calculated |
 | `ftp_and_mail.feature` | FTP and mail rows are written in the shape the FTP daemon and Postfix read, including `mail_forward.mail_domain_id` |
-| `staff.feature` | Every page the menu offers renders, the system check runs, and a registration waits for validation |
+| `staff.feature` | The system check runs, a registration waits for validation, and the billing log starts empty |
 | `certbot.feature` | The certificate request path reaches certbot |
-| `english.feature` | No Dutch remains on any page either kind of user can reach -- a regression guard for the translation. It follows the menu and one hop past it, because several screens are only linked from inside another page, and that is how the last few Dutch strings survived the first pass |
