@@ -12,6 +12,9 @@ services:
     # CREATE USER and GRANT OPTION on top of rights to its own schema.
     command: >
       --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    # Nothing a test writes is worth an fsync, and on a slow disk every commit waits for one.
+    tmpfs:
+      - /var/lib/mysql
     healthcheck:
       test: ["CMD", "mariadb-admin", "ping", "-uroot", "-prootpw", "--silent"]
       interval: 2s
